@@ -6,10 +6,10 @@ on:
       - develop
 
 jobs:
-  deploy-dev:
-    name: Deploy to Local/Dev Environment
+  build-develop:
+    name: Build & Package (Dev)
     runs-on: ubuntu-latest
-    environment: Local/Dev
+    environment: Local-Dev
 
     steps:
     - name: Checkout Code
@@ -28,40 +28,38 @@ jobs:
         cache: 'npm'
         cache-dependency-path: Frontend/package-lock.json
 
-    # Install EF Core CLI Tool
-    - name: Install EF Tool
-      run: dotnet tool install --global dotnet-ef
-
-    # Apply Idempotent Migrations to Dev Database
-    - name: Apply DB Migrations
-      run: dotnet ef database update --project Backend/Backend.csproj --connection "${{ secrets.DEV_CONNECTION_STRING }}"
-
     # Build and Publish Backend
-    - name: Build & Publish Backend
+    - name: Restore & Build Backend
       run: |
         dotnet restore Backend/Backend.csproj
-        dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+        dotnet build Backend/Backend.csproj --no-restore --configuration Release
 
-    # Build & Publish Frontend
-    - name: Build Frontend
-      run: |
-        npm ci
-        npm run build -- --configuration=development
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+    - name: Publish Backend
+      run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    # Build Frontend
+    - name: Install Frontend Dependencies
+      run: npm ci
       working-directory: Frontend
 
-    # Auto-deploy artifacts steps (Using mock/placeholder deployment steps to hosting slots)
-    - name: Deploy Backend to Web App (Dev Slot)
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: 'psamb-colonization-dev-api'
-        slot-name: 'development'
-        publish-profile: ${{ secrets.AZURE_DEV_PUBLISH_PROFILE }}
-        package: './publish-backend'
+    - name: Build Frontend (Development)
+      run: npm run build -- --configuration=development
+      working-directory: Frontend
 
-    - name: Deploy Frontend to Web App (Dev Slot)
-      uses: azure/webapps-deploy@v3
+    # Upload build artifacts for manual deployment
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
       with:
-        app-name: 'psamb-colonization-dev-web'
-        slot-name: 'development'
-        publish-profile: ${{ secrets.AZURE_DEV_WEB_PUBLISH_PROFILE }}
-        package: './Frontend/dist/Frontend'
+        name: backend-dev-build
+        path: ./publish-backend
+        retention-days: 7
+
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-dev-build
+        path: ./Frontend/dist/
+        retention-days: 7

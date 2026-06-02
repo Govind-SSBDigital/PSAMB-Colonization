@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  deploy-prod:
-    name: Deploy to Production Environment
+  build-production:
+    name: Build & Package (Production)
     runs-on: ubuntu-latest
     # Freezes the pipeline here until approved by authorized reviewers in GitHub UI
     environment: Production
@@ -29,66 +29,69 @@ jobs:
         cache: 'npm'
         cache-dependency-path: Frontend/package-lock.json
 
-    # Validate SQL Server Transparent Data Encryption (TDE) is enabled in Production
-    - name: Validate Transparent Data Encryption (TDE)
+    # Build and Publish Backend
+    - name: Restore & Build Backend
       run: |
-        echo "Verifying TDE status on Production Database..."
-        # Running TDE verification query. If encryption status is 0, execution halts.
-        sqlcmd -S "${{ secrets.PROD_DB_SERVER }}" -d "${{ secrets.PROD_DB_NAME }}" -U "${{ secrets.PROD_DB_USER }}" -P "${{ secrets.PROD_DB_PASSWORD }}" -Q "
-        DECLARE @tde_state INT;
-        SELECT @tde_state = is_encrypted FROM sys.databases WHERE name = DB_NAME();
-        IF @tde_state = 1
-        BEGIN
-            PRINT 'TDE Validation Succeeded: Production database is encrypted.';
-        END
-        ELSE
-        BEGIN
-            PRINT 'CRITICAL ERROR: TDE is NOT enabled on this database!';
-            THROW 51000, 'Transparent Data Encryption (TDE) is disabled on Production. Halting deployment.', 1;
-        END"
-      continue-on-error: false
+        dotnet restore Backend/Backend.csproj
+        dotnet build Backend/Backend.csproj --no-restore --configuration Release
 
-    # Install EF Core CLI Tool
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+    - name: Publish Backend
+      run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    # Build Frontend
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Build Frontend (Production)
+      run: npm run build -- --configuration=production
+      working-directory: Frontend
+
+    # Generate EF Core Migration Script (for manual DB updates)
     - name: Install EF Tool
       run: dotnet tool install --global dotnet-ef
 
-    # Apply Idempotent Migrations to Production Database
-    - name: Apply DB Migrations
-      run: dotnet ef database update --project Backend/Backend.csproj --connection "${{ secrets.PROD_CONNECTION_STRING }}"
+    - name: Generate Migration SQL Script
+      run: dotnet ef migrations script --project Backend/Backend.csproj --idempotent --output ./migration-production.sql
+      continue-on-error: true
 
-    # Build and Publish Backend
-    - name: Build & Publish Backend
+    # Upload build artifacts for manual deployment
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-production-build
+        path: ./publish-backend
+        retention-days: 30
+
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-production-build
+        path: ./Frontend/dist/
+        retention-days: 30
+
+    - name: Upload Migration Script
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: migration-script-production
+        path: ./migration-production.sql
+        retention-days: 30
+        if-no-files-found: ignore
+
+    # Summary
+    - name: Deployment Summary
       run: |
-        dotnet restore Backend/Backend.csproj
-        dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
-
-    # Build & Publish Frontend
-    - name: Build Frontend
-      run: |
-        npm ci
-        npm run build -- --configuration=production
-      working-directory: Frontend
-
-    # Zero-downtime deployment: Deploy to staging slot and swap to production
-    - name: Deploy Backend to Staging Slot
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: 'psamb-colonization-prod-api'
-        slot-name: 'staging-slot'
-        publish-profile: ${{ secrets.AZURE_PROD_PUBLISH_PROFILE }}
-        package: './publish-backend'
-
-    - name: Swap Backend Slots (Zero-Downtime Swap)
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.30.0
-        inlineScript: |
-          az webapp deployment slot swap -g psamb-rg -n psamb-colonization-prod-api --slot staging-slot --target-slot production
-
-    # Deploy frontend assets to Production CDN with caching invalidation
-    - name: Deploy Frontend to Production Server
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: 'psamb-colonization-prod-web'
-        publish-profile: ${{ secrets.AZURE_PROD_WEB_PUBLISH_PROFILE }}
-        package: './Frontend/dist/Frontend'
+        echo "## 🚀 Production Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Build artifacts are ready for manual deployment." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts:" >> $GITHUB_STEP_SUMMARY
+        echo "- **backend-production-build** — Published .NET API" >> $GITHUB_STEP_SUMMARY
+        echo "- **frontend-production-build** — Angular production bundle" >> $GITHUB_STEP_SUMMARY
+        echo "- **migration-script-production** — Idempotent SQL migration script" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Download artifacts from the Actions run page and deploy to your server." >> $GITHUB_STEP_SUMMARY

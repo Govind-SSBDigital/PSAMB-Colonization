@@ -6,8 +6,8 @@ on:
       - staging
 
 jobs:
-  deploy-staging:
-    name: Deploy to Staging / UAT Environment
+  build-staging:
+    name: Build & Package (Staging / UAT)
     runs-on: ubuntu-latest
     environment: Staging
 
@@ -28,46 +28,55 @@ jobs:
         cache: 'npm'
         cache-dependency-path: Frontend/package-lock.json
 
-    # Install EF Core CLI Tool
+    # Build and Publish Backend
+    - name: Restore & Build Backend
+      run: |
+        dotnet restore Backend/Backend.csproj
+        dotnet build Backend/Backend.csproj --no-restore --configuration Release
+
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+    - name: Publish Backend
+      run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    # Build Frontend
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Build Frontend (Staging)
+      run: npm run build -- --configuration=production
+      working-directory: Frontend
+
+    # Generate EF Core Migration Script (for manual DB updates)
     - name: Install EF Tool
       run: dotnet tool install --global dotnet-ef
 
-    # Apply Idempotent Migrations to Staging Database
-    - name: Apply DB Migrations
-      run: dotnet ef database update --project Backend/Backend.csproj --connection "${{ secrets.STAGING_CONNECTION_STRING }}"
+    - name: Generate Migration SQL Script
+      run: dotnet ef migrations script --project Backend/Backend.csproj --idempotent --output ./migration-staging.sql
+      continue-on-error: true
 
-    # Build and Publish Backend
-    - name: Build & Publish Backend
-      run: |
-        dotnet restore Backend/Backend.csproj
-        dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
-
-    # Build & Publish Frontend
-    - name: Build Frontend
-      run: |
-        npm ci
-        npm run build -- --configuration=production
-      working-directory: Frontend
-
-    # Auto-deploy artifacts steps to Staging/UAT Web and CDN servers
-    - name: Deploy Backend to Staging Web App
-      uses: azure/webapps-deploy@v3
+    # Upload build artifacts for manual deployment
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
       with:
-        app-name: 'psamb-colonization-staging-api'
-        publish-profile: ${{ secrets.AZURE_STAGING_PUBLISH_PROFILE }}
-        package: './publish-backend'
+        name: backend-staging-build
+        path: ./publish-backend
+        retention-days: 14
 
-    - name: Deploy Frontend to Staging Web Server
-      uses: azure/webapps-deploy@v3
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
       with:
-        app-name: 'psamb-colonization-staging-web'
-        publish-profile: ${{ secrets.AZURE_STAGING_WEB_PUBLISH_PROFILE }}
-        package: './Frontend/dist/Frontend'
+        name: frontend-staging-build
+        path: ./Frontend/dist/
+        retention-days: 14
 
-    # Deploy frontend assets to Staging CDN for dress-rehearsal testing
-    - name: Upload Assets to CDN
-      uses: azure/CLI@v1
+    - name: Upload Migration Script
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
       with:
-        azcliversion: 2.30.0
-        inlineScript: |
-          az storage blob upload-batch --account-name psambstagingcdn --auth-mode key -d '$web' -s ./Frontend/dist/Frontend
+        name: migration-script-staging
+        path: ./migration-staging.sql
+        retention-days: 14
+        if-no-files-found: ignore
