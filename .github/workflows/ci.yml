@@ -1,0 +1,63 @@
+name: CI / Build and Test
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+      - '!staging'
+      - '!develop'
+
+jobs:
+  backend-ci:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Backend Packages
+      run: dotnet restore Backend/Backend.csproj
+
+    - name: Build Backend
+      run: dotnet build Backend/Backend.csproj --no-restore --configuration Release
+
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+  frontend-ci:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Lint Frontend
+      run: npm run lint --if-present
+      working-directory: Frontend
+
+    - name: Build Frontend
+      run: npm run build
+      working-directory: Frontend
+
+    - name: Run Frontend Tests
+      run: npx ng test --watch=false --no-progress --browsers=ChromeHeadless
+      working-directory: Frontend

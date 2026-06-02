@@ -1,0 +1,73 @@
+name: CD / Deploy Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging / UAT Environment
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Setup .NET & Node
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    # Install EF Core CLI Tool
+    - name: Install EF Tool
+      run: dotnet tool install --global dotnet-ef
+
+    # Apply Idempotent Migrations to Staging Database
+    - name: Apply DB Migrations
+      run: dotnet ef database update --project Backend/Backend.csproj --connection "${{ secrets.STAGING_CONNECTION_STRING }}"
+
+    # Build and Publish Backend
+    - name: Build & Publish Backend
+      run: |
+        dotnet restore Backend/Backend.csproj
+        dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    # Build & Publish Frontend
+    - name: Build Frontend
+      run: |
+        npm ci
+        npm run build -- --configuration=production
+      working-directory: Frontend
+
+    # Auto-deploy artifacts steps to Staging/UAT Web and CDN servers
+    - name: Deploy Backend to Staging Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'psamb-colonization-staging-api'
+        publish-profile: ${{ secrets.AZURE_STAGING_PUBLISH_PROFILE }}
+        package: './publish-backend'
+
+    - name: Deploy Frontend to Staging Web Server
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'psamb-colonization-staging-web'
+        publish-profile: ${{ secrets.AZURE_STAGING_WEB_PUBLISH_PROFILE }}
+        package: './Frontend/dist/Frontend'
+
+    # Deploy frontend assets to Staging CDN for dress-rehearsal testing
+    - name: Upload Assets to CDN
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az storage blob upload-batch --account-name psambstagingcdn --auth-mode key -d '$web' -s ./Frontend/dist/Frontend

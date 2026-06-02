@@ -1,0 +1,67 @@
+name: CD / Deploy Develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy-dev:
+    name: Deploy to Local/Dev Environment
+    runs-on: ubuntu-latest
+    environment: Local/Dev
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Setup .NET & Node
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    # Install EF Core CLI Tool
+    - name: Install EF Tool
+      run: dotnet tool install --global dotnet-ef
+
+    # Apply Idempotent Migrations to Dev Database
+    - name: Apply DB Migrations
+      run: dotnet ef database update --project Backend/Backend.csproj --connection "${{ secrets.DEV_CONNECTION_STRING }}"
+
+    # Build and Publish Backend
+    - name: Build & Publish Backend
+      run: |
+        dotnet restore Backend/Backend.csproj
+        dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    # Build & Publish Frontend
+    - name: Build Frontend
+      run: |
+        npm ci
+        npm run build -- --configuration=development
+      working-directory: Frontend
+
+    # Auto-deploy artifacts steps (Using mock/placeholder deployment steps to hosting slots)
+    - name: Deploy Backend to Web App (Dev Slot)
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'psamb-colonization-dev-api'
+        slot-name: 'development'
+        publish-profile: ${{ secrets.AZURE_DEV_PUBLISH_PROFILE }}
+        package: './publish-backend'
+
+    - name: Deploy Frontend to Web App (Dev Slot)
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'psamb-colonization-dev-web'
+        slot-name: 'development'
+        publish-profile: ${{ secrets.AZURE_DEV_WEB_PUBLISH_PROFILE }}
+        package: './Frontend/dist/Frontend'
