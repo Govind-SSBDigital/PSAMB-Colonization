@@ -41,3 +41,15 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+.custom-switch-color:focus {
+  box-shadow: none !important;
+  border: none !important;
+}
+.custom-switch-color:checked {
+  background-color: #28633e !important;
+  border:none !important;
+}
+.custom-input-color:focus {
+  box-shadow: none !important;
+  border-color: #28633e !important;
+}
