@@ -13,6 +13,13 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'property-bidder-registration',
+    loadChildren: () => import('./features/property-bidder-registration/property-bidder-registration.module').then(m => m.PropertyBidderRegistrationModule),
+    // canActivate: [AuthGuard]
+  },
+
+  
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

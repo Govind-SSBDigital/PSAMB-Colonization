@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <form [formGroup=""]="registerationForm" (ngSubmit="")="onSubmit()" novalidate="">
+    <form [formGroup]="registerationForm" (ngSubmit)="onSubmit()" novalidate="">
       <div class="row g-4 mb-4">
         <div class="col-lg-8">
           <div class="card border-0 rounded-4 shadow-sm h-100">
@@ -36,7 +36,7 @@
                     [class.is-invalid=""]="isInvalid('mandi')" />
                   <datalist id="mandis">
                     @for (mandi of mandis; track mandi) {
-                    <option [value=""]="mandi"></option>
+                    <option [value]="mandi"></option>
                     }
                   </datalist>
                   @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
@@ -52,7 +52,7 @@
                     [class.is-invalid=""]="isInvalid('branch')" />
                   <datalist id="branches">
                     @for (branch of branches; track branch) {
-                    <option [value=""]="branch"></option>
+                    <option [value]="branch"></option>
                     }
                   </datalist>
                   @if (isInvalid('branch')) { <div class="invalid-feedback">Branch is required.</div> }
@@ -78,7 +78,7 @@
                     formControlName="plotstatus" [class.is-invalid=""]="isInvalid('plotstatus')">
                     <option value="" disabled="">Select status</option>
                     @for (status of plotStatuses; track status) {
-                    <option [value=""]="status">{{ status }}</option>
+                    <option [value]="status">{{ status }}</option>
                     }
                   </select>
                   @if (isInvalid('plotstatus')) { <div class="invalid-feedback">Plot status is required.</div> }
@@ -93,7 +93,7 @@
                     formControlName="plottype" [class.is-invalid=""]="isInvalid('plottype')">
                     <option value="" disabled="">Select plot type</option>
                     @for (type of plotTypes; track type) {
-                    <option [value=""]="type">{{ type }}</option>
+                    <option [value]="type">{{ type }}</option>
                     }
                   </select>
                   @if (isInvalid('plottype')) { <div class="invalid-feedback">Plot type is required.</div> }
@@ -128,7 +128,7 @@
                     formControlName="propertycategory" [class.is-invalid=""]="isInvalid('propertycategory')">
                     <option value="" disabled="">Select category</option>
                     @for (category of propertyCategories; track category) {
-                    <option [value=""]="category">{{ category }}</option>
+                    <option [value]="category">{{ category }}</option>
                     }
                   </select>
                   @if (isInvalid('propertycategory')) { <div class="invalid-feedback">
@@ -151,13 +151,13 @@
               <div class="d-grid gap-3">
                 @for (status of statusFields; track status.control) {
                 <div class="d-flex align-items-center justify-content-between bg-light rounded-3 p-2">
-                  <label class="form-check-label fw-semibold text-secondary" [for=""]="status.control">
+                  <label class="form-check-label fw-semibold text-secondary" [for]="status.control">
                     {{ status.label
                     }}
                   </label>
                   <div class="form-check form-switch m-0">
                     <input class="form-check-input custom-switch-color" type="checkbox" role="switch"
-                      [id=""]="status.control" [formControlName=""]="status.control" />
+                      [id]="status.control" [formControlName]="status.control" />
                   </div>
                 </div>
                 }
@@ -216,7 +216,7 @@
                 </label>
                 <select id="bidderType" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="bidderType" [class.is-invalid=""]="isInvalid('bidderType')">
-                  @for (type of bidderTypes; track type) { <option [value=""]="type">{{ type }}</option> }
+                  @for (type of bidderTypes; track type) { <option [value]="type">{{ type }}</option> }
                 </select>
                 @if (isInvalid('bidderType')) { <div class="invalid-feedback">Bidder type is required.</div> }
               </div>
@@ -241,7 +241,7 @@
                     placeholder="Enter full name of highest bidder" formControlName="h1BidderName"
                     [class.is-invalid=""]="isInvalid('h1BidderName')" />
                   <button type="button" class="btn btn-outline-secondary rounded-end-3"
-                    [disabled=""]="!registerationForm.get('transfered')?.value">+ Add</button>
+                    [disabled]="!registerationForm.get('transfered')?.value">+ Add</button>
                 </div>
                 @if (isInvalid('h1BidderName')) { <div class="invalid-feedback d-block">
                   H1 bidder name is required.
@@ -269,7 +269,7 @@
                 <label for="relation" class="form-label small text-secondary fw-bold text-uppercase">Relation</label>
                 <select id="relation" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="relation" [class.is-invalid=""]="isInvalid('relation')">
-                  @for (relation of relations; track relation) { <option [value=""]="relation">{{ relation }}</option> }
+                  @for (relation of relations; track relation) { <option [value]="relation">{{ relation }}</option> }
                 </select>
                 @if (isInvalid('relation')) { <div class="invalid-feedback">Relation is required.</div> }
               </div>
@@ -320,7 +320,7 @@
                 </label>
                 <select id="auctionPropertyType" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="auctionPropertyType" [class.is-invalid=""]="isInvalid('auctionPropertyType')">
-                  @for (type of auctionPropertyTypes; track type) { <option [value=""]="type">{{ type }}</option> }
+                  @for (type of auctionPropertyTypes; track type) { <option [value]="type">{{ type }}</option> }
                 </select>
                 @if (isInvalid('auctionPropertyType')) { <div class="invalid-feedback">Property type is required.</div>
                 }
@@ -499,7 +499,7 @@
                   <select class="form-select bg-white custom-input-color" formControlName="installmentNo"
                     [class.is-invalid=""]="isInvalid('installmentNo')">
                     @for (installment of installments; track
-                    installment) { <option [value=""]="installment">{{ installment }}</option> }
+                    installment) { <option [value]="installment">{{ installment }}</option> }
                   </select>@if
                   (isInvalid('installmentNo')) { <div class="invalid-feedback">Installment no. is required.</div> }
                 </div>
@@ -514,7 +514,7 @@
                     class="form-select bg-white custom-input-color" formControlName="paidStatus"
                     [class.is-invalid=""]="isInvalid('paidStatus')">
                     @for (status of paidStatuses; track status) { <option
-                      [value=""]="status">{{ status }}</option> }
+                      [value]="status">{{ status }}</option> }
                   </select>@if (isInvalid('paidStatus')) { <div
                     class="invalid-feedback">Paid status is required.</div> }
                 </div>

@@ -1,20 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
 import { SharedModule } from '../../shared/shared.module';
-import { PropertyBidderRegistrationComponent } from './property-bidder-registration.component';
+import { PropertyBidderRegistration } from './property-bidder-registration';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [PropertyBidderRegistrationComponent],
+  declarations: [PropertyBidderRegistration],
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     SharedModule,
 
     RouterModule.forChild([
       {
-        path: 'property-bidder-registration',
-        component: PropertyBidderRegistrationComponent
+        path: '',
+        component: PropertyBidderRegistration
       }
     ])
   ]
