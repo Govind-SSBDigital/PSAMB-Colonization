@@ -53,3 +53,8 @@ body {
   box-shadow: none !important;
   border-color: #28633e !important;
 }
+.custom-checkbox-color:focus,
+.custom-checkbox-color:checked {
+  background-color: #28633e !important;
+  border-color: #28633e !important;
+}
