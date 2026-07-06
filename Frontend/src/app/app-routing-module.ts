@@ -18,6 +18,11 @@ const routes: Routes = [
     // canActivate: [AuthGuard]
   },
 
+  {
+    path: 'register-property',
+    loadChildren: () => import('./features/register-property/register-property.module').then(m => m.RegisterPropertyModule),
+    // canActivate: [AuthGuard]
+  },
   
   {
     path: '',
