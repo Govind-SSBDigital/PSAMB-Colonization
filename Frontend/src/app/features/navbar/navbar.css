@@ -1,0 +1,301 @@
+/* ==========================================================================
+   Premium & Responsive Navbar Styles
+   ========================================================================== */
+
+/* Government Top Info Bar */
+.govt-top-bar {
+  background-color: #022c22;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 20px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  z-index: 1000;
+  position: relative;
+}
+
+.top-bar-flex {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-bar-right {
+  display: flex;
+  gap: 16px;
+}
+
+.top-bar-right a {
+  color: #cbd5e1;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+}
+
+.top-bar-right a:hover {
+  color: #fbbf24;
+}
+
+/* Premium Main Navbar */
+.premium-navbar {
+  background-color: rgba(6, 78, 59, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 3px solid #fbbf24; /* Golden Highlight Line */
+  box-shadow: 0 10px 30px -10px rgba(2, 44, 34, 0.25);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  padding: 12px 20px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.nav-flex-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Branding Logo & Title Group */
+.nav-branding-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: white;
+}
+
+.branding-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 30px;
+  height: auto;
+  opacity: 0.9;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: filter 0.4s ease, opacity 0.4s ease;
+}
+
+.nav-branding-wrap:hover .logo-img {
+  opacity: 1;
+  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+}
+
+.branding-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #ffffff 0%, #fef08a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sub-title {
+  font-size: 0.78rem;
+  color: #a7f3d0;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Navigation Links */
+.nav-links-container {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link-item {
+  color: rgba(241, 245, 249, 0.85);
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 6px 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #d97706; /* Golden Line */
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.nav-link-item:hover {
+  color: white;
+}
+
+.nav-link-item:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-link-item.active {
+  color: #fbbf24;
+}
+
+.nav-link-item.active::after {
+  transform: scaleX(1);
+  background-color: #fbbf24;
+}
+
+/* CTA buttons */
+.nav-actions-desktop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-nav-login {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-nav-login:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: white;
+  color: white;
+}
+
+.btn-nav-register {
+  color: white;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  border: none;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
+}
+
+.btn-nav-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(217, 119, 6, 0.35);
+  color: white;
+}
+
+/* Collapsed mobile components */
+.nav-actions-mobile {
+  display: none;
+}
+
+.nav-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.35rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT STYLES
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .nav-actions-desktop {
+    display: none;
+  }
+  
+  .nav-mobile-toggle {
+    display: block;
+  }
+  
+  .nav-links-container {
+    position: fixed;
+    top: 110px; /* offset top bar + navbar */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #022c22;
+    flex-direction: column;
+    padding: 30px 40px;
+    gap: 20px;
+    align-items: flex-start;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 998;
+    overflow-y: auto;
+  }
+  
+  .nav-links-container.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .nav-link-item {
+    font-size: 1.1rem;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 0;
+  }
+  
+  .nav-link-item::after {
+    display: none;
+  }
+
+  .nav-actions-mobile {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .nav-actions-mobile a {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 580px) {
+  .premium-navbar {
+    padding: 10px 14px;
+  }
+  .logo-img {
+    width: 38px;
+  }
+  .main-title {
+    font-size: 0.92rem;
+  }
+  .sub-title {
+    font-size: 0.7rem;
+  }
+  .nav-links-container {
+    top: 96px; /* slightly smaller top height */
+  }
+}

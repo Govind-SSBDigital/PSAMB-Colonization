@@ -4,6 +4,16 @@ import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   {
+    path: '',
+    loadComponent: () => import('./features/home-page/home-page').then(m => m.HomePage),
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    redirectTo: 'auth/login',
+    pathMatch: 'full'
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
   },
@@ -13,13 +23,8 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
-  },
-  {
     path: '**',
-    redirectTo: 'dashboard'
+    redirectTo: ''
   }
 ];
 
@@ -28,3 +33,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+

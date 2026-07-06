@@ -1,0 +1,57 @@
+<!-- <header class="govt-top-bar">
+  <div class="container-fluid top-bar-flex">
+    <div class="top-bar-left">
+      <span><i class="fas fa-landmark"></i> Official Portal of Colonization Department, Punjab State Land &amp; Property Colonization Board</span>
+    </div>
+    <div class="top-bar-right">
+      <a href="#introduction"><i class="fas fa-info-circle"></i> About Dept</a>
+      <a href="https://punjab.gov.in" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Punjab Govt</a>
+    </div>
+  </div>
+</header> -->
+
+<nav class="premium-navbar">
+  <div class="container-fluid nav-flex-container">
+
+    <!-- Branding Logo & Titles -->
+    <a class="nav-branding-wrap">
+      <div class="branding-logo">
+        <img src="/ColonizationLogo.png" alt="PSLPCB Punjab Logo" class="logo-img"
+          style="filter: brightness(0) invert(1); opacity: 0.9;" />
+      </div>
+      <div class="branding-text-block">
+        <h1 class="main-title">Punjab State Land &amp; Property Colonization Board</h1>
+        <span class="sub-title">Colonization Department (Property &amp; Auction Portal)</span>
+      </div>
+    </a>
+
+    <!-- Nav Links (Responsive Collapse) -->
+    <div class="nav-links-container" [class.mobile-open]="isMobileMenuOpen">
+      <a class="nav-link-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        (click)="closeMobileMenu()">Home</a>
+      <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">e-Auctions</a>
+      <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">Citizen
+        Services</a>
+      <a class="nav-link-item" href="#introduction" (click)="closeMobileMenu()">About Us</a>
+
+      <!-- CTA Auth Buttons in mobile/collapsed view -->
+      <!-- <div class="nav-actions-mobile mt-3">
+        <a class="btn-nav-login" routerLink="/login" [queryParams]="{mode: 'signin'}"
+          (click)="closeMobileMenu()">Sign In</a>
+        <a class="btn-nav-register" routerLink="/login" [queryParams]="{mode: 'signup'}"
+          (click)="closeMobileMenu()">Sign Up</a>
+      </div> -->
+    </div>
+
+    <!-- Desktop CTA Buttons -->
+    <div class="nav-actions-desktop">
+      <a class="btn-nav-login" routerLink="/auth/login">Sign In</a>
+      <a class="btn-nav-login" routerLink="/auth/register">Sign Up</a>
+    </div>
+
+    <!-- Mobile Menu Toggler Toggle -->
+    <button class="nav-mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle Navigation">
+      <i class="fas" [class.fa-bars]="!isMobileMenuOpen" [class.fa-times]="isMobileMenuOpen"></i>
+    </button>
+  </div>
+</nav>
