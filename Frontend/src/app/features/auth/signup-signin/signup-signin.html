@@ -1,0 +1,1042 @@
+<!-- Custom Toast Container -->
+<div class="custom-toast-container" [class.show]="showToast" [class.success]="toastType === 'success'"
+    [class.error]="toastType === 'error'" [class.info]="toastType === 'info'">
+    <div class="toast-content">
+        <i class="fas" [class.fa-check-circle]="toastType === 'success'" [class.fa-times-circle]="toastType === 'error'"
+            [class.fa-info-circle]="toastType === 'info'"></i>
+        <span>{{ toastMessage }}</span>
+    </div>
+</div>
+
+<app-navbar></app-navbar>
+
+<div class="portal-wrapper" [class.signin-bg]="authMode === 'signin' && !isLoggedIn">
+    <!-- Portal Header banner -->
+    <!-- <div class="portal-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+      <div class="badge">Colonization Department</div>
+      <h1>Colonization Department Portal / ਉਪਨਿਵੇਸ਼ ਵਿਭਾਗ ਪੋਰਟਲ</h1>
+      <p>Government of Punjab — Easy access to e-Auctions, digital property records, and online citizen services.</p>
+    </div>
+  </div> -->
+
+    <div class="portal-container">
+
+        <!-- NOT LOGGED IN STATE -->
+        <div *ngIf="!isLoggedIn">
+
+
+
+            <!-- 2. LOGIN CARD -->
+            <div class="auth-card-wrapper-screenshot animated fade-in" *ngIf="authMode === 'signin'">
+
+                <!-- Back to landing button -->
+                <button type="button" class="btn-back-to-landing-top" (click)="goBackToLanding()">
+                    <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
+                </button>
+
+                <div class="auth-card-header-screenshot mt-3">
+                    <h2>Login</h2>
+                </div>
+
+                <!-- Registration Successful Alert -->
+                <div class="registration-success-alert-material animated fade-in" *ngIf="showRegistrationSuccessAlert">
+                    <div class="alert-icon-wrapper-material-inner">
+                        <mat-icon>mark_email_read</mat-icon>
+                    </div>
+                    <div class="alert-content-wrapper">
+                        <h3>Registration Successful! / ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਸਫਲ ਰਹੀ!</h3>
+                        <p>Your user account has been registered. Your credentials have been sent to your email.</p>
+                    </div>
+                    <button mat-icon-button class="close-alert-btn" (click)="showRegistrationSuccessAlert = false"
+                        title="Dismiss">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+
+                <!-- Demo credentials helper -->
+                <div class="demo-credentials-banner-material" *ngIf="showRegistrationSuccessAlert">
+                    <div class="banner-heading-material">
+                        <mat-icon>science</mat-icon> <strong>Demo Test Credentials (ਈਮੇਲ ਸਿਮੂਲੇਟਰ)</strong>
+                    </div>
+                    <p>For testing, copy the generated credentials:</p>
+                    <div class="demo-fields-grid-material">
+                        <div class="demo-field-material">
+                            <span class="df-lbl">User ID:</span>
+                            <span class="df-val">{{ generatedUserId }}</span>
+                            <button type="button" class="btn-copy" (click)="copyToClipboard(generatedUserId)"
+                                title="Copy ID">
+                                <mat-icon>content_copy</mat-icon>
+                            </button>
+                        </div>
+                        <div class="demo-field-material">
+                            <span class="df-lbl">Password:</span>
+                            <span class="df-val">{{ generatedPassword }}</span>
+                            <button type="button" class="btn-copy" (click)="copyToClipboard(generatedPassword)"
+                                title="Copy Password">
+                                <mat-icon>content_copy</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ERROR BANNER -->
+                <div class="login-error-banner-material" *ngIf="errorMessage">
+                    <mat-icon>warning</mat-icon>
+                    <span>{{ errorMessage }}</span>
+                </div>
+
+                <!-- LOGIN FORM WITH CAPTCHA (MATCHING SCREENSHOT) -->
+                <form *ngIf="loginMethod === 'password'" (ngSubmit)="onSignInSubmit()"
+                    class="signin-form-screenshot animated fade-in">
+
+                    <!-- User ID Input -->
+                    <div class="form-input-box-screenshot">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="text" name="userId" [(ngModel)]="loginData.userId" required
+                            placeholder="pmb.mcabo-ms">
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-input-box-screenshot">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="password" name="password" [(ngModel)]="loginData.password" required
+                            placeholder="Enter Password">
+                    </div>
+
+                    <!-- Captcha Section -->
+                    <div class="captcha-label-screenshot">Captcha</div>
+
+                    <div class="captcha-row-screenshot">
+                        <div class="captcha-image-wrapper">
+                            <span class="captcha-chars">{{ captchaText }}</span>
+                        </div>
+                        <button type="button" class="btn-refresh-captcha" (click)="refreshCaptcha()">Refresh</button>
+                    </div>
+
+                    <!-- Captcha Code Input -->
+                    <input type="text" name="captchaInput" [(ngModel)]="captchaInput" required
+                        placeholder="Enter Captcha Code" class="captcha-input-field-screenshot">
+
+                    <!-- Forgot Password & Submit Button -->
+                    <div class="forgot-pwd-row-screenshot">
+                        <a href="javascript:void(0)" class="forgot-link-screenshot">Forgot Password</a>
+                    </div>
+
+                    <div class="login-actions-row-parallel">
+                        <button type="submit" class="btn-login-screenshot flex-grow-1">
+                            LOG IN
+                        </button>
+                        <button type="button" class="btn-login-mobile-toggle" (click)="toggleLoginMethod('otp')">
+                            <i class="fas fa-mobile-alt"></i> Login with Mobile
+                        </button>
+                    </div>
+                </form>
+
+                <!-- LOGIN FORM FOR MOBILE OTP LOGIN -->
+                <form *ngIf="loginMethod === 'otp'" (ngSubmit)="onSignInOtpSubmit()"
+                    class="signin-form-screenshot animated fade-in">
+
+                    <!-- Mobile Number Input -->
+                    <div class="form-input-box-screenshot">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="tel" name="mobileNumber" maxlength="10" [(ngModel)]="loginOtpData.mobileNumber"
+                            required [disabled]="loginOtpData.otpSent" placeholder="Enter Mobile Number">
+                    </div>
+
+                    <!-- Verification OTP Code Input (Shown only when OTP sent) -->
+                    <div class="form-input-box-screenshot" *ngIf="loginOtpData.otpSent">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="text" name="otpInput" maxlength="6" [(ngModel)]="loginOtpData.otpInput" required
+                            placeholder="Enter 6-digit OTP (112233)">
+                    </div>
+
+                    <!-- OTP Sent Countdown/Resend helper -->
+                    <div class="otp-timer-row-helper" *ngIf="loginOtpData.otpSent">
+                        <span *ngIf="loginOtpData.timer > 0">Resend OTP in: <strong>{{ loginOtpData.timer
+                                }}s</strong></span>
+                        <button type="button" class="btn-resend-link" *ngIf="loginOtpData.timer === 0"
+                            (click)="sendLoginOtp()">Resend OTP</button>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="login-actions-row-parallel mt-2">
+                        <!-- Send OTP Button (when not sent) -->
+                        <button type="button" *ngIf="!loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1"
+                            (click)="sendLoginOtp()">
+                            Send OTP / ਵੈਰੀਫਾਈ ਕਰੋ
+                        </button>
+
+                        <!-- Verify & Log In Button (when sent) -->
+                        <button type="submit" *ngIf="loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1">
+                            Verify & Login
+                        </button>
+
+                        <!-- <button type="button" class="btn-login-mobile-toggle" (click)="toggleLoginMethod('password')">
+              <i class="fas fa-key"></i> Login with Password
+            </button> -->
+                    </div>
+                </form>
+
+                <div class="auth-card-footer text-center">
+                    <p>Don't have an account? / ਖਾਤਾ ਨਹੀਂ ਹੈ? <button type="button" class="btn-link-action"
+                            (click)="openSignUp()">Register as Applicant / ਬਿਨੈਕਾਰ ਵਜੋਂ ਰਜਿਸਟਰ ਕਰੋ</button></p>
+                </div>
+            </div>
+
+            <div class="auth-card-wrapper-screenshot signup-wide animated fade-in" [class.form-active]="proceedToForm" *ngIf="authMode === 'signup'">
+
+                <!-- Back Button -->
+                <button type="button" class="btn-back-to-landing-top mb-3" (click)="proceedToForm ? onBackToInstructions() : goBackToLanding()">
+                    <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
+                </button>
+
+                <!-- INSTRUCTIONS SECTION (Shown when proceedToForm is false) -->
+                <div class="instructions-section animated fade-in" *ngIf="!proceedToForm">
+                    <!-- Page Header Title -->
+                    <div class="signup-page-header text-center mb-4">
+                        <h1 class="signup-main-title">ਸਾਈਨ ਅੱਪ ਕਰੋ / Sign Up</h1>
+                    </div>
+
+                    <div class="instructions-card-container">
+                        <div class="row g-4">
+                            <!-- English Column -->
+                            <div class="col-md-6 border-end-desktop">
+                                <h2 class="ins-title-en">General Instructions (English)</h2>
+                                <p class="ins-intro-en">You are requested to choose the category accordingly in which you want to Sign up for the <strong>E-Services</strong></p>
+                                <span class="ins-subtitle-en">(Registrations for E-Auctions, Citizen Services, and Property Bidders)</span>
+                                
+                                <ul class="ins-list-en mt-3">
+                                    <li>Individual</li>
+                                    <li>Sole Proprietorship</li>
+                                    <li>Partnership Firm</li>
+                                    <li>Hindu Undivided Family(HUF)</li>
+                                    <li>Company</li>
+                                    <li>Other</li>
+                                </ul>
+
+                                <h3 class="ins-heading-en mt-4">Instructions to fill the form</h3>
+                                <ul class="ins-sublist-en">
+                                    <li>Kindly scan your photo and required documents (Format- jpg, png, jpeg. Maximum Size Limit for Applicant Photo is 100 KB and for all other documents is 500 KB)</li>
+                                    <li>All (*) Marked fields are Mandatory to be filled.</li>
+                                    <li>Fill correct Mobile Number and Email address. The username/password will be sent on this registered email/mobile number.</li>
+                                </ul>
+
+                            </div>
+
+                            <!-- Punjabi Column -->
+                            <div class="col-md-6">
+                                <h2 class="ins-title-pb">ਆਮ ਹਦਾਇਤਾਂ (ਪੰਜਾਬੀ)</h2>
+                                <p class="ins-intro-pb">ਤੁਹਾਨੂੰ ਉਸ ਅਨੁਸਾਰ ਸ਼੍ਰੇਣੀ ਦੀ ਚੋਣ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ <strong>ਈ-ਸੇਵਾਵਾਂ</strong> ਲਈ ਸਾਈਨ ਅੱਪ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ</p>
+                                <span class="ins-subtitle-pb">(ਈ-ਨੀਲਾਮੀ, ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਅਤੇ ਜਾਇਦਾਦ ਬੋਲੀਕਾਰਾਂ ਲਈ ਰਜਿਸਟ੍ਰੇਸ਼ਨ)</span>
+                                
+                                <ul class="ins-list-pb mt-3">
+                                    <li>ਵਿਅਕਤੀਗਤ</li>
+                                    <li>ਇਕੱਲੇ ਮਾਲਕ ਦਾ ਅਧਿਕਾਰ</li>
+                                    <li>ਭਾਈਵਾਲੀ ਫਰਮ</li>
+                                    <li>ਹਿੰਦੂ ਅਣਵੰਡਿਆ ਪਰਿਵਾਰ (HUF)</li>
+                                    <li>ਕੰਪਨੀ</li>
+                                    <li>ਹੋਰ</li>
+                                </ul>
+
+                                <h3 class="ins-heading-pb mt-4">ਫਾਰਮ ਭਰਨ ਲਈ ਹਦਾਇਤਾਂ</h3>
+                                <ul class="ins-sublist-pb">
+                                    <li>ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਫੋਟੋ ਅਤੇ ਲੋੜੀਂਦੇ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਸਕੈਨ ਕਰੋ (ਫਾਰਮੈਟ- jpg, png, jpeg. ਬਿਿਨੈਕਾਰ ਫੋਟੋ ਲਈ ਵੱਧ ਤੋਂ ਵੱਧ ਆਕਾਰ ਸੀਮਾ 100 KB ਅਤੇ ਹੋਰ ਸਾਰੇ ਦਸਤਾਵੇਜ਼ਾਂ ਲਈ 500 KB ਹੈ)</li>
+                                    <li>ਸਾਰੇ (*) ਚਿੰਨ੍ਹਤ ਖੇਤਰ ਭਰੇ ਜਾਣੇ ਲਾਜ਼ਮੀ ਹਨ।</li>
+                                    <li>ਸਹੀ ਮੋਬਾਈਲ ਨੰਬਰ ਅਤੇ ਈਮੇਲ ਭਰੋ। ਯੂਜ਼ਰ ਨਾਮ/ਪਾਸਵਰਡ ਤੁਹਾਡੀ ਰਜਿਸਟਰਡ ਈਮੇਲ/ਮੋਬਾਈਲ ਨੰਬਰ 'ਤੇ ਭੇਜਿਆ ਜਾਵੇਗਾ।</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Parallel Query Boxes Row -->
+                        <div class="query-boxes-row mt-4">
+                            <div class="query-box-en">
+                                <strong>In case of any queries kindly contact on 01725101674 (Landline), 98779 37725, 83608 99462 (Mobile) Email – imspmbsupport@ssbdigital.in</strong>
+                            </div>
+                            <div class="query-box-pb">
+                                <strong>ਜੇਕਰ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੀ ਦਿੱਕਤ ਪੇਸ਼ ਆਉਂਦੀ ਹੈ ਤਾਂ ਹੇਠ ਦਰਸਾਏ ਨੰਬਰਾਂ 'ਤੇ ਸੰਪਰਕ ਕਰੋ ਜੀ- 01725101674 (ਲੈਂਡਲਾਈਨ), 98779 37725, 83608 99462 (ਮੋਬਾਈਲ) ਈਮੇਲ - imspmbsupport@ssbdigital.in</strong>
+                            </div>
+                        </div>
+
+                        <!-- Red Warning Alert Box (aligned same, separate borders) -->
+                        <div class="note-box-row mt-4">
+                            <div class="note-box-en">
+                                <strong>Note:</strong> If you are already a registered user on this portal, then you need not to Sign Up as a fresh user to apply for other services or E-Auction.
+                            </div>
+                            <div class="note-box-pb">
+                                <strong>ਨੋਟ:</strong> ਜੇਕਰ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਰਜਿਸਟਰਡ ਯੂਜ਼ਰ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਇਸ ਪੋਰਟਲ 'ਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਜਾਂ ਈ-ਨੀਲਾਮੀ ਲਈ ਅਰਜ਼ੀ ਦੇਣ ਲਈ ਦੁਬਾਰਾ ਸਾਈਨ ਅੱਪ ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Selector Box at the bottom of instructions -->
+                    <div class="category-selection-card mt-4">
+                        <div class="category-inline-row">
+                            <div class="category-dropdown-wrap">
+                                <label for="entityDropdown" class="form-label-custom mb-2">Select Category - (ਸ਼੍ਰੇਣੀ ਚੁਣੋ) <span class="required-star">*</span></label>
+                                <select id="entityDropdown" [(ngModel)]="selectedEntityType" (change)="onEntityTypeChange()" class="form-input-custom inline-select">
+                                    <option value="" disabled selected>-Select Category- (-ਸ਼੍ਰੇਣੀ ਚੁਣੋ-)</option>
+                                    <option *ngFor="let item of entityTypes" [value]="item.id">{{ item.label }} / {{ getPunjabiLabel(item.id) }}</option>
+                                </select>
+                            </div>
+                            
+                            <div class="category-inline-buttons">
+                                <button type="button" class="btn-proceed-signup" [disabled]="!selectedEntityType" (click)="onProceedToForm()">Proceed (ਅੱਗੇ ਵਧੋ)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Category Header (Shown when proceedToForm is true) -->
+                <div class="selected-category-header mb-4" *ngIf="proceedToForm">
+                    <div class="sch-content">
+                        <span>Selected Category / ਚੁਣੀ ਗਈ ਸ਼੍ਰੇਣੀ: </span>
+                        <strong>{{ selectedEntityType }} / {{ getPunjabiLabel(selectedEntityType) }}</strong>
+                        <button type="button" class="btn-change-category" (click)="onBackToInstructions()">
+                            <i class="fas fa-edit"></i> Change
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Continuous Sections Wrapper (Shown only if entity type selected and proceeded) -->
+                <div class="signup-step-container" *ngIf="selectedEntityType && proceedToForm">
+
+                    <!-- SECTION 1: PROFILE DETAILS -->
+                    <div class="step-form-block">
+                        <div class="step-green-header collapsible-header" (click)="toggleSection('profile')">
+                            <span><i class="fas fa-user-circle"></i> &nbsp; {{ getDynamicTitle() }}</span>
+                            <mat-icon>{{ sectionsExpanded.profile ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        </div>
+
+                        <div class="wizard-form-grid mt-3" [class.collapsed]="!sectionsExpanded.profile">
+                            <!-- Gender -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Gender (ਲਿੰਗ) <span
+                                        class="required-star">*</span></label>
+                                <select name="gender" [(ngModel)]="signUpData.gender" class="form-input-custom">
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="Male">Male / ਪੁਰਸ਼</option>
+                                    <option value="Female">Female / ਇਸਤਰੀ</option>
+                                    <!-- <option value="Transgender">Transgender/Other / ਟ੍ਰਾਂਸਜੈਂਡਰ/ਹੋਰ</option> -->
+                                </select>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Date Of Birth (ਜਨਮ ਤਾਰੀਖ) <span
+                                        class="required-star">*</span></label>
+                                <div class="input-with-icon-right">
+                                    <input type="date" name="dob" [(ngModel)]="signUpData.dob"
+                                        class="form-input-custom">
+                                    <i class="fas fa-calendar-alt input-icon-right"></i>
+                                </div>
+                            </div>
+
+                            <!-- First Name -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">First Name (ਪਹਿਲਾ ਨਾਂ) <span
+                                        class="required-star">*</span></label>
+                                <input type="text" name="firstName" [(ngModel)]="signUpData.firstName"
+                                    class="form-input-custom" placeholder="Enter Name">
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Last Name (ਆਖਰੀ ਨਾਂ)</label>
+                                <input type="text" name="lastName" [(ngModel)]="signUpData.lastName"
+                                    class="form-input-custom" placeholder="Enter Last Name">
+                            </div>
+
+                            <!-- Father's First Name -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Father's/Husband First Name (ਪਿਤਾ/ਪਤੀ ਦਾ ਪਹਿਲਾ ਨਾਂ)
+                                    <span class="required-star">*</span></label>
+                                <input type="text" name="fatherFirstName" [(ngModel)]="signUpData.fatherFirstName"
+                                    class="form-input-custom" placeholder="Enter Father's/Husband First Name">
+                            </div>
+
+                            <!-- Father's Last Name -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Father's/Husband Last Name (ਪਿਤਾ/ਪਤੀ ਦਾ ਆਖਰੀ
+                                    ਨਾਂ)</label>
+                                <input type="text" name="fatherLastName" [(ngModel)]="signUpData.fatherLastName"
+                                    class="form-input-custom" placeholder="Enter Father's/Husband Last Name">
+                            </div>
+
+                            <!-- Mother's First Name -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Mother's First Name (ਮਾਤਾ ਦਾ ਪਹਿਲਾ ਨਾਂ) <span
+                                        class="required-star">*</span></label>
+                                <input type="text" name="motherFirstName" [(ngModel)]="signUpData.motherFirstName"
+                                    class="form-input-custom" placeholder="Enter Mother's First Name">
+                            </div>
+
+                            <!-- Mother's Last Name -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Mother's Last Name (ਮਾਤਾ ਦਾ ਆਖਰੀ ਨਾਂ)</label>
+                                <input type="text" name="motherLastName" [(ngModel)]="signUpData.motherLastName"
+                                    class="form-input-custom" placeholder="Enter Mother's Last Name">
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Email Id (ਈ-ਮੇਲ ਆਈ.ਡੀ) <span
+                                        class="required-star">*</span></label>
+                                <input type="email" name="emailAddress" [(ngModel)]="signUpData.emailAddress"
+                                    class="form-input-custom" placeholder="Enter Email Id">
+                            </div>
+
+                            <!-- Mobile No Field -->
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">Mobile No. (ਮੋਬਾਈਲ ਨੰ) <span
+                                        class="required-star">*</span></label>
+                                <input type="tel" maxlength="10" name="mobileNumber"
+                                    [(ngModel)]="signUpData.mobileNumber" class="form-input-custom"
+                                    placeholder="Enter Mobile Number">
+                            </div>
+
+                            <!-- Password Field -->
+                            <!-- <div class="form-group-custom">
+                <label class="form-label-custom">Create Login Password (ਲੌਗਇਨ ਪਾਸਵਰਡ) <span
+                    class="required-star">*</span></label>
+                <input type="password" name="password" [(ngModel)]="signUpData.password" class="form-input-custom"
+                  placeholder="Enter Password (min 6 chars)">
+              </div> -->
+
+                            <!-- Confirm Password Field -->
+                            <!-- <div class="form-group-custom">
+                <label class="form-label-custom">Confirm Password (ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ) <span
+                    class="required-star">*</span></label>
+                <input type="password" name="confirmPassword" [(ngModel)]="signUpData.confirmPassword"
+                  class="form-input-custom" placeholder="Re-enter Password">
+              </div> -->
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: DOCUMENTS & ADDRESS DETAILS -->
+                    <div class="step-form-block">
+                        <div class="step-green-header collapsible-header" (click)="toggleSection('documents')">
+                            <span><i class="fas fa-folder-open"></i> &nbsp; {{ getDocumentsTitle() }}</span>
+                            <mat-icon>{{ sectionsExpanded.documents ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        </div>
+
+                        <div class="collapsible-content" [class.collapsed]="!sectionsExpanded.documents">
+                            <div class="wizard-form-grid mb-4">
+                                <!-- Select Identification Document -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Select Identification Document (ਪਛਾਣ ਦਸਤਾਵੇਜ਼ ਚੁਣੋ)
+                                        <span class="required-star">*</span></label>
+                                    <select name="idDocumentType" [(ngModel)]="signUpData.idDocumentType"
+                                        class="form-input-custom">
+                                        <option value="" disabled selected>Select Document</option>
+                                        <option *ngFor="let doc of idDocTypes" [value]="doc">{{ doc }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- Number -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Number (ਨੰਬਰ) <span
+                                            class="required-star">*</span></label>
+                                    <input type="text" name="idDocumentNumber" [(ngModel)]="signUpData.idDocumentNumber"
+                                        class="form-input-custom" placeholder="Enter Document Number">
+                                </div>
+
+                                <!-- Upload Document -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Upload Document (ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ) <span
+                                            class="required-star">*</span></label>
+                                    <div class="custom-file-wrapper">
+                                        <div class="choose-file-container">
+                                            <button type="button" class="choose-file-btn"
+                                                (click)="idDocInput.click()">Choose File</button>
+                                            <span class="file-chosen-text"
+                                                [class.text-muted]="!signUpData.idDocumentFileName">{{
+                                                signUpData.idDocumentFileName || 'No file chosen' }}</span>
+                                            <input #idDocInput type="file" (change)="onFileSelected($event, 'idDoc')"
+                                                class="d-none">
+                                        </div>
+                                        <div class="progress-bar-inline" *ngIf="uploadingStates['idDoc']">
+                                            <div class="p-fill" [style.width.%]="uploadProgress['idDoc']"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- PAN Number -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">PAN Number (ਪੈਨ ਨੰਬਰ) <span
+                                            class="required-star">*</span></label>
+                                    <input type="text" name="panNumber" maxlength="10"
+                                        [(ngModel)]="signUpData.panNumber" class="form-input-custom"
+                                        placeholder="Enter PAN Number">
+                                </div>
+
+                                <!-- Upload PAN Document -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Upload PAN Document (ਪੈਨ ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ) <span
+                                            class="required-star">*</span></label>
+                                    <div class="custom-file-wrapper">
+                                        <div class="choose-file-container">
+                                            <button type="button" class="choose-file-btn"
+                                                (click)="panInput.click()">Choose
+                                                File</button>
+                                            <span class="file-chosen-text"
+                                                [class.text-muted]="!signUpData.panFileName">{{
+                                                signUpData.panFileName || 'No file chosen' }}</span>
+                                            <input #panInput type="file" (change)="onFileSelected($event, 'pan')"
+                                                class="d-none">
+                                        </div>
+                                        <div class="progress-bar-inline" *ngIf="uploadingStates['pan']">
+                                            <div class="p-fill" [style.width.%]="uploadProgress['pan']"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upload Your Photo -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Upload Your Photo (ਆਪਣੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ) <span
+                                            class="required-star">*</span></label>
+                                    <div class="custom-file-wrapper">
+                                        <div class="choose-file-container">
+                                            <button type="button" class="choose-file-btn"
+                                                (click)="photoInput.click()">Choose File</button>
+                                            <span class="file-chosen-text"
+                                                [class.text-muted]="!signUpData.photoFileName">{{
+                                                signUpData.photoFileName || 'No file chosen' }}</span>
+                                            <input #photoInput type="file" (change)="onFileSelected($event, 'photo')"
+                                                class="d-none">
+                                        </div>
+                                        <div class="progress-bar-inline" *ngIf="uploadingStates['photo']">
+                                            <div class="p-fill" [style.width.%]="uploadProgress['photo']"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Subheader -->
+                            <div class="step-green-header-inner text-success">
+                                <i class="fas fa-map-marker-alt"></i> &nbsp; {{ getAddressTitle() }}
+                            </div>
+
+                            <div class="wizard-form-grid">
+                                <!-- State -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">State (ਰਾਜ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="addressState" [(ngModel)]="signUpData.addressState"
+                                        class="form-input-custom">
+                                        <option value="" disabled selected>---Select State---</option>
+                                        <option *ngFor="let s of states" [value]="s">{{ s }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- District -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">District (ਜ਼ਿਲ੍ਹਾ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="addressDistrict" [(ngModel)]="signUpData.addressDistrict"
+                                        class="form-input-custom">
+                                        <option value="" disabled selected>---Select District---</option>
+                                        <option *ngFor="let d of districts" [value]="d">{{ d }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- City -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">City (ਸ਼ਹਿਰ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="addressCity" [(ngModel)]="signUpData.addressCity"
+                                        class="form-input-custom">
+                                        <option value="" disabled selected>---Select City---</option>
+                                        <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- Pin Code -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Pin Code (ਪਿੰਨ ਕੋਡ) <span
+                                            class="required-star">*</span></label>
+                                    <input type="text" name="addressPincode" maxlength="6"
+                                        [(ngModel)]="signUpData.addressPincode" class="form-input-custom"
+                                        placeholder="Enter Pin Code">
+                                </div>
+
+                                <!-- Plot No/Street No/Landmark -->
+                                <div class="form-group-custom full-width">
+                                    <label class="form-label-custom">Plot No/Street No/Landmark(If any) (ਪਲਾਟ ਨੰਬਰ/ਗਲੀ
+                                        ਨੰਬਰ/ਲੈਂਡਮਾਰਕ (ਜੇ ਕੋਈ
+                                        ਹੋਵੇ)) <span class="required-star">*</span></label>
+                                    <textarea rows="2" name="addressLandmark" [(ngModel)]="signUpData.addressLandmark"
+                                        class="form-input-custom"
+                                        placeholder="Enter Plot No/Street No/Landmark(If any)"></textarea>
+                                </div>
+
+                                <!-- Select Address Document -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Select Address Document (ਪਤਾ ਦਸਤਾਵੇਜ਼ ਚੁਣੋ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="addressDocType" [(ngModel)]="signUpData.addressDocType"
+                                        class="form-input-custom">
+                                        <option value="" disabled selected>Select Document</option>
+                                        <option *ngFor="let doc of addressDocTypes" [value]="doc">{{ doc }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- Number -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Number (ਨੰਬਰ) <span
+                                            class="required-star">*</span></label>
+                                    <input type="text" name="addressDocNumber" [(ngModel)]="signUpData.addressDocNumber"
+                                        class="form-input-custom" placeholder="Enter Address Proof Number">
+                                </div>
+
+                                <!-- Upload Document -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Upload Document (ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ) <span
+                                            class="required-star">*</span></label>
+                                    <div class="custom-file-wrapper">
+                                        <div class="choose-file-container">
+                                            <button type="button" class="choose-file-btn"
+                                                (click)="addressDocInput.click()">Choose File</button>
+                                            <span class="file-chosen-text"
+                                                [class.text-muted]="!signUpData.addressDocFileName">{{
+                                                signUpData.addressDocFileName || 'No file chosen' }}</span>
+                                            <input #addressDocInput type="file"
+                                                (change)="onFileSelected($event, 'addressDoc')" class="d-none">
+                                        </div>
+                                        <div class="progress-bar-inline" *ngIf="uploadingStates['addressDoc']">
+                                            <div class="p-fill" [style.width.%]="uploadProgress['addressDoc']"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: BUSINESS DETAILS -->
+                    <div class="step-form-block">
+                        <div class="step-green-header collapsible-header" (click)="toggleSection('business')">
+                            <span><i class="fas fa-building"></i> &nbsp; Business Details (ਕਾਰੋਬਾਰੀ ਵੇਰਵਾ)</span>
+                            <mat-icon>{{ sectionsExpanded.business ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        </div>
+
+                        <div class="collapsible-content" [class.collapsed]="!sectionsExpanded.business">
+                            <div class="wizard-form-grid mb-4">
+                                <!-- Firm Name -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Firm Name (ਫਰਮ ਦਾ ਨਾਮ) <span
+                                            class="required-star">*</span></label>
+                                    <input type="text" name="firmName" [(ngModel)]="signUpData.firmName"
+                                        class="form-input-custom" placeholder="Firm Name">
+                                </div>
+
+                                <!-- GST Number -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">GST Number (GST ਨੰਬਰ)</label>
+                                    <input type="text" name="gstNumber" maxlength="15"
+                                        [(ngModel)]="signUpData.gstNumber" class="form-input-custom"
+                                        placeholder="Enter GST Number">
+                                </div>
+                            </div>
+
+                            <!-- Subheader Bar -->
+                            <div class="business-office-bar">
+                                <i class="fas fa-store-alt"></i> &nbsp; Business Office (ਵਪਾਰਕ ਦਫ਼ਤਰ)
+                            </div>
+
+                            <!-- Address Duplicate Checkbox -->
+                            <div class="checkbox-container-custom">
+                                <input type="checkbox" id="sameAddressCheck" name="isSameAddress"
+                                    [(ngModel)]="signUpData.isSameAddress" (change)="onSameAddressChange()">
+                                <label for="sameAddressCheck">Is Business Office address is same as {{
+                                    selectedEntityType ||
+                                    'Sole
+                                    Proprietor' }} address.</label>
+                            </div>
+
+                            <div class="wizard-form-grid">
+                                <!-- State -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">State (ਰਾਜ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="businessState" [(ngModel)]="signUpData.businessState"
+                                        [disabled]="signUpData.isSameAddress" class="form-input-custom">
+                                        <option value="" disabled selected>---Select State---</option>
+                                        <option *ngFor="let s of states" [value]="s">{{ s }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- District -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">District (ਜ਼ਿਲ੍ਹਾ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="businessDistrict" [(ngModel)]="signUpData.businessDistrict"
+                                        [disabled]="signUpData.isSameAddress" class="form-input-custom">
+                                        <option value="" disabled selected>---Select District---</option>
+                                        <option *ngFor="let d of districts" [value]="d">{{ d }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- City -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">City (ਸ਼ਹਿਰ) <span
+                                            class="required-star">*</span></label>
+                                    <select name="businessCity" [(ngModel)]="signUpData.businessCity"
+                                        [disabled]="signUpData.isSameAddress" class="form-input-custom">
+                                        <option value="" disabled selected>---Select City---</option>
+                                        <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+                                    </select>
+                                </div>
+
+                                <!-- Pin Code -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Pin Code (ਪਿੰਨ ਕੋਡ) <span
+                                            class="required-star">*</span></label>
+                                    <input type="text" name="businessPincode" maxlength="6"
+                                        [(ngModel)]="signUpData.businessPincode" [disabled]="signUpData.isSameAddress"
+                                        class="form-input-custom" placeholder="Enter Pin Code">
+                                </div>
+
+                                <!-- Plot No/Street No/Landmark -->
+                                <div class="form-group-custom full-width">
+                                    <label class="form-label-custom">Plot No/Street No/Landmark(If any) (ਪਲਾਟ ਨੰਬਰ/ਗਲੀ
+                                        ਨੰਬਰ/ਲੈਂਡਮਾਰਕ (ਜੇ ਕੋਈ
+                                        ਹੋਵੇ)) <span class="required-star">*</span></label>
+                                    <textarea rows="2" name="businessLandmark" [(ngModel)]="signUpData.businessLandmark"
+                                        [disabled]="signUpData.isSameAddress" class="form-input-custom"
+                                        placeholder="Plot No/Street No/Landmark(If any)"></textarea>
+                                </div>
+
+                                <!-- Front Photograph -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Front Photograph of Office Property (ਦਫ਼ਤਰ ਦੀ
+                                        ਜਾਇਦਾਦ ਦੇ
+                                        ਅੱਗੇ ਦੀ ਫੋਟੋ)
+                                        <span class="required-star">*</span></label>
+                                    <div class="custom-file-wrapper">
+                                        <div class="choose-file-container">
+                                            <button type="button" class="choose-file-btn"
+                                                (click)="officePhotoInput.click()">Choose
+                                                File</button>
+                                            <span class="file-chosen-text"
+                                                [class.text-muted]="!signUpData.officePhotoFileName">{{
+                                                signUpData.officePhotoFileName || 'No file chosen' }}</span>
+                                            <input #officePhotoInput type="file"
+                                                (change)="onFileSelected($event, 'officePhoto')" class="d-none">
+                                        </div>
+                                        <div class="progress-bar-inline" *ngIf="uploadingStates['officePhoto']">
+                                            <div class="p-fill" [style.width.%]="uploadProgress['officePhoto']"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mandi Property Code -->
+                                <div class="form-group-custom">
+                                    <label class="form-label-custom">Mandi Property Code (If any) (ਮੰਡੀ ਪ੍ਰਾਪਰਟੀ ਕੋਡ (ਜੇ
+                                        ਕੋਈ
+                                        ਹੋਵੇ))</label>
+                                    <input type="text" name="mandiPropertyCode"
+                                        [(ngModel)]="signUpData.mandiPropertyCode" class="form-input-custom"
+                                        placeholder="Enter Mandi Property Code">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer Actions (Shown only if entity type selected and proceeded to form) -->
+                <div class="wizard-footer-actions" *ngIf="selectedEntityType && proceedToForm">
+                    <button type="button" class="btn-wizard-back" (click)="onBackToInstructions()">
+                        Back (ਵਾਪਸ ਜਾਓ)
+                    </button>
+                    <button type="button" class="btn-wizard-submit" (click)="onSubmitSignup()">
+                        Submit (ਜਮ੍ਹਾ ਕਰੋ)
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CITIZEN PORTAL DASHBOARD (Shown when logged in) -->
+        <div class="dashboard-wrapper-material animated fade-in" *ngIf="isLoggedIn">
+
+            <!-- Dashboard Header -->
+            <mat-card class="dashboard-header-card">
+                <div class="dashboard-user-header-material">
+                    <div class="user-profile-meta">
+                        <div class="avatar-circle-material">
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Individual'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Company'">business</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'HUF'">groups</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Partnership Firm'">handshake</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Sole Proprietorship'">work</mat-icon>
+                            <mat-icon
+                                *ngIf="loggedInUser.entityType === 'Other' || !loggedInUser.entityType">more_horiz</mat-icon>
+                        </div>
+                        <div class="user-text-info">
+                            <h2>Welcome, {{ loggedInUser.fullName }}</h2>
+                            <p>Registered as: <strong>{{ loggedInUser.entityType }}</strong> | User ID: <strong>{{
+                                    loggedInUser.userId
+                                    }}</strong></p>
+                        </div>
+                    </div>
+
+                    <button mat-raised-button color="btn-landing-primary" (click)="logout()">
+                        <mat-icon>logout</mat-icon> Logout
+                    </button>
+                </div>
+            </mat-card>
+
+            <!-- Stats Quick Overview Cards -->
+            <div class="stats-overview-grid-material">
+
+                <mat-card class="stat-card bg-light-blue-card">
+                    <mat-card-content class="stat-card-content">
+                        <div class="stat-icon-wrapper bg-blue"><mat-icon>gavel</mat-icon></div>
+                        <div class="stat-details">
+                            <h3>2</h3>
+                            <p>Active e-Auctions</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card bg-light-teal-card">
+                    <mat-card-content class="stat-card-content">
+                        <div class="stat-icon-wrapper bg-teal"><mat-icon>assignment</mat-icon></div>
+                        <div class="stat-details">
+                            <h3>0</h3>
+                            <p>Digital Properties</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card bg-light-orange-card">
+                    <mat-card-content class="stat-card-content">
+                        <div class="stat-icon-wrapper bg-orange"><mat-icon>pending_actions</mat-icon></div>
+                        <div class="stat-details">
+                            <h3>0</h3>
+                            <p>Pending Applications</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card bg-light-green-card">
+                    <mat-card-content class="stat-card-content">
+                        <div class="stat-icon-wrapper bg-green"><mat-icon>notifications_active</mat-icon></div>
+                        <div class="stat-details">
+                            <h3>5</h3>
+                            <p>System Notifications</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+            </div>
+
+            <!-- Dashboard Services Grid -->
+            <div class="dashboard-actions-title">
+                <h2>Available Colonization Services</h2>
+            </div>
+
+            <div class="actions-grid-container-material">
+
+                <!-- Card 1: Access Dashboard -->
+                <mat-card class="action-card-material" (click)="runDashboardAction('Access Dashboard')">
+                    <div class="action-card-flex">
+                        <div class="card-icon bg-light-blue"><mat-icon>trending_up</mat-icon></div>
+                        <div class="card-desc">
+                            <h3>Access Dashboard</h3>
+                            <!-- <p>Review comprehensive stats of your properties, bid results, lease status, and pending payments.</p> -->
+                        </div>
+                        <div class="card-action-indicator">
+                            <mat-icon>chevron_right</mat-icon>
+                        </div>
+                    </div>
+                </mat-card>
+
+                <!-- Card 2: Participate in e-Auctions -->
+                <mat-card class="action-card-material highlighted"
+                    (click)="runDashboardAction('Participate in e-Auctions')">
+                    <div class="action-card-flex">
+                        <div class="card-icon bg-light-purple"><mat-icon>gavel</mat-icon></div>
+                        <div class="card-desc">
+                            <h3>Participate in e-Auctions</h3>
+                            <!-- <p>Browse auction calendars, purchase terms, bid security deposits, and place bids in ongoing e-auctions. -->
+                            <!-- </p> -->
+                        </div>
+                        <div class="card-badge">LIVE</div>
+                        <div class="card-action-indicator">
+                            <mat-icon>chevron_right</mat-icon>
+                        </div>
+                    </div>
+                </mat-card>
+
+                <!-- Card 3: Register Existing Properties -->
+                <mat-card class="action-card-material" (click)="runDashboardAction('Register Existing Properties')">
+                    <div class="action-card-flex">
+                        <div class="card-icon bg-light-teal"><mat-icon>border_color</mat-icon></div>
+                        <div class="card-desc">
+                            <h3>Register Existing Properties</h3>
+                            <!-- <p>Digitize your records by submitting existing colonization property deeds for verification and access. -->
+                            <!-- </p> -->
+                        </div>
+                        <div class="card-action-indicator">
+                            <mat-icon>chevron_right</mat-icon>
+                        </div>
+                    </div>
+                </mat-card>
+
+                <!-- Card 4: Apply for Online Services -->
+                <mat-card class="action-card-material" (click)="runDashboardAction('Apply for Online Services')">
+                    <div class="action-card-flex">
+                        <div class="card-icon bg-light-orange"><mat-icon>devices</mat-icon></div>
+                        <div class="card-desc">
+                            <h3>Apply for Online Services</h3>
+                            <!-- <p>Submit applications for Mutation, Lease Extension, Title Transfer, No Objection Certificate (NOC), and
+                more.</p> -->
+                        </div>
+                        <div class="card-action-indicator">
+                            <mat-icon>chevron_right</mat-icon>
+                        </div>
+                    </div>
+                </mat-card>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MOCK SIGNUP OTP VERIFICATION MODAL OVERLAY -->
+<div class="modal-overlay-custom animated fade-in" *ngIf="otpModalOpen">
+    <div class="otp-dialog-box">
+        <div class="otp-dialog-header">
+            <h3>OTP Security Verification / ਸੁਰੱਖਿਆ ਪੁਸ਼ਟੀਕਰਨ</h3>
+            <button type="button" class="btn-close-modal" (click)="closeOtpModal()">&times;</button>
+        </div>
+
+        <div class="otp-dialog-body">
+            <p class="verification-subtext">Verification OTPs have been sent to your registered credentials.</p>
+
+            <div class="otp-fields-stack">
+                <!-- Mobile OTP -->
+                <div class="otp-item-card" [class.verified]="otpData.mobileVerified">
+                    <div class="otp-item-header">
+                        <div class="o-icon bg-mobile"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="o-meta">
+                            <h4>Mobile OTP</h4>
+                            <span>Sent to: {{ signUpData.mobileNumber }}</span>
+                        </div>
+                        <span class="verified-badge" *ngIf="otpData.mobileVerified"><i class="fas fa-check-circle"></i>
+                            Verified</span>
+                    </div>
+
+                    <div class="otp-item-inputs" *ngIf="!otpData.mobileVerified">
+                        <input type="text" maxlength="6" [(ngModel)]="otpData.mobileOtpInput"
+                            placeholder="Enter 6-digit Mobile OTP" class="otp-code-input">
+                        <div class="timer-row">
+                            <span *ngIf="otpData.mobileTimer > 0">Resend in: <strong>{{ otpData.mobileTimer
+                                    }}s</strong></span>
+                            <button type="button" class="btn-resend-otp-action" *ngIf="otpData.mobileTimer === 0"
+                                (click)="sendMobileOtp()">Resend Mobile OTP</button>
+                        </div>
+                        <button type="button" class="btn-verify-otp-action" (click)="verifyMobileOtp()">Verify Mobile
+                            OTP</button>
+                    </div>
+                </div>
+
+                <!-- Email OTP -->
+                <div class="otp-item-card" [class.verified]="otpData.emailVerified">
+                    <div class="otp-item-header">
+                        <div class="o-icon bg-email"><i class="fas fa-envelope"></i></div>
+                        <div class="o-meta">
+                            <h4>Email OTP</h4>
+                            <span>Sent to: {{ signUpData.emailAddress }}</span>
+                        </div>
+                        <span class="verified-badge" *ngIf="otpData.emailVerified"><i class="fas fa-check-circle"></i>
+                            Verified</span>
+                    </div>
+
+                    <div class="otp-item-inputs" *ngIf="!otpData.emailVerified">
+                        <input type="text" maxlength="6" [(ngModel)]="otpData.emailOtpInput"
+                            placeholder="Enter 6-digit Email OTP" class="otp-code-input">
+                        <div class="timer-row">
+                            <span *ngIf="otpData.emailTimer > 0">Resend in: <strong>{{ otpData.emailTimer
+                                    }}s</strong></span>
+                            <button type="button" class="btn-resend-otp-action" *ngIf="otpData.emailTimer === 0"
+                                (click)="sendEmailOtp()">Resend Email OTP</button>
+                        </div>
+                        <button type="button" class="btn-verify-otp-action" (click)="verifyEmailOtp()">Verify Email
+                            OTP</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test mode helper -->
+            <div class="otp-banner-helper">
+                <i class="fas fa-info-circle"></i>
+                <span><strong>Testing Helper:</strong> Use Mobile OTP <strong>123456</strong> and Email OTP
+                    <strong>654321</strong>.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MOCK ROLE-BASED LOGIN OTP VERIFICATION MODAL OVERLAY -->
+<div class="modal-overlay-custom animated fade-in" *ngIf="loginOtpModalOpen">
+    <div class="otp-dialog-box">
+        <div class="otp-dialog-header">
+            <h3>Login OTP Verification / ਲਾਗਇਨ ਓ.ਟੀ.ਪੀ</h3>
+            <button type="button" class="btn-close-modal" (click)="closeLoginOtpModal()">&times;</button>
+        </div>
+
+        <div class="otp-dialog-body">
+            <p class="verification-subtext">This account has role-based security enabled. Please enter the Login OTP
+                sent to
+                your registered mobile number: <strong>{{ pendingLoginUser?.mobile }}</strong></p>
+
+            <div class="otp-fields-stack">
+                <div class="otp-item-card">
+                    <div class="otp-item-header">
+                        <div class="o-icon bg-mobile"><i class="fas fa-shield-alt"></i></div>
+                        <div class="o-meta">
+                            <h4>Security login OTP</h4>
+                            <span>User: {{ pendingLoginUser?.userId }}</span>
+                        </div>
+                    </div>
+
+                    <div class="otp-item-inputs">
+                        <input type="text" maxlength="6" [(ngModel)]="loginOtpInput"
+                            placeholder="Enter 6-digit Login OTP" class="otp-code-input">
+                        <div class="timer-row">
+                            <span *ngIf="loginOtpTimer > 0">Resend in: <strong>{{ loginOtpTimer }}s</strong></span>
+                            <button type="button" class="btn-resend-otp-action" *ngIf="loginOtpTimer === 0"
+                                (click)="resendLoginOtp()">Resend OTP</button>
+                        </div>
+                        <button type="button" class="btn-verify-otp-action" (click)="verifyLoginOtp()">Verify & Sign
+                            In</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test mode helper -->
+            <div class="otp-banner-helper">
+                <i class="fas fa-info-circle"></i>
+                <span><strong>Testing Helper:</strong> Use login OTP <strong>778899</strong>.</span>
+            </div>
+        </div>
+    </div>
+</div>
