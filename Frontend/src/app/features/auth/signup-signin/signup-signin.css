@@ -2,7 +2,7 @@
    Punjab Colonization Portal - Premium Redesign Stylesheet
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Poppins:wght@400;500&display=swap');
 
 :host {
     /* Color Palette Tokens */
@@ -2226,13 +2226,13 @@
         align-items: stretch;
         gap: 12px;
     }
-    
+
     .category-inline-buttons {
         flex-direction: column;
         width: 100%;
         gap: 10px;
     }
-    
+
     .category-inline-buttons button {
         width: 100%;
     }
@@ -2272,7 +2272,7 @@
     .instructions-card-container .row {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .border-end-desktop {
         border-right: 1px dashed #bbf7d0; /* Dashed separator */
         padding-right: 32px;
@@ -2386,4 +2386,4 @@
 
 .note-box-en strong, .note-box-pb strong {
     color: #be123c; /* Red color for Note label */
-}
+}
