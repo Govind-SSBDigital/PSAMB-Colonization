@@ -20,15 +20,17 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule),
-    canActivate: [AuthGuard]
+    // canActivate: [AuthGuard]
   },
   {
     path: "register-property",
-    loadChildren: () => import('./features/register-property/register-property.module').then(m => m.RegisterPropertyModule)
+    redirectTo: 'dashboard/register-property',
+    pathMatch: 'full'
   },
   {
     path: "property-bidder-registration",
-    loadChildren: () => import('./features/property-bidder-registration/property-bidder-registration.module').then(m => m.PropertyBidderRegistrationModule)
+    redirectTo: 'dashboard/property-bidder-registration',
+    pathMatch: 'full'
   },
   {
     path: '**',
