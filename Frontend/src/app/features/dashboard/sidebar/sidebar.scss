@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.dashboard-sidebar {
+  width: 280px;
+  min-height: calc(100vh - 78px);
+  position: sticky;
+  top: 78px;
+}
+
+.user-summary,
+.service-card {
+  background: #f0fdf4;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  background: #064e3b;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.nav-link {
+  color: #475569;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0;
+}
+
+.nav-link i {
+  color: #047857;
+  font-size: 1.05rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: #064e3b;
+  color: #ffffff;
+}
+
+.nav-link:hover i,
+.nav-link.active i {
+  color: #ffffff;
+}
