@@ -23,6 +23,14 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: "register-property",
+    loadChildren: () => import('./features/register-property/register-property.module').then(m => m.RegisterPropertyModule)
+  },
+  {
+    path: "property-bidder-registration",
+    loadChildren: () => import('./features/property-bidder-registration/property-bidder-registration.module').then(m => m.PropertyBidderRegistrationModule)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
