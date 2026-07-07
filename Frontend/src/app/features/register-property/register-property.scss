@@ -1,0 +1,27 @@
+:host {
+	--register-success: rgba(6, 78, 59, 0.95);
+}
+
+:host .text-success {
+	color: var(--register-success) !important;
+}
+
+:host .btn-success {
+	background-color: var(--register-success) !important;
+	border-color: var(--register-success) !important;
+	color: #fff;
+}
+
+:host .btn-success:hover,
+:host .btn-success:focus,
+:host .btn-success:active {
+	background-color: var(--register-success) !important;
+	border-color: var(--register-success) !important;
+	box-shadow: none !important;
+}
+
+:host .alert-success {
+	color: var(--register-success) !important;
+	border-color: rgba(6, 78, 59, 0.35) !important;
+	background-color: rgba(6, 78, 59, 0.12) !important;
+}

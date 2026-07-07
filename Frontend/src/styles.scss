@@ -33,3 +33,23 @@ body {
 }
 
 /* You can add global styles to this file, and also import other style files */
+.custom-switch-color:focus {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.custom-switch-color:checked {
+  background-color: rgba(6, 78, 59, 0.95) !important;
+  border: none !important;
+}
+
+.custom-input-color:focus {
+  box-shadow: none !important;
+  border-color: rgba(6, 78, 59, 0.95) !important;
+}
+.custom-checkbox-color:focus,
+.custom-checkbox-color:checked {
+  background-color: rgba(6, 78, 59, 0.95) !important;
+  border-color: rgba(6, 78, 59, 0.95) !important;
+  box-shadow: none !important;
+}
