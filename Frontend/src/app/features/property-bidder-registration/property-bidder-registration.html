@@ -23,6 +23,7 @@
                   <div class="input-group">
                     <input id="propertySearch" type="search" class="form-control bg-light custom-input-color"
                       placeholder="Search by Property Code" />
+                      <button class="btn btn-success fw-semibold rounded-end-3" type="button">Search</button>
                   </div>
                 </div>
 
@@ -149,7 +150,7 @@
       </div>
 
       <div class="card border-0 rounded-4 shadow-sm text-white mb-4"
-        style="background: linear-gradient(90deg, rgba(6, 78, 59, 0.95), #28633e);">
+        style="background: linear-gradient(90deg, var(--theme-primary-alpha), var(--theme-teal));">
         <div class="card-body p-4">
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
             <div>
@@ -463,7 +464,7 @@
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
           (click)="resetForm()">Cancel</button>
         <button type="submit" class="btn text-white rounded-3 px-4 py-2 fw-bold shadow-sm border-0"
-          style="background: rgba(6, 78, 59, 0.95);">Save &amp; Register Asset</button>
+          style="background: var(--theme-primary-alpha);">Save &amp; Register Asset</button>
       </div>
     </form>
   </div>

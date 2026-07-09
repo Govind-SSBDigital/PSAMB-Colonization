@@ -1,7 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Poppins:wght@400;500&display=swap');
-
 html,
 body {
   height: auto !important;
@@ -9,7 +7,7 @@ body {
 }
 
 body {
-  font-family: 'Outfit', 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #f8fafc;
   color: #334155;
   margin: 0;

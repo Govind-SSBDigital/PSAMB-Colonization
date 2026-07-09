@@ -1,4 +1,4 @@
-<nav class="navbar bg-white border-bottom shadow-sm dashboard-header py-2 py-lg-2">
+<nav class="navbar shadow-sm dashboard-header py-2 py-lg-2">
   <div class="container-fluid px-3 px-lg-4 position-relative">
     <button class="btn sidebar-toggle d-inline-flex align-items-center justify-content-center"
       type="button" aria-label="Toggle sidebar" (click)="onToggleSidebar()">
@@ -6,17 +6,17 @@
     </button>
 
     <a class="navbar-brand dashboard-brand d-flex justify-content-center align-items-center gap-3 mx-auto text-center" routerLink="/dashboard">
-      <img src="ColonizationLogo.png" width="44" height="44" class="rounded-circle flex-shrink-0" alt="Board logo" />
+      <img src="ColonizationLogo.png" width="44" height="44" class="rounded-circle flex-shrink-0 dashboard-logo" alt="Board logo" />
 
       <span class="d-flex flex-column lh-sm">
-        <span class="fw-bold text-success dashboard-title">Punjab State Land & Property Colonization Board</span>
-        <small class="text-secondary d-none d-sm-inline">Colonization Department (Property & Auction Portal)</small>
+        <span class="fw-bold text-white dashboard-title">Director of Colonization Punjab</span>
+        <small class="text-white d-none d-sm-inline sub-title">Colonization Department (Property &amp; Auction Portal)</small>
       </span>
     </a>
 
-    <button class="navbar-toggler border-success" type="button" aria-controls="dashboardNavbar" aria-expanded="false"
+    <button class="navbar-toggler dashboard-menu-toggle" type="button" aria-controls="dashboardNavbar" aria-expanded="false"
       aria-label="Toggle navigation">
-      <i class="fa-solid fa-ellipsis-vertical"></i>
+      <i class="fa-solid fa-ellipsis-vertical custom-icon"></i>
     </button>
 
     <div class="collapse navbar-collapse w-100 order-3 mt-3" id="dashboardNavbar">
@@ -24,9 +24,9 @@
       <div class="ms-lg-auto d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 gap-lg-3">
 
         <div class="dropdown">
-          <button class="btn btn-light btn-sm rounded-pill px-3 dropdown-toggle w-100 user-menu" data-bs-toggle="dropdown"
+          <button class="btn btn-sm rounded-pill px-3 dropdown-toggle w-100 user-menu" data-bs-toggle="dropdown"
             aria-expanded="false">
-            <i class="bi bi-person-circle me-2 text-success"></i>
+            <i class="bi bi-person-circle me-2"></i>
             User
           </button>
 

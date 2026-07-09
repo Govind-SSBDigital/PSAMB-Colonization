@@ -1,0 +1,9 @@
+:host {
+	--register-success: var(--theme-primary-alpha);
+}
+
+:host .btn-success {
+	background-color: var(--register-success) !important;
+	border-color: var(--register-success) !important;
+	color: #fff;
+}
