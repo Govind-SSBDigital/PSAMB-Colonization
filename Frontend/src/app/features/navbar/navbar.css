@@ -7,7 +7,7 @@
   background-color: #022c22;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding: 6px 20px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.72rem;
   font-weight: 500;
   color: #cbd5e1;
@@ -97,7 +97,7 @@
 }
 
 .main-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 1.15rem;
   font-weight: 800;
   margin: 0;
@@ -124,7 +124,7 @@
 .nav-link-item {
   color: rgba(241, 245, 249, 0.85);
   text-decoration: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   padding: 6px 0;
@@ -176,7 +176,7 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 8px 18px;
   border-radius: 6px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
@@ -195,7 +195,7 @@
   border: none;
   padding: 9px 20px;
   border-radius: 6px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
