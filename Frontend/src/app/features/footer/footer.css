@@ -50,7 +50,7 @@
 
 /* Heading style */
 .footer-col h4 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: white;
@@ -84,7 +84,7 @@
 }
 
 .footer-logo-wrap h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 1.45rem;
   font-weight: 800;
   color: white;
@@ -230,7 +230,7 @@
 }
 
 .govt-emblem-wrap span {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   color: #fbbf24;
@@ -272,7 +272,7 @@
   background-color: rgba(217, 119, 6, 0.1);
   border: 1px solid rgba(217, 119, 6, 0.2);
   color: #fbbf24;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.75rem;
   padding: 6px 12px;
   border-radius: 4px;
