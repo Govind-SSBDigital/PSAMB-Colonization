@@ -7,3 +7,19 @@
 	border-color: var(--register-success) !important;
 	color: #fff;
 }
+.section-header{
+    background: linear-gradient(
+        90deg,
+        rgba(var(--theme-primary-rgb),0.08),
+        rgba(var(--theme-teal-rgb),0.03)
+    );
+
+    border-left:5px solid var(--theme-primary-alpha);
+
+    padding:12px 18px;
+
+    border-radius:10px;
+
+    margin-bottom:20px;
+}
+	
