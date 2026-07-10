@@ -1,5 +1,5 @@
 :host {
-	--register-success: rgba(6, 78, 59, 0.95);
+	--register-success: var(--theme-primary-alpha);
 }
 
 :host .text-success {
@@ -22,6 +22,6 @@
 
 :host .alert-success {
 	color: var(--register-success) !important;
-	border-color: rgba(6, 78, 59, 0.35) !important;
-	background-color: rgba(6, 78, 59, 0.12) !important;
+	border-color: var(--theme-primary-border) !important;
+	background-color: var(--theme-primary-soft) !important;
 }
