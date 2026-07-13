@@ -6,7 +6,7 @@
     </button>
 
     <a class="navbar-brand dashboard-brand d-flex justify-content-center align-items-center gap-3 mx-auto text-center" routerLink="/dashboard">
-      <img src="ColonizationLogo.png" width="44" height="44" class="rounded-circle flex-shrink-0 dashboard-logo" alt="Board logo" />
+      <img src="ColonizationLogo.png" width="42" class="rounded-circle flex-shrink-0 dashboard-logo" alt="Board logo" />
 
       <span class="d-flex flex-column lh-sm">
         <span class="fw-bold text-white dashboard-title">Director Colonization Punjab</span>
@@ -16,7 +16,11 @@
 
     <button class="navbar-toggler dashboard-menu-toggle" type="button" [attr.aria-expanded]="isUserMenuOpen"
       aria-label="Toggle navigation" (click)="toggleUserMenu($event)">
-      <i class="fa-solid fa-ellipsis-vertical custom-icon"></i>
+      <span class="menu-toggle-text d-none d-md-inline-flex align-items-center gap-3">
+         User
+        <i class="fa-solid fa-chevron-down"></i>
+      </span>
+      <i class="fa-solid fa-ellipsis-vertical custom-icon d-inline-flex d-md-none"></i>
     </button>
 
     <div class="dashboard-user-menu dropdown-menu dropdown-menu-end bg-success bg-gradient border border-warning rounded-3 shadow-lg p-2 mt-1"
@@ -31,6 +35,12 @@
       <a class="dropdown-item text-white rounded-2 py-2" routerLink="/login" (click)="closeUserMenu()">
         <span class="me-2 text-warning"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
         Logout
+      </a>
+      <div class="dropdown-divider"></div>
+
+      <a class="dropdown-item text-white rounded-2 py-2" routerLink="/login" (click)="closeUserMenu()">
+        <span class="me-2 text-warning"><i class="fa-solid fa-gear"></i></span>
+        Settings
       </a>
     </div>
   </div>

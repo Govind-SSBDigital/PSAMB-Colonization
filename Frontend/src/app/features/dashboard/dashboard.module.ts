@@ -25,6 +25,10 @@ import { Footer } from './footer/footer';
             path: 'property-bidder-registration',
             loadChildren: () => import('../property-bidder-registration/property-bidder-registration.module').then(m => m.PropertyBidderRegistrationModule),
           },
+          {
+            path: 'property-verification',
+            loadChildren: () => import('../property-verification/property-verification.module').then(m => m.PropertyVerificationModule),
+          },
         ],
       },
     ]),
