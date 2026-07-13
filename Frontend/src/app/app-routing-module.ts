@@ -33,6 +33,11 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: "property-verification",
+    redirectTo: 'dashboard/property-verification',
+    pathMatch: 'full'
+  },
+  {
     path: '**',
     redirectTo: ''
   }

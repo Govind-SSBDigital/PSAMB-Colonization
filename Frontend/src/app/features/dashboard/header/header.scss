@@ -69,11 +69,23 @@
   color: var(--theme-white);
   border: 1px solid var(--theme-glass-border);
   border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  white-space: nowrap;
 }
 
 .dashboard-menu-toggle:hover {
   color: var(--dashboard-gold);
   background: var(--theme-glass);
+}
+
+.menu-toggle-text {
+  font-weight: 500;
+  color: var(--theme-white);
+}
+
+.menu-toggle-text .fa-user,
+.menu-toggle-text .fa-chevron-down {
+  font-size: 0.95rem;
 }
 
 .dashboard-user-menu {

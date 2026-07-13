@@ -1,34 +1,34 @@
-<main class="min-vh-100 bg-light py-3 py-lg-4">
-  <div class="container-xxl" style="max-width: 1168px;">
-    <div class="bg-white bg-opacity-75 rounded-4 p-4 mb-4 border shadow-sm">
+<main class="registration-page min-vh-100 py-3 py-lg-4">
+  <div class="registration-container container-xxl">
+    <div class="registration-title-card bg-white bg-opacity-75 rounded-4 p-4 mb-4 border shadow-sm">
       <div class="d-flex flex-column flex-md-row justify-content-center align-items-md-center gap-3">
-        <h1 class="h4 fw-bold text-dark mt-0 mb-0">Property &amp; Bidder Detail Registration</h1>
+        <h1 class="h4 text-dark mt-0 mb-0">Property &amp; Bidder Detail Registration</h1>
       </div>
     </div>
 
     <form [formGroup]="registerationForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="row g-4 mb-4">
         <div class="col-lg-8">
-          <div class="card border-0 rounded-4 shadow-sm h-100">
+          <div class="registration-card card border-0 rounded-4 shadow-sm h-100">
             <div class="card-body p-4">
-              <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-                <h2 class="h5 fw-bold mb-0">Property Information</h2>
+              <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                <h3 class="h5 mb-0 text-white">Property Information</h3>
               </div>
 
               <div class="row g-3">
 
                 <div class="col-12">
                   <label for="propertySearch"
-                    class="form-label small text-secondary fw-bold text-uppercase">Search/Property Code </label>
+                    class="form-label small text-dark fw-semibold text-uppercase">Search/Property Code </label>
                   <div class="input-group">
                     <input id="propertySearch" type="search" class="form-control bg-light custom-input-color"
                       placeholder="Search by Property Code" />
-                      <button class="btn btn-success fw-semibold rounded-end-3" type="button">Search</button>
+                      <button class="btn btn-success rounded-end-3" type="button">Search</button>
                   </div>
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="mandi" class="form-label small text-secondary fw-bold text-uppercase">Mandi <span
+                  <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Mandi <span
                       class="text-danger">*</span></label>
                   <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color" list="mandis"
                     placeholder="Select or Type Mandi" formControlName="mandi"
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="branch" class="form-label small text-secondary fw-bold text-uppercase">Branch <span
+                  <label for="branch" class="form-label small text-dark fw-semibold text-uppercase">Branch <span
                       class="text-danger">*</span></label>
                   <input id="branch" type="text" class="form-control bg-light rounded-3 custom-input-color"
                     list="branches" placeholder="Select or Type Branch" formControlName="branch"
@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plotsize" class="form-label small text-secondary fw-bold text-uppercase">Plot Size <span
+                  <label for="plotsize" class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span
                       class="text-danger">*</span></label>
                   <input id="plotsize" type="text" class="form-control bg-light rounded-3 custom-input-color"
                     placeholder="e.g., 200 Sq. Yards" formControlName="plotsize"
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plotstatus" class="form-label small text-secondary fw-bold text-uppercase">Plot Status
+                  <label for="plotstatus" class="form-label small text-dark fw-semibold text-uppercase">Plot Status
                     <span class="text-danger">*</span></label>
                   <select id="plotstatus" class="form-select bg-light rounded-3 custom-input-color"
                     formControlName="plotstatus" [class.is-invalid]="isInvalid('plotstatus')">
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plottype" class="form-label small text-secondary fw-bold text-uppercase">Plot Type <span
+                  <label for="plottype" class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
                       class="text-danger">*</span></label>
                   <select id="plottype" class="form-select bg-light rounded-3 custom-input-color"
                     formControlName="plottype" [class.is-invalid]="isInvalid('plottype')">
@@ -91,7 +91,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plotno" class="form-label small text-secondary fw-bold text-uppercase">Plot No. <span
+                  <label for="plotno" class="form-label small text-dark fw-semibold text-uppercase">Plot No. <span
                       class="text-danger">*</span></label>
                   <input id="plotno" type="text" class="form-control bg-light rounded-3 custom-input-color"
                     placeholder="e.g., B-12" formControlName="plotno" [class.is-invalid]="isInvalid('plotno')" />
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plan" class="form-label small text-secondary fw-bold text-uppercase">Plan <span
+                  <label for="plan" class="form-label small text-dark fw-semibold text-uppercase">Plan <span
                       class="text-danger">*</span></label>
                   <input id="plan" type="text" class="form-control bg-light rounded-3 custom-input-color"
                     placeholder="Standard Allocation" formControlName="plan" [class.is-invalid]="isInvalid('plan')" />
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="propertycategory" class="form-label small text-secondary fw-bold text-uppercase">Property
+                  <label for="propertycategory" class="form-label small text-dark fw-semibold text-uppercase">Property
                     Category <span class="text-danger">*</span></label>
                   <select id="propertycategory" class="form-select bg-light rounded-3 custom-input-color"
                     formControlName="propertycategory" [class.is-invalid]="isInvalid('propertycategory')">
@@ -126,15 +126,15 @@
         </div>
 
         <div class="col-lg-4">
-          <div class="card border-0 rounded-4 shadow-sm h-100">
+          <div class="registration-card compliance-card card border-0 rounded-4 shadow-sm h-100">
             <div class="card-body p-4">
-              <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-                <h2 class="h5 fw-bold mb-0">Compliance &amp; Flags</h2>
+              <div class="section-heading d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                <h3 class="h5 mb-0 text-white">Compliance &amp; Flags</h3>
               </div>
 
               <div class="d-grid gap-3">
                 @for (status of statusFields; track status.control) {
-                <div class="d-flex align-items-center justify-content-between bg-light rounded-3 p-2">
+                <div class="flag-row d-flex align-items-center justify-content-between bg-light rounded-3 p-2 checkbox-border">
                   <label class="form-check-label fw-semibold text-secondary" [for]="status.control">{{ status.label
                     }}</label>
                   <div class="form-check form-switch m-0">
@@ -149,12 +149,11 @@
         </div>
       </div>
 
-      <div class="card border-0 rounded-4 shadow-sm text-white mb-4"
-        style="background: linear-gradient(90deg, var(--theme-primary-alpha), var(--theme-teal));">
+      <div class="auction-status-card card border-0 rounded-4 shadow-sm text-white mb-4">
         <div class="card-body p-4">
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
             <div>
-              <h3 class="h5 fw-bold mb-1">Has this asset been Auctioned?</h3>
+              <h3 class="h5 mb-1">Has this asset been Auctioned?</h3>
               <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment
                 Milestone panels.</p>
             </div>
@@ -170,15 +169,15 @@
 
       @if (registerationForm.get('Isauctioned')?.value) {
       <div class="d-grid gap-2 mb-3">
-        <div class="card border-0 rounded-4 shadow-sm">
+        <div class="registration-card card border-0 rounded-4 shadow-sm">
           <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-              <h2 class="h5 fw-bold mb-0">Bidder &amp; Auction Details</h2>
+            <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+              <h2 class="h5 mb-0">Bidder &amp; Auction Details</h2>
             </div>
 
             <div class="row g-2">
               <div class="col-md-4">
-                <label for="auctionDateTime" class="form-label small text-secondary fw-bold text-uppercase">Auction Date
+                <label for="auctionDateTime" class="form-label small text-dark fw-semibold text-uppercase">Auction Date
                   &amp; Time <span class="text-danger">*</span></label>
                 <input id="auctionDateTime" type="datetime-local"
                   class="form-control bg-light rounded-3 custom-input-color" formControlName="auctionDateTime"
@@ -187,7 +186,7 @@
                 </div> }
               </div>
               <div class="col-md-4">
-                <label for="bidderType" class="form-label small text-secondary fw-bold text-uppercase">Bidder
+                <label for="bidderType" class="form-label small text-dark fw-semibold text-uppercase">Bidder
                   Type</label>
                 <select id="bidderType" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="bidderType" [class.is-invalid]="isInvalid('bidderType')">
@@ -196,7 +195,7 @@
                 @if (isInvalid('bidderType')) { <div class="invalid-feedback">Bidder type is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="emailId" class="form-label small text-secondary fw-bold text-uppercase">Email ID <span
+                <label for="emailId" class="form-label small text-dark fw-semibold text-uppercase">Email ID <span
                     class="text-danger">*</span></label>
                 <input id="emailId" type="email" class="form-control bg-light rounded-3 custom-input-color"
                   placeholder="bidder@domain.com" formControlName="emailId" [class.is-invalid]="isInvalid('emailId')" />
@@ -204,7 +203,7 @@
                 </div> }
               </div>
               <div class="col-md-8">
-                <label for="h1BidderName" class="form-label small text-secondary fw-bold text-uppercase">H1 Bidder Name
+                <label for="h1BidderName" class="form-label small text-dark fw-semibold text-uppercase">H1 Bidder Name
                   <span class="text-danger">*</span></label>
                 <div class="input-group">
                   <input id="h1BidderName" type="text" class="form-control bg-light rounded-start-3 custom-input-color"
@@ -222,7 +221,7 @@
                   Transfered<span class="text-danger"> *</span></label>
                 <div class="bg-light rounded-3 p-2">
                   <div class="form-check form-switch d-flex align-items-center justify-content-between m-0 p-0">
-                    <label class="form-check-label fw-semibold text-secondary" for="isTransfered">Is Transfered</label>
+                    <label class="form-check-label fw-semibold text-dark" for="isTransfered">Is Transfered</label>
                     <input class="form-check-input m-0 custom-switch-color" type="checkbox" role="switch"
                       id="isTransfered" formControlName="transfered" [class.is-invalid]="isInvalid('transfered')" />
                   </div>
@@ -232,7 +231,7 @@
               </div>
 
               <div class="col-md-4">
-                <label for="relation" class="form-label small text-secondary fw-bold text-uppercase">Relation</label>
+                <label for="relation" class="form-label small text-dark fw-semibold text-uppercase">Relation</label>
                 <select id="relation" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="relation" [class.is-invalid]="isInvalid('relation')">
                   @for (relation of relations; track relation) { <option [value]="relation">{{ relation }}</option> }
@@ -240,7 +239,7 @@
                 @if (isInvalid('relation')) { <div class="invalid-feedback">Relation is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="guardianName" class="form-label small text-secondary fw-bold text-uppercase">Father /
+                <label for="guardianName" class="form-label small text-dark fw-semibold text-uppercase">Father /
                   Husband Name <span class="text-danger">*</span></label>
                 <input id="guardianName" type="text" class="form-control bg-light rounded-3 custom-input-color"
                   placeholder="Guardian Name" formControlName="guardianName"
@@ -249,7 +248,7 @@
                 }
               </div>
               <div class="col-md-4">
-                <label for="panNo" class="form-label small text-secondary fw-bold text-uppercase">PAN No. <span
+                <label for="panNo" class="form-label small text-dark fw-semibold text-uppercase">PAN No. <span
                     class="text-danger">*</span></label>
                 <input id="panNo" type="text" maxlength="10"
                   class="form-control bg-light rounded-3 font-monospace text-uppercase custom-input-color"
@@ -257,7 +256,7 @@
                 @if (isInvalid('panNo')) { <div class="invalid-feedback">PAN no. is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="aadharNo" class="form-label small text-secondary fw-bold text-uppercase">Aadhar No. <span
+                <label for="aadharNo" class="form-label small text-dark fw-semibold text-uppercase">Aadhar No. <span
                     class="text-danger">*</span></label>
                 <input id="aadharNo" type="text" maxlength="12"
                   class="form-control bg-light rounded-3 font-monospace custom-input-color" placeholder="Aadhaar Number"
@@ -265,14 +264,14 @@
                 @if (isInvalid('aadharNo')) { <div class="invalid-feedback">Aadhar no. is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="mobileNo" class="form-label small text-secondary fw-bold text-uppercase">Mobile No. <span
+                <label for="mobileNo" class="form-label small text-dark fw-semibold text-uppercase">Mobile No. <span
                     class="text-danger">*</span></label>
                 <input id="mobileNo" type="tel" class="form-control bg-light rounded-3 custom-input-color"
                   placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')" />
                 @if (isInvalid('mobileNo')) { <div class="invalid-feedback">Mobile no. is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="auctionPropertyType" class="form-label small text-secondary fw-bold text-uppercase">Property
+                <label for="auctionPropertyType" class="form-label small text-dark fw-semibold text-uppercase">Property
                   Type</label>
                 <select id="auctionPropertyType" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="auctionPropertyType" [class.is-invalid]="isInvalid('auctionPropertyType')">
@@ -283,7 +282,7 @@
               </div>
               <div class="col-12">
                 <label for="communicationAddress"
-                  class="form-label small text-secondary fw-bold text-uppercase">Permanent Communication Address <span
+                  class="form-label small text-dark fw-semibold text-uppercase">Permanent Communication Address <span
                     class="text-danger">*</span></label>
                 <textarea id="communicationAddress" rows="3" class="form-control bg-light rounded-3 custom-input-color"
                   placeholder="Enter complete billing/residential address..." formControlName="communicationAddress"
@@ -295,17 +294,17 @@
           </div>
         </div>
 
-        <div class="card border-0 rounded-4 shadow-sm mt-3">
+        <div class="registration-card card border-0 rounded-4 shadow-sm mt-3">
           <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+            <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
 
-              <h2 class="h5 fw-bold mb-0">Financial Breakdowns</h2>
+              <h2 class="h5 mb-0">Financial Breakdowns</h2>
             </div>
 
             <div class="row g-3 mb-4">
               <div class="col-md-6">
-                <div class="bg-light border rounded-4 p-3 h-100">
-                  <label for="reservePrice" class="form-label small text-secondary fw-bold text-uppercase">Reserve Price
+                <div class="financial-tile bg-light border rounded-4 p-3 h-100">
+                  <label for="reservePrice" class="form-label small text-dark fw-semibold text-uppercase">Reserve Price
                     <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-white">Rs.</span>
@@ -318,8 +317,8 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <div class="bg-light border rounded-4 p-3 h-100">
-                  <label for="h1BidderFinalPrice" class="form-label small text-secondary fw-bold text-uppercase">H1
+                <div class="financial-tile bg-light border rounded-4 p-3 h-100">
+                  <label for="h1BidderFinalPrice" class="form-label small text-dark fw-semibold text-uppercase">H1
                     Bidder Final Price <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-white ">Rs.</span>
@@ -335,23 +334,23 @@
 
             <div class="row g-3 mb-3">
               <div class="col-lg-12">
-                <div class="bg-light border rounded-4 p-3 h-100">
+                <div class="financial-panel bg-light border rounded-4 p-3 h-100">
                   <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Form Fees Structure
                     <span class="text-danger">*</span>
                   </h3>
                   <div class="row g-2">
-                    <div class="col-sm-4"><label class="form-label small text-secondary">Transaction ID</label><input
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction ID</label><input
                         type="text" class="form-control bg-white font-monospace custom-input-color"
                         formControlName="formFeeTransactionId"
                         [class.is-invalid]="isInvalid('formFeeTransactionId')" />@if (isInvalid('formFeeTransactionId'))
                       { <div class="invalid-feedback">Transaction ID is required.</div> }</div>
-                    <div class="col-sm-4"><label class="form-label small text-secondary">Txn Date</label><input
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input
                         type="date" class="form-control bg-white custom-input-color"
                         formControlName="formFeeTransactionDate"
                         [class.is-invalid]="isInvalid('formFeeTransactionDate')" />@if
                       (isInvalid('formFeeTransactionDate')) { <div class="invalid-feedback">Transaction date is
                         required.</div> }</div>
-                    <div class="col-sm-4"><label class="form-label small text-secondary">Paid Amount (Rs.)</label><input
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Paid Amount (Rs.)</label><input
                         type="number" step="0.01" class="form-control bg-white custom-input-color"
                         formControlName="formFeePaidAmount" [class.is-invalid]="isInvalid('formFeePaidAmount')" />@if
                       (isInvalid('formFeePaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> }
@@ -360,21 +359,21 @@
                 </div>
               </div>
               <div class="col-lg-12">
-                <div class="bg-light border rounded-4 p-3 h-100">
+                <div class="financial-panel bg-light border rounded-4 p-3 h-100">
                   <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">EMD (Earnest Money
                     Deposit) <span class="text-danger">*</span></h3>
                   <div class="row g-2 ">
-                    <div class="col-sm-4"><label class="form-label small text-secondary">EMD Txn ID</label><input
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Txn ID</label><input
                         type="text" class="form-control bg-white font-monospace custom-input-color"
                         formControlName="emdTransactionId" [class.is-invalid]="isInvalid('emdTransactionId')" />@if
                       (isInvalid('emdTransactionId')) { <div class="invalid-feedback">EMD transaction ID is required.
                       </div> }</div>
-                    <div class="col-sm-4"><label class="form-label small text-secondary">EMD Date</label><input
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Date</label><input
                         type="date" class="form-control bg-white custom-input-color"
                         formControlName="emdTransactionDate" [class.is-invalid]="isInvalid('emdTransactionDate')" />@if
                       (isInvalid('emdTransactionDate')) { <div class="invalid-feedback">EMD date is required.</div> }
                     </div>
-                    <div class="col-sm-4"><label class="form-label small text-secondary">EMD Paid (Rs.)</label><input
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Paid (Rs.)</label><input
                         type="number" step="0.01" class="form-control bg-white custom-input-color"
                         formControlName="emdPaidAmount" [class.is-invalid]="isInvalid('emdPaidAmount')" />@if
                       (isInvalid('emdPaidAmount')) { <div class="invalid-feedback">EMD paid amount is required.</div> }
@@ -384,22 +383,22 @@
               </div>
             </div>
 
-            <div class="bg-light border rounded-4 p-3 mb-3">
+            <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money
                 Milestone <span class="text-danger">*</span></h3>
               <div class="row g-2">
-                <div class="col-sm-4"><label class="form-label small text-secondary">25% Milestone Txn ID</label><input
+                <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">25% Milestone Txn ID</label><input
                     type="text" class="form-control bg-white font-monospace custom-input-color"
                     formControlName="allotmentTransactionId"
                     [class.is-invalid]="isInvalid('allotmentTransactionId')" />@if (isInvalid('allotmentTransactionId'))
                   { <div class="invalid-feedback">25% milestone transaction ID is required.</div> }</div>
-                <div class="col-sm-4"><label class="form-label small text-secondary">Transaction Date</label><input
+                <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction Date</label><input
                     type="date" class="form-control bg-white custom-input-color"
                     formControlName="allotmentTransactionDate"
                     [class.is-invalid]="isInvalid('allotmentTransactionDate')" />@if
                   (isInvalid('allotmentTransactionDate')) { <div class="invalid-feedback">Transaction date is required.
                   </div> }</div>
-                <div class="col-sm-4"><label class="form-label small text-secondary">Amount Paid (Rs.)</label><input
+                <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label><input
                     type="number" step="0.01" class="form-control bg-white custom-input-color"
                     formControlName="allotmentPaidAmount" [class.is-invalid]="isInvalid('allotmentPaidAmount')" />@if
                   (isInvalid('allotmentPaidAmount')) { <div class="invalid-feedback">Amount paid is required.</div> }
@@ -407,12 +406,12 @@
               </div>
             </div>
 
-            <div class="bg-light border rounded-4 p-3">
+            <div class="financial-panel bg-light border rounded-4 p-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp;
                 Installment Scheduler <span class="text-danger">*</span></h3>
               <div class="row g-2">
                 <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-secondary">Installment
+                  <label class="form-label small text-dark fw-semibold">Installment
                     No.</label>
                   <select class="form-select bg-white custom-input-color" formControlName="installmentNo"
                     [class.is-invalid]="isInvalid('installmentNo')">@for (installment of installments; track
@@ -420,27 +419,27 @@
                   (isInvalid('installmentNo')) { <div class="invalid-feedback">Installment no. is required.</div> }
                 </div>
                 <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-secondary">Due Date</label>
+                  <label class="form-label small text-dark fw-semibold">Due Date</label>
                   <input type="date" class="form-control bg-white custom-input-color" formControlName="dueDate"
                     [class.is-invalid]="isInvalid('dueDate')" />@if (isInvalid('dueDate')) { <div
                     class="invalid-feedback">Due date is required.</div> }
                 </div>
                 <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-secondary">Paid Status</label><select
+                  <label class="form-label small text-dark fw-semibold">Paid Status</label><select
                     class="form-select bg-white custom-input-color" formControlName="paidStatus"
                     [class.is-invalid]="isInvalid('paidStatus')">@for (status of paidStatuses; track status) { <option
                       [value]="status">{{ status }}</option> }</select>@if (isInvalid('paidStatus')) { <div
                     class="invalid-feedback">Paid status is required.</div> }
                 </div>
                 <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-secondary">Due Amount
+                  <label class="form-label small text-dark fw-semibold">Due Amount
                     (Rs.)</label>
                   <input type="number" step="0.01" class="form-control bg-white custom-input-color" placeholder="0.00"
                     formControlName="dueAmount" [class.is-invalid]="isInvalid('dueAmount')" />@if
                   (isInvalid('dueAmount')) { <div class="invalid-feedback">Due amount is required.</div> }
                 </div>
                 <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-secondary">Interest
+                  <label class="form-label small text-dark fw-semibold">Interest
                     (Rs.)</label>
                   <input type="number" step="0.01" class="form-control bg-white custom-input-color" placeholder="0.00"
                     formControlName="accumulatedInterest" [class.is-invalid]="isInvalid('accumulatedInterest')" />@if
@@ -448,10 +447,10 @@
                   <div class="invalid-feedback">Interest is required.</div> }
                 </div>
                 <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small fw-bold text-secondary">Total Due
+                  <label class="form-label small text-dark fw-semibold">Total Due
                     (Rs.)</label>
-                  <input type="number" class="form-control fw-bold text-primary custom-input-color"
-                    placeholder="Auto Calculated" formControlName="totalDueAmount" />
+                  <input type="number" class="form-control fw-semibold text-primary custom-input-color"
+                    placeholder="Auto Calculate" formControlName="totalDueAmount" />
                 </div>
               </div>
             </div>
@@ -460,10 +459,10 @@
       </div>
       }
 
-      <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
+      <div class="form-actions d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
           (click)="resetForm()">Cancel</button>
-        <button type="submit" class="btn text-white rounded-3 px-4 py-2 fw-bold shadow-sm border-0"
+        <button type="submit" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
           style="background: var(--theme-primary-alpha);">Save &amp; Register Asset</button>
       </div>
     </form>
