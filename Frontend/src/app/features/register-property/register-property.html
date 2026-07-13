@@ -3,12 +3,12 @@
     <div class="bg-white rounded-4 p-3 p-lg-4 mb-3 border shadow-sm">
       <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
         <div>
-          <p class="small text-success fw-bold text-uppercase mb-1">Property ownership service</p>
-          <h1 class="h4 fw-bold text-dark mb-1">Register Your Property</h1>
-          <p class="text-secondary mb-0">Search allottee details or submit the complete property and owner information below.</p>
+          <h1 class="h4 fw-bold text-success mb-1">Register Your Property</h1>
+          <!-- <p class="small text-success fw-semibold text-uppercase mb-1">Property ownership service</p> -->
+          <p class="text-dark mb-0 ">Search allottee details or submit the complete property and owner information below.</p>
         </div>
         <form class="col-12 col-lg-4" [formGroup]="propertyForm">
-          <label for="allotteeCode" class="form-label small text-secondary fw-bold text-uppercase mb-1">Search Allottee Code</label>
+          <label for="allotteeCode" class="form-label small text-dark fw-semibold text-uppercase mb-1">Search Allottee Code</label>
           <div class="input-group">
             <input id="allotteeCode" type="search" class="form-control bg-light rounded-start-3 custom-input-color"
               placeholder="Format AAA1-1" formControlName="allotteeCode"
@@ -27,16 +27,15 @@
         If you do not have the allottee code, please enter your property details below.
       </div>
 
-      <section class="card border-0 rounded-4 shadow-sm mb-4">
+      <section class="card register-section-card border-0 rounded-4 shadow-sm mb-4">
         <div class="card-body p-3 p-lg-4">
-          <div class="border-bottom pb-3 mb-3">
-            <h2 class="h5 fw-bold mb-1">Property Details</h2>
-            <p class="text-secondary mb-0">Location, committee and plot information</p>
+          <div class="border-bottom pb-3 mb-3 section-header">
+            <h2 class="h5 fw-semibold mb-1">Property Details (Location, committee and plot information)</h2>
           </div>
 
           <div class="row g-3">
             <div class="col-md-6 col-xl-3">
-              <label for="district" class="form-label small text-secondary fw-bold text-uppercase">District <span class="text-danger">*</span></label>
+              <label for="district" class="form-label small text-dark fw-semibold text-uppercase">District <span class="text-danger">*</span></label>
               <select id="district" class="form-select bg-light rounded-3 custom-input-color" formControlName="district"
                 [class.is-invalid]="isInvalid('district')">
                 <option value="" disabled>Select district</option>
@@ -48,7 +47,7 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="marketCommittee" class="form-label small text-secondary fw-bold text-uppercase">Market Committee <span class="text-danger">*</span></label>
+              <label for="marketCommittee" class="form-label small text-dark fw-semibold text-uppercase">Market Committee <span class="text-danger">*</span></label>
               <select id="marketCommittee" class="form-select bg-light rounded-3 custom-input-color" formControlName="marketCommittee"
                 [class.is-invalid]="isInvalid('marketCommittee')">
                 <option value="" disabled>Select committee</option>
@@ -60,7 +59,7 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="mandi" class="form-label small text-secondary fw-bold text-uppercase">Mandi <span class="text-danger">*</span></label>
+              <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Mandi <span class="text-danger">*</span></label>
               <select id="mandi" class="form-select bg-light rounded-3 custom-input-color" formControlName="mandi"
                 [class.is-invalid]="isInvalid('mandi')">
                 <option value="" disabled>Select mandi</option>
@@ -72,7 +71,7 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="plotNumber" class="form-label small text-secondary fw-bold text-uppercase">Plot Number / Property No. <span class="text-danger">*</span></label>
+              <label for="plotNumber" class="form-label small text-dark fw-semibold text-uppercase">Plot Number / Property No. <span class="text-danger">*</span></label>
               <select id="plotNumber" class="form-select bg-light rounded-3 custom-input-color" formControlName="plotNumber"
                 [class.is-invalid]="isInvalid('plotNumber')">
                 <option value="" disabled>Select plot</option>
@@ -86,30 +85,29 @@
         </div>
       </section>
 
-      <section class="card border-0 rounded-4 shadow-sm mb-4">
+      <section class="card register-section-card border-0 rounded shadow-sm mb-4">
         <div class="card-body p-3 p-lg-4">
-          <div class="border-bottom pb-3 mb-3">
-            <h2 class="h5 fw-bold mb-1">Owner Information</h2>
-            <p class="text-secondary mb-0">Applicant identity and communication details</p>
+          <div class="border-bottom pb-3 mb-3 section-header">
+            <h2 class="h5 fw-semibold mb-1">Owner Information (Applicant identity and communication details)</h2>
           </div>
 
           <div class="row g-3">
             <div class="col-md-6 col-xl-3">
-              <label for="currentOwnerName" class="form-label small text-secondary fw-bold text-uppercase">Current Owner Name <small class="text-success text-capitalize">(As per document)</small> <span class="text-danger">*</span></label>
+              <label for="currentOwnerName" class="form-label small text-dark fw-semibold text-uppercase">Current Owner Name <small class="text-success text-capitalize">(As per document)</small> <span class="text-danger">*</span></label>
               <input id="currentOwnerName" class="form-control bg-light rounded-3 custom-input-color" placeholder="Current owner"
                 formControlName="currentOwnerName" [class.is-invalid]="isInvalid('currentOwnerName')" />
               @if (isInvalid('currentOwnerName')) { <div class="invalid-feedback">Current owner name is required.</div> }
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="guardianName" class="form-label small text-secondary fw-bold text-uppercase">Father's / Husband Name <span class="text-danger">*</span></label>
+              <label for="guardianName" class="form-label small text-dark fw-semibold text-uppercase">Father's / Husband Name <span class="text-danger">*</span></label>
               <input id="guardianName" class="form-control bg-light rounded-3 custom-input-color" placeholder="Father's / husband name"
                 formControlName="guardianName" [class.is-invalid]="isInvalid('guardianName')" />
               @if (isInvalid('guardianName')) { <div class="invalid-feedback">Father's / husband name is required.</div> }
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="mobileNumber" class="form-label small text-secondary fw-bold text-uppercase">Mobile Number <span class="text-danger">*</span></label>
+              <label for="mobileNumber" class="form-label small text-dark fw-semibold text-uppercase">Mobile Number <span class="text-danger">*</span></label>
               <input id="mobileNumber" type="tel" maxlength="10" class="form-control bg-light rounded-3 custom-input-color"
                 placeholder="10 digit mobile number" formControlName="mobileNumber"
                 [class.is-invalid]="isInvalid('mobileNumber')" />
@@ -117,14 +115,14 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="email" class="form-label small text-secondary fw-bold text-uppercase">Email <span class="text-danger">*</span></label>
+              <label for="email" class="form-label small text-dark fw-semibold text-uppercase">Email <span class="text-danger">*</span></label>
               <input id="email" type="email" class="form-control bg-light rounded-3 custom-input-color" placeholder="name@example.com"
                 formControlName="email" [class.is-invalid]="isInvalid('email')" />
               @if (isInvalid('email')) { <div class="invalid-feedback">Enter a valid email address.</div> }
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="state" class="form-label small text-secondary fw-bold text-uppercase">State <span class="text-danger">*</span></label>
+              <label for="state" class="form-label small text-dark fw-semibold text-uppercase">State <span class="text-danger">*</span></label>
               <select id="state" class="form-select bg-light rounded-3 custom-input-color" formControlName="state"
                 [class.is-invalid]="isInvalid('state')">
                 <option value="" disabled>Select state</option>
@@ -136,7 +134,7 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="ownerDistrict" class="form-label small text-secondary fw-bold text-uppercase">District <span class="text-danger">*</span></label>
+              <label for="ownerDistrict" class="form-label small text-dark fw-semibold text-uppercase">District <span class="text-danger">*</span></label>
               <select id="ownerDistrict" class="form-select bg-light rounded-3 custom-input-color" formControlName="ownerDistrict"
                 [class.is-invalid]="isInvalid('ownerDistrict')">
                 <option value="" disabled>Select district</option>
@@ -148,7 +146,7 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="city" class="form-label small text-secondary fw-bold text-uppercase">City <span class="text-danger">*</span></label>
+              <label for="city" class="form-label small text-dark fw-semibold text-uppercase">City <span class="text-danger">*</span></label>
               <select id="city" class="form-select bg-light rounded-3 custom-input-color" formControlName="city"
                 [class.is-invalid]="isInvalid('city')">
                 <option value="" disabled>Select city</option>
@@ -160,14 +158,14 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="address" class="form-label small text-secondary fw-bold text-uppercase">Address <span class="text-danger">*</span></label>
+              <label for="address" class="form-label small text-dark fw-semibold text-uppercase">Address <span class="text-danger">*</span></label>
               <input id="address" class="form-control bg-light rounded-3 custom-input-color" placeholder="Complete address"
                 formControlName="address" [class.is-invalid]="isInvalid('address')" />
               @if (isInvalid('address')) { <div class="invalid-feedback">Address is required.</div> }
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="aadhaarNumber" class="form-label small text-secondary fw-bold text-uppercase">Aadhaar Number <span class="text-danger">*</span></label>
+              <label for="aadhaarNumber" class="form-label small text-dark fw-semibold text-uppercase">Aadhaar Number <span class="text-danger">*</span></label>
               <input id="aadhaarNumber" maxlength="12" class="form-control bg-light rounded-3 custom-input-color"
                 placeholder="12 digit Aadhaar number" formControlName="aadhaarNumber"
                 [class.is-invalid]="isInvalid('aadhaarNumber')" />
@@ -175,20 +173,20 @@
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="aadhaarProof" class="form-label small text-secondary fw-bold text-uppercase">Upload Aadhaar Card Proof <span class="text-danger">*</span></label>
+              <label for="aadhaarProof" class="form-label small text-dark fw-semibold text-uppercase">Upload Aadhaar Card Proof <span class="text-danger">*</span></label>
               <input id="aadhaarProof" type="file" class="form-control bg-light rounded-3 custom-input-color" [accept]="allowedFileTypes"
                 (change)="onFileChange($event, 'aadhaarProof')" [class.is-invalid]="isInvalid('aadhaarProof')" />
               @if (isInvalid('aadhaarProof')) { <div class="invalid-feedback d-block">JPEG, JPG, PNG or PDF file is required.</div> }
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="passportNumber" class="form-label small text-secondary fw-bold text-uppercase">Passport Number</label>
+              <label for="passportNumber" class="form-label small text-dark fw-semibold text-uppercase">Passport Number</label>
               <input id="passportNumber" class="form-control bg-light rounded-3 custom-input-color" placeholder="Passport number"
                 formControlName="passportNumber" />
             </div>
 
             <div class="col-md-6 col-xl-3">
-              <label for="passportProof" class="form-label small text-secondary fw-bold text-uppercase">Upload Passport Proof</label>
+              <label for="passportProof" class="form-label small text-dark fw-semibold text-uppercase">Upload Passport Proof</label>
               <input id="passportProof" type="file" class="form-control bg-light rounded-3 custom-input-color" [accept]="allowedFileTypes"
                 (change)="onFileChange($event, 'passportProof')" [class.is-invalid]="isInvalid('passportProof')" />
               @if (isInvalid('passportProof')) { <div class="invalid-feedback d-block">Only JPEG, JPG, PNG or PDF files are allowed.</div> }
@@ -197,11 +195,10 @@
         </div>
       </section>
 
-      <section class="card border-0 rounded-4 shadow-sm mb-4">
+      <section class="card register-section-card border-0 rounded-4 shadow-sm mb-4">
         <div class="card-body p-3 p-lg-4">
-          <div class="border-bottom pb-3 mb-3">
-            <h2 class="h5 fw-bold mb-1">Upload Documents</h2>
-            <p class="text-secondary mb-0">At least one supporting document with file upload is required</p>
+          <div class="border-bottom pb-3 mb-3 section-header">
+            <h2 class="h5 fw-semibold mb-1">Upload Documents (At least one supporting document with file upload is required)</h2>
           </div>
 
           @if (hasDocumentError()) {
@@ -217,7 +214,7 @@
                     <div class="form-check">
                       <input class="form-check-input custom-checkbox-color" type="checkbox"
                         [id]="document.key + 'Selected'" [formControlName]="document.key + 'Selected'" />
-                      <label class="form-check-label fw-semibold" [for]="document.key + 'Selected'">
+                      <label class="form-check-label fw-semibold" style="color: #064e3b;" [for]="document.key + 'Selected'">
                         {{ document.label }}
                         @if (document.hint) {
                         <small class="d-block text-secondary fw-normal">{{ document.hint }}</small>
@@ -241,7 +238,7 @@
       <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mb-4">
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
           (click)="resetForm()">Cancel</button>
-        <button type="submit" class="btn btn-success rounded-3 px-4 py-2 fw-bold shadow-sm">
+        <button type="submit" class="btn btn-success rounded-3 px-4 py-2 fw-semibold shadow-sm">
           Save Property
         </button>
       </div>
