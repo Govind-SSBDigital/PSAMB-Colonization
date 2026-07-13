@@ -1,9 +1,268 @@
 :host {
-	--register-success: var(--theme-primary-alpha);
+  --register-success: var(--theme-primary-alpha);
+  --register-surface: #ffffff;
+  --register-soft: #f0fdf4;
+  --register-border: rgba(var(--theme-primary-rgb), 0.32);
+  --register-shadow: 0 18px 40px -26px rgba(var(--theme-forest-dark-rgb), 0.75);
+  display: block;
+  font-family: 'Poppins', sans-serif;
+}
+::placeholder {
+  font-size: 14px; 
+  opacity: 1;      
+}
+select {
+  font-size: 14px;
+}
+input[type="date"] {
+  font-size: 14px;
 }
 
-:host .btn-success {
-	background-color: var(--register-success) !important;
-	border-color: var(--register-success) !important;
-	color: #fff;
+.registration-page {
+  position: relative;
+}
+
+.registration-page::before {
+  content: none;
+}
+
+.registration-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1168px;
+}
+
+.registration-title-card,
+.registration-card,
+.auction-status-card {
+  overflow: hidden;
+  box-shadow: var(--register-shadow) !important;
+}
+
+.registration-title-card {
+  position: relative;
+  background: var(--theme-primary) !important;
+  color: var(--theme-white);
+  border-radius: 12px !important;
+}
+
+.registration-title-card::before {
+  display: none;
+}
+
+.registration-title-card h1,
+.section-heading h2,
+.auction-status-card h3 {
+  letter-spacing: 0;
+}
+
+.registration-title-card h1 {
+  color: var(--theme-white) !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.16);
+}
+
+.registration-card {
+  background: var(--register-surface);
+  border-radius: 14px !important;
+}
+
+.section-heading {
+  position: relative;
+  margin: -1.5rem -1.5rem 1.25rem;
+  padding: 1.05rem 1.5rem !important;
+  background: var(--theme-primary) !important;
+}
+
+.section-heading h2 {
+  color: var(--theme-white);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+  font-size: 1.15rem;
+}
+
+.section-heading::before {
+  content: '';
+  width: 6px;
+  height: 28px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--theme-gold);
+}
+
+.compliance-card .section-heading::before,
+.registration-card .section-heading.no-accent::before {
+  display: none;
+}
+
+.form-label {
+  // color: var(--theme-slate-600) !important;
+  margin-bottom: 0.45rem;
+}
+.checkbox-border{
+  border: 1px solid rgba(var(--theme-primary-rgb), 0.3);
+  // border-color: rgba(var(--theme-primary-rgb), 0.3);
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+  min-height: 44px;
+  border-color: rgba(var(--theme-primary-rgb), 0.3);
+  color: var(--theme-slate-900);
+  background-color: #ffffff !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+textarea.form-control {
+  min-height: 94px;
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: rgba(var(--theme-primary-rgb), 0.32);
+}
+
+.custom-input-color:focus,
+.form-select:focus {
+  border-color: var(--theme-primary) !important;
+  background-color: var(--theme-white) !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.12) !important;
+}
+
+.btn-success {
+  background: var(--theme-primary) !important;
+  border-color: transparent !important;
+  color: var(--theme-white);
+  box-shadow: 0 10px 20px -15px rgba(var(--theme-primary-rgb), 0.9);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+  filter: brightness(1.04);
+}
+
+.form-check.form-switch.bg-light,
+.form-check.form-switch.bg-white {
+  background: #f8fffb !important;
+}
+
+.financial-tile,
+.financial-panel {
+  background: #ffffff !important;
+}
+
+.flag-row {
+  min-height: 46px;
+  padding-inline: 0.75rem !important;
+  // border: 1px solid rgba(var(--theme-gold-rgb), 0.78);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flag-row:hover {
+  border-color: rgba(var(--theme-primary-rgb), 0.44);
+  box-shadow: 0 10px 22px -20px rgba(var(--theme-forest-dark-rgb), 0.6);
+  transform: translateY(-1px);
+}
+
+.flag-row label,
+.form-check-label {
+  color: var(--theme-slate-600) !important;
+}
+
+.custom-switch-color {
+  cursor: pointer;
+  border-color: rgba(var(--theme-primary-rgb), 0.2);
+}
+.custom-switch-color:focus {
+  box-shadow: 0 0 0 0.2rem rgba(var(--theme-gold-rgb), 0.18) !important;
+  border: 1px solid rgba(var(--theme-gold-rgb), 0.55) !important;
+}
+
+.custom-switch-color:checked {
+  background-color: var(--theme-primary) !important;
+}
+
+.auction-status-card {
+  position: relative;
+  border-color: rgba(var(--theme-gold-rgb), 0.62) !important;
+  background: var(--theme-primary) !important;
+}
+
+.auction-status-card::after {
+  content: none;
+}
+
+.auction-status-card .card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.auction-status-card .form-check {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.financial-tile,
+.financial-panel {
+  border-color: rgba(var(--theme-primary-rgb), 0.28) !important;
+}
+
+.financial-tile {
+  box-shadow: 0 12px 26px -24px rgba(var(--theme-forest-dark-rgb), 0.8);
+}
+
+.financial-panel h3 {
+  color: var(--theme-primary) !important;
+  border-color: rgba(var(--theme-primary-rgb), 0.2) !important;
+}
+
+.input-group .btn,
+.form-actions .btn {
+  min-height: 44px;
+}
+
+.form-actions {
+  border-color: rgba(var(--theme-primary-rgb), 0.14) !important;
+}
+
+.form-actions .btn[type='submit'] {
+  background: var(--theme-primary) !important;
+  box-shadow: 0 16px 26px -18px rgba(var(--theme-primary-rgb), 0.95) !important;
+}
+
+.form-actions .btn[type='submit']:hover,
+.form-actions .btn[type='submit']:focus {
+  filter: brightness(1.05);
+}
+
+.form-actions .btn-outline-secondary {
+  color: var(--theme-slate-600);
+  border-color: #cbd5e1;
+  // background-color: rgba(255, 255, 255, 0.72);
+}
+
+.form-actions .btn-outline-secondary:hover,
+.form-actions .btn-outline-secondary:focus {
+  color: var(--theme-primary);
+  border-color: rgba(var(--theme-primary-rgb), 0.38);
+  background-color: rgba(var(--theme-primary-rgb), 0.07);
+}
+
+.invalid-feedback {
+  font-weight: 500;
+}
+
+@media (max-width: 575.98px) {
+  .registration-title-card,
+  .registration-card .card-body,
+  .auction-status-card .card-body {
+    padding: 1.15rem !important;
+  }
+
+  .section-heading::before {
+    height: 26px;
+  }
+
+  .section-heading {
+    margin: -1.15rem -1.15rem 1rem;
+    padding: 0.9rem 1.15rem !important;
+  }
 }
