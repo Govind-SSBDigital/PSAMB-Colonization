@@ -91,7 +91,7 @@ export class PropertyBidderRegistration implements OnInit {
       relation: ['Son of (S/o)'],
       guardianName: [''],
       panNo: [''],
-      aadharNo: [''],
+      aadharNo: ['', [Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]],
       mobileNo: [''],
       auctionPropertyType: ['Commercial Plots'],
       communicationAddress: [''],
@@ -120,6 +120,25 @@ export class PropertyBidderRegistration implements OnInit {
     this.registerationForm.get('Isauctioned')?.valueChanges.subscribe((isAuctioned) => {
       this.updateAuctionValidators(isAuctioned);
     });
+  }
+    maskInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
+
+    // Strip out the prefix temporarily to see what the user typed
+    let digits = value.replace(/^XXXXXXXX/, '').replace(/\D/g, '');
+
+    // Limit the actual typed digits to 4
+    if (digits.length > 4) {
+      digits = digits.substring(0, 4);
+    }
+
+    // Combine the mask with the typed digits
+    const maskedValue = 'XXXXXXXX' + digits;
+
+    // Update the form control and input display value
+    this.registerationForm.get('aadharNo')?.setValue(maskedValue, { emitEvent: false });
+    input.value = maskedValue;
   }
 
   isInvalid(controlName: string): boolean {

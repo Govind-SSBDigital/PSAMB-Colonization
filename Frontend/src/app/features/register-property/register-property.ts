@@ -15,6 +15,7 @@ export class RegisterProperty {
   readonly marketCommittees = ['Ambala Market Committee', 'Hisar Market Committee', 'Karnal Market Committee'];
   readonly mandis = ['Grain Market A', 'New Sabzi Mandi', 'Regional Mandi B', 'Cotton Mandi'];
   readonly plots = ['Plot A-12', 'Plot B-21', 'Shop 18'];
+  readonly plotTypes = ['Residential', 'Commercial', 'Industrial'];
   readonly states = ['Punjab', 'Delhi', 'Chandigarh'];
   readonly cities = ['Chandigarh','Mohali'];
 
@@ -45,6 +46,8 @@ export class RegisterProperty {
         marketCommittee: ['', Validators.required],
         mandi: ['', Validators.required],
         plotNumber: ['', Validators.required],
+        plotType: ['', Validators.required],
+        plotSize: ['', Validators.required],
         currentOwnerName: ['', Validators.required],
         guardianName: ['', Validators.required],
         mobileNumber: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
@@ -53,7 +56,7 @@ export class RegisterProperty {
         ownerDistrict: ['', Validators.required],
         city: ['', Validators.required],
         address: ['', Validators.required],
-        aadhaarNumber: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]],
+        aadhaarNumber: ['', [Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]],
         aadhaarProof: [null, [Validators.required, this.fileTypeValidator()]],
         passportNumber: [''],
         passportProof: [null, this.fileTypeValidator()],
@@ -61,6 +64,26 @@ export class RegisterProperty {
       },
       { validators: this.atLeastOneDocumentValidator() },
     );
+  }
+
+  maskInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
+
+    // Strip out the prefix temporarily to see what the user typed
+    let digits = value.replace(/^XXXXXXXX/, '').replace(/\D/g, '');
+
+    // Limit the actual typed digits to 4
+    if (digits.length > 4) {
+      digits = digits.substring(0, 4);
+    }
+
+    // Combine the mask with the typed digits
+    const maskedValue = 'XXXXXXXX' + digits;
+
+    // Update the form control and input display value
+    this.propertyForm.get('aadhaarNumber')?.setValue(maskedValue, { emitEvent: false });
+    input.value = maskedValue;
   }
 
   isInvalid(controlName: string): boolean {
