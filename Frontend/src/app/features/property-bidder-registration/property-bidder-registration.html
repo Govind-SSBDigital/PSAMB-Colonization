@@ -259,9 +259,9 @@
                 <label for="aadharNo" class="form-label small text-dark fw-semibold text-uppercase">Aadhar No. <span
                     class="text-danger">*</span></label>
                 <input id="aadharNo" type="text" maxlength="12"
-                  class="form-control bg-light rounded-3 font-monospace custom-input-color" placeholder="Aadhaar Number"
-                  formControlName="aadharNo" [class.is-invalid]="isInvalid('aadharNo')" />
-                @if (isInvalid('aadharNo')) { <div class="invalid-feedback">Aadhar no. is required.</div> }
+                  class="form-control bg-light rounded-3 font-monospace custom-input-color" placeholder="XXXXXXXX1234"
+                  formControlName="aadharNo" (input)="maskInput($event)" [class.is-invalid]="isInvalid('aadharNo')" />
+                @if (isInvalid('aadharNo')) { <div class="invalid-feedback">Enter a valid 4 digit Aadhaar number.</div> }
               </div>
               <div class="col-md-4">
                 <label for="mobileNo" class="form-label small text-dark fw-semibold text-uppercase">Mobile No. <span

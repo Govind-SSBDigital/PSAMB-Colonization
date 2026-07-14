@@ -1,0 +1,132 @@
+<div class="step-form-block">
+    <div class="step-green-header collapsible-header" (click)="toggleSection('profile')">
+        <span><i class="fas fa-user-circle"></i> &nbsp; {{ getDynamicTitle() }}</span>
+        <mat-icon>{{ sectionsExpanded.profile ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </div>
+
+    <div class="wizard-form-grid mt-3" [class.collapsed]="!sectionsExpanded.profile">
+        <!-- Gender -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Gender (ਲਿੰਗ) <span class="required-star">*</span></label>
+            <select name="gender" [(ngModel)]="signUpData.gender" class="form-input-custom">
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male / ਪੁਰਸ਼</option>
+                <option value="Female">Female / ਇਸਤਰੀ</option>
+                <!-- <option value="Transgender">Transgender/Other / ਟ੍ਰਾਂਸਜੈਂਡਰ/ਹੋਰ</option> -->
+            </select>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Date Of Birth (ਜਨਮ ਤਾਰੀਖ) <span class="required-star">*</span></label>
+            <div class="input-with-icon-right">
+                <input type="date" name="dob" [(ngModel)]="signUpData.dob" class="form-input-custom">
+                <i class="fas fa-calendar-alt input-icon-right"></i>
+            </div>
+        </div>
+
+        <!-- First Name -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">First Name (ਪਹਿਲਾ ਨਾਂ) <span class="required-star">*</span></label>
+            <input type="text" name="firstName" [(ngModel)]="signUpData.firstName" class="form-input-custom"
+                placeholder="Enter Name">
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Last Name (ਆਖਰੀ ਨਾਂ)</label>
+            <input type="text" name="lastName" [(ngModel)]="signUpData.lastName" class="form-input-custom"
+                placeholder="Enter Last Name">
+        </div>
+
+        <!-- Father's First Name -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Father's/Husband First Name (ਪਿਤਾ/ਪਤੀ ਦਾ ਪਹਿਲਾ ਨਾਂ)
+                <span class="required-star">*</span></label>
+            <input type="text" name="fatherFirstName" [(ngModel)]="signUpData.fatherFirstName"
+                class="form-input-custom" placeholder="Enter Father's/Husband First Name">
+        </div>
+
+        <!-- Father's Last Name -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Father's/Husband Last Name (ਪਿਤਾ/ਪਤੀ ਦਾ ਆਖਰੀ ਨਾਂ)</label>
+            <input type="text" name="fatherLastName" [(ngModel)]="signUpData.fatherLastName"
+                class="form-input-custom" placeholder="Enter Father's/Husband Last Name">
+        </div>
+
+        <!-- Mother's First Name -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Mother's First Name (ਮਾਤਾ ਦਾ ਪਹਿਲਾ ਨਾਂ) <span
+                    class="required-star">*</span></label>
+            <input type="text" name="motherFirstName" [(ngModel)]="signUpData.motherFirstName"
+                class="form-input-custom" placeholder="Enter Mother's First Name">
+        </div>
+
+        <!-- Mother's Last Name -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">Mother's Last Name (ਮਾਤਾ ਦਾ ਆਖਰੀ ਨਾਂ)</label>
+            <input type="text" name="motherLastName" [(ngModel)]="signUpData.motherLastName"
+                class="form-input-custom" placeholder="Enter Mother's Last Name">
+        </div>
+
+        <!-- Email Field -->
+        <!-- <div class="form-group-custom">
+            <label class="form-label-custom">Email Id (ਈ-ਮੇਲ ਆਈ.ਡੀ) <span class="required-star">*</span></label>
+            <input type="email" name="emailAddress" [(ngModel)]="signUpData.emailAddress"
+                class="form-input-custom" placeholder="Enter Email Id">
+        </div> -->
+
+        <!-- Mobile No Field -->
+        <!-- <div class="form-group-custom">
+            <label class="form-label-custom">Mobile No. (ਮੋਬਾਈਲ ਨੰ) <span class="required-star">*</span></label>
+            <input type="tel" maxlength="10" name="mobileNumber" [(ngModel)]="signUpData.mobileNumber"
+                class="form-input-custom" placeholder="Enter Mobile Number">
+        </div> -->
+
+
+<!-- ... existing fields ... -->
+<div class="form-group-custom">
+            <label class="form-label-custom">
+                Email Id (ਈ-ਮੇਲ ਆਈ.ਡੀ) <span class="required-star">*</span>
+                <span class="verified-badge-inline" *ngIf="verification.emailVerified">
+                    <i class="fas fa-check-circle"></i> Verified
+                </span>
+            </label>
+            <div class="input-with-action">
+                <input type="email" name="emailAddress" [(ngModel)]="signUpData.emailAddress"
+                    class="form-input-custom" placeholder="Enter Email Id" 
+                    [disabled]="verification.emailVerified || verification.emailSent">
+                
+                <button type="button" class="btn-verify-inline" *ngIf="!verification.emailVerified && !verification.emailSent" 
+                    (click)="sendEmailOtp()">Verify</button>
+
+                <!-- Inline OTP input replaces button to prevent movement -->
+                <input type="text" maxlength="6" *ngIf="verification.emailSent"
+                    [(ngModel)]="verification.emailOtpInput" (input)="onEmailOtpInput()" 
+                    class="form-input-custom otp-input-inline" placeholder="123456">
+            </div>
+        </div>
+
+        <!-- Mobile Field (Inline Verification) -->
+        <div class="form-group-custom">
+            <label class="form-label-custom">
+                Mobile No. (ਮੋਬਾਈਲ ਨੰ) <span class="required-star">*</span>
+                <span class="verified-badge-inline" *ngIf="verification.mobileVerified">
+                    <i class="fas fa-check-circle"></i> Verified
+                </span>
+            </label>
+            <div class="input-with-action">
+                <input type="tel" maxlength="10" name="mobileNumber" [(ngModel)]="signUpData.mobileNumber"
+                    class="form-input-custom" placeholder="Enter Mobile Number" 
+                    [disabled]="verification.mobileVerified || verification.mobileSent">
+                
+                <button type="button" class="btn-verify-inline" *ngIf="!verification.mobileVerified && !verification.mobileSent" 
+                    (click)="sendMobileOtp()">Verify</button>
+
+                <input type="text" maxlength="6" *ngIf="verification.mobileSent"
+                    [(ngModel)]="verification.mobileOtpInput" (input)="onMobileOtpInput()" 
+                    class="form-input-custom otp-input-inline" placeholder="654321">
+
+<!-- ... remaining ... -->
+    </div>
+</div>

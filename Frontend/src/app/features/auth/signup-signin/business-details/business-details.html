@@ -1,0 +1,74 @@
+<div class="step-form-block">
+    <div class="step-green-header collapsible-header" (click)="toggleSection()">
+        <span><i class="fas fa-building"></i> &nbsp; Business Details (ਕਾਰੋਬਾਰੀ ਵੇਰਵਾ)</span>
+        <i class="fas" [class.fa-chevron-up]="isExpanded" [class.fa-chevron-down]="!isExpanded"></i>
+    </div>
+
+    <div class="collapsible-content" [class.collapsed]="!isExpanded">
+        <div class="wizard-form-grid mb-4">
+            <div class="form-group-custom">
+                <label class="form-label-custom">Firm Name (ਫਰਮ ਦਾ ਨਾਮ) <span class="required-star">*</span></label>
+                <input type="text" name="firmName" [(ngModel)]="signUpData.firmName" class="form-input-custom"
+                    placeholder="Firm Name">
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">GST Number (GST ਨੰਬਰ)</label>
+                <input type="text" name="gstNumber" maxlength="15" [(ngModel)]="signUpData.gstNumber"
+                    class="form-input-custom" placeholder="Enter GST Number">
+            </div>
+        </div>
+
+        <div class="business-office-bar">
+            <i class="fas fa-store-alt"></i> &nbsp; Business Office (ਵਪਾਰਕ ਦਫ਼ਤਰ)
+        </div>
+
+        <div class="checkbox-container-custom">
+            <input type="checkbox" id="sameAddressCheck" name="isSameAddress" [(ngModel)]="signUpData.isSameAddress"
+                (change)="onSameAddressChange()">
+            <label for="sameAddressCheck">Is Business Office address is same as {{ getBusinessOfficeLabel() }} address.</label>
+        </div>
+
+        <div class="wizard-form-grid">
+            <div class="form-group-custom">
+                <label class="form-label-custom">State (ਰਾਜ) <span class="required-star">*</span></label>
+                <select name="businessState" [(ngModel)]="signUpData.businessState" [disabled]="signUpData.isSameAddress"
+                    class="form-input-custom">
+                    <option value="" disabled selected>---Select State---</option>
+                    <option *ngFor="let s of states" [value]="s">{{ s }}</option>
+                </select>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">District (ਜ਼ਿਲ੍ਹਾ) <span class="required-star">*</span></label>
+                <select name="businessDistrict" [(ngModel)]="signUpData.businessDistrict"
+                    [disabled]="signUpData.isSameAddress" class="form-input-custom">
+                    <option value="" disabled selected>---Select District---</option>
+                    <option *ngFor="let d of districts" [value]="d">{{ d }}</option>
+                </select>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">City (ਸ਼ਹਿਰ) <span class="required-star">*</span></label>
+                <select name="businessCity" [(ngModel)]="signUpData.businessCity" [disabled]="signUpData.isSameAddress"
+                    class="form-input-custom">
+                    <option value="" disabled selected>---Select City---</option>
+                    <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+                </select>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Pin Code (ਪਿੰਨ ਕੋਡ) <span class="required-star">*</span></label>
+                <input type="text" name="businessPincode" maxlength="6" [(ngModel)]="signUpData.businessPincode"
+                    [disabled]="signUpData.isSameAddress" class="form-input-custom" placeholder="Enter Pin Code">
+            </div>
+
+            <div class="form-group-custom full-width">
+                <label class="form-label-custom">Plot No/Street No/Landmark(If any) (ਪਲਾਟ ਨੰਬਰ/ਗਲੀ ਨੰਬਰ/ਲੈਂਡਮਾਰਕ (ਜੇ ਕੋਈ ਹੋਵੇ)) <span class="required-star">*</span></label>
+                <textarea rows="2" name="businessLandmark" [(ngModel)]="signUpData.businessLandmark"
+                    [disabled]="signUpData.isSameAddress" class="form-input-custom"
+                    placeholder="Plot No/Street No/Landmark(If any)"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
