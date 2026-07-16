@@ -32,7 +32,27 @@
       <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">e-Auctions</a>
       <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">Citizen
         Services</a>
+
+      <a class="nav-link-item" (click)="clickMessages($event)">Messages</a>
+
       <a class="nav-link-item" href="#introduction" (click)="closeMobileMenu()">About Us</a>
+      <!-- Downloads Dropdown Menu -->
+      <div class="nav-dropdown-wrapper" [class.dropdown-open]="isDownloadsDropdownOpen">
+        <a class="nav-link-item dropdown-toggle" (click)="toggleDownloadsDropdown($event)">
+          Downloads <i class="fas fa-chevron-down dropdown-arrow" [class.rotated]="isDownloadsDropdownOpen"></i>
+        </a>
+        <div class="nav-dropdown-menu" [class.show]="isDownloadsDropdownOpen">
+          <a class="dropdown-item" href="/downloads/ndc_requirements.txt" download (click)="closeMobileMenu(); isDownloadsDropdownOpen = false">
+            <i class="fas fa-file-invoice icon-dropdown"></i> Documents for NDC
+          </a>
+          <a class="dropdown-item" href="/downloads/permission_to_sell_requirements.txt" download (click)="closeMobileMenu(); isDownloadsDropdownOpen = false">
+            <i class="fas fa-file-signature icon-dropdown"></i> Permission to Sell
+          </a>
+          <a class="dropdown-item" href="/downloads/permission_to_transfer_death_case.txt" download (click)="closeMobileMenu(); isDownloadsDropdownOpen = false">
+            <i class="fas fa-users-slash icon-dropdown"></i> Permission to Transfer
+          </a>
+        </div>
+      </div>
 
       <!-- CTA Auth Buttons in mobile/collapsed view -->
       <!-- <div class="nav-actions-mobile mt-3">
