@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Navbar } from '../../navbar/navbar';
+import { DocumentsAndAddress } from './documents-and-address/documents-and-address';
+import { PersonalDetails } from './personal-details/personal-details';
+import { BusinessDetails } from './business-details/business-details';
 
 interface EntityType {
   id: string;
@@ -16,7 +19,8 @@ interface EntityType {
 
 @Component({
   selector: 'app-signup-signin',
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, Navbar],
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, Navbar, PersonalDetails, DocumentsAndAddress, BusinessDetails],
   templateUrl: './signup-signin.html',
   styleUrl: './signup-signin.css',
 })
@@ -25,12 +29,11 @@ export class SignupSignin implements OnInit {
   loginMethod: 'password' | 'otp' = 'password';
 
   sectionsExpanded = {
-    profile: true,
     documents: true,
     business: true
   };
 
-  toggleSection(section: 'profile' | 'documents' | 'business') {
+  toggleSection(section: 'documents' | 'business') {
     this.sectionsExpanded[section] = !this.sectionsExpanded[section];
   }
 
@@ -40,6 +43,7 @@ export class SignupSignin implements OnInit {
     { id: 'HUF', label: 'Hindu Undivided Family (HUF)', icon: 'groups', desc: 'Family-owned traditional business' },
     { id: 'Partnership Firm', label: 'Partnership Firm', icon: 'handshake', desc: 'Business managed by partnership deed' },
     { id: 'Company', label: 'Company', icon: 'business', desc: 'Registered Private or Public Corporation' },
+    { id: 'Procurement Agency', label: 'Procurement Agency', icon: 'assignment', desc: 'Government or private procurement agency' },
     { id: 'Other', label: 'Other', icon: 'more_horiz', desc: 'Other legally applicable entity types' }
   ];
 
@@ -74,6 +78,7 @@ export class SignupSignin implements OnInit {
     idDocumentType: '',
     idDocumentNumber: '',
     idDocumentFileName: '',
+    shareAadhaarDetails: false,
     panNumber: '',
     panFileName: '',
     photoFileName: '',
@@ -260,44 +265,9 @@ export class SignupSignin implements OnInit {
       case 'HUF': return 'ਹਿੰਦੂ ਅਣਵੰਡਿਆ ਪਰਿਵਾਰ';
       case 'Partnership Firm': return 'ਭਾਈਵਾਲੀ ਫਰਮ';
       case 'Company': return 'ਕੰਪਨੀ';
+      case 'Procurement Agency': return 'ਖਰੀਦ ਏਜੰਸੀ';
       default: return 'ਹੋਰ';
     }
-  }
-
-  getDynamicTitle(): string {
-    if (!this.selectedEntityType) {
-      return 'Personal Details / ਨਿੱਜੀ ਵੇਰਵੇ';
-    }
-    const type = this.selectedEntityType;
-    if (type === 'Sole Proprietorship') {
-      return 'Personal Details of Sole Proprietor (ਇਕੱਲੇ ਮਾਲਕ ਦੇ ਨਿੱਜੀ ਵੇਰਵੇ)';
-    }
-    const punjabi = this.getPunjabiLabel(type);
-    return `Personal Details of ${type} (${punjabi} ਦੇ ਨਿੱਜੀ ਵੇਰਵੇ)`;
-  }
-
-  getDocumentsTitle(): string {
-    if (!this.selectedEntityType) {
-      return 'Documents / ਦਸਤਾਵੇਜ਼';
-    }
-    const type = this.selectedEntityType;
-    if (type === 'Sole Proprietorship') {
-      return 'Documents of Sole Proprietor (ਸੋਲ ਪ੍ਰੋਪਰਾਇਟਰ ਦੇ ਦਸਤਾਵੇਜ਼)';
-    }
-    const punjabi = this.getPunjabiLabel(type);
-    return `Documents of ${type} (${punjabi} ਦੇ ਦਸਤਾਵੇਜ਼)`;
-  }
-
-  getAddressTitle(): string {
-    if (!this.selectedEntityType) {
-      return 'Address / ਪਤਾ';
-    }
-    const type = this.selectedEntityType;
-    if (type === 'Sole Proprietorship') {
-      return 'Address of Sole Proprietor (ਇਕੱਲੇ ਮਾਲਕ ਦਾ ਪਤਾ)';
-    }
-    const punjabi = this.getPunjabiLabel(type);
-    return `Address of ${type} (${punjabi} ਦਾ ਪਤਾ)`;
   }
 
   onEntityTypeChange() {
@@ -414,24 +384,6 @@ export class SignupSignin implements OnInit {
     this.triggerToast('Login OTP resent (Use: 778899)', 'info');
   }
 
-  // Same Address Checkbox toggler logic
-  onSameAddressChange() {
-    if (this.signUpData.isSameAddress) {
-      this.signUpData.businessState = this.signUpData.addressState;
-      this.signUpData.businessDistrict = this.signUpData.addressDistrict;
-      this.signUpData.businessCity = this.signUpData.addressCity;
-      this.signUpData.businessPincode = this.signUpData.addressPincode;
-      this.signUpData.businessLandmark = this.signUpData.addressLandmark;
-      this.triggerToast('Address copied from Document Address', 'success');
-    } else {
-      this.signUpData.businessState = '';
-      this.signUpData.businessDistrict = '';
-      this.signUpData.businessCity = '';
-      this.signUpData.businessPincode = '';
-      this.signUpData.businessLandmark = '';
-    }
-  }
-
   // Step 1 Validation
   validateStep1(): boolean {
     if (!this.selectedEntityType) {
@@ -489,14 +441,6 @@ export class SignupSignin implements OnInit {
     }
     if (!this.signUpData.idDocumentFileName) {
       this.triggerToast('Please upload Identification Document / ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ', 'error');
-      return false;
-    }
-    if (!this.signUpData.panNumber || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(this.signUpData.panNumber)) {
-      this.triggerToast('Please enter a valid 10-character PAN Number / ਪੈਨ ਨੰਬਰ ਦਰਜ ਕਰੋ', 'error');
-      return false;
-    }
-    if (!this.signUpData.panFileName) {
-      this.triggerToast('Please upload PAN Document / ਪੈਨ ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ', 'error');
       return false;
     }
     if (!this.signUpData.photoFileName) {
@@ -740,6 +684,7 @@ export class SignupSignin implements OnInit {
       idDocumentType: '',
       idDocumentNumber: '',
       idDocumentFileName: '',
+      shareAadhaarDetails: false,
       panNumber: '',
       panFileName: '',
       photoFileName: '',
