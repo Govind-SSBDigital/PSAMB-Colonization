@@ -1,4 +1,4 @@
-<app-navbar></app-navbar>
+<app-navbar (messageSelected)="selectMessageTab($event)"></app-navbar>
 <div class="homepage-container">
 
     <!-- 1. HERO & ANNOUNCEMENTS SPLIT SECTION -->
@@ -87,6 +87,31 @@
         </div>
     </section>
 
+    <!-- 2.5. LEADERSHIP MESSAGES SECTION -->
+    <section class="messages-section" id="messages-section">
+        <div class="section-header-centered">
+            <!-- <span class="section-subtitle-badge">Messages / ਸੰਦੇਸ਼</span> -->
+            <h2>Messages from Leadership</h2>
+            <p>Select a leader below to view their detailed messages and vision updates.</p>
+        </div>
+
+        <div class="leadership-small-grid">
+            <!-- Small Card Link -->
+            <a class="leader-small-card" *ngFor="let item of leadershipShortlist" href="javascript:void(0)" (click)="openLeaderModal(item.id)">
+                <div class="small-card-inner">
+                    <div class="leader-avatar-wrapper">
+                        <img [src]="item.image" [alt]="item.name" class="leader-avatar-img">
+                    </div>
+                    <div class="leader-text-details">
+                        <span class="role-badge-small">{{ item.name }}</span>
+                        <h4 class="leader-display-name-small">{{ item.role }}</h4>
+                        <span class="punjabi-role-small">{{ item.punjabiName }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
     <!-- 3. DEPARTMENT VISION & INTRODUCTION -->
     <section class="department-introduction-block" id="introduction">
         <div class="intro-grid-container">
@@ -154,6 +179,8 @@
     </section> -->
 
 
+
+
     <!-- 7. PHOTO GALLERY SECTION -->
     <section class="media-photo-gallery">
         <div class="section-header-centered">
@@ -162,18 +189,95 @@
                 godowns.</p>
         </div>
 
-        <div class="photos-masonry-grid">
-            <div class="photo-thumbnail-card" *ngFor="let photo of photos">
-                <div class="photo-image-wrap">
-                    <img [src]="photo.image" [alt]="photo.title">
-                    <div class="photo-info-overlay">
-                        <h4>{{ photo.title }}</h4>
-                        <span><i class="fas fa-image"></i> Infrastructure</span>
+        <div class="gallery-carousel-wrapper">
+            <button class="gallery-nav-btn prev" (click)="scrollGallery(-1)" aria-label="Scroll Left">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="photos-scroll-container" #galleryContainer>
+                <div class="photo-thumbnail-card" *ngFor="let photo of photos; let i = index">
+                    <div class="photo-image-wrap">
+                        <img [src]="photo.image" [alt]="photo.title" [loading]="i < 4 ? 'eager' : 'lazy'" [attr.fetchpriority]="i < 4 ? 'high' : 'auto'">
                     </div>
                 </div>
             </div>
+
+            <button class="gallery-nav-btn next" (click)="scrollGallery(1)" aria-label="Scroll Right">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </section>
+    <!-- LEADERSHIP DETAIL MODAL POPUP -->
+    <div class="leader-modal-overlay" *ngIf="isLeaderModalOpen && selectedLeaderData" (click)="closeLeaderModal()">
+        <div class="leader-modal-card" (click)="$event.stopPropagation()">
+            <button class="btn-close-modal" (click)="closeLeaderModal()" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body-scroll">
+                <main class="leader-details-grid">
+                    <!-- Left Side: Profile Portrait Card -->
+                    <aside class="leader-portrait-panel">
+                        <div class="portrait-glass-wrapper">
+                            <div class="portrait-frame">
+                                <img [src]="selectedLeaderData.image" [alt]="selectedLeaderData.name" class="portrait-main-img">
+                                <div class="badge-role-insignia">
+                                    <i class="fas" 
+                                       [class.fa-user-tie]="selectedLeaderId === 'cm'" 
+                                       [class.fa-wallet]="selectedLeaderId === 'fm'" 
+                                       [class.fa-user-shield]="selectedLeaderId === 'doc'"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="leader-status-label">
+                                <span class="pulse-dot"></span>
+                                Government of Punjab / ਪੰਜਾਬ ਸਰਕਾਰ
+                            </div>
+                        </div>
+                    </aside>
+        
+                    <!-- Right Side: Extensive Details / Message Panels -->
+                    <section class="leader-content-panel">
+                        <div class="leader-header-block">
+                            <span class="govt-department-badge">
+                                <i class="fas fa-landmark"></i> Colonization Department
+                            </span>
+                            <h1 class="leader-display-name">{{ selectedLeaderData.name }}</h1>
+                            <h2 class="leader-display-role">{{ selectedLeaderData.title }}</h2>
+                            <h3 class="leader-display-role-punjabi">{{ selectedLeaderData.punjabiTitle }}</h3>
+                        </div>
+        
+                        <!-- Featured Highlight Quote -->
+                        <div class="featured-quote-block">
+                            <i class="fas fa-quote-left quote-decor-start"></i>
+                            <p class="highlight-quote-en">{{ selectedLeaderData.quote }}</p>
+                            <p class="highlight-quote-pa">{{ selectedLeaderData.punjabiQuote }}</p>
+                        </div>
+        
+                        <!-- Detailed Message Blocks -->
+                        <div class="detailed-messages-content">
+                            <div class="lang-message-column english-block">
+                                <h4 class="lang-title"><i class="fas fa-globe-americas"></i> Official Statement (English)</h4>
+                                <div class="message-paragraphs">
+                                    <p *ngFor="let para of selectedLeaderData.fullMessage" class="message-para-text">
+                                        {{ para }}
+                                    </p>
+                                </div>
+                            </div>
+        
+                            <div class="lang-message-column punjabi-block">
+                                <h4 class="lang-title"><i class="fas fa-feather-alt"></i> ਅਧਿਕਾਰਤ ਬਿਆਨ (ਪੰਜਾਬੀ)</h4>
+                                <div class="message-paragraphs">
+                                    <p *ngFor="let para of selectedLeaderData.punjabiFullMessage" class="message-para-text punjabi-text">
+                                        {{ para }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
 
 </div>
 <app-footer></app-footer>
