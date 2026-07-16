@@ -81,6 +81,25 @@
               </select>
               @if (isInvalid('plotNumber')) { <div class="invalid-feedback">Plot/property no. is required.</div> }
             </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="plotType" class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span class="text-danger">*</span></label>
+              <select id="plotType" class="form-select bg-light rounded-3 custom-input-color" formControlName="plotType"
+                [class.is-invalid]="isInvalid('plotType')">
+                <option value="" disabled>Select plot type</option>
+                @for (type of plotTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+                }
+              </select>
+              @if (isInvalid('plotType')) { <div class="invalid-feedback">Plot type is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="plotSize" class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span class="text-danger">*</span></label>
+              <input id="plotSize" type="text" class="form-control bg-light rounded-3 custom-input-color"
+                placeholder="Enter plot size" formControlName="plotSize" [class.is-invalid]="isInvalid('plotSize')" />
+              @if (isInvalid('plotSize')) { <div class="invalid-feedback">Plot size is required.</div> }
+            </div>
           </div>
         </div>
       </section>
@@ -167,9 +186,9 @@
             <div class="col-md-6 col-xl-3">
               <label for="aadhaarNumber" class="form-label small text-dark fw-semibold text-uppercase">Aadhaar Number <span class="text-danger">*</span></label>
               <input id="aadhaarNumber" maxlength="12" class="form-control bg-light rounded-3 custom-input-color"
-                placeholder="12 digit Aadhaar number" formControlName="aadhaarNumber"
+                placeholder="XXXXXXXX1234" formControlName="aadhaarNumber" (input)="maskInput($event)"
                 [class.is-invalid]="isInvalid('aadhaarNumber')" />
-              @if (isInvalid('aadhaarNumber')) { <div class="invalid-feedback">Enter a valid 12 digit Aadhaar number.</div> }
+              @if (isInvalid('aadhaarNumber')) { <div class="invalid-feedback">Enter a valid 4 digit Aadhaar number.</div> }
             </div>
 
             <div class="col-md-6 col-xl-3">
@@ -202,7 +221,7 @@
           </div>
 
           @if (hasDocumentError()) {
-          <div class="alert alert-warning rounded-3 py-2">Select and upload at least one document.</div>
+          <div class="alert alert-warning rounded-3 py-2">Select and upload at least Two documents.</div>
           }
 
           <div class="row g-3">
