@@ -42,9 +42,10 @@ export class SignupSignin implements OnInit {
     { id: 'Sole Proprietorship', label: 'Sole Proprietorship', icon: 'work', desc: 'Single-owner business or trade' },
     { id: 'HUF', label: 'Hindu Undivided Family (HUF)', icon: 'groups', desc: 'Family-owned traditional business' },
     { id: 'Partnership Firm', label: 'Partnership Firm', icon: 'handshake', desc: 'Business managed by partnership deed' },
-    { id: 'Company', label: 'Company', icon: 'business', desc: 'Registered Private or Public Corporation' },
-    { id: 'Procurement Agency', label: 'Procurement Agency', icon: 'assignment', desc: 'Government or private procurement agency' },
-    { id: 'Other', label: 'Other', icon: 'more_horiz', desc: 'Other legally applicable entity types' }
+    { id: 'Public Limited Company', label: 'Public Limited Company', icon: 'business', desc: 'Registered Public Corporation' },
+    { id: 'Private Limited Company', label: 'Private Limited Company', icon: 'business', desc: 'Registered Private Corporation' },
+    { id: 'Limited Liability Partnership', label: 'Limited Liability Partnership', icon: 'business', desc: 'Hybrid business structure' },
+    { id: 'Procurement Agency', label: 'Procurement Agency', icon: 'assignment', desc: 'Government or private procurement agency' }
   ];
 
   states = ['Punjab', 'Haryana', 'Delhi', 'Himachal Pradesh'];
@@ -266,7 +267,10 @@ export class SignupSignin implements OnInit {
       case 'Partnership Firm': return 'ਭਾਈਵਾਲੀ ਫਰਮ';
       case 'Company': return 'ਕੰਪਨੀ';
       case 'Procurement Agency': return 'ਖਰੀਦ ਏਜੰਸੀ';
-      default: return 'ਹੋਰ';
+      case 'Public Limited Company': return 'ਪਬਲਿਕ ਲਿਮਟਿਡ ਕੰਪਨੀ';
+      case 'Private Limited Company': return 'ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ ਕੰਪਨੀ';
+      case 'Limited Liability Partnership': return 'ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ';
+      default: return 'Individual';
     }
   }
 
