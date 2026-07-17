@@ -19,11 +19,18 @@ interface UserProfile {
   styleUrls: ['./profile.scss'],
 })
 export class Profile implements OnInit {
+  passwordModalOpen = false;
+  passwordForm = {
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+  passwordError = '';
 
   user: UserProfile = {
-    name: 'Aris Vance',
-    email: 'aris.vance@domain.com',
-    mobile: '+1 555-0199',
+    name: 'Abc',
+    email: 'abc@domain.com',
+    mobile: '+91 234 567 890',
     altMobile: '',
     address: '742 Evergreen Terrace',
     city: 'Springfield',
@@ -55,9 +62,43 @@ export class Profile implements OnInit {
   }
 
   changePassword(): void {
-    // Implement your routing logic or modal pop-up here
-    console.log('Redirecting to password update workflow...');
-    alert('Change password trigger called.');
+    this.openPasswordModal();
+  }
+
+  openPasswordModal(): void {
+    this.passwordModalOpen = true;
+    this.passwordError = '';
+    this.passwordForm = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
+  }
+
+  closePasswordModal(): void {
+    this.passwordModalOpen = false;
+    this.passwordError = '';
+  }
+
+  savePassword(): void {
+    if (!this.passwordForm.oldPassword) {
+      this.passwordError = 'Please enter your current password.';
+      return;
+    }
+
+    if (!this.passwordForm.newPassword || !this.passwordForm.confirmPassword) {
+      this.passwordError = 'Please enter and confirm your new password.';
+      return;
+    }
+
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+      this.passwordError = 'New password and confirmation do not match.';
+      return;
+    }
+
+    this.passwordError = '';
+    this.passwordModalOpen = false;
+    alert('Password updated successfully.');
   }
 
   resetForm(): void {

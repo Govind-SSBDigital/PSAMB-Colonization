@@ -1,4 +1,10 @@
-
+.text-success {
+  color: var(--theme-forest-dark) !important;
+}
+.btn-outline-success{
+    color: var(--theme-forest-dark)!important;
+    border-color: rgba(var(--theme-primary-rgb), 0.24);
+}
 .profile-wrapper {
   min-height: 100vh;
   background: var(--theme-slate-50);
@@ -32,6 +38,15 @@
   object-fit: cover;
   border: 3px solid var(--theme-primary);
   background: var(--theme-slate-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-primary);
+  font-size: 7rem;
+}
+
+.profile-avatar-placeholder {
+  background: var(--theme-slate-100);
 }
 
 .avatar-edit-btn {
@@ -53,7 +68,6 @@
 }
 
 .avatar-edit-btn:hover {
-  background: var(--theme-gold);
   transform: translateY(-1px);
 }
 
@@ -87,8 +101,7 @@
 
 .btn-action-primary:hover,
 .btn-success:hover {
-  background: var(--theme-teal);
-  border-color: var(--theme-teal);
+  border-color: var(--theme-primary);
 }
 
 .btn-action-secondary,
@@ -99,7 +112,7 @@
 
 .btn-action-secondary:hover,
 .btn-outline-secondary:hover {
-  background: rgba(var(--theme-primary-rgb), 0.08);
+  background: rgba(var(--theme-primary), 0.10);
   color: var(--theme-primary);
 }
 
