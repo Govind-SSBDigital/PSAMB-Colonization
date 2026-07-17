@@ -442,31 +442,36 @@
           </tr>
         </thead>
         <tbody>
-          @for (schedule of calculatedSchedulesMatrix; track schedule.index) {
-            <tr [class.table-primary-subtle]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel">
-              <td class="text-start fw-semibold ps-4 py-2">
-                <span class="dot-indicator me-2" [class.bg-primary]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel" [class.bg-light]="registerationForm.get('installmentNo')?.value !== schedule.installmentLabel"></span>
-                Installment {{ schedule.index }}
-              </td>
-              <td class="font-monospace fw-medium text-dark">
-                {{ schedule.dueDate ? (schedule.dueDate | date:'dd/MM/yyyy') : 'Waiting on base milestone date...' }}
-              </td>
-              <td class="text-muted fw-bold">
-                {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
-              </td>
-              <td class="text-end fw-bold text-success pe-3">
-                {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="4" class="text-center py-4 text-muted border-0">
-                <i class="bi bi-exclamation-circle d-block mb-2 h4 text-black-50"></i>
-                Provide the base validation parameters above to process calculations automatically.
-              </td>
-            </tr>
-          }
-        </tbody>
+  @for (schedule of calculatedSchedulesMatrix; track schedule.index) {
+    <!-- Highlight active installment row cleanly -->
+    <tr [class.table-primary-subtle]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel">
+      <td class="text-start fw-semibold ps-4 py-2">
+        <!-- Colored status indicator dot -->
+        <span class="dot-indicator me-2" 
+              [class.bg-primary]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel" 
+              [class.bg-light]="registerationForm.get('installmentNo')?.value !== schedule.installmentLabel">
+        </span>
+        {{ schedule.installmentLabel }}
+      </td>
+      <td class="font-monospace fw-medium text-dark">
+        {{ schedule.dueDate ? (schedule.dueDate | date:'dd/MM/yyyy') : 'Waiting on base milestone date...' }}
+      </td>
+      <td class="text-muted fw-bold">
+        {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
+      </td>
+      <td class="text-end fw-bold text-success pe-3">
+        {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
+      </td>
+    </tr>
+  } @empty {
+    <tr>
+      <td colspan="4" class="text-center py-4 text-muted border-0">
+        <i class="bi bi-exclamation-circle d-block mb-2 h4 text-black-50"></i>
+        Provide the base validation parameters above to process calculations automatically.
+      </td>
+    </tr>
+  }
+</tbody>
       </table>
     </div>
   </div>
