@@ -164,7 +164,7 @@
     margin: 0;
     width: 100%;
     min-height: calc(100vh - 100px);
-    padding: 60px 20px;
+    padding: 10px 20px;
     font-family: 'Poppins', sans-serif;
     color: var(--text-main);
     background-color: #f8fafc;
@@ -386,7 +386,7 @@
     left: 0;
     width: 100%;
     height: 5px;
-    background: var(--punjab-green-gradient);
+    background: var(--primary-color);
     border-bottom-left-radius: var(--border-radius-md);
     border-bottom-right-radius: var(--border-radius-md);
 }
@@ -955,8 +955,8 @@
     background: var(--primary-gradient);
     color: white;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 500;
     padding: 14px 20px;
     display: flex;
     align-items: center;
@@ -1191,7 +1191,7 @@
 }
 
 .btn-wizard-submit {
-    background: var(--punjab-green-gradient);
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 10px 28px;
@@ -2117,8 +2117,8 @@
 
 .signup-main-title {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.8rem;
-    font-weight: 800;
+    font-size: 1.75rem;
+    font-weight: 700;
     color: var(--primary-color);
     margin: 0;
 }
@@ -2278,7 +2278,7 @@
 }
 
 .ins-title-en, .ins-title-pb {
-    color: #166534; /* Dark Forest Green */
+    color: var(--primary-color);
     font-size: 1.35rem;
     font-weight: 700;
     margin-bottom: 8px;
@@ -2293,12 +2293,12 @@
 }
 
 .ins-intro-en strong, .ins-intro-pb strong {
-    color: #15803d;
+    color: var(--primary-color);
 }
 
 .ins-subtitle-en, .ins-subtitle-pb {
     font-size: 0.85rem;
-    color: #16a34a;
+    color: #15803d;
     font-style: italic;
     display: block;
     margin-bottom: 16px;
@@ -2318,7 +2318,7 @@
 }
 
 .ins-heading-en, .ins-heading-pb {
-    color: #166534;
+    color: var(--primary-color);
     font-size: 1.2rem;
     font-weight: 700;
     margin-top: 20px;

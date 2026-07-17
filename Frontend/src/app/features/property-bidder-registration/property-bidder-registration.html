@@ -1,10 +1,10 @@
 <main class="registration-page min-vh-100 py-3 py-lg-4">
   <div class="registration-container container-xxl">
-    <div class="registration-title-card bg-white bg-opacity-75 rounded-4 p-4 mb-4 border shadow-sm">
+    <!-- <div class="registration-title-card bg-white bg-opacity-75 rounded-4 p-4 mb-4 border shadow-sm">
       <div class="d-flex flex-column flex-md-row justify-content-center align-items-md-center gap-3">
         <h1 class="h4 text-dark mt-0 mb-0">Property &amp; Bidder Detail Registration</h1>
       </div>
-    </div>
+    </div> -->
 
     <form [formGroup]="registerationForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="row g-4 mb-4">
@@ -409,51 +409,233 @@
             <div class="financial-panel bg-light border rounded-4 p-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp;
                 Installment Scheduler <span class="text-danger">*</span></h3>
-              <div class="row g-2">
-                <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-dark fw-semibold">Installment
-                    No.</label>
-                  <select class="form-select bg-white custom-input-color" formControlName="installmentNo"
-                    [class.is-invalid]="isInvalid('installmentNo')">@for (installment of installments; track
-                    installment) { <option [value]="installment">{{ installment }}</option> }</select>@if
-                  (isInvalid('installmentNo')) { <div class="invalid-feedback">Installment no. is required.</div> }
-                </div>
-                <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-dark fw-semibold">Due Date</label>
-                  <input type="date" class="form-control bg-white custom-input-color" formControlName="dueDate"
-                    [class.is-invalid]="isInvalid('dueDate')" />@if (isInvalid('dueDate')) { <div
-                    class="invalid-feedback">Due date is required.</div> }
-                </div>
-                <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-dark fw-semibold">Paid Status</label><select
-                    class="form-select bg-white custom-input-color" formControlName="paidStatus"
-                    [class.is-invalid]="isInvalid('paidStatus')">@for (status of paidStatuses; track status) { <option
-                      [value]="status">{{ status }}</option> }</select>@if (isInvalid('paidStatus')) { <div
-                    class="invalid-feedback">Paid status is required.</div> }
-                </div>
-                <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-dark fw-semibold">Due Amount
-                    (Rs.)</label>
-                  <input type="number" step="0.01" class="form-control bg-white custom-input-color" placeholder="0.00"
-                    formControlName="dueAmount" [class.is-invalid]="isInvalid('dueAmount')" />@if
-                  (isInvalid('dueAmount')) { <div class="invalid-feedback">Due amount is required.</div> }
-                </div>
-                <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-dark fw-semibold">Interest
-                    (Rs.)</label>
-                  <input type="number" step="0.01" class="form-control bg-white custom-input-color" placeholder="0.00"
-                    formControlName="accumulatedInterest" [class.is-invalid]="isInvalid('accumulatedInterest')" />@if
-                  (isInvalid('accumulatedInterest')) {
-                  <div class="invalid-feedback">Interest is required.</div> }
-                </div>
-                <div class="col-sm-6 col-lg-2">
-                  <label class="form-label small text-dark fw-semibold">Total Due
-                    (Rs.)</label>
-                  <input type="number" class="form-control fw-semibold text-primary custom-input-color"
-                    placeholder="Auto Calculate" formControlName="totalDueAmount" />
-                </div>
-              </div>
+             
+              <div class="row g-3">
+
+  <div class="col-sm-6 col-lg-6">
+    <label class="form-label small text-dark fw-semibold text-uppercase">Due Amount (Principal)</label>
+    <input type="number" class="form-control bg-light custom-input-color fw-bold text-success" formControlName="dueAmount" readonly />
+  </div>
+
+  <div class="col-sm-6 col-lg-6">
+    <label class="form-label small text-dark fw-semibold text-uppercase">Total Due (Inc. Interest)</label>
+    <input type="number" class="form-control bg-light custom-input-color fw-bold text-danger" formControlName="totalDueAmount" readonly />
+  </div>
+</div>
+
+<div class="col-12 mt-4">
+  <div class="border rounded-4 bg-white p-3 shadow-sm">
+    <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+      <h4 class="h6 mb-0 fw-semibold text-uppercase custom-color">
+        <i class="fa-solid fa-calendar me-2 custom-color"></i>Complete 6-Month Installments Overview Schedule
+      </h4>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+        <thead class="table-light text-secondary text-uppercase font-monospace" style="font-size: 0.75rem;">
+          <tr>
+            <th scope="col" class="text-start ps-3 custom-color">Installments</th>
+            <th scope="col" class="custom-color">Calculated Due Date</th>
+            <th scope="col" class="custom-color">Base Principal</th>
+            <th scope="col" class="text-end pe-3 custom-color">Total Estimated Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (schedule of calculatedSchedulesMatrix; track schedule.index) {
+            <tr [class.table-primary-subtle]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel">
+              <td class="text-start fw-semibold ps-4 py-2">
+                <span class="dot-indicator me-2" [class.bg-primary]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel" [class.bg-light]="registerationForm.get('installmentNo')?.value !== schedule.installmentLabel"></span>
+                Installment {{ schedule.index }}
+              </td>
+              <td class="font-monospace fw-medium text-dark">
+                {{ schedule.dueDate ? (schedule.dueDate | date:'dd/MM/yyyy') : 'Waiting on base milestone date...' }}
+              </td>
+              <td class="text-muted fw-bold">
+                {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
+              </td>
+              <td class="text-end fw-bold text-success pe-3">
+                {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="text-center py-4 text-muted border-0">
+                <i class="bi bi-exclamation-circle d-block mb-2 h4 text-black-50"></i>
+                Provide the base validation parameters above to process calculations automatically.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
             </div>
+
+        <div class="financial-panel bg-light border rounded-4 p-3 mt-3" [formGroup]="registerationForm">
+  <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+    <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
+    <button type="button" class="btn btn-sm btn-success px-3 rounded-pill" (click)="addNewReceiptRow()">
+      <i class="fa-solid fa-plus me-1"></i> Add Record
+    </button>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="table-responsive rounded-3 overflow-hidden border shadow-sm bg-white">
+      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap" formArrayName="receiptsFormArray">
+        <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.8rem;">
+          <tr>
+            <th scope="col" class="fw-normal px-1">Receipt No.</th>
+            <th scope="col" class="fw-normal px-1">Receipt Date</th>
+            <th scope="col" class="fw-normal px-1">Draft No.</th>
+            <th scope="col" class="fw-normal px-1">Draft Amount</th>
+            <th scope="col" class="fw-normal px-1">Draft Date</th>
+            <th scope="col" class="fw-normal px-1">Draft Bank</th>
+            <th scope="col" class="fw-normal px-1">Principal</th>
+            <th scope="col" class="fw-normal px-1">Interest</th>
+            <th scope="col" class="fw-normal px-1">Other</th>
+            <th scope="col" class="fw-normal px-1">Penalty</th>
+            <th scope="col" class="fw-normal px-1">Type</th>
+            <th scope="col" class="fw-normal px-1">Remarks</th>
+            <th scope="col" class="fw-normal px-1 text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of receiptsFormArray.controls; track row; let idx = $index) {
+            <tr [formGroupName]="idx" [class.table-warning-subtle]="row.get('isEditing')?.value">
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="text" class="form-control form-control-sm text-center" formControlName="receiptNo" placeholder="No." />
+                } @else {
+                  <span class="fw-semibold text-secondary">{{ row.get('receiptNo')?.value }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="date" class="form-control form-control-sm font-monospace" formControlName="receiptDate" />
+                } @else {
+                  <span class="font-monospace text-dark">{{ row.get('receiptDate')?.value | date:'dd/MM/yyyy' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="text" class="form-control form-control-sm text-center" formControlName="draftNo" placeholder="DRF..." />
+                } @else {
+                  <span class="font-monospace text-muted">{{ row.get('draftNo')?.value }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="number" step="0.01" class="form-control form-control-sm text-center fw-bold" formControlName="draftAmount" />
+                } @else {
+                  <span class="fw-bold text-dark">{{ row.get('draftAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="date" class="form-control form-control-sm font-monospace" formControlName="draftDate" />
+                } @else {
+                  <span class="font-monospace text-dark">{{ row.get('draftDate')?.value | date:'dd/MM/yyyy' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="text" class="form-control form-control-sm" formControlName="draftBank" placeholder="Bank" />
+                } @else {
+                  <span>{{ row.get('draftBank')?.value }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="number" step="0.01" class="form-control form-control-sm text-center text-success fw-bold" formControlName="principalAmount" />
+                } @else {
+                  <span class="text-success fw-bold">{{ row.get('principalAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="number" step="0.01" class="form-control form-control-sm text-center text-danger" formControlName="interestAmount" />
+                } @else {
+                  <span class="text-danger">{{ row.get('interestAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="number" step="0.01" class="form-control form-control-sm text-center" formControlName="otherAmount" />
+                } @else {
+                  <span class="text-muted">{{ row.get('otherAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="number" step="0.01" class="form-control form-control-sm text-center text-warning-dark" formControlName="penaltyAmount" />
+                } @else {
+                  <span class="text-warning-dark">{{ row.get('penaltyAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="text" class="form-control form-control-sm" formControlName="penaltyType" />
+                } @else {
+                  <span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value }}</span>
+                }
+              </td>
+
+              <td>
+                @if (row.get('isEditing')?.value) {
+                  <input type="text" class="form-control form-control-sm" formControlName="remarks" placeholder="..." />
+                } @else {
+                  <span class="text-start d-inline-block text-truncate" style="max-width: 120px;" [title]="row.get('remarks')?.value">
+                    {{ row.get('remarks')?.value || '—' }}
+                  </span>
+                }
+              </td>
+
+              <td class="text-end pe-3">
+                <div class="btn-group btn-group-sm">
+                  @if (row.get('isEditing')?.value) {
+                    <button type="button" class="btn btn-outline-success border-0 px-2" (click)="saveRowData(idx)" title="Save changes">
+                      <i class="fa-solid fa-check text-success"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary border-0 px-2" (click)="cancelRowEditing(idx, !receiptList[idx])" title="Cancel">
+                      <i class="fa-solid fa-xmark text-muted"></i>
+                    </button>
+                  } @else {
+                    <button type="button" class="btn btn-outline-primary border-0 px-2" (click)="enableRowEditing(idx)" title="Edit line item">
+                      <i class="fa-solid fa-pencil text-primary"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger border-0 px-2" (click)="removeReceiptRow(idx)" title="Remove line item">
+                      <i class="fa-solid fa-trash-can text-danger"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="13" class="text-center text-muted py-4 bg-light">
+                <i class="fa-solid fa-receipt d-block mb-2 h4 text-black-50"></i>
+                No financial records ledger found. Click <strong>Add Record</strong> to register a new entry.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
           </div>
         </div>
       </div>

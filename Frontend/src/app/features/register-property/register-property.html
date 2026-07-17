@@ -185,7 +185,7 @@
 
             <div class="col-md-6 col-xl-3">
               <label for="aadhaarNumber" class="form-label small text-dark fw-semibold text-uppercase">Aadhaar Number <span class="text-danger">*</span></label>
-              <input id="aadhaarNumber" maxlength="12" class="form-control bg-light rounded-3 custom-input-color"
+              <input id="aadhaarNumber" maxlength="13" class="form-control bg-light rounded-3 custom-input-color"
                 placeholder="XXXXXXXX1234" formControlName="aadhaarNumber" (input)="maskInput($event)"
                 [class.is-invalid]="isInvalid('aadhaarNumber')" />
               @if (isInvalid('aadhaarNumber')) { <div class="invalid-feedback">Enter a valid 4 digit Aadhaar number.</div> }
