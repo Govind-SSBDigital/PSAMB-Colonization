@@ -1,0 +1,283 @@
+<app-navbar (messageSelected)="selectMessageTab($event)"></app-navbar>
+<div class="homepage-container">
+
+    <!-- 1. HERO & ANNOUNCEMENTS SPLIT SECTION -->
+    <section class="hero-split-grid">
+        <!-- Left Hero Banner -->
+        <div class="hero-banner-main">
+            <div class="banner-overlay-gradient"></div>
+            <div class="banner-content-inner">
+                <span class="govt-badge-label"><i class="fas fa-landmark"></i> Government of Punjab / ਪੰਜਾਬ ਸਰਕਾਰ</span>
+                <h1>Colonization Department Punjab </h1>
+                <h2>ਆਬਾਦਕਾਰੀ ਵਿਭਾਗ ਪੰਜਾਬ </h2>
+                <p>
+                    Managing the e-auctions, allotments, digital property records, and development schemes of commercial
+                    plots, mandi estates, and colonized property sectors across the state of Punjab.
+                </p>
+                <!-- <div class="hero-cta-buttons">
+          <a class="btn-hero-primary" routerLink="/login">
+            <i class="fas fa-sign-in-alt"></i> Access Citizen Portal
+          </a>
+          <a class="btn-hero-secondary" href="#introduction">
+            Learn More <i class="fas fa-chevron-down"></i>
+          </a>
+        </div> -->
+            </div>
+        </div>
+
+        <!-- Right Announcements Panel (What's New) -->
+        <div class="announcements-panel">
+            <div class="panel-header-glass">
+                <h3><i class="fas fa-bullhorn text-warning"></i> What's New / ਤਾਜ਼ਾ ਜਾਣਕਾਰੀ</h3>
+                <span class="live-blink-dot"></span>
+            </div>
+            <div class="announcements-list-wrapper">
+                <div class="ticker-scroll-content">
+                    <div class="announcement-item" *ngFor="let item of announcements"
+                        [class.new-highlight]="item.isNew">
+                        <div class="announcement-meta">
+                            <span class="ann-date">{{ item.date }}</span>
+                            <span class="new-tag-badge" *ngIf="item.isNew">NEW</span>
+                        </div>
+                        <p class="ann-title">{{ item.title }}</p>
+                    </div>
+                    <!-- Duplicate items for seamless continuous scrolling loop -->
+                    <div class="announcement-item" *ngFor="let item of announcements"
+                        [class.new-highlight]="item.isNew">
+                        <div class="announcement-meta">
+                            <span class="ann-date">{{ item.date }}</span>
+                            <span class="new-tag-badge" *ngIf="item.isNew">NEW</span>
+                        </div>
+                        <p class="ann-title">{{ item.title }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. KEY STATS METRIC BAR -->
+    <section class="stats-metrics-bar">
+        <div class="metric-card-flat">
+            <div class="icon-wrap bg-blue-glow"><mat-icon>business</mat-icon></div>
+            <div class="metric-data">
+                <h4>150+</h4>
+                <p>Market Mandis Managed</p>
+            </div>
+        </div>
+        <div class="metric-card-flat">
+            <div class="icon-wrap bg-teal-glow"><mat-icon>gavel</mat-icon></div>
+            <div class="metric-data">
+                <h4>420+</h4>
+                <p>Completed e-Auctions</p>
+            </div>
+        </div>
+        <div class="metric-card-flat">
+            <div class="icon-wrap bg-gold-glow"><mat-icon>assignment_turned_in</mat-icon></div>
+            <div class="metric-data">
+                <h4>12,400+</h4>
+                <p>Digitized Property Deeds</p>
+            </div>
+        </div>
+        <div class="metric-card-flat">
+            <div class="icon-wrap bg-emerald-glow"><mat-icon>people</mat-icon></div>
+            <div class="metric-data">
+                <h4>98.2%</h4>
+                <p>Citizen Satisfaction</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2.5. LEADERSHIP MESSAGES SECTION -->
+    <section class="messages-section" id="messages-section">
+        <div class="section-header-centered">
+            <!-- <span class="section-subtitle-badge">Messages / ਸੰਦੇਸ਼</span> -->
+            <h2>Messages from Leadership</h2>
+            <p>Select a leader below to view their detailed messages and vision updates.</p>
+        </div>
+
+        <div class="leadership-small-grid">
+            <!-- Small Card Link -->
+            <a class="leader-small-card" *ngFor="let item of leadershipShortlist" href="javascript:void(0)" (click)="openLeaderModal(item.id)">
+                <div class="small-card-inner">
+                    <div class="leader-avatar-wrapper">
+                        <img [src]="item.image" [alt]="item.name" class="leader-avatar-img">
+                    </div>
+                    <div class="leader-text-details">
+                        <span class="role-badge-small">{{ item.name }}</span>
+                        <h4 class="leader-display-name-small">{{ item.role }}</h4>
+                        <span class="punjabi-role-small">{{ item.punjabiName }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 3. DEPARTMENT VISION & INTRODUCTION -->
+    <section class="department-introduction-block" id="introduction">
+        <div class="intro-grid-container">
+            <div class="intro-image-collage">
+                <div class="main-collage-img">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800"
+                        alt="Modern commercial storefront">
+                </div>
+                <div class="secondary-collage-img shadow-lg">
+                    <img src="psamb.jpg"
+                        alt="Real Estate Property Contract Keys">
+                </div>
+            </div>
+
+            <div class="intro-text-content">
+                <span class="section-subtitle-badge">Introduction / ਭੂਮਿਕਾ</span>
+                <h2>Director Colonization Punjab</h2>
+                <p class="lead-text">
+                    Establishing, colonizing, and transforming rural & semi-urban commercial markets into advanced trade
+                    hubs.
+                </p>
+                <p class="lead-text">
+                    The Colonization Department functions as the core property management and development organ of the
+                    (Director Colonization Punjab). Initiated under the Colonization of
+                    Government Lands Act, the department is responsible for the systematic acquisition, planning,
+                    allotment, and administration of commercial mandi booths, residential plots, and shop sites.
+                </p>
+                <p class="lead-text">
+                    Through transparency and digital-first services like online property ledger cards, digital mutation
+                    tracking, and e-Auctions, we are enabling direct, hassle-free interfaces for all citizens, traders,
+                    and commission agents in the state of Punjab.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. DYNAMIC SCHEMES AND INITIATIVES -->
+    <!-- <section class="schemes-initiatives-section">
+        <div class="section-header-centered">
+            <span class="section-subtitle-badge">Our Schemes / ਸਾਡੀਆਂ ਯੋਜਨਾਵਾਂ</span>
+            <h2>Important Departmental Schemes & Initiatives</h2>
+            <p>Explore current initiatives driven by the Colonization Department to foster commercial business
+                infrastructure and land regularity.</p>
+        </div>
+
+        <div class="schemes-cards-grid">
+            <div class="scheme-modern-card" *ngFor="let scheme of schemes">
+                <div class="scheme-image-container">
+                    <img [src]="scheme.image" [alt]="scheme.title">
+                    <div class="scheme-tag-top">SCHEME</div>
+                </div>
+                <div class="scheme-body-details">
+                    <h3>{{ scheme.title }}</h3>
+                    <span class="punjabi-subhead">{{ scheme.punjabiTitle }}</span>
+                    <p class="english-desc">{{ scheme.desc }}</p>
+                    <p class="punjabi-desc">{{ scheme.punjabiDesc }}</p>
+                </div>
+                <div class="scheme-footer-cta">
+                    <a class="link-learn-more" routerLink="/login">
+                        Apply / View Details <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+
+
+
+    <!-- 7. PHOTO GALLERY SECTION -->
+    <section class="media-photo-gallery">
+        <div class="section-header-centered">
+            <h5 class="section-title">Infrastructure & Mandi Development Projects</h5>
+            <p style="font-size: 0.95rem;">A visual gallery showcases developed grains markets, administrative office structures, and modern storage
+                godowns.</p>
+        </div>
+
+        <div class="gallery-carousel-wrapper">
+            <button class="gallery-nav-btn prev" (click)="scrollGallery(-1)" aria-label="Scroll Left">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="photos-scroll-container" #galleryContainer>
+                <div class="photo-thumbnail-card" *ngFor="let photo of photos; let i = index">
+                    <div class="photo-image-wrap">
+                        <img [src]="photo.image" [alt]="photo.title" [loading]="i < 4 ? 'eager' : 'lazy'" [attr.fetchpriority]="i < 4 ? 'high' : 'auto'">
+                    </div>
+                </div>
+            </div>
+
+            <button class="gallery-nav-btn next" (click)="scrollGallery(1)" aria-label="Scroll Right">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+    <!-- LEADERSHIP DETAIL MODAL POPUP -->
+    <div class="leader-modal-overlay" *ngIf="isLeaderModalOpen && selectedLeaderData" (click)="closeLeaderModal()">
+        <div class="leader-modal-card" (click)="$event.stopPropagation()">
+            <button class="btn-close-modal" (click)="closeLeaderModal()" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body-scroll">
+                <main class="leader-details-grid">
+                    <!-- Left Side: Profile Portrait Card -->
+                    <aside class="leader-portrait-panel">
+                        <div class="portrait-glass-wrapper">
+                            <div class="portrait-frame">
+                                <img [src]="selectedLeaderData.image" [alt]="selectedLeaderData.name" class="portrait-main-img">
+                                <div class="badge-role-insignia">
+                                    <i class="fas" 
+                                       [class.fa-user-tie]="selectedLeaderId === 'cm'" 
+                                       [class.fa-wallet]="selectedLeaderId === 'fm'" 
+                                       [class.fa-user-shield]="selectedLeaderId === 'doc'"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="leader-status-label">
+                                <span class="pulse-dot"></span>
+                                Government of Punjab / ਪੰਜਾਬ ਸਰਕਾਰ
+                            </div>
+                        </div>
+                    </aside>
+        
+                    <!-- Right Side: Extensive Details / Message Panels -->
+                    <section class="leader-content-panel">
+                        <div class="leader-header-block">
+                            <span class="govt-department-badge">
+                                <i class="fas fa-landmark"></i> Colonization Department
+                            </span>
+                            <h1 class="leader-display-name">{{ selectedLeaderData.name }}</h1>
+                            <h2 class="leader-display-role">{{ selectedLeaderData.title }}</h2>
+                            <h3 class="leader-display-role-punjabi">{{ selectedLeaderData.punjabiTitle }}</h3>
+                        </div>
+        
+                        <!-- Featured Highlight Quote -->
+                        <div class="featured-quote-block">
+                            <i class="fas fa-quote-left quote-decor-start"></i>
+                            <p class="highlight-quote-en">{{ selectedLeaderData.quote }}</p>
+                            <p class="highlight-quote-pa">{{ selectedLeaderData.punjabiQuote }}</p>
+                        </div>
+        
+                        <!-- Detailed Message Blocks -->
+                        <div class="detailed-messages-content">
+                            <div class="lang-message-column english-block">
+                                <h4 class="lang-title"><i class="fas fa-globe-americas"></i> Official Statement (English)</h4>
+                                <div class="message-paragraphs">
+                                    <p *ngFor="let para of selectedLeaderData.fullMessage" class="message-para-text">
+                                        {{ para }}
+                                    </p>
+                                </div>
+                            </div>
+        
+                            <div class="lang-message-column punjabi-block">
+                                <h4 class="lang-title"><i class="fas fa-feather-alt"></i> ਅਧਿਕਾਰਤ ਬਿਆਨ (ਪੰਜਾਬੀ)</h4>
+                                <div class="message-paragraphs">
+                                    <p *ngFor="let para of selectedLeaderData.punjabiFullMessage" class="message-para-text punjabi-text">
+                                        {{ para }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+
+</div>
+<app-footer></app-footer>

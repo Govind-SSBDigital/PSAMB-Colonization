@@ -9,19 +9,9 @@ import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
-  declarations: [
-    App
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    CoreModule,
-    SharedModule
-  ],
-  providers: [
-    provideHttpClient(withInterceptorsFromDi()),
-    provideAnimationsAsync()
-  ],
-  bootstrap: [App]
+  declarations: [App],
+  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule],
+  providers: [provideHttpClient(withInterceptorsFromDi()), provideAnimationsAsync()],
+  bootstrap: [App],
 })
-export class AppModule { }
+export class AppModule {}

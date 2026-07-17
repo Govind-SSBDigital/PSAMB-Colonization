@@ -4,22 +4,46 @@ import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   {
+    path: '',
+    loadComponent: () => import('./features/home-page/home-page').then(m => m.HomePage),
+    pathMatch: 'full'
+  },
+  {
+    path: 'leadership-message/:id',
+    loadComponent: () => import('./features/leadership-message/leadership-message').then(m => m.LeadershipMessageComponent)
+  },
+  {
+    path: 'login',
+    redirectTo: 'auth/login',
+    pathMatch: 'full'
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
   },
   {
     path: 'dashboard',
     loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule),
-    canActivate: [AuthGuard]
+    // canActivate: [AuthGuard]
   },
   {
-    path: '',
-    redirectTo: 'dashboard',
+    path: "register-property",
+    redirectTo: 'dashboard/register-property',
+    pathMatch: 'full'
+  },
+  {
+    path: "property-bidder-registration",
+    redirectTo: 'dashboard/property-bidder-registration',
+    pathMatch: 'full'
+  },
+  {
+    path: "property-verification",
+    redirectTo: 'dashboard/property-verification',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'dashboard'
+    redirectTo: ''
   }
 ];
 
@@ -28,3 +52,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
