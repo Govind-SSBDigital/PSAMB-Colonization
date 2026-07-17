@@ -56,7 +56,7 @@ export class RegisterProperty {
         ownerDistrict: ['', Validators.required],
         city: ['', Validators.required],
         address: ['', Validators.required],
-        aadhaarNumber: ['', [Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]],
+        aadhaarNumber: ['', [Validators.required, Validators.pattern(/^XXXXXXXX \d{0,4}$/)]],
         aadhaarProof: [null, [Validators.required, this.fileTypeValidator()]],
         passportNumber: [''],
         passportProof: [null, this.fileTypeValidator()],
@@ -71,7 +71,7 @@ export class RegisterProperty {
     let value = input.value;
 
     // Strip out the prefix temporarily to see what the user typed
-    let digits = value.replace(/^XXXXXXXX/, '').replace(/\D/g, '');
+    let digits = value.replace(/^XXXXXXXX\s?/, '').replace(/\D/g, '');
 
     // Limit the actual typed digits to 4
     if (digits.length > 4) {
@@ -79,7 +79,7 @@ export class RegisterProperty {
     }
 
     // Combine the mask with the typed digits
-    const maskedValue = 'XXXXXXXX' + digits;
+    const maskedValue = 'XXXXXXXX' + ' ' + digits;
 
     // Update the form control and input display value
     this.propertyForm.get('aadhaarNumber')?.setValue(maskedValue, { emitEvent: false });

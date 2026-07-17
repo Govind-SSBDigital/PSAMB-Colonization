@@ -34,7 +34,7 @@ export class DocumentsAndAddress {
     this.fileSelected.emit({ event, docType });
   }
 
-  getPunjabiLabel(typeId: string): string {
+   getPunjabiLabel(typeId: string): string {
     switch (typeId) {
       case 'Individual': return 'ਵਿਅਕਤੀਗਤ';
       case 'Sole Proprietorship': return 'ਇਕੱਲੇ ਮਾਲਕ';
@@ -42,8 +42,45 @@ export class DocumentsAndAddress {
       case 'Partnership Firm': return 'ਭਾਈਵਾਲੀ ਫਰਮ';
       case 'Company': return 'ਕੰਪਨੀ';
       case 'Procurement Agency': return 'ਖਰੀਦ ਏਜੰਸੀ';
-      default: return 'ਹੋਰ';
+      case 'Public Limited Company': return 'ਪਬਲਿਕ ਲਿਮਟਿਡ ਕੰਪਨੀ';
+      case 'Private Limited Company': return 'ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ ਕੰਪਨੀ';
+      case 'Limited Liability Partnership': return 'ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ';
+      default: return 'Individual';
     }
+  }
+  onDocumentTypeChange(): void {
+    this.signUpData.idDocumentNumber = '';
+  }
+  onInputFormatting(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const docType = this.signUpData.idDocumentType;
+
+    if (docType === 'Aadhaar Card') {
+      let value = input.value;
+      // Strip out the prefix and spaces to analyze trailing numeric blocks
+      let digits = value.replace(/^XXXXXXXX\s?/, '').replace(/\D/g, '');
+      
+      if (digits.length > 4) {
+        digits = digits.substring(0, 4);
+      }
+
+      const maskedValue = 'XXXXXXXX ' + digits;
+      this.signUpData.idDocumentNumber = maskedValue;
+      input.value = maskedValue;
+
+    }
+  }
+  getCurrentPattern(): string {
+    const docType = this.signUpData.idDocumentType;
+    if (docType === 'Aadhaar Card') {
+      return '^XXXXXXXX \\d{4}$'; // Strictly expects the space and exactly 4 final digits on submit
+    }
+    return '.*'; // No specific pattern restriction for other document options
+  }
+  getMaxLength(): number {
+    const docType = this.signUpData.idDocumentType;
+    if (docType === 'Aadhaar Card') return 13; // "XXXXXXXX " (9 chars) + 4 digits = 13
+    return 50;                                 // Standard default fallback limit
   }
 
   getDocumentsTitle(): string {

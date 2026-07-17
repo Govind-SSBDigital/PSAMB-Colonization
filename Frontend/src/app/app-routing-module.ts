@@ -38,6 +38,11 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: "profile",
+    redirectTo: 'dashboard/profile',
+    pathMatch: 'full'
+  },
+  {
     path: '**',
     redirectTo: ''
   }

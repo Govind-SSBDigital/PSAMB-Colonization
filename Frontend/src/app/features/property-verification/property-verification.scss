@@ -1,0 +1,194 @@
+:root {
+    --gov-navy-900: #0F172A;
+    --gov-navy-800: #1E3A8A;
+    --gov-navy-700: #1E40AF;
+    --gov-slate-50:  #F8FAFC;
+    --gov-slate-100: #F1F5F9;
+    --gov-slate-200: #E2E8F0;
+    --gov-slate-400: #94A3B8;
+    --gov-slate-500: #64748B;
+    --gov-slate-700: #334155;
+    --gov-accent-emerald: #059669;
+    --gov-accent-emerald-hover: #047857;
+}
+
+.bg-surface {
+    background: var(--gov-slate-50);
+}
+
+.hero-panel {
+    background: var(--theme-primary);
+}
+
+.header-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+}
+
+.header-subtitle {
+    font-size: .72rem;
+}
+
+.text-navy {
+    color: var(--gov-navy-900) !important;
+    font-size: .95rem;
+}
+
+.stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.10);
+    line-height: 1.05;
+
+    .stat-pill-value {
+        font-weight: 700;
+        font-size: .85rem;
+        color: #fff;
+    }
+
+    .stat-pill-label {
+        font-size: .58rem;
+        color: rgba(255, 255, 255, 0.68);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+}
+
+// ---------- Property cards ----------
+.property-card-item {
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    border-left: 3px solid transparent;
+    border: 1px solid var(--gov-slate-200);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(15, 23, 42, 0.07) !important;
+        border-color: var(--gov-slate-200);
+    }
+
+    &.status-verified { border-left-color: var(--gov-accent-emerald); }
+    &.status-pending { border-left-color: #d97706; }
+    &.status-rejected { border-left-color: #dc2626; }
+}
+
+.property-avatar-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+    }
+
+    &.avatar-verified { background: #ecfdf5; color: var(--gov-accent-emerald); }
+    &.avatar-pending { background: #fffbeb; color: #d97706; }
+    &.avatar-rejected { background: #fef2f2; color: #dc2626; }
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .65rem;
+    font-weight: 600;
+    padding: .28rem .55rem;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.dot-verified { background: var(--gov-accent-emerald); }
+    &.dot-pending { background: #d97706; }
+    &.dot-rejected { background: #dc2626; }
+}
+
+.property-details {
+    font-size: .78rem;
+}
+
+.meta-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    color: var(--gov-slate-500);
+}
+
+.dot-sep {
+    color: var(--gov-slate-200);
+}
+
+.rounded-lg {
+    border-radius: 8px !important;
+}
+
+.btn-icon {
+    font-size: 15px;
+    height: 15px;
+    width: 15px;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.btn-ghost-slate {
+    color: var(--theme-primary);
+    background: #fff;
+    border: 1px solid var(--gov-slate-200);
+    font-weight: 500;
+    font-size: .78rem;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+
+    &:focus-visible {
+        outline: 2px solid var(--gov-navy-700);
+        outline-offset: 1px;
+    }
+}
+
+.btn-accent-solid {
+    background:#fff;
+    border: 1px solid var(--gov-accent-emerald);
+    font-weight: 500;
+    font-size: .78rem;
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+
+
+    &:focus-visible {
+        outline: 2px solid var(--gov-navy-700);
+        outline-offset: 1px;
+    }
+}
+
+.action-button {
+    color: var(--gov-slate-500);
+}
+
+.empty-state {
+    color: var(--gov-slate-400);
+
+    mat-icon {
+        font-size: 38px;
+        height: 38px;
+        width: 38px;
+    }
+}
+
+::ng-deep mat-paginator {
+    background: transparent !important;
+    border-radius: .75rem;
+    font-size: .8rem;
+}
