@@ -19,16 +19,32 @@ import { Footer } from './footer/footer';
         children: [
           {
             path: 'register-property',
-            loadChildren: () => import('../register-property/register-property.module').then(m => m.RegisterPropertyModule),
+            loadChildren: () =>
+              import('../register-property/register-property.module').then(
+                (m) => m.RegisterPropertyModule,
+              ),
           },
           {
             path: 'property-bidder-registration',
-            loadChildren: () => import('../property-bidder-registration/property-bidder-registration.module').then(m => m.PropertyBidderRegistrationModule),
+            loadChildren: () =>
+              import('../property-bidder-registration/property-bidder-registration.module').then(
+                (m) => m.PropertyBidderRegistrationModule,
+              ),
           },
           {
             path: 'property-verification',
-            loadChildren: () => import('../property-verification/property-verification.module').then(m => m.PropertyVerificationModule),
+            loadChildren: () =>
+              import('../property-verification/property-verification.module').then(
+                (m) => m.PropertyVerificationModule,
+              ),
           },
+          {
+            path: 'profile',
+            loadChildren: () =>
+              import('./profile/profile.module').then(
+                (m) => m.ProfileModule,
+              ),
+          }
         ],
       },
     ]),

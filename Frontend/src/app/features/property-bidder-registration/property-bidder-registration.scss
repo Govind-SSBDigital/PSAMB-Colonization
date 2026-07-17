@@ -7,14 +7,21 @@
   display: block;
   font-family: 'Poppins', sans-serif;
 }
+.table-success {
+    --bs-table-bg: var(--theme-primary-alpha);
+     --bs-table-color: #ffffff ; 
+}
 ::placeholder {
   font-size: 14px; 
   opacity: 1;      
 }
+.custom-color{
+  color: var(--theme-primary) !important;
+}
 select {
   font-size: 14px;
 }
-input[type="date"] {
+input[type="date"],input[type="datetime-local"] {
   font-size: 14px;
 }
 
