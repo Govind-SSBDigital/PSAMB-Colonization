@@ -1,17 +1,10 @@
 :root {
-    --gov-navy-900: #0F172A;
-    --gov-navy-800: #1E3A8A;
-    --gov-navy-700: #1E40AF;
     --gov-slate-50:  #F8FAFC;
     --gov-slate-100: #F1F5F9;
-    --gov-slate-200: #E2E8F0;
-    --gov-slate-400: #94A3B8;
-    --gov-slate-500: #64748B;
-    --gov-slate-700: #334155;
-    --gov-accent-emerald: #059669;
-    --gov-accent-emerald-hover: #047857;
 }
-
+.text-success {
+    color: var(--theme-primary) !important;
+}
 .bg-surface {
     background: var(--gov-slate-50);
 }
@@ -64,7 +57,7 @@
 .property-card-item {
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     border-left: 3px solid transparent;
-    border: 1px solid var(--gov-slate-200);
+    border: 1px solid var(--theme-slate-500);
 
     &:hover {
         transform: translateY(-2px);
@@ -91,7 +84,7 @@
         width: 20px;
     }
 
-    &.avatar-verified { background: #ecfdf5; color: var(--gov-accent-emerald); }
+    &.avatar-verified { background: #ecfdf5; color: var(--theme-primary); }
     &.avatar-pending { background: #fffbeb; color: #d97706; }
     &.avatar-rejected { background: #fef2f2; color: #dc2626; }
 }
