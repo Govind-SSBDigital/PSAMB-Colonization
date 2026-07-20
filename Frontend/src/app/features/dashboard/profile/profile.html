@@ -3,16 +3,20 @@
     <div class="profile-card shadow-sm rounded-4 overflow-hidden">
       <div class="profile-card-header d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 p-2 p-md-3 border-bottom">
         <div class="d-flex align-items-center gap-4">
+          <div class="avatar-wrapper">
           <div class="avatar-container">
             <div *ngIf="!user.avatarUrl" class="profile-avatar profile-avatar-placeholder">
               <i class="fa-solid fa-circle-user"></i>
-              
             </div>
             <img *ngIf="user.avatarUrl" [src]="user.avatarUrl" alt="Profile Image" class="profile-avatar">
-            <button type="button" class="avatar-edit-btn" (click)="fileInput.click()" title="Update Image">
+            <button type="button" class="avatar-edit-btn" (click)="fileInput.click()" matTooltip="Upload Image" matTooltipPosition="right">
               <i class="fa-regular fa-pen-to-square"></i>
             </button>
             <input #fileInput type="file" (change)="onAvatarChange($event)" class="d-none" accept="image/*">
+            </div>
+            <div *ngIf="errorMessage" class="text-danger small mt-1">
+              {{ errorMessage }}
+            </div>
           </div>
           <div>
             <h2 class="h4 mb-1 fw-semibold text-dark">{{ user.name || 'User Profile' }}</h2>
@@ -45,12 +49,12 @@
 
             <div class="col-md-6">
               <label class="form-label">Mobile No.</label>
-              <input type="tel" class="form-control minimal-input" name="mobile" [(ngModel)]="user.mobile" required>
+              <input type="tel" class="form-control minimal-input" name="mobile" [(ngModel)]="user.mobile" required [minlength]="10" maxlength="10">
             </div>
 
             <div class="col-md-6">
               <label class="form-label">Alternate Contact No.</label>
-              <input type="tel" class="form-control minimal-input" name="altMobile" [(ngModel)]="user.altMobile">
+              <input type="tel" class="form-control minimal-input" name="altMobile" [(ngModel)]="user.altMobile" [minlength]="10" maxlength="10">
             </div>
 
             <div class="col-12 mt-4">
@@ -79,7 +83,7 @@
 
             <div class="col-md-4">
               <label class="form-label">Pincode</label>
-              <input type="text" class="form-control minimal-input" name="pincode" [(ngModel)]="user.pincode" required>
+              <input type="text" class="form-control minimal-input" name="pincode" [(ngModel)]="user.pincode" required [minlength]="6" maxlength="6">
             </div>
 
             <div class="col-12 mt-3 pt-3 border-top d-flex justify-content-end">
@@ -104,17 +108,17 @@
           <form (ngSubmit)="savePassword()" #passwordFormRef="ngForm" novalidate>
             <div class="mb-3">
               <label class="form-label">Current Password</label>
-              <input type="password" class="form-control" name="oldPassword" [(ngModel)]="passwordForm.oldPassword" required>
+              <input type="password" class="form-control" name="oldPassword" [(ngModel)]="passwordForm.oldPassword" required [minlength]="8" maxlength="50">
             </div>
 
             <div class="mb-3">
               <label class="form-label">New Password</label>
-              <input type="password" class="form-control" name="newPassword" [(ngModel)]="passwordForm.newPassword" required minlength="8">
+              <input type="password" class="form-control" name="newPassword" [(ngModel)]="passwordForm.newPassword" required [minlength]="8" maxlength="50">
             </div>
 
             <div class="mb-3">
               <label class="form-label">Confirm Password</label>
-              <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="passwordForm.confirmPassword" required>
+              <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="passwordForm.confirmPassword" required [minlength]="8" maxlength="50">
             </div>
 
             <div *ngIf="passwordError" class="alert alert-danger py-2">

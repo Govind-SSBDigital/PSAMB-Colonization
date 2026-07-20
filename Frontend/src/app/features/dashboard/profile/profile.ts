@@ -26,17 +26,17 @@ export class Profile implements OnInit {
     confirmPassword: ''
   };
   passwordError = '';
-
+  errorMessage: string | null = null;
   user: UserProfile = {
-    name: 'Abc',
-    email: 'abc@domain.com',
-    mobile: '+91 234 567 890',
+    name: '',
+    email: '',
+    mobile: '',
     altMobile: '',
-    address: '742 Evergreen Terrace',
-    city: 'Springfield',
-    district: 'West Province',
-    state: 'Oregon',
-    pincode: '97477',
+    address: '',
+    city: '',
+    district: '',
+    state: '',
+    pincode: '',
     avatarUrl: ''
   };
 
@@ -46,18 +46,26 @@ export class Profile implements OnInit {
     this.initialFormState = { ...this.user };
   }
 
+
   onAvatarChange(event: Event): void {
-    const element = event.target as HTMLInputElement;
-    const fileList: FileList | null = element.files;
+    const input = event.target as HTMLInputElement;
     
-    if (fileList && fileList[0]) {
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      const maxSizeInBytes = 100 * 1024; // 102,400 bytes (100 KB)
+
+      // Validate file size
+      if (file.size > maxSizeInBytes) {
+        this.errorMessage = 'Image size must be less than 100 KB.';
+        input.value = '';
+        return;
+      }
+      this.errorMessage = null;
       const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result) {
-          this.user.avatarUrl = e.target.result as string;
-        }
+      reader.onload = () => {
+        this.user.avatarUrl = reader.result as string;
       };
-      reader.readAsDataURL(fileList[0]);
+      reader.readAsDataURL(file);
     }
   }
 
@@ -102,7 +110,26 @@ export class Profile implements OnInit {
   }
 
   resetForm(): void {
-    this.user = { ...this.initialFormState };
+    this.user = {
+      name: '',
+      email: '',
+      mobile: '',
+      altMobile: '',
+      address: '',
+      city: '',
+      district: '',
+      state: '',
+      pincode: '',
+      avatarUrl: ''
+    };
+    this.initialFormState = { ...this.user };
+    this.passwordModalOpen = false;
+    this.passwordError = '';
+    this.passwordForm = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
   }
 
   saveProfile(): void {

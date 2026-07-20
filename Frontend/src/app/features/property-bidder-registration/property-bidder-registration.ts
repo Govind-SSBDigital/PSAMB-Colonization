@@ -170,7 +170,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         otherAmount: 500.00,
         penaltyAmount: 0.00,
         penaltyType: 'N/A',
-        remarks: 'First installment received.'
+        remarks: '1st Installment received.'
       }
     ];
     // Set interest amount dynamically to Form State before running layout calculations
@@ -219,6 +219,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     };
     
     this.receiptsFormArray.push(this.createReceiptRowFormGroup(newEmptyRecord));
+  }
+
+  get hasActiveReceiptRowEditing(): boolean {
+    return this.receiptsFormArray.controls.some((control) => control.get('isEditing')?.value);
   }
 
   enableRowEditing(index: number): void {

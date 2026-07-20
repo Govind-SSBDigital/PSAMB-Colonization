@@ -43,6 +43,11 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: "verification-view",
+    redirectTo: 'dashboard/verification-view',
+    pathMatch: 'full'
+  },
+  {
     path: '**',
     redirectTo: ''
   }

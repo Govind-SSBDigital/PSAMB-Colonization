@@ -89,17 +89,6 @@
     &.avatar-rejected { background: #fef2f2; color: #dc2626; }
 }
 
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: .65rem;
-    font-weight: 600;
-    padding: .28rem .55rem;
-    text-transform: uppercase;
-    letter-spacing: .02em;
-}
-
 .status-dot {
     width: 6px;
     height: 6px;
@@ -120,10 +109,6 @@
     height: 14px;
     width: 14px;
     color: var(--gov-slate-500);
-}
-
-.dot-sep {
-    color: var(--gov-slate-200);
 }
 
 .rounded-lg {
