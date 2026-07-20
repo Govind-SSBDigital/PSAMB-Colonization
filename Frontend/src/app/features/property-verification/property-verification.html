@@ -72,30 +72,13 @@
 
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <h6 class="fw-bold mb-0 text-success">{{ property.propertyNo }}</h6>
-
-                                <span class="badge rounded-pill status-badge"
-                                      [ngClass]="{
-                                        'text-bg-success-subtle': property.status === 'Verified',
-                                        'text-bg-warning-subtle': property.status === 'Pending',
-                                        'text-bg-danger-subtle': property.status === 'Rejected'
-                                      }">
-                                    <span class="status-dot"
-                                          [ngClass]="{
-                                            'dot-verified': property.status === 'Verified',
-                                            'dot-pending': property.status === 'Pending',
-                                            'dot-rejected': property.status === 'Rejected'
-                                          }"></span>
-                                    {{ property.status }}
-                                </span>
                             </div>
-
-                            <button mat-icon-button
+                            <!-- <button mat-icon-button
                                     [matMenuTriggerFor]="menu"
                                     [matMenuTriggerData]="{prop: property}"
                                     class="action-button">
-                                <!-- <mat-icon>more_vert</mat-icon> -->
-                            </button>
-
+                                <mat-icon>more_vert</mat-icon>
+                            </button> -->
                         </div>
 
                         <div class="property-details text-secondary small d-flex flex-wrap align-items-center gap-2 mb-2">
@@ -103,22 +86,18 @@
                                 <mat-icon class="meta-icon">person</mat-icon>
                                 <strong class="text-success">{{ property.ownerName }}</strong>
                             </span>
-                            <span class="dot-sep">•</span>
                             <span class="d-flex align-items-center gap-1">
                                 <mat-icon class="meta-icon">category</mat-icon>
                                 {{ property.category }}
                             </span>
-                            <span class="dot-sep">•</span>
                             <span class="d-flex align-items-center gap-1">
                                 <mat-icon class="meta-icon">account_balance</mat-icon>
                                 {{ property.branch }}
                             </span>
-                            <span class="dot-sep">•</span>
                             <span class="d-flex align-items-center gap-1">
                                 <mat-icon class="meta-icon">location_on</mat-icon>
                                 {{ property.district }}, {{ property.village }}
                             </span>
-                            <span class="dot-sep">•</span>
                             <span class="d-flex align-items-center gap-1">
                                 <mat-icon class="meta-icon">event</mat-icon>
                                 {{ property.registrationDate }}
@@ -128,13 +107,13 @@
                         <div class="d-flex gap-2 flex-wrap border-top pt-2">
                             <button type="button"
                                     class="btn btn-sm btn-ghost-slate fw-bold rounded-lg px-3"
-                                    (click)="viewDetails(property)">
+                                    [routerLink]="['/verification-view']"  matTooltip="View Details" matTooltipPosition="above">
                                 <mat-icon class="btn-icon">visibility</mat-icon>
                                 View Details
                             </button>
                             <button type="button"
                                     class="btn btn-sm btn-accent-solid text-dark fw-bold rounded-lg px-3"
-                                    (click)="editProperty(property)">
+                                    (click)="editProperty(property)"  matTooltip="Edit Record" matTooltipPosition="above">
                                 <mat-icon class="btn-icon text-dark">edit</mat-icon>
                                 Edit Record
                             </button>
@@ -160,13 +139,13 @@
     <mat-paginator
             [length]="filteredPropertyList.length"
             [pageSize]="pageSize"
-            [pageSizeOptions]="[6,8,12]"
+            [pageSizeOptions]="[10, 20, 50]"
             [pageIndex]="pageIndex"
             (page)="onPageChange($event)">
     </mat-paginator>
 </div>
 
-<mat-menu #menu="matMenu" xPosition="before">
+<!-- <mat-menu #menu="matMenu" xPosition="before">
     <ng-template matMenuContent let-property="prop">
         <button mat-menu-item (click)="viewDetails(property)">
             <mat-icon class="me-2" style="color: var(--theme-teal-light)">visibility</mat-icon>
@@ -177,4 +156,4 @@
             <span>Edit Record</span>
         </button>
     </ng-template>
-</mat-menu>
+</mat-menu> -->

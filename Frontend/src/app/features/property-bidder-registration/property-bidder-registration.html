@@ -431,9 +431,9 @@
       </h4>
     </div>
     
-    <div class="table-responsive">
+    <div class="table-responsive table-responsive-scroll">
       <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
-        <thead class="table-light text-secondary text-uppercase font-monospace" style="font-size: 0.75rem;">
+        <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
           <tr>
             <th scope="col" class="text-start ps-3 custom-color">Installments</th>
             <th scope="col" class="custom-color">Calculated Due Date</th>
@@ -453,13 +453,13 @@
         </span>
         {{ schedule.installmentLabel }}
       </td>
-      <td class="font-monospace fw-medium text-dark">
+      <td class="fw-medium text-dark">
         {{ schedule.dueDate ? (schedule.dueDate | date:'dd/MM/yyyy') : 'Waiting on base milestone date...' }}
       </td>
-      <td class="text-muted fw-bold">
+      <td class="text-muted fw-semibold">
         {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
       </td>
-      <td class="text-end fw-bold text-success pe-3">
+      <td class="text-end fw-semibold text-success pe-3">
         {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
       </td>
     </tr>
@@ -481,15 +481,15 @@
         <div class="financial-panel bg-light border rounded-4 p-3 mt-3" [formGroup]="registerationForm">
   <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
     <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
-    <button type="button" class="btn btn-sm btn-success px-3 rounded-pill" (click)="addNewReceiptRow()">
+    <button type="button" class="btn btn-sm btn-success px-3 rounded-pill" (click)="addNewReceiptRow()" [disabled]="hasActiveReceiptRowEditing">
       <i class="fa-solid fa-plus me-1"></i> Add Record
     </button>
   </div>
 
   <div class="col-sm-12">
-    <div class="table-responsive rounded-3 overflow-hidden border shadow-sm bg-white">
-      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap" formArrayName="receiptsFormArray">
-        <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.8rem;">
+    <div class="table-responsive table-responsive-scroll rounded-3 overflow-hidden border shadow-sm bg-white">
+      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap" formArrayName="receiptsFormArray" scrollable="true">
+        <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
           <tr>
             <th scope="col" class="fw-normal px-1">Receipt No.</th>
             <th scope="col" class="fw-normal px-1">Receipt Date</th>
@@ -616,11 +616,11 @@
                     <button type="button" class="btn btn-outline-secondary border-0 px-2" (click)="cancelRowEditing(idx, !receiptList[idx])" title="Cancel">
                       <i class="fa-solid fa-xmark text-muted"></i>
                     </button>
-                  } @else {
-                    <button type="button" class="btn btn-outline-primary border-0 px-2" (click)="enableRowEditing(idx)" title="Edit line item">
-                      <i class="fa-solid fa-pencil text-primary"></i>
+                  } @else if (!hasActiveReceiptRowEditing) {
+                    <button type="button" class="btn border-0 px-1" (click)="enableRowEditing(idx)" title="Edit record">
+                      <i class="fa-solid fa-pencil text-success"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger border-0 px-2" (click)="removeReceiptRow(idx)" title="Remove line item">
+                    <button type="button" class="btn border-0 px-1" (click)="removeReceiptRow(idx)" title="Remove record">
                       <i class="fa-solid fa-trash-can text-danger"></i>
                     </button>
                   }
