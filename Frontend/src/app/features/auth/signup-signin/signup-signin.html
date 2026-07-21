@@ -32,7 +32,7 @@
             <div class="auth-card-wrapper-screenshot animated fade-in" *ngIf="authMode === 'signin'">
 
                 <!-- Back to landing button -->
-                <button type="button" class="btn-back-to-landing-top" (click)="goBackToLanding()">
+                <button type="button" class="btn-back-to-landing-top" (click)="goBackFromLogin()">
                     <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
                 </button>
 
@@ -98,7 +98,7 @@
                         </div>
                         <div class="vertical-divider-screenshot">|</div>
                         <input type="text" name="userId" [(ngModel)]="loginData.userId" required
-                            placeholder="pmb.mcabo-ms">
+                            placeholder="Enter UserName">
                     </div>
 
                     <!-- Password Input -->

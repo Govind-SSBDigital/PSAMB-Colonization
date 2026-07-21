@@ -7,10 +7,10 @@ import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
-
+import { ToastrModule } from 'ngx-toastr';
 @NgModule({
   declarations: [App],
-  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule],
+  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule, ToastrModule.forRoot()],
   providers: [provideHttpClient(withInterceptorsFromDi()), provideAnimationsAsync()],
   bootstrap: [App],
 })

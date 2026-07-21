@@ -56,7 +56,7 @@
   position: relative;
   border-radius: 16px;
   min-height: 500px;
-  background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200');
+  background-image: url('/pmb.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
