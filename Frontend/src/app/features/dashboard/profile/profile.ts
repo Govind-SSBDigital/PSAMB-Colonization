@@ -1,4 +1,5 @@
 import { Component,OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
 interface UserProfile {
   name: string;
@@ -39,7 +40,7 @@ export class Profile implements OnInit {
     pincode: '',
     avatarUrl: ''
   };
-
+  constructor(private toastr: ToastrService) {}
   private initialFormState!: UserProfile;
 
   ngOnInit(): void {
@@ -135,6 +136,12 @@ export class Profile implements OnInit {
   saveProfile(): void {
     console.log('Payload Submitted:', this.user);
     this.initialFormState = { ...this.user };
-    alert('Profile data saved successfully.');
+    this.showSuccess();
+  }
+  show() {
+    this.toastr.error('Error message', 'Major Error');
+  }
+  showSuccess() {
+    this.toastr.success('Profile updated successfully!', 'Success');
   }
 }

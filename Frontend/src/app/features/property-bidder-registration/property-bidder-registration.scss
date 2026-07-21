@@ -15,6 +15,9 @@
   font-size: 14px; 
   opacity: 1;      
 }
+.border-secondary{
+  border-color: rgba(var(--theme-primary-rgb), 0.3) !important;
+}
 .custom-color{
   color: var(--theme-primary) !important;
 }

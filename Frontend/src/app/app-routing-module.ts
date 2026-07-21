@@ -9,10 +9,6 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'leadership-message/:id',
-    loadComponent: () => import('./features/leadership-message/leadership-message').then(m => m.LeadershipMessageComponent)
-  },
-  {
     path: 'login',
     redirectTo: 'auth/login',
     pathMatch: 'full'

@@ -70,9 +70,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'h1BidderName',
     'relation',
     'guardianName',
-    'panNo',
-    'aadharNo',
-    'mobileNo',
     'auctionPropertyType',
     'communicationAddress',
     'reservePrice',
@@ -119,24 +116,25 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       bidderType: ['Individual'],
       emailId: [''],
       h1BidderName: [''],
+      bidderNames: this.fb.array([]),
       transfered: [false],
       relation: ['Son of (S/o)'],
       guardianName: [''],
       panNo: [''],
-      aadharNo: ['', [Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]],
+      aadharNo: ['', [ Validators.pattern(/^XXXXXXXX\d{4}$/)]],
       mobileNo: [''],
       auctionPropertyType: ['Commercial Plots'],
       communicationAddress: [''],
       reservePrice: [''],
       h1BidderFinalPrice: [''],
       formFeeTransactionId: [''],
-      formFeeTransactionDate: [''],
+      formFeeTransactionDate: ['', [Validators.pattern(/^\d{2}\/\d{2}\/\d{4}$/)]],
       formFeePaidAmount: [''],
       emdTransactionId: [''],
-      emdTransactionDate: [''],
+      emdTransactionDate: ['', [Validators.pattern(/^\d{2}\/\d{2}\/\d{4}$/)]],
       emdPaidAmount: [''],
       allotmentTransactionId: [''],
-      allotmentTransactionDate: [''],
+      allotmentTransactionDate: ['', [Validators.pattern(/^\d{2}\/\d{2}\/\d{4}$/)]],
       allotmentPaidAmount: [''],
       // Changed from '1st Installment' to match HTML UI labeling pattern
       installmentNo: ['Installment 1'],
@@ -154,6 +152,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   get receiptsFormArray(): FormArray {
     return this.registerationForm.get('receiptsFormArray') as FormArray;
+  }
+
+  get bidderNamesFormArray(): FormArray {
+    return this.registerationForm.get('bidderNames') as FormArray;
   }
   
   loadReceiptData(): void {
@@ -219,6 +221,21 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     };
     
     this.receiptsFormArray.push(this.createReceiptRowFormGroup(newEmptyRecord));
+  }
+
+  addBidderName(): void {
+    const bidderControl = this.registerationForm.get('h1BidderName');
+    const bidderName = (bidderControl?.value || '').trim();
+    if (!bidderName) {
+      return;
+    }
+
+    this.bidderNamesFormArray.push(this.fb.control(bidderName, Validators.required));
+    bidderControl?.setValue('');
+  }
+
+  removeBidderName(index: number): void {
+    this.bidderNamesFormArray.removeAt(index);
   }
 
   get hasActiveReceiptRowEditing(): boolean {
@@ -296,6 +313,58 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     const maskedValue = 'XXXXXXXX' + digits;
     this.registerationForm.get('aadharNo')?.setValue(maskedValue, { emitEvent: false });
     input.value = maskedValue;
+  }
+
+  private readonly ddmmyyyyPattern = /^\d{2}\/\d{2}\/\d{4}$/;
+
+  formatDisplayDate(value: string | Date | null | undefined): string {
+    if (!value) {
+      return '';
+    }
+
+    const date = this.parseDdMmYyyy(value);
+    if (!date) {
+      return '';
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  private parseDdMmYyyy(value: string | Date): Date | null {
+    if (value instanceof Date) {
+      return isNaN(value.getTime()) ? null : value;
+    }
+
+    const stringValue = String(value).trim();
+    if (this.ddmmyyyyPattern.test(stringValue)) {
+      const parts = stringValue.split('/').map((part) => parseInt(part, 10));
+      const [day, month, year] = parts;
+      const parsed = new Date(year, month - 1, day);
+      if (parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day) {
+        return parsed;
+      }
+    }
+
+    const fallbackDate = new Date(stringValue);
+    return isNaN(fallbackDate.getTime()) ? null : fallbackDate;
+  }
+
+  formatDateField(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let digits = input.value.replace(/\D/g, '').slice(0, 8);
+    if (digits.length >= 5) {
+      digits = digits.replace(/^(\d{2})(\d{2})(\d{0,4}).*$/, '$1/$2/$3');
+    } else if (digits.length >= 3) {
+      digits = digits.replace(/^(\d{2})(\d{0,2}).*$/, '$1/$2');
+    }
+    input.value = digits;
+    const controlName = input.getAttribute('formControlName');
+    if (controlName && this.registerationForm.get(controlName)) {
+      this.registerationForm.get(controlName)?.setValue(digits, { emitEvent: false });
+    }
   }
 
   isInvalid(controlName: string): boolean {

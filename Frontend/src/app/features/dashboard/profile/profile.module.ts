@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { Profile } from './profile';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ToastrModule } from 'ngx-toastr';
 
 
 @NgModule({
@@ -12,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     CommonModule,
     FormsModule,
     MatTooltipModule,
+    ToastrModule,
     RouterModule.forChild([
           {
             path: '',
