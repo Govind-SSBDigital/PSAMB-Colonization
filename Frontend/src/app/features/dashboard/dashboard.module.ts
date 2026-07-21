@@ -18,6 +18,11 @@ import { Footer } from './footer/footer';
         component: DashboardComponent,
         children: [
           {
+            path: '',
+            redirectTo: 'register-property',
+            pathMatch: 'full',
+          },
+          {
             path: 'register-property',
             loadChildren: () =>
               import('../register-property/register-property.module').then(
@@ -43,6 +48,13 @@ import { Footer } from './footer/footer';
             loadChildren: () =>
               import('./profile/profile.module').then(
                 (m) => m.ProfileModule,
+              ),
+          },
+          {
+            path: 'verification-view',
+            loadChildren: () =>
+              import('../verification-view/verification-view.module').then(
+                (m) => m.VerificationViewModule,
               ),
           }
         ],

@@ -45,10 +45,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   bidderTypes = ['Individual', 'Joint Venture / Firm', 'Corporate Entity'];
   relations = ['Son of (S/o)', 'Daughter of (D/o)', 'Wife of (W/o)'];
   auctionPropertyTypes = ['Commercial Plots', 'Industrial Complex'];
-  installments = ['1st Installment', '2nd Installment', '3rd Installment'];
+  // Cleaned up list to match the visual "Installment X" pattern exactly
+  installments = ['Installment 1', 'Installment 2', 'Installment 3', 'Installment 4', 'Installment 5', 'Installment 6'];
   paidStatuses = ['Pending', 'Fully Paid', 'Partially Paid'];
   plotStatuses = ['Sold', 'Unsold'];
-//for installments calculation and display in UI
+  // Array that holds the calculated installments displayed in the HTML table
   calculatedSchedulesMatrix: InstallmentScheduleView[] = [];
 
   statusFields = [
@@ -137,11 +138,13 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       allotmentTransactionId: [''],
       allotmentTransactionDate: [''],
       allotmentPaidAmount: [''],
-      installmentNo: ['1st Installment'],
+      // Changed from '1st Installment' to match HTML UI labeling pattern
+      installmentNo: ['Installment 1'],
       dueDate: [''],
       paidStatus: ['Pending'],
       dueAmount: [''],
-      accumulatedInterest: [''],
+      // Will load with interest fetched from receipt records
+      accumulatedInterest: [0],
       totalDueAmount: [{ value: '', disabled: true }],
       receiptsFormArray: this.fb.array([])
     });
@@ -167,9 +170,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         otherAmount: 500.00,
         penaltyAmount: 0.00,
         penaltyType: 'N/A',
-        remarks: 'First installment received.'
+        remarks: '1st Installment received.'
       }
     ];
+    // Set interest amount dynamically to Form State before running layout calculations
+    const receiptInterest = this.receiptList.reduce((acc, rec) => acc + (rec.interestAmount || 0), 0);
+    this.registerationForm.get('accumulatedInterest')?.setValue(receiptInterest, { emitEvent: false });
     this.populateReceiptsFormArray();
   }
 
@@ -197,7 +203,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       isEditing: [receipt.isEditing || false]
     });
   }
-//add new receipt row with default values and set it to editing mode
+//Add new receipt row with default values and set it to editing mode
   addNewReceiptRow(): void {
     const newEmptyRecord: Partial<Receipt> = {
       receiptNo: `REC-2026-00${this.receiptsFormArray.length + 1}`,
@@ -215,6 +221,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.receiptsFormArray.push(this.createReceiptRowFormGroup(newEmptyRecord));
   }
 
+  get hasActiveReceiptRowEditing(): boolean {
+    return this.receiptsFormArray.controls.some((control) => control.get('isEditing')?.value);
+  }
+
   enableRowEditing(index: number): void {
     this.receiptsFormArray.at(index).get('isEditing')?.setValue(true);
   }
@@ -229,6 +239,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     
     // Updates internal datastore tracking parameters
     this.receiptList[index] = rowGroup.getRawValue();
+
+    // Re-calculate sum of all receipt interests and push back to form to keep scheduler synced
+    const totalReceiptInterest = this.receiptList.reduce((acc, rec) => acc + (Number(rec.interestAmount) || 0), 0);
+    this.registerationForm.get('accumulatedInterest')?.setValue(totalReceiptInterest, { emitEvent: false });
+    
+    this.calculateUIInstallments();
   }
 
   cancelRowEditing(index: number, isNew: boolean): void {
@@ -248,6 +264,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (this.receiptList[index]) {
       this.receiptList.splice(index, 1);
     }
+
+    // Re-calculate sum of all remaining receipt interests
+    const totalReceiptInterest = this.receiptList.reduce((acc, rec) => acc + (Number(rec.interestAmount) || 0), 0);
+    this.registerationForm.get('accumulatedInterest')?.setValue(totalReceiptInterest, { emitEvent: false });
+
+    this.calculateUIInstallments();
   }
 
   ngOnInit(): void {
@@ -312,7 +334,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       bidderType: 'Individual',
       relation: 'Son of (S/o)',
       auctionPropertyType: 'Commercial Plots',
-      installmentNo: '1st Installment',
+      installmentNo: 'Installment 1',
       paidStatus: 'Pending',
     });
     this.receiptsFormArray.clear();
@@ -347,49 +369,55 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         this.calculateUIInstallments();
       });
   }
+    // CORE CALCULATION ALGORITHM
 
-  // Core calculation logic for dynamic installment schedule generation and UI binding
-  private calculateUIInstallments(): void {
+    // Core calculation logic for dynamic installment schedule generation and UI binding
+   private calculateUIInstallments(): void {
+    // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('h1BidderFinalPrice')?.value) || 0;
     const emdPaid = Number(this.registerationForm.get('emdPaidAmount')?.value) || 0;
     const allotmentPaid = Number(this.registerationForm.get('allotmentPaidAmount')?.value) || 0;
     const milestoneDateStr = this.registerationForm.get('allotmentTransactionDate')?.value;
-    const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || '1st Installment';
+    const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
     const currentInterest = Number(this.registerationForm.get('accumulatedInterest')?.value) || 0;
 
+    // 2. Calculate TOTAL Outstanding Principal Balance
     const downPaymentsTotal = emdPaid + allotmentPaid;
     const outstandingPrincipal = finalBidderPrice - downPaymentsTotal;
 
+    // Compute the base installment rate (1/6th of total outstanding principal)
     let computedDueAmount = 0;
     if (outstandingPrincipal > 0) {
       computedDueAmount = outstandingPrincipal / 6;
       computedDueAmount = Math.round((computedDueAmount + Number.EPSILON) * 100) / 100;
     }
 
-    // Generate comprehensive dynamic schedule table calculation for up to 6 schedules
+    // NEW: Divide the interest evenly across all 6 installments
+    let computedInterestPerInstallment = 0;
+    if (currentInterest > 0) {
+      computedInterestPerInstallment = currentInterest / 6;
+      computedInterestPerInstallment = Math.round((computedInterestPerInstallment + Number.EPSILON) * 100) / 100;
+    }
+
+    // 3. Generate the 6-part amortization matrix table
     const generatedMatrix: InstallmentScheduleView[] = [];
     
     for (let step = 1; step <= 6; step++) {
       let calculatedDateStr = '';
       
       if (milestoneDateStr) {
-        // Safe programmatic split to parse date parts directly without native UTC timeline shifts
         const parts = milestoneDateStr.split('-'); 
         if (parts.length === 3) {
           const baseYear = parseInt(parts[0], 10);
-          const baseMonth = parseInt(parts[1], 10) - 1; // Convert to standard 0-indexed month architecture
+          const baseMonth = parseInt(parts[1], 10) - 1; 
           const baseDay = parseInt(parts[2], 10);
           
-          // Add explicit targeted months (step * 6)
           const targetTotalMonths = baseMonth + (step * 6);
-          
           const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
           const targetMonth = targetTotalMonths % 12;
           
-          // Use Date constructor with explicit constraints to protect day values from moving forward
           const targetDateObj = new Date(targetYear, targetMonth, baseDay);
           
-          // Keep day calculation aligned with baseline inputs
           if (targetDateObj.getDate() !== baseDay) {
             targetDateObj.setDate(0); 
           }
@@ -399,12 +427,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         }
       }
 
-      const stepInterest = step.toString() + 'st Installment' === selectedInstallmentString ? currentInterest : 0;
-      const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + stepInterest) : 0;
+      const currentLabel = `Installment ${step}`;
+      
+      // Calculate total amount for this row (Base Principal + Evenly Split Interest)
+      const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestPerInstallment) : 0;
 
       generatedMatrix.push({
         index: step,
-        installmentLabel: `${step}${this.getOrdinalSuffix(step)} Installment`,
+        installmentLabel: currentLabel,
         dueDate: calculatedDateStr,
         baseAmountDue: computedDueAmount,
         totalWithInterest: Math.round((stepTotalWithInterest + Number.EPSILON) * 100) / 100
@@ -413,23 +443,16 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
     this.calculatedSchedulesMatrix = generatedMatrix;
 
-    // Find active selection node matching standard logic target mappings
+    // 4. Calculate total overall due (Full Principal + Accumulated Interest)
+    const finalTotalDueIncludingInterest = outstandingPrincipal > 0 ? (outstandingPrincipal + currentInterest) : 0;
     const activeNode = generatedMatrix.find(item => item.installmentLabel === selectedInstallmentString);
     const activeDueDate = activeNode ? activeNode.dueDate : '';
-    const activeTotalDue = activeNode ? activeNode.totalWithInterest : 0;
 
+    // 5. Patch corrected, high-level overview values to UI inputs
     this.registerationForm.patchValue({
-      dueAmount: computedDueAmount > 0 ? computedDueAmount : '',
+      dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : '', // Displays 27,500.00
       dueDate: activeDueDate,
-      totalDueAmount: activeTotalDue > 0 ? activeTotalDue : ''
+      totalDueAmount: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : '' // Displays 32,000.00
     }, { emitEvent: false });
-  }
-
-  private getOrdinalSuffix(i: number): string {
-    const j = i % 10, k = i % 100;
-    if (j === 1 && k !== 11) return "st";
-    if (j === 2 && k !== 12) return "nd";
-    if (j === 3 && k !== 13) return "rd";
-    return "th";
   }
 }

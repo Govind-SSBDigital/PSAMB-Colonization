@@ -230,6 +230,23 @@ textarea.form-control {
   border-color: rgba(var(--theme-primary-rgb), 0.14) !important;
 }
 
+.table-responsive-scroll {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive-scroll .table {
+  min-width: 760px;
+  margin-bottom: 0;
+}
+.table thead th,tbody td {
+  white-space: nowrap !important;
+
+}
+
 .form-actions .btn[type='submit'] {
   background: var(--theme-primary) !important;
   box-shadow: 0 16px 26px -18px rgba(var(--theme-primary-rgb), 0.95) !important;
