@@ -326,6 +326,14 @@ export class SignupSignin implements OnInit {
       this.generateCaptcha();
     }
   }
+  goBackFromLogin() {
+    if (this.loginMethod === 'otp') {
+      this.toggleLoginMethod('password');
+      return;
+    }
+
+    this.goBackToLanding();
+  }
 
   goBackToLanding() {
     this.router.navigate(['/']);
