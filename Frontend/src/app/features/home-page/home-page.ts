@@ -48,7 +48,7 @@ interface PhotoItem {
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, Navbar, Footer, RouterLink],
+  imports: [CommonModule, MatIconModule, MatButtonModule, Navbar, Footer],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
