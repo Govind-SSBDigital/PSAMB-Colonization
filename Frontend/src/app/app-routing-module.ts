@@ -8,10 +8,10 @@ const routes: Routes = [
     loadComponent: () => import('./features/home-page/home-page').then(m => m.HomePage),
     pathMatch: 'full'
   },
-  // {
-  //   path: 'leadership-message/:id',
-  //   loadComponent: () => import('./features/leadership-message/leadership-message').then(m => m.LeadershipMessageComponent)
-  // },
+  {
+    path: 'leadership-message/:id',
+    loadComponent: () => import('./features/leadership-message/leadership-message').then(m => m.LeadershipMessageComponent)
+  },
   {
     path: 'login',
     redirectTo: 'auth/login',
@@ -44,6 +44,11 @@ const routes: Routes = [
   {
     path: "profile",
     redirectTo: 'dashboard/profile',
+    pathMatch: 'full'
+  },
+  {
+    path: "verification-view",
+    redirectTo: 'dashboard/verification-view',
     pathMatch: 'full'
   },
   {

@@ -15,6 +15,9 @@
   font-size: 14px; 
   opacity: 1;      
 }
+.border-secondary{
+  border-color: rgba(var(--theme-primary-rgb), 0.3) !important;
+}
 .custom-color{
   color: var(--theme-primary) !important;
 }
@@ -228,6 +231,23 @@ textarea.form-control {
 
 .form-actions {
   border-color: rgba(var(--theme-primary-rgb), 0.14) !important;
+}
+
+.table-responsive-scroll {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive-scroll .table {
+  min-width: 760px;
+  margin-bottom: 0;
+}
+.table thead th,tbody td {
+  white-space: nowrap !important;
+
 }
 
 .form-actions .btn[type='submit'] {

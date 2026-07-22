@@ -54,11 +54,11 @@ interface PhotoItem {
 })
 export class HomePage {
   announcements: Announcement[] = [
-    { id: 1, date: 'June 25, 2026', title: 'Upcoming e-Auction Notice No. 2026/04 for commercial and residential booths in Jalandhar Mandi.', isNew: true },
-    { id: 2, date: 'June 20, 2026', title: 'Notification regarding revision of building regularization guidelines and lease extension rates.', isNew: true },
-    { id: 3, date: 'June 15, 2026', title: 'Launch of Online Land Mutation and Digital NOC Tracking System for citizen convenience.', isNew: false },
-    { id: 4, date: 'June 10, 2026', title: 'Office Order: Allotment list of residential plots under the Command Area Development Scheme (Phase II).', isNew: false },
-    { id: 5, date: 'June 05, 2026', title: 'Instructions for submitting online bids and depositing EMD via the integrated payment gateway.', isNew: false }
+    { id: 1, date: '25-06-2026', title: 'Upcoming e-Auction Notice No. 2026/04 for commercial and residential booths in Jalandhar Mandi.', isNew: true },
+    { id: 2, date: '20-06-2026', title: 'Notification regarding revision of building regularization guidelines and lease extension rates.', isNew: true },
+    { id: 3, date: '15-06-2026', title: 'Launch of Online Land Mutation and Digital NOC Tracking System for citizen convenience.', isNew: false },
+    { id: 4, date: '10-06-2026', title: 'Office Order: Allotment list of residential plots under the Command Area Development Scheme (Phase II).', isNew: false },
+    { id: 5, date: '05-06-2026', title: 'Instructions for submitting online bids and depositing EMD via the integrated payment gateway.', isNew: false }
   ];
 
   schemes: Scheme[] = [
@@ -113,14 +113,13 @@ export class HomePage {
   ];
 
   photos: PhotoItem[] = [
-    { id: 1, title: 'Grain Mandi Project View Jalandhar', image: '/Mandi1.JPG' },
-    { id: 2, title: 'Grain Mandi Project View Ludhiana', image: '/Mandi2.JPG' },
-    { id: 3, title: 'Grain Mandi Project View Amritsar', image: '/Mandi3.JPG' },
-    { id: 4, title: 'Grain Mandi Project View Bathinda', image: '/Mandi4.JPG' },
-    { id: 5, title: 'Grain Mandi Project View Patiala', image: '/Mandi5.JPG' },
-    { id: 6, title: 'Grain Mandi Project View Mohali', image: '/Mandi6.JPG' },
-    { id: 7, title: 'Grain Mandi Project View Ferozepur', image: '/Mandi7.JPG' },
-    { id: 8, title: 'Grain Mandi Project View Pathankot', image: '/Mandi8.JPG' }
+    { id: 1, title: 'Mandi Image', image: '/_DSC5557 (1).webp' },
+    { id: 2, title: 'Mandi Image', image: '/mandi5.webp' },
+    { id: 3, title: 'Mandi Image', image: '/DSC_8723.webp' },
+    { id: 4, title: 'Mandi Image', image: '/0212.webp' },
+    { id: 5, title: 'Mandi Image', image: '/_DSC5671 (1).webp' },
+    // { id: 6, title: 'Mandi Image', image: '/Mandi3.JPG' },
+    // { id: 7, title: 'Mandi Image', image: '/_DSC8081.JPG' },
   ];
 
   leadershipShortlist = [
@@ -136,14 +135,14 @@ export class HomePage {
       name: "Hon'ble Finance Minister",
       punjabiName: "ਮਾਨਯੋਗ ਵਿੱਤ ਮੰਤਰੀ",
       image: "/finance minister.jpg",
-      role: "Sh. Harpal Singh Cheema"
+      role: "Sh. Gurmeet Singh Khuddian"
     },
     {
       id: 'doc',
       name: "Director of Colonization",
       punjabiName: "\u0A21\u0A3E\u0A07\u0A30\u0A48\u0A15\u0A1F\u0A30 \u0A06\u0A2c\u0A3e\u0A26\u0A15\u0A3e\u0A30\u0A40",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200",
-      role: "Smt. Amrit Singh, IAS"
+      role: "IAS Smt. Baldeep Kaur"
     }
   ];
 

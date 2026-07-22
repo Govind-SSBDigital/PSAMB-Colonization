@@ -36,7 +36,7 @@ export class PropertyVerification implements OnInit {
   pagedPropertyList: PropertyVerificationModel[] = [];
 
   pageIndex = 0;
-  pageSize = 6;
+  pageSize = 10;
 
   
 
@@ -78,19 +78,7 @@ export class PropertyVerification implements OnInit {
         village: 'Phase 8',
         status: 'Rejected',
         registrationDate: '18-Jul-2026'
-      },
-      {
-        id: 4,
-        propertyNo: 'PROP-1004',
-        ownerName: 'Sandeep Kumar',
-        category: 'Residential',
-        branch: 'Chandigarh',
-        district: 'Chandigarh',
-        village: 'Sector 17',
-        status: 'Verified',
-        registrationDate: '19-Jul-2026'
       }
-     
     ];
 
     this.filteredPropertyList = [...this.propertyList];
