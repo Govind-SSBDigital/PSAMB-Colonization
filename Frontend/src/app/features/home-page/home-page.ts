@@ -43,6 +43,7 @@ interface PhotoItem {
   id: number;
   title: string;
   image: string;
+  loaded?: boolean;
 }
 
 @Component({
@@ -113,13 +114,12 @@ export class HomePage {
   ];
 
   photos: PhotoItem[] = [
-    { id: 1, title: 'Mandi Image', image: 'assets/_DSC5557 (1).webp' },
-    { id: 2, title: 'Mandi Image', image: 'assets/mandi5.webp' },
-    { id: 3, title: 'Mandi Image', image: 'assets/DSC_8723.webp' },
-    { id: 4, title: 'Mandi Image', image: 'assets/0212.webp' },
-    { id: 5, title: 'Mandi Image', image: 'assets/_DSC5671 (1).webp' },
-    // { id: 6, title: 'Mandi Image', image: 'assets/Mandi3.JPG' },
-    // { id: 7, title: 'Mandi Image', image: 'assets/_DSC8081.JPG' },
+    { id: 1, title: 'Mandi Image', image: 'assets/Mandi1.webp' },
+    { id: 2, title: 'Mandi Image', image: 'assets/Mandi2.webp' },
+    { id: 3, title: 'Mandi Image', image: 'assets/Mandi3.webp' },
+    { id: 4, title: 'Mandi Image', image: 'assets/Mandi6.webp' },
+    { id: 5, title: 'Mandi Image', image: 'assets/Mandi7.webp' },
+    { id: 6, title: 'Mandi Image', image: 'assets/Mandi8.webp' },
   ];
 
   leadershipShortlist = [
@@ -145,7 +145,8 @@ export class HomePage {
       role: "IAS Smt. Baldeep Kaur"
     }
   ];
-
+  private autoplayTimer: any;
+  private readonly AUTOPLAY_DELAY = 3000;
   isLeaderModalOpen = false;
   selectedLeaderId: string | null = null;
   selectedLeaderData: any = null;
@@ -231,23 +232,63 @@ export class HomePage {
 
   @ViewChild('galleryContainer') galleryContainer!: ElementRef<HTMLDivElement>;
 
+   ngAfterViewInit() {
+    this.startAutoplay();
+  }
+  ngOnDestroy() {
+    this.pauseAutoplay();
+  }
+
   selectMessageTab(tab: string) {
     const element = document.getElementById('messages-section');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
+ scrollGallery(direction: number) {
+    const container = this.galleryContainer?.nativeElement;
+    if (!container) return;
 
-  scrollGallery(direction: number) {
-    if (this.galleryContainer) {
-      const container = this.galleryContainer.nativeElement;
-      // Scroll by 3 cards (75% of container width)
-      const scrollAmount = (container.clientWidth * 0.75) * direction;
-      const targetLeft = container.scrollLeft + scrollAmount;
-      
-      this.animateScroll(container, targetLeft, 250); // Snappy 250ms animation duration
+    const card = container.querySelector('.photo-thumbnail-card') as HTMLElement;
+    if (!card) return;
+
+    const gap = 12; // must match your CSS gap
+    const cardWidth = card.offsetWidth + gap;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    // If we're already at (or past) the end, loop back to the start
+    if (direction > 0 && container.scrollLeft >= maxScroll - 5) {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+    if (direction < 0 && container.scrollLeft <= 5) {
+      container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+      return;
+    }
+
+    const target = container.scrollLeft + cardWidth * direction;
+    container.scrollTo({ left: target, behavior: 'smooth' });
+  }
+  
+  startAutoplay() {
+    this.pauseAutoplay(); // avoid stacking multiple intervals
+    this.autoplayTimer = setInterval(() => {
+      this.scrollGallery(1);
+    }, this.AUTOPLAY_DELAY);
+  }
+
+  pauseAutoplay() {
+    if (this.autoplayTimer) {
+      clearInterval(this.autoplayTimer);
+      this.autoplayTimer = null;
     }
   }
+
+  resumeAutoplay() {
+    this.startAutoplay();
+  }
+
+
 
   private animateScroll(element: HTMLElement, target: number, duration: number) {
     const start = element.scrollLeft;
