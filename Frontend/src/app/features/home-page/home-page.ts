@@ -48,7 +48,7 @@ interface PhotoItem {
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, Navbar, Footer],
+  imports: [CommonModule, MatIconModule, MatButtonModule, Footer],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
@@ -113,13 +113,13 @@ export class HomePage {
   ];
 
   photos: PhotoItem[] = [
-    { id: 1, title: 'Mandi Image', image: '/_DSC5557 (1).webp' },
-    { id: 2, title: 'Mandi Image', image: '/mandi5.webp' },
-    { id: 3, title: 'Mandi Image', image: '/DSC_8723.webp' },
-    { id: 4, title: 'Mandi Image', image: '/0212.webp' },
-    { id: 5, title: 'Mandi Image', image: '/_DSC5671 (1).webp' },
-    // { id: 6, title: 'Mandi Image', image: '/Mandi3.JPG' },
-    // { id: 7, title: 'Mandi Image', image: '/_DSC8081.JPG' },
+    { id: 1, title: 'Mandi Image', image: 'assets/_DSC5557 (1).webp' },
+    { id: 2, title: 'Mandi Image', image: 'assets/mandi5.webp' },
+    { id: 3, title: 'Mandi Image', image: 'assets/DSC_8723.webp' },
+    { id: 4, title: 'Mandi Image', image: 'assets/0212.webp' },
+    { id: 5, title: 'Mandi Image', image: 'assets/_DSC5671 (1).webp' },
+    // { id: 6, title: 'Mandi Image', image: 'assets/Mandi3.JPG' },
+    // { id: 7, title: 'Mandi Image', image: 'assets/_DSC8081.JPG' },
   ];
 
   leadershipShortlist = [
@@ -127,21 +127,21 @@ export class HomePage {
       id: 'cm',
       name: "Hon'ble Chief Minister",
       punjabiName: "ਮਾਨਯੋਗ ਮੁੱਖ ਮੰਤਰੀ",
-      image: "/chief minister.jpg",
+      image: 'assets/chief minister.jpg',
       role: "Sh. Bhagwant Singh Mann"
     },
     {
       id: 'fm',
-      name: "Hon'ble Finance Minister",
-      punjabiName: "ਮਾਨਯੋਗ ਵਿੱਤ ਮੰਤਰੀ",
-      image: "/finance minister.jpg",
+      name: "Hon'ble Agriculture Minister ",
+      punjabiName: "ਮਾਨਯੋਗ ਖੇਤੀਬਾੜੀ ਮੰਤਰੀ",
+      image: "assets/agriculture_minister.jpg",
       role: "Sh. Gurmeet Singh Khuddian"
     },
     {
       id: 'doc',
       name: "Director of Colonization",
       punjabiName: "\u0A21\u0A3E\u0A07\u0A30\u0A48\u0A15\u0A1F\u0A30 \u0A06\u0A2c\u0A3e\u0A26\u0A15\u0A3e\u0A30\u0A40",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200",
+      image: "assets/ias_image.jpg",
       role: "IAS Smt. Baldeep Kaur"
     }
   ];
@@ -156,7 +156,7 @@ export class HomePage {
       name: 'Sh. Bhagwant Singh Mann',
       title: "Hon'ble Chief Minister, Punjab",
       punjabiTitle: "ਮਾਨਯੋਗ ਮੁੱਖ ਮੰਤਰੀ, ਪੰਜਾਬ",
-      image: "/chief minister.jpg",
+      image: "assets/chief minister.jpg",
       quote: "Our vision is to make Punjab a hub of digital governance and commercial prosperity.",
       punjabiQuote: "ਸਾਡਾ ਸੰਕਲਪ ਪੰਜਾਬ ਨੂੰ ਡਿਜੀਟਲ ਗਵਰਨੈਂਸ ਅਤੇ ਵਪਾਰਕ ਖੁਸ਼ਹਾਲੀ ਦਾ ਕੇਂਦਰ ਬਣਾਉਣਾ ਹੈ।",
       fullMessage: [
@@ -175,22 +175,23 @@ export class HomePage {
     },
     fm: {
       id: 'fm',
-      name: 'Sh. Harpal Singh Cheema',
-      title: "Hon'ble Finance Minister, Punjab",
-      punjabiTitle: "ਮਾਨਯੋਗ ਵਿੱਤ ਮੰਤਰੀ, ਪੰਜਾਬ",
-      image: "/finance minister.jpg",
-      quote: "Empowering the local economy through modern infrastructural development is our top priority.",
-      punjabiQuote: "ਆਧੁਨਿਕ ਬੁਨਿਆਦੀ ਢਾਂਚੇ ਦੇ ਵਿਕਾਸ ਰਾਹੀਂ ਸਥਾਨਕ ਆਰਥਿਕਤਾ ਨੂੰ ਮਜ਼ਬੂਤ ਕਰਨਾ ਸਾਡੀ ਮੁੱਖ ਤਰਜੀਹ ਹੈ।",
+      name: 'Sh. Gurmeet Singh Khuddian',
+      title: "Hon'ble Agriculture Minister, Punjab",
+      punjabiTitle: "ਮਾਨਯੋਗ ਖੇਤੀਬਾੜੀ ਮੰਤਰੀ, ਪੰਜਾਬ",
+      image: "assets/agriculture_minister.jpg",
+      quote: "Empowering our farmers and boosting the rural economy through modern agricultural infrastructure is our top priority.",
+      punjabiQuote: "ਆਧੁਨਿਕ ਖੇਤੀਬਾੜੀ ਬੁਨਿਆਦੀ ਢਾਂਚੇ ਰਾਹੀਂ ਸਾਡੇ ਕਿਸਾਨਾਂ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਣਾ ਅਤੇ ਪੇਂਡੂ ਆਰਥਿਕਤਾ ਨੂੰ ਮਜ਼ਬੂਤ ਕਰਨਾ ਸਾਡੀ ਮੁੱਖ ਤਰਜੀਹ ਹੈ।",
       fullMessage: [
-        "Punjab has always been a land of strength, resilience, and economic potential. As the Hon’ble Finance Minister, our commitment is to ensure sound financial management, transparency, and efficient utilization of resources for the overall development of the state.",
-        "We are focused on strengthening the financial framework of Punjab by improving revenue systems, promoting fiscal discipline, and ensuring that public funds are used effectively for the welfare of the people. Special emphasis is being placed on supporting key sectors such as agriculture, industry, education, and healthcare.",
-        "Our goal is to create a robust and sustainable economy that generates opportunities for growth, employment, and prosperity. Through strategic planning and responsible governance, we aim to build a financially strong and progressive Punjab.",
-        "I express my sincere gratitude to the people of Punjab for their continued trust and support. Together, we will work towards inclusive growth, financial stability, and a brighter future for all. "
+        "Punjab has always been the breadbasket of the nation, built on the hard work, resilience, and dedication of our farming community. As the Hon’ble Agriculture Minister, our commitment is to empower our farmers, modernize agricultural practices, and ensure sustainable growth across the state.",
+        "We are focused on strengthening Punjab's agricultural ecosystem by advancing crop diversification, promoting eco-friendly farming, improving irrigation networks, and guaranteeing timely access to quality seeds, fertilizers, and modern equipment. Special emphasis is being placed on supporting small and marginal farmers, ensuring fair market access, and increasing farm incomes.",
+        "Our goal is to build a resilient and modern agricultural sector that generates sustainable employment, protects our soil and water resources, and secures the future of rural Punjab. Through strategic planning, technological innovation, and farmer-centric governance, we aim to make agriculture more profitable and sustainable.",
+        "I express my sincere gratitude to the hardworking farmers and people of Punjab for their unwavering dedication. Together, we will work towards a prosperous, green, and vibrant Punjab. "
       ],
       punjabiFullMessage: [
-        "ਪੰਜਾਬ ਦੀ ਆਰਥਿਕ ਮਜ਼ਬੂਤੀ ਮੁੱਖ ਤੌਰ 'ਤੇ ਮਜ਼ਬੂਤ ਅਨਾਜ ਮੰਡੀਆਂ ਅਤੇ ਯੋਜਨਾਬੱਧ ਵਪਾਰਕ ਖੇਤਰਾਂ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ। ਆਬਾਦਕਾਰੀ ਵਿਭਾਗ ਰਾਹੀਂ, ਅਸੀਂ ਉੱਚ ਪੱਧਰੀ ਮੰਡੀਆਂ, ਭੰਡਾਰਨ ਸਹੂਲਤਾਂ ਅਤੇ ਡਿਜੀਟਲ ਵਪਾਰਕ ਨੈੱਟਵਰਕਾਂ ਵਿੱਚ ਨਿਵੇਸ਼ ਕਰ ਰਹੇ ਹਾਂ।",
-        "ਜ਼ਮੀਨ ਦੀ ਅਲਾਟਮੈਂਟ ਅਤੇ ਨਿਲਾਮੀ ਬੋਲੀਆਂ ਵਿੱਚ ਮੁਕੰਮਲ ਪਾਰਦਰਸ਼ਤਾ ਯਕੀਨੀ ਬਣਾਉਣਾ ਸਾਡਾ ਮੁੱਖ ਉਦੇਸ਼ ਹੈ। ਹਰ ਲੈਣ-ਦੇਣ ਅਤੇ ਬੋਲੀ ਨੂੰ ਡਿਜੀਟਲ ਰੂਪ ਵਿੱਚ ਟਰੈਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਜਿਸ ਨਾਲ ਸਰਕਾਰੀ ਪ੍ਰਕਿਰਿਆਵਾਂ 'ਤੇ ਭਰੋਸਾ ਵਧ ਰਿਹਾ ਹੈ।",
-        "ਅਸੀਂ ਵਪਾਰੀਆਂ ਅਤੇ ਨਾਗਰਿਕਾਂ ਦੇ ਸੁਝਾਵਾਂ ਦਾ ਸਵਾਗਤ ਕਰਦੇ ਹਾਂ ਕਿਉਂਕਿ ਅਸੀਂ ਪੰਜਾਬ ਵਿੱਚ ਵਪਾਰ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਹੋਰ ਸਰਲ ਬਣਾਉਣ ਲਈ ਯਤਨਸ਼ੀਲ ਹਾਂ।"
+        "ਪੰਜਾਬ ਹਮੇਸ਼ਾ ਦੇਸ਼ ਦਾ 'ਅੰਨਦਾਤਾ' ਰਿਹਾ ਹੈ, ਜੋ ਸਾਡੇ ਕਿਸਾਨ ਭਾਈਚਾਰੇ ਦੀ ਅਣਥੱਕ ਮਿਹਨਤ, ਦ੍ਰਿੜਤਾ ਅਤੇ ਸਮਰਪਣ 'ਤੇ ਟਿਕਿਆ ਹੋਇਆ ਹੈ। ਮਾਨਯੋਗ ਖੇਤੀਬਾੜੀ ਮੰਤਰੀ ਵਜੋਂ, ਸਾਡੀ ਵਚਨਬੱਧਤਾ ਕਿਸਾਨਾਂ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਣਾ, ਖੇਤੀਬਾੜੀ ਤਰੀਕਿਆਂ ਦਾ ਆਧੁਨਿਕੀਕਰਨ ਕਰਨਾ ਅਤੇ ਰਾਜ ਵਿੱਚ ਟਿਕਾਊ ਵਿਕਾਸ ਨੂੰ ਯਕੀਨੀ ਬਣਾਉਣਾ ਹੈ।",
+        "ਅਸੀਂ ਫਸਲੀ ਭਿੰਨਤਾ ਨੂੰ ਉਤਸ਼ਾਹਿਤ ਕਰਕੇ, ਵਾਤਾਵਰਣ ਪੱਖੀ ਖੇਤੀ ਨੂੰ ਬੜ੍ਹਾਵਾ ਦੇ ਕੇ, ਸਿੰਚਾਈ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸੁਧਾਰ ਕਰਕੇ ਅਤੇ ਉੱਚ ਮਿਆਰੀ ਬੀਜਾਂ, ਖਾਦਾਂ ਅਤੇ ਆਧੁਨਿਕ ਮਸ਼ੀਨਰੀ ਦੀ ਸਮੇਂ ਸਿਰ ਉਪਲਬਧਤਾ ਯਕੀਨੀ ਬਣਾ ਕੇ ਪੰਜਾਬ ਦੇ ਖੇਤੀਬਾੜੀ ਖੇਤਰ ਨੂੰ ਮਜ਼ਬੂਤ ਕਰਨ 'ਤੇ ਧਿਆਨ ਕੇਂਦਰਿਤ ਕਰ ਰਹੇ ਹਾਂ। ਛੋਟੇ ਅਤੇ ਸੀਮਾਂਤ ਕਿਸਾਨਾਂ ਦੀ ਸਹਾਇਤਾ ਕਰਨ, ਮੰਡੀਕਰਨ ਨੂੰ ਆਸਾਨ ਬਣਾਉਣ ਅਤੇ ਕਿਸਾਨੀ ਆਮਦਨ ਵਧਾਉਣ 'ਤੇ ਵਿਸ਼ੇਸ਼ ਜ਼ੋਰ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ।",
+        "ਸਾਡਾ ਉਦੇਸ਼ ਇੱਕ ਅਜਿਹਾ ਮਜ਼ਬੂਤ ਅਤੇ ਆਧੁਨਿਕ ਖੇਤੀਬਾੜੀ ਖੇਤਰ ਤਿਆਰ ਕਰਨਾ ਹੈ ਜੋ ਰੋਜ਼ਗਾਰ ਦੇ ਮੌਕੇ ਪੈਦਾ ਕਰੇ, ਸਾਡੀ ਜ਼ਮੀਨ ਅਤੇ ਪਾਣੀ ਦੇ ਸਰੋਤਾਂ ਦੀ ਸੰਭਾਲ ਕਰੇ, ਅਤੇ ਪੰਜਾਬ ਦੇ ਪੇਂਡੂ ਭਵਿੱਖ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੇ। ਯੋਜਨਾਬੱਧ ਨੀਤੀਆਂ, ਤਕਨਾਲੋਜੀ ਦੇ ਸੁਚੱਜੇ ਪ੍ਰਯੋਗ ਅਤੇ ਕਿਸਾਨ ਪੱਖੀ ਪ੍ਰਸ਼ਾਸਨ ਰਾਹੀਂ, ਅਸੀਂ ਖੇਤੀਬਾੜੀ ਨੂੰ ਹੋਰ ਲਾਹੇਵੰਦ ਅਤੇ ਟਿਕਾਊ ਬਣਾਉਣ ਲਈ ਯਤਨਸ਼ੀਲ ਹਾਂ।",
+        "ਮੈਂ ਪੰਜਾਬ ਦੇ ਮਿਹਨਤੀ ਕਿਸਾਨਾਂ ਅਤੇ ਆਮ ਨਾਗਰਿਕਾਂ ਦਾ ਅਤੁੱਟ ਵਿਸ਼ਵਾਸ ਅਤੇ ਸਹਿਯੋਗ ਲਈ ਤਹਿ ਦਿਲੋਂ ਧੰਨਵਾਦ ਕਰਦਾ ਹਾਂ। ਆਓ ਸਾਰੇ ਮਿਲ ਕੇ ਇੱਕ ਖੁਸ਼ਹਾਲ, ਹਰਿਆ-ਭਰਿਆ ਅਤੇ ਗਤੀਸ਼ੀਲ ਪੰਜਾਬ ਬਣਾਉਣ ਲਈ ਕੰਮ ਕਰੀਏ।"
       ]
     },
     doc: {
@@ -198,7 +199,7 @@ export class HomePage {
       name: 'Smt. Amrit Singh, IAS',
       title: "Director of Colonization, Punjab",
       punjabiTitle: "\u0A21\u0A3E\u0A07\u0A30\u0A48\u0A15\u0A1F\u0A30 \u0A06\u0A2c\u0A3e\u0A26\u0A15\u0A3e\u0A30\u0A40, \u0A2a\u0A70\u0A1c\u0A3e\u0A2c",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+      image: "assets/ias_image.jpg",
       quote: "Welcome to the Digital Property and e-Auction Portal. We are dedicated to providing seamless, paperless citizen services.",
       punjabiQuote: "ਡਿਜੀਟਲ ਪ੍ਰਾਪਰਟੀ ਅਤੇ ਈ-ਨਿਲਾਮੀ ਪੋਰਟਲ 'ਤੇ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਅਸੀਂ ਨਿਰਵਿਘਨ ਅਤੇ ਕਾਗਜ਼ ਰਹਿਤ ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਪ੍ਰਦਾਨ ਕਰਨ ਲਈ ਵਚਨਬੱਧ ਹਾਂ।",
       fullMessage: [

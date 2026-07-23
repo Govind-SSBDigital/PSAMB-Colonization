@@ -20,7 +20,7 @@ interface EntityType {
 @Component({
   selector: 'app-signup-signin',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, Navbar, PersonalDetails, DocumentsAndAddress, BusinessDetails],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, PersonalDetails, DocumentsAndAddress, BusinessDetails],
   templateUrl: './signup-signin.html',
   styleUrl: './signup-signin.css',
 })

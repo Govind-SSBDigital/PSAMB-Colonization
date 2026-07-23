@@ -204,7 +204,7 @@
                 <label for="auctionDateTime" class="form-label small text-dark fw-semibold text-uppercase">Auction Date
                   &amp; Time <span class="text-danger">*</span></label>
                 <input id="auctionDateTime" type="datetime-local"
-                  class="form-control bg-light rounded-3 custom-input-color" formControlName="auctionDateTime"
+                  class="form-control bg-light rounded-3 custom-input-color uppercase" formControlName="auctionDateTime"
                   [class.is-invalid]="isInvalid('auctionDateTime')" />
                 @if (isInvalid('auctionDateTime')) { <div class="invalid-feedback">Auction date &amp; time is required.
                 </div> }
@@ -227,7 +227,7 @@
                 </div> }
               </div>
               <div class="col-md-8">
-                <label for="h1BidderName" class="form-label small text-dark fw-semibold text-uppercase">H1 Bidder Name
+                <label for="h1BidderName" class="form-label small text-dark fw-semibold text-uppercase">Allotee Name
                   <span class="text-danger">*</span></label>
                 <div class="input-group">
                   <input id="h1BidderName" type="text" class="form-control bg-light rounded-start-3 custom-input-color"
@@ -237,7 +237,7 @@
                     <button type="button" class="btn btn-outline-secondary rounded-end-3" (click)="addBidderName()">+ Add</button>
                   }
                 </div>
-                @if (isInvalid('h1BidderName')) { <div class="invalid-feedback d-block">H1 bidder name is required.
+                @if (isInvalid('h1BidderName')) { <div class="invalid-feedback d-block">Allotee name is required.
                 </div> }
                 @if (registerationForm.get('transfered')?.value && bidderNamesFormArray.length) {
                 }
@@ -259,7 +259,7 @@
 
               @if (registerationForm.get('transfered')?.value) {
                 <div class="col-md-12 mt-3 border border-secondary rounded-3 bg-light p-2">
-                  <h6 class="small text-dark fw-semibold">Bidders Name</h6>
+                  <h6 class="small text-dark fw-semibold">Allotee Names</h6>
                   @if (bidderNamesFormArray.length) {
                     <ul class="list-group list-group-flush">
                       @for (bidder of bidderNamesFormArray.controls; track bidder) {
@@ -270,7 +270,7 @@
                       }
                     </ul>
                   } @else {
-                    <div class="text-muted small py-2">No bidder names added yet. Click + Add to add one.</div>
+                    <div class="text-muted small py-2">No allotee names added yet. Click + Add to add one.</div>
                   }
                 </div>
               }
@@ -385,9 +385,9 @@
                         [class.is-invalid]="isInvalid('formFeeTransactionId')" />@if (isInvalid('formFeeTransactionId'))
                       { <div class="invalid-feedback">Transaction ID is required.</div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input
-                        type="text" class="form-control bg-white custom-input-color"
-                        formControlName="formFeeTransactionDate" placeholder="DD/MM/YYYY" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}"
-                      (input)="formatDateField($event)" [class.is-invalid]="isInvalid('formFeeTransactionDate')" />@if
+                        type="date" class="form-control bg-white custom-input-color uppercase"
+                        formControlName="formFeeTransactionDate"
+                        [class.is-invalid]="isInvalid('formFeeTransactionDate')" />@if
                       (isInvalid('formFeeTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.</div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Paid Amount (Rs.)</label><input
                         type="number" step="0.01" class="form-control bg-white custom-input-color"
@@ -408,9 +408,8 @@
                       (isInvalid('emdTransactionId')) { <div class="invalid-feedback">EMD transaction ID is required.
                       </div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Date</label><input
-                        type="text" class="form-control bg-white custom-input-color"
-                        formControlName="emdTransactionDate" placeholder="DD/MM/YYYY" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}"
-                        (input)="formatDateField($event)" [class.is-invalid]="isInvalid('emdTransactionDate')" />@if
+                        type="date" class="form-control bg-white custom-input-color uppercase"
+                        formControlName="emdTransactionDate" [class.is-invalid]="isInvalid('emdTransactionDate')" />@if
                       (isInvalid('emdTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.</div> }
                     </div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Paid (Rs.)</label><input
@@ -433,9 +432,9 @@
                     [class.is-invalid]="isInvalid('allotmentTransactionId')" />@if (isInvalid('allotmentTransactionId'))
                   { <div class="invalid-feedback">25% milestone transaction ID is required.</div> }</div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction Date</label><input
-                    type="text" class="form-control bg-white custom-input-color"
-                    formControlName="allotmentTransactionDate" placeholder="DD/MM/YYYY" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}"
-                    (input)="formatDateField($event)" [class.is-invalid]="isInvalid('allotmentTransactionDate')" />@if
+                    type="date" class="form-control bg-white custom-input-color uppercase"
+                    formControlName="allotmentTransactionDate"
+                    [class.is-invalid]="isInvalid('allotmentTransactionDate')" />@if
                   (isInvalid('allotmentTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.</div> }
                   </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label><input
@@ -563,9 +562,9 @@
 
               <td>
                 @if (row.get('isEditing')?.value) {
-                  <input type="text" class="form-control form-control-sm font-monospace" formControlName="receiptDate" placeholder="dd/mm/yyyy" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" (input)="formatDateField($event)" />
+                   <input type="date" class="form-control form-control-sm font-monospace" formControlName="receiptDate" />
                 } @else {
-                  <span class="font-monospace text-dark">{{ formatDisplayDate(row.get('receiptDate')?.value) }}</span>
+                  <span class="font-monospace text-dark">{{ row.get('receiptDate')?.value | date:'dd/MM/yyyy' }}</span>
                 }
               </td>
 
@@ -587,9 +586,9 @@
 
               <td>
                 @if (row.get('isEditing')?.value) {
-                  <input type="text" class="form-control form-control-sm font-monospace" formControlName="draftDate" placeholder="dd/mm/yyyy" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" (input)="formatDateField($event)" />
+                  <input type="date" class="form-control form-control-sm font-monospace" formControlName="draftDate" />
                 } @else {
-                  <span class="font-monospace text-dark">{{ formatDisplayDate(row.get('draftDate')?.value) }}</span>
+                  <span class="font-monospace text-dark">{{ row.get('draftDate')?.value | date:'dd/MM/yyyy' }}</span>
                 }
               </td>
 
