@@ -38,11 +38,18 @@ export class Navbar {
         }, 150);
       });
     }
+    this.selectMessageTab('all');
   }
 
   toggleDownloadsDropdown(event: Event) {
     event.preventDefault();
     event.stopPropagation();
     this.isDownloadsDropdownOpen = !this.isDownloadsDropdownOpen;
+  }
+   selectMessageTab(tab: string) {
+    const element = document.getElementById('messages-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }
