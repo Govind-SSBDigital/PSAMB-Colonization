@@ -9,11 +9,11 @@ $cream: #faf8f3;
 $text-dark: #16281f;
 $text-muted: #6b8577;
 
-// ---------- Page background 
+// ---------- Page background
 .login-page {
   font-family: 'Poppins', sans-serif;
   margin-top: -28px !important;
-   background-image: linear-gradient(rgba(2, 44, 34, 0.75), rgba(2, 44, 34, 0.85)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600');
+  background-image: linear-gradient(rgba(2, 44, 34, 0.75), rgba(2, 44, 34, 0.85)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600');
 
 }
 .custom-btn{
@@ -22,11 +22,24 @@ $text-muted: #6b8577;
   // color: #ffffff;
   color: #000;
   font-size: 14px;
-  margin-top: -15px;
   &:hover{
     // background-color: transparent;
     background-color: var(--theme-primary);
     color: #fff;
+  }
+}
+
+.back-btn {
+  z-index: 2;
+}
+
+.form-content {
+  margin-top: 4.75rem;
+}
+
+@media (max-width: 575.98px) {
+  .form-content {
+    margin-top: 4.25rem;
   }
 }
 
@@ -62,7 +75,7 @@ input::placeholder{
 }
 
 .illustration-photo {
-  filter: saturate(1.05) contrast(1.03); 
+  filter: saturate(1.05) contrast(1.03);
 }
 
 // bottom-weighted scrim so the glass panel text stays legible — gradients aren't in Bootstrap
@@ -74,7 +87,7 @@ input::placeholder{
 
 
 .illustration-eyebrow {
-  letter-spacing: 0.14em; 
+  letter-spacing: 0.14em;
   color: $gold;
 }
 
@@ -165,7 +178,7 @@ input::placeholder{
   }
 }
 
-// ---- Buttons 
+// ---- Buttons
 .btn-primary-custom {
   background: linear-gradient(135deg, $forest 0%, $moss 100%);
   color: #fff;
@@ -211,6 +224,26 @@ input::placeholder{
   }
 }
 
+// ---------- OTP module 
+.otp-hint {
+  color: $text-muted;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.otp-digit-input {
+  width: 100%;
+  max-width: 46px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.resend-text {
+  color: $text-muted;
+  font-size: 0.85rem;
+}
+
 // ---------- Responsive ----------
 @media (max-width: 991.98px) {
   .login-card {
@@ -230,5 +263,9 @@ input::placeholder{
 
   .form-panel {
     padding: 1.75rem !important;
+  }
+  .otp-digit-input {
+    max-width: 40px;
+    font-size: 1.1rem;
   }
 }
