@@ -274,9 +274,9 @@ export class SignupSignin implements OnInit {
     }
   }
 
-  onEntityTypeChange() {
-    this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
-  }
+  // onEntityTypeChange() {
+  //   this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
+  // }
 
   openSignUp() {
     if (!this.router.url.includes('/register')) {
@@ -352,7 +352,7 @@ export class SignupSignin implements OnInit {
 
   refreshCaptcha() {
     this.generateCaptcha();
-    this.triggerToast('Captcha refreshed / ਕੈਪਚਾ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਗਿਆ', 'info');
+    // this.triggerToast('Captcha refreshed / ਕੈਪਚਾ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਗਿਆ', 'info');
   }
 
   // Role-based OTP Check
