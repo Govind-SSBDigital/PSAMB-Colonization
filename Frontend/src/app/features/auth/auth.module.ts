@@ -12,6 +12,7 @@ import { SharedModule } from '../../shared/shared.module';
     SharedModule,
     RouterModule.forChild([
       { path: 'login', component: SignupSignin },
+      // {path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule)},
       { path: 'register', component: SignupSignin },
       { path: '', redirectTo: 'login', pathMatch: 'full' }
     ])

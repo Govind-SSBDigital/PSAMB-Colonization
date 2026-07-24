@@ -14,7 +14,8 @@ $text-muted: #6b8577;
   font-family: 'Poppins', sans-serif;
   margin-top: -28px !important;
   background-image: linear-gradient(rgba(2, 44, 34, 0.75), rgba(2, 44, 34, 0.85)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600');
-
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .custom-btn{
   // background-color: var(--theme-primary);
@@ -145,12 +146,11 @@ input::placeholder{
 // ---- Captcha ----
 .captcha-box {
   background: $forest;
-  border: 1px solid $gold;
   font-family: 'Poppins', sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 4px;
   font-style: italic;
-  color: #f2e6cd;
+  color: #ffffff;
   user-select: none;
 }
 
