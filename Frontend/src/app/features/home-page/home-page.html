@@ -1,4 +1,4 @@
-<app-navbar (messageSelected)="selectMessageTab($event)"></app-navbar>
+<!-- <app-navbar (messageSelected)="selectMessageTab($event)"></app-navbar> -->
 <div class="homepage-container">
 
     <!-- 1. HERO & ANNOUNCEMENTS SPLIT SECTION -->
@@ -67,21 +67,21 @@
         <div class="metric-card-flat">
             <div class="icon-wrap bg-teal-glow"><mat-icon>gavel</mat-icon></div>
             <div class="metric-data">
-                <h4>12715+</h4>
+                <h4>28440+</h4>
                 <p>No. of Sold Properties</p>
             </div>
         </div>
         <div class="metric-card-flat">
             <div class="icon-wrap bg-gold-glow"><mat-icon>assignment_turned_in</mat-icon></div>
             <div class="metric-data">
-                <h4>12,400+</h4>
+                <h4>51509+</h4>
                 <p>Digitized Property Deeds</p>
             </div>
         </div>
         <div class="metric-card-flat">
             <div class="icon-wrap bg-emerald-glows"><mat-icon>people</mat-icon></div>
             <div class="metric-data">
-                <h4>9250+</h4>
+                <h4>22149+</h4>
                 <p>No. of Unsold Properties</p>
             </div>
         </div>
@@ -117,11 +117,11 @@
         <div class="intro-grid-container">
             <div class="intro-image-collage">
                 <div class="main-collage-img">
-                    <img src="pmb3.png"
+                    <img src="assets/pmb3.png"
                         alt="Modern commercial storefront">
                 </div>
                 <div class="secondary-collage-img shadow-lg">
-                    <img src="pmb2.png"
+                    <img src="assets/pmb2.png"
                         alt="Real Estate Property Contract Keys">
                 </div>
             </div>
@@ -189,23 +189,36 @@
                 godowns.</p>
         </div>
 
-        <div class="gallery-carousel-wrapper">
-            <button class="gallery-nav-btn prev" (click)="scrollGallery(-1)" aria-label="Scroll Left">
-                <i class="fas fa-chevron-left"></i>
-            </button>
+        <div class="gallery-carousel-wrapper position-relative d-flex align-items-center"
+     (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
 
-            <div class="photos-scroll-container" #galleryContainer>
-                <div class="photo-thumbnail-card" *ngFor="let photo of photos; let i = index">
-                    <div class="photo-image-wrap">
-                        <img [src]="photo.image" [alt]="photo.title" [loading]="i < 4 ? 'eager' : 'lazy'" [attr.fetchpriority]="i < 4 ? 'high' : 'auto'">
-                    </div>
-                </div>
-            </div>
+  <button class="btn btn-light rounded-circle shadow-sm gallery-nav-btn prev"
+          (click)="scrollGallery(-1)" aria-label="Scroll Left">
+    <i class="fas fa-chevron-left"></i>
+  </button>
 
-            <button class="gallery-nav-btn next" (click)="scrollGallery(1)" aria-label="Scroll Right">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
+  <div class="photos-scroll-container d-flex gap-3 flex-nowrap overflow-auto w-100" #galleryContainer>
+    <div class="photo-thumbnail-card flex-shrink-0 bg-white border rounded-3 shadow-sm overflow-hidden"
+         *ngFor="let photo of photos; let i = index">
+      <div class="photo-image-wrap position-relative overflow-hidden"
+           [class.skeleton]="!photo.loaded">
+        <img [src]="photo.image"
+             [alt]="photo.title"
+             width="400" height="200"
+             [loading]="i < 4 ? 'eager' : 'lazy'"
+             [attr.fetchpriority]="i < 2 ? 'high' : 'auto'"
+             decoding="async"
+             (load)="photo.loaded = true"
+             class="w-100 h-100 object-fit-cover">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-light rounded-circle shadow-sm gallery-nav-btn next"
+          (click)="scrollGallery(1)" aria-label="Scroll Right">
+    <i class="fas fa-chevron-right"></i>
+  </button>
+</div>
     </section>
     <!-- LEADERSHIP DETAIL MODAL POPUP -->
     <div class="leader-modal-overlay" *ngIf="isLeaderModalOpen && selectedLeaderData" (click)="closeLeaderModal()">

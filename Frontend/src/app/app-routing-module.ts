@@ -48,6 +48,14 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: "new-login",
+    loadChildren: () => import('./features/auth/login/login.module').then(m => m.LoginModule),
+  },
+  {
+    path: "new-signup",
+    loadComponent:() => import('./features/auth/signup/signup').then(m =>m.Signup),
+  },
+  {
     path: '**',
     redirectTo: ''
   }

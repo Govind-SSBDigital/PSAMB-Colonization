@@ -352,20 +352,20 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return isNaN(fallbackDate.getTime()) ? null : fallbackDate;
   }
 
-  formatDateField(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let digits = input.value.replace(/\D/g, '').slice(0, 8);
-    if (digits.length >= 5) {
-      digits = digits.replace(/^(\d{2})(\d{2})(\d{0,4}).*$/, '$1/$2/$3');
-    } else if (digits.length >= 3) {
-      digits = digits.replace(/^(\d{2})(\d{0,2}).*$/, '$1/$2');
-    }
-    input.value = digits;
-    const controlName = input.getAttribute('formControlName');
-    if (controlName && this.registerationForm.get(controlName)) {
-      this.registerationForm.get(controlName)?.setValue(digits, { emitEvent: false });
-    }
-  }
+  // formatDateField(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   let digits = input.value.replace(/\D/g, '').slice(0, 8);
+  //   if (digits.length >= 5) {
+  //     digits = digits.replace(/^(\d{2})(\d{2})(\d{0,4}).*$/, '$1/$2/$3');
+  //   } else if (digits.length >= 3) {
+  //     digits = digits.replace(/^(\d{2})(\d{0,2}).*$/, '$1/$2');
+  //   }
+  //   input.value = digits;
+  //   const controlName = input.getAttribute('formControlName');
+  //   if (controlName && this.registerationForm.get(controlName)) {
+  //     this.registerationForm.get(controlName)?.setValue(digits, { emitEvent: false });
+  //   }
+  // }
 
   isInvalid(controlName: string): boolean {
     const control = this.registerationForm.get(controlName);
