@@ -20,7 +20,7 @@ interface EntityType {
 @Component({
   selector: 'app-signup-signin',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, Navbar, PersonalDetails, DocumentsAndAddress, BusinessDetails],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, PersonalDetails, DocumentsAndAddress, BusinessDetails],
   templateUrl: './signup-signin.html',
   styleUrl: './signup-signin.css',
 })
@@ -274,9 +274,9 @@ export class SignupSignin implements OnInit {
     }
   }
 
-  onEntityTypeChange() {
-    this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
-  }
+  // onEntityTypeChange() {
+  //   this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
+  // }
 
   openSignUp() {
     if (!this.router.url.includes('/register')) {
@@ -352,7 +352,7 @@ export class SignupSignin implements OnInit {
 
   refreshCaptcha() {
     this.generateCaptcha();
-    this.triggerToast('Captcha refreshed / ਕੈਪਚਾ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਗਿਆ', 'info');
+    // this.triggerToast('Captcha refreshed / ਕੈਪਚਾ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਗਿਆ', 'info');
   }
 
   // Role-based OTP Check

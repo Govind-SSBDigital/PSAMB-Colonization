@@ -1,22 +1,10 @@
-<!-- <header class="govt-top-bar">
-  <div class="container-fluid top-bar-flex">
-    <div class="top-bar-left">
-      <span><i class="fas fa-landmark"></i> Official Portal of Colonization Department, Punjab State Land &amp; Property Colonization Board</span>
-    </div>
-    <div class="top-bar-right">
-      <a href="#introduction"><i class="fas fa-info-circle"></i> About Dept</a>
-      <a href="https://punjab.gov.in" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Punjab Govt</a>
-    </div>
-  </div>
-</header> -->
-
 <nav class="premium-navbar">
   <div class="container-fluid nav-flex-container">
 
     <!-- Branding Logo & Titles -->
-    <a class="nav-branding-wrap">
+    <a class="nav-branding-wrap" routerLink="/" (click)="closeMobileMenu()">
       <div class="branding-logo">
-        <img src="/ColonizationLogo.png" alt="PSLPCB Punjab Logo" class="logo-img"
+        <img src="assets/ColonizationLogo.png" alt="PSLPCB Punjab Logo" class="logo-img"
           style="filter: brightness(0) invert(1); opacity: 0.9;" />
       </div>
       <div class="branding-text-block">
@@ -25,42 +13,45 @@
       </div>
     </a>
 
-    <!-- Nav Links (Responsive Collapse) -->
+    <!-- Nav Links (Responsive Drawer) -->
     <div class="nav-links-container" [class.mobile-open]="isMobileMenuOpen">
       <a class="nav-link-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
         (click)="closeMobileMenu()">Home</a>
       <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">e-Auctions</a>
-      <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">Citizen
-        Services</a>
-
+      <a class="nav-link-item" routerLinkActive="active" (click)="closeMobileMenu()">Citizen Services</a>
       <a class="nav-link-item" (click)="clickMessages($event)">Messages</a>
-
       <a class="nav-link-item" href="#introduction" (click)="closeMobileMenu()">About Us</a>
       <!-- Downloads Dropdown Menu -->
-      <div class="nav-dropdown-wrapper" [class.dropdown-open]="isDownloadsDropdownOpen">
-        <a class="nav-link-item dropdown-toggle" (click)="toggleDownloadsDropdown($event)">
-          Downloads <i class="fas fa-chevron-down dropdown-arrow" [class.rotated]="isDownloadsDropdownOpen"></i>
-        </a>
-        <div class="nav-dropdown-menu" [class.show]="isDownloadsDropdownOpen">
-          <a class="dropdown-item" href="/downloads/ndc_requirements.txt" download (click)="closeMobileMenu(); isDownloadsDropdownOpen = false">
-            <i class="fas fa-file-invoice icon-dropdown"></i> Documents for NDC
-          </a>
-          <a class="dropdown-item" href="/downloads/permission_to_sell_requirements.txt" download (click)="closeMobileMenu(); isDownloadsDropdownOpen = false">
-            <i class="fas fa-file-signature icon-dropdown"></i> Permission to Sell
-          </a>
-          <a class="dropdown-item" href="/downloads/permission_to_transfer_death_case.txt" download (click)="closeMobileMenu(); isDownloadsDropdownOpen = false">
-            <i class="fas fa-users-slash icon-dropdown"></i> Permission to Transfer
-          </a>
-        </div>
+      <div class="nav-item dropdown" [class.open]="isDownloadsOpen">
+        <button type="button" class="nav-link-item dropdown-toggle"
+        (click)="toggleDownloads($event)" [attr.aria-expanded]="isDownloadsOpen">
+        Downloads
+        <i class="fas fa-chevron-down dropdown-arrow" [class.rotated]="isDownloadsOpen"></i>
+        </button>
+        <ul class="dropdown-menu custom-bg" [class.show]="isDownloadsOpen">
+          <li>
+            <a class="dropdown-item" href="/downloads/ndc_requirements.txt" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-invoice icon-dropdown"></i> Documents for NDC
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/downloads/permission_to_sell_requirements.txt" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-signature icon-dropdown"></i> Permission to Sell
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/downloads/permission_to_transfer_death_case.txt" download (click)="closeMobileMenu()">
+              <i class="fas fa-users-slash icon-dropdown"></i> Permission to Transfer
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <!-- CTA Auth Buttons in mobile/collapsed view -->
-      <!-- <div class="nav-actions-mobile mt-3">
-        <a class="btn-nav-login" routerLink="/login" [queryParams]="{mode: 'signin'}"
-          (click)="closeMobileMenu()">Sign In</a>
-        <a class="btn-nav-register" routerLink="/login" [queryParams]="{mode: 'signup'}"
-          (click)="closeMobileMenu()">Sign Up</a>
-      </div> -->
+      <!-- CTA buttons inside the drawer, mobile only -->
+      <div class="nav-actions-mobile">
+        <a class="btn-nav-login" routerLink="/auth/login" (click)="closeMobileMenu()">Sign In</a>
+        <a class="btn-nav-register" routerLink="/auth/register" (click)="closeMobileMenu()">Sign Up</a>
+      </div>
     </div>
 
     <!-- Desktop CTA Buttons -->
@@ -69,9 +60,12 @@
       <a class="btn-nav-login" routerLink="/auth/register">Sign Up</a>
     </div>
 
-    <!-- Mobile Menu Toggler Toggle -->
+    <!-- Mobile Menu Toggler -->
     <button class="nav-mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle Navigation">
       <i class="fas" [class.fa-bars]="!isMobileMenuOpen" [class.fa-times]="isMobileMenuOpen"></i>
     </button>
   </div>
+
+  <!-- Backdrop: only in DOM while menu is open -->
+  <div class="nav-backdrop" *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
 </nav>

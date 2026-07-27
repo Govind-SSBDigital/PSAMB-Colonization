@@ -1,0 +1,54 @@
+:host {
+  --brand: #064e3b;
+  --brand-light: #059669;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Gurmukhi', sans-serif;
+}
+.custom-bg{
+  background-image: linear-gradient(rgba(2, 44, 34, 0.75), rgba(2, 44, 34, 0.85)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600');
+}
+.custom-btn{
+  background-color: #ffffff;
+  color: rgb(77, 75, 75);
+  font-size: 14px;
+  margin-top: -5px;
+  &:hover{
+    background-color: var(--brand);
+    color: #fff;
+  }
+}
+.text-brand {
+  color: var(--brand) !important;
+}
+select::placeholder{
+    font-size: 13px !important;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: #ecfdf5;
+  color: var(--brand);
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.header-gradient {
+  background: linear-gradient(135deg, var(--brand) 0%, #065f46 100%);
+}
+
+.btn-brand {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.btn-brand:hover,
+.btn-brand:focus {
+  background-color: var(--brand-light);
+  border-color: var(--brand-light);
+  color: #fff;
+}
+
+.btn-brand:disabled {
+  opacity: 0.6;
+}
