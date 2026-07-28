@@ -10,7 +10,10 @@ import { DocumentsAndAddress } from './documents-and-address/documents-and-addre
 import { PersonalDetails } from './personal-details/personal-details';
 import { BusinessDetails } from './business-details/business-details';
 import { Procurement } from './procurement/procurement';
+<<<<<<< HEAD
 import { AuthService } from '../../../core/service/auth.service';
+=======
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
 
 interface EntityType {
   id: string;

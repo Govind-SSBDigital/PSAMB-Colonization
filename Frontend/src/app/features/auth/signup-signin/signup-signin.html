@@ -273,10 +273,13 @@
                             <div class="category-dropdown-wrap">
                                 <label for="entityDropdown" class="form-label-custom mb-2">Select Category - (ਸ਼੍ਰੇਣੀ ਚੁਣੋ) <span class="required-star">*</span></label>
                                 <select id="entityDropdown" [(ngModel)]="selectedEntityType" class="form-input-custom inline-select">
+<<<<<<< HEAD
                                 <label for="entityDropdown" class="form-label-custom mb-2">Select Category - (ਸ਼੍ਰੇਣੀ
                                     ਚੁਣੋ) <span class="required-star">*</span></label>
                                 <select id="entityDropdown" [(ngModel)]="selectedEntityType"
                                     (change)="onEntityTypeChange()" class="form-input-custom inline-select">
+=======
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                                     <option value="" disabled selected>-Select Category- (-ਸ਼੍ਰੇਣੀ ਚੁਣੋ-)</option>
                                     <option *ngFor="let item of entityTypes" [value]="item.id">{{ item.label }} / {{
                                         getPunjabiLabel(item.id) }}</option>
@@ -297,7 +300,12 @@
                     </app-personal-details>
 
                     <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
+<<<<<<< HEAD
                         [idDocTypes]="idDocTypes" [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
+=======
+                        [states]="states" [districts]="districts" [cities]="cities" [idDocTypes]="idDocTypes"
+                        [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                         [uploadingStates]="uploadingStates"
                         (fileSelected)="onFileSelected($event.event, $event.docType)">
                     </app-documents-and-address>
@@ -308,7 +316,18 @@
                                 [states]="states" [districts]="districts" [cities]="cities"
                                 (toastMessage)="triggerToast($event.message, $event.type)">
                         </app-business-details>
+<<<<<<< HEAD
+=======
 
+                </div>
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
+
+                <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
+                    <app-procurement [selectedEntityType]="selectedEntityType"
+                        (backClicked)="onBackToInstructions()"
+                        
+                        (toastMessage)="triggerToast($event.message, $event.type)">
+                    </app-procurement>
                 </div>
 
                 <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
