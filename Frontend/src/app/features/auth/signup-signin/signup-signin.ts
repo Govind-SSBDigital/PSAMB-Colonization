@@ -9,6 +9,7 @@ import { Navbar } from '../../navbar/navbar';
 import { DocumentsAndAddress } from './documents-and-address/documents-and-address';
 import { PersonalDetails } from './personal-details/personal-details';
 import { BusinessDetails } from './business-details/business-details';
+import { Procurement } from './procurement/procurement';
 
 interface EntityType {
   id: string;
@@ -20,7 +21,7 @@ interface EntityType {
 @Component({
   selector: 'app-signup-signin',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, PersonalDetails, DocumentsAndAddress, BusinessDetails],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, PersonalDetails, DocumentsAndAddress, BusinessDetails, Procurement],
   templateUrl: './signup-signin.html',
   styleUrl: './signup-signin.css',
 })
@@ -70,7 +71,12 @@ export class SignupSignin implements OnInit {
     fatherLastName: '',
     motherFirstName: '',
     motherLastName: '',
-    emailAddress: '',
+    spouseFirstName: '',
+    spouseLastName: '',
+      fatherSectionVisible: false,
+      spouseSectionVisible: false,
+      isManagingPartner: null,
+      emailAddress: '',
     mobileNumber: '',
     password: '',
     confirmPassword: '',
@@ -174,38 +180,6 @@ export class SignupSignin implements OnInit {
     const existingUsersRaw = localStorage.getItem('cp_users');
     const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
 
-    // 1. Staff / Business User (Requires OTP)
-    const staffUser = {
-      userId: 'pmb.mcabo-ms',
-      password: 'password',
-      fullName: 'Board Officer (MCABO-MS)',
-      entityType: 'Sole Proprietorship', // Requires OTP
-      mobile: '9876543210',
-      email: 'pmb.mcabo-ms@punjab.gov.in'
-    };
-    const staffIdx = existingUsers.findIndex((u: any) => u.userId.toLowerCase() === 'pmb.mcabo-ms');
-    if (staffIdx === -1) {
-      existingUsers.push(staffUser);
-    } else {
-      existingUsers[staffIdx] = staffUser;
-    }
-
-    // 2. Individual Citizen User (Bypasses OTP)
-    const citizenUser = {
-      userId: 'dataentryoprt',
-      password: '123456',
-      fullName: 'Rahul Kumar',
-      entityType: 'Individual', // Bypasses OTP
-      mobile: '9988776655',
-      email: 'dataentryoprt@punjab.gov.in'
-    };
-    const citizenIdx = existingUsers.findIndex((u: any) => u.userId.toLowerCase() === 'dataentryoprt');
-    if (citizenIdx === -1) {
-      existingUsers.push(citizenUser);
-    } else {
-      existingUsers[citizenIdx] = citizenUser;
-    }
-
     localStorage.setItem('cp_users', JSON.stringify(existingUsers));
 
     const session = localStorage.getItem('cp_session');
@@ -272,6 +246,14 @@ export class SignupSignin implements OnInit {
       case 'Limited Liability Partnership': return 'ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ';
       default: return 'Individual';
     }
+  }
+
+  shouldShowBusinessDetails(): boolean {
+    return this.selectedEntityType !== 'Individual' && this.selectedEntityType !== 'Procurement Agency';
+  }
+
+  shouldShowProcurementSection(): boolean {
+    return this.selectedEntityType === 'Procurement Agency';
   }
 
   // onEntityTypeChange() {
@@ -362,39 +344,30 @@ export class SignupSignin implements OnInit {
     return isStaff || isBusiness;
   }
 
-  openLoginOtpModal() {
-    this.loginOtpModalOpen = true;
-    this.loginOtpInput = '';
-    this.loginOtpTimer = 30;
-    this.triggerToast('Login OTP sent (Use: 778899)', 'info');
+  // openLoginOtpModal() {
+  //   this.loginOtpModalOpen = true;
+  //   this.loginOtpInput = '';
+  //   this.loginOtpTimer = 30;
+  //   this.triggerToast('Login OTP sent (Use: 778899)', 'info');
 
-    const interval = setInterval(() => {
-      if (this.loginOtpTimer > 0) {
-        this.loginOtpTimer--;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
+  //   const interval = setInterval(() => {
+  //     if (this.loginOtpTimer > 0) {
+  //       this.loginOtpTimer--;
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 1000);
+  // }
 
-  closeLoginOtpModal() {
-    this.loginOtpModalOpen = false;
-    this.pendingLoginUser = null;
-  }
+  // closeLoginOtpModal() {
+  //   this.loginOtpModalOpen = false;
+  //   this.pendingLoginUser = null;
+  // }
 
-  verifyLoginOtp() {
-    if (this.loginOtpInput === '778899') {
-      this.loginSuccess(this.pendingLoginUser);
-      this.closeLoginOtpModal();
-    } else {
-      this.triggerToast('Invalid OTP. Please use code: 778899', 'error');
-    }
-  }
-
-  resendLoginOtp() {
-    this.loginOtpTimer = 30;
-    this.triggerToast('Login OTP resent (Use: 778899)', 'info');
-  }
+  // resendLoginOtp() {
+  //   this.loginOtpTimer = 30;
+  //   this.triggerToast('Login OTP resent (Use: 778899)', 'info');
+  // }
 
   // Step 1 Validation
   validateStep1(): boolean {
@@ -414,13 +387,25 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter First Name / ਪਹਿਲਾ ਨਾਂ ਦਰਜ ਕਰੋ', 'error');
       return false;
     }
-    if (!this.signUpData.fatherFirstName || this.signUpData.fatherFirstName.trim() === '') {
-      this.triggerToast("Please enter Father's/Husband First Name / ਪਿਤਾ/ਪਤੀ ਦਾ ਪਹਿਲਾ ਨਾਂ ਦਰਜ ਕਰੋ", 'error');
-      return false;
+    if (this.signUpData.fatherSectionVisible) {
+      if (!this.signUpData.fatherFirstName || this.signUpData.fatherFirstName.trim() === '') {
+        this.triggerToast("Please enter Father's/Husband First Name / ਪਿਤਾ/ਪਤੀ ਦਾ ਪਹਿਲਾ ਨਾਂ ਦਰਜ ਕਰੋ", 'error');
+        return false;
+      }
+      if (!this.signUpData.motherFirstName || this.signUpData.motherFirstName.trim() === '') {
+        this.triggerToast("Please enter Mother's First Name / ਮਾਤਾ ਦਾ ਪਹਿਲਾ ਨਾਂ ਦਰਜ ਕਰੋ", 'error');
+        return false;
+      }
     }
-    if (!this.signUpData.motherFirstName || this.signUpData.motherFirstName.trim() === '') {
-      this.triggerToast("Please enter Mother's First Name / ਮਾਤਾ ਦਾ ਪਹਿਲਾ ਨਾਂ ਦਰਜ ਕਰੋ", 'error');
-      return false;
+    if (this.signUpData.spouseSectionVisible) {
+      if (!this.signUpData.spouseFirstName || this.signUpData.spouseFirstName.trim() === '') {
+        this.triggerToast("Please enter Spouse First Name / ਪਤਨੀ ਦਾ ਪਹਿਲਾ ਨਾਂ ਦਰਜ ਕਰੋ", 'error');
+        return false;
+      }
+      if (!this.signUpData.spouseLastName || this.signUpData.spouseLastName.trim() === '') {
+        this.triggerToast("Please enter Spouse Last Name / ਪਤਨੀ ਦਾ ਆਖਰੀ ਨਾਂ ਦਰਜ ਕਰੋ", 'error');
+        return false;
+      }
     }
     if (!this.signUpData.emailAddress || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.signUpData.emailAddress)) {
       this.triggerToast('Please enter a valid Email ID / ਸਹੀ ਈ-ਮੇਲ ਦਰਜ ਕਰੋ', 'error');
@@ -498,6 +483,10 @@ export class SignupSignin implements OnInit {
   validateFullForm(): boolean {
     if (!this.validateStep1()) return false;
     if (!this.validateStep2()) return false;
+
+    if (!this.shouldShowBusinessDetails()) {
+      return true;
+    }
 
     // Validate Step 3 Business Details
     if (!this.signUpData.firmName || this.signUpData.firmName.trim() === '') {
@@ -689,6 +678,11 @@ export class SignupSignin implements OnInit {
       fatherLastName: '',
       motherFirstName: '',
       motherLastName: '',
+      spouseFirstName: '',
+      spouseLastName: '',
+      fatherSectionVisible: false,
+      spouseSectionVisible: false,
+      isManagingPartner: null,
       emailAddress: '',
       mobileNumber: '',
       password: '',
@@ -764,7 +758,7 @@ export class SignupSignin implements OnInit {
     if (user) {
       if (this.requiresLoginOtp(user)) {
         this.pendingLoginUser = user;
-        this.openLoginOtpModal();
+        // this.openLoginOtpModal();
       } else {
         this.loginSuccess(user);
       }
@@ -852,17 +846,4 @@ export class SignupSignin implements OnInit {
     this.triggerToast('Copied to clipboard!', 'success');
   }
 
-  runDashboardAction(actionName: string) {
-    this.triggerToast(`Launching action: "${actionName}" - Feature coming soon!`, 'info');
-  }
-
-  logout() {
-    localStorage.removeItem('cp_session');
-    this.loggedInUser = { userId: '', fullName: '', entityType: '', mobile: '' };
-    this.isLoggedIn = false;
-    this.authMode = 'landing';
-    this.resetSignInForm();
-    this.router.navigate(['/']);
-    this.triggerToast('Logged out successfully', 'info');
-  }
 }
