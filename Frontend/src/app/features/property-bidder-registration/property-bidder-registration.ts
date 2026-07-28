@@ -39,6 +39,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   registerationForm!: FormGroup;
 
   branches = ['Main Corporate Branch', 'North Zone Mandi', 'South Zone Branch', 'Head Office'];
+  districts = ['Bathinda','Mohali', 'Chandigarh'];
   mandis = ['Grain Market A', 'Regional Mandi B', 'Fruit & Vegetable Mandi', 'Cotton Mandi'];
   plotTypes = ['Commercial', 'Residential', 'Industrial'];
   propertyCategories = ['Premium Category', 'General Category'];
@@ -95,6 +96,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   constructor(private fb: FormBuilder) {
     this.registerationForm = this.fb.group({
       branch: ['', Validators.required],
+      district: ['', Validators.required],
+      marketCommittee: ['', Validators.required],
       mandi: ['', Validators.required],
       propertycode: ['', Validators.required],
       plotsize: ['', Validators.required],

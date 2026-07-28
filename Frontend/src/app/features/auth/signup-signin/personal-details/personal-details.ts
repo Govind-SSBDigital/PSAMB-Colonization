@@ -20,6 +20,12 @@ export class PersonalDetails implements OnInit {
   ageError = false;
   futureDobError = false;
 
+  // Edit this list to control which entity types show the "Managing Partner" toggle
+  managingPartnerVisibleTypes: string[] = [
+    'Partnership Firm',
+    'Limited Liability Partnership'
+  ];
+
   // Verification state
   verification = {
     emailSent: false,
@@ -40,6 +46,30 @@ export class PersonalDetails implements OnInit {
 
   toggleSection(section: 'profile') {
     this.sectionsExpanded[section] = !this.sectionsExpanded[section];
+  }
+
+  get isManagingPartnerVisible(): boolean {
+    return this.managingPartnerVisibleTypes.includes(this.selectedEntityType);
+  }
+
+  onRelationTypeChange() {
+    if (!this.signUpData) return;
+
+    if (this.signUpData.relationType === 'father') {
+      this.signUpData.spouseFirstName = '';
+      this.signUpData.spouseLastName = '';
+    } else if (this.signUpData.relationType === 'spouse') {
+      this.signUpData.fatherFirstName = '';
+      this.signUpData.fatherLastName = '';
+      this.signUpData.motherFirstName = '';
+      this.signUpData.motherLastName = '';
+      this.signUpData.isManagingPartner = null;
+    }
+  }
+
+   setManagingPartner(value: boolean) {
+    if (!this.signUpData) return;
+    this.signUpData.isManagingPartner = value;
   }
 
   onTextInput(field: string, value: string) {
@@ -139,7 +169,7 @@ export class PersonalDetails implements OnInit {
     }
   }
 
-   getPunjabiLabel(typeId: string): string {
+  getPunjabiLabel(typeId: string): string {
     switch (typeId) {
       case 'Individual': return 'ਵਿਅਕਤੀਗਤ';
       case 'Sole Proprietorship': return 'ਇਕੱਲੇ ਮਾਲਕ';
