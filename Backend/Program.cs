@@ -1,20 +1,25 @@
+﻿using Backend.Data;
+using Backend.Models.Entities;
+using Backend.Repositories.Implementations;
+using Backend.Repositories.Interfaces;
+using Backend.Services.Implementations;
+using Backend.Services.Interfaces;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
-using Backend.Data;
-using Backend.Repositories;
-using FluentValidation;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog from appsettings
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -26,19 +31,36 @@ try
 {
     Log.Information("Configuring services...");
 
-    // Add controllers
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+      .ConfigureApiBehaviorOptions(options =>
+      {
+          options.InvalidModelStateResponseFactory = context =>
+          {
+              var errors = context.ModelState.Values
+                  .SelectMany(v => v.Errors)
+                  .Select(e => e.ErrorMessage)
+                  .ToList();
 
-    // Register FluentValidation
+              var response = new
+              {
+                  success = false,
+                  message = "Validation failed",
+                  errors = errors
+              };
+
+              return new BadRequestObjectResult(response);
+          };
+      });
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddFluentValidationClientsideAdapters();
     builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-
-    // Register DbContext with SQL Server
+    // ── DATABASE ──────────────────────────────────
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            sql => sql.EnableRetryOnFailure(3)));
 
-    // Configure ASP.NET Core Identity
-    builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    builder.Services.AddIdentity<IdentityApplicationUser, IdentityRole>(options =>
     {
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
@@ -55,9 +77,9 @@ try
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-    // Configure JWT Bearer Tokens Authentication
     var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-    var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
+    var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Key"]
+        ?? throw new InvalidOperationException("JwtSettings:Key missing"));
 
     builder.Services.AddAuthentication(options =>
     {
@@ -79,21 +101,36 @@ try
             IssuerSigningKey = new SymmetricSecurityKey(secretKey),
             ClockSkew = TimeSpan.Zero
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async ctx =>
+            {
+                ctx.HandleResponse();
+                ctx.Response.StatusCode = 401;
+                ctx.Response.ContentType = "application/json";
+                await ctx.Response.WriteAsync(
+                    """{"success":false,"message":"Unauthorized. Please login first."}""");
+            }
+        };
     });
 
-    // Configure CORS Policy
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+        options.AddPolicy("UserOrAdmin", p => p.RequireRole("User", "Admin"));
+    });
+
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy", policy =>
         {
-            policy.WithOrigins("http://localhost:4200") // Frontend URL
+            policy.WithOrigins("http://localhost:4200")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
         });
     });
 
-    // Configure Rate Limiting (Fixed Window)
     builder.Services.AddRateLimiter(options =>
     {
         options.AddFixedWindowLimiter(policyName: "FixedWindowLimit", limitOptions =>
@@ -103,21 +140,39 @@ try
             limitOptions.QueueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit");
             limitOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         });
+
+        options.AddFixedWindowLimiter(policyName: "AuthPolicy", limitOptions =>
+        {
+            limitOptions.PermitLimit = 5;
+            limitOptions.Window = TimeSpan.FromMinutes(1);
+            limitOptions.QueueLimit = 0;
+        });
+
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
 
-    // Register Repositories and Unit of Work
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-    // Configure Swagger Documentation with Bearer security definitions
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IFileService, FileService>();
+    builder.Services.AddMemoryCache();
+    builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddHttpClient();
+    builder.Services.AddScoped<IMobileVerificationService, MobileVerificationService>();
+    //
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "PSAMB Colonization REST API", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "PSAMB Colonization REST API",
+            Version = "v1"
+        });
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Description = "JWT Authorization: Bearer {token}",
             Name = "Authorization",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.ApiKey,
@@ -129,37 +184,30 @@ try
                 new OpenApiSecurityScheme
                 {
                     Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
+                        { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
                 },
                 Array.Empty<string>()
             }
         });
     });
-
     var app = builder.Build();
 
-    // Verify TDE in Staging / Production
+    await SeedRolesAsync(app);
+
     if (!app.Environment.IsDevelopment())
     {
-        using (var scope = app.Services.CreateScope())
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        try
         {
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            // Verify TDE check. (Optional check, throws only if explicitly failing TDE verification)
-            try
-            {
-                await db.VerifyTdeAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "TDE Verification warning. If database is sys.databases restricted (e.g. Azure SQL / LocalDB), this is normal.");
-            }
+            await db.VerifyTdeAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "TDE Verification warning.");
         }
     }
 
-    // Configure the HTTP request pipeline
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -171,14 +219,10 @@ try
     }
 
     app.UseHttpsRedirection();
-
     app.UseCors("CorsPolicy");
-
     app.UseRateLimiter();
-
     app.UseAuthentication();
     app.UseAuthorization();
-
     app.MapControllers();
 
     Log.Information("Host configured successfully. Running application...");
@@ -192,3 +236,51 @@ finally
 {
     Log.CloseAndFlush();
 }
+async Task SeedRolesAsync(WebApplication app)
+{
+    try  
+    {
+        using var scope = app.Services.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        string[] roles = { "Admin", "User" };
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+    catch (Exception ex) 
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error seeding roles");
+    }
+}
+//static async Task SeedRolesAsync(WebApplication app)
+//{
+//    using var scope = app.Services.CreateScope();
+//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityApplicationUser>>();
+
+//    foreach (var role in new[] { "Admin", "User" })
+//        if (!await roleManager.RoleExistsAsync(role))
+//            await roleManager.CreateAsync(new IdentityRole(role));
+
+//    var adminEmail = "admin@psamb.com";
+//    var adminPassword = "Admin@12345";
+
+//    if (await userManager.FindByEmailAsync(adminEmail) == null)
+//    {
+//        var admin = new IdentityApplicationUser
+//        {
+//            UserName = adminEmail,
+//            Email = adminEmail,
+//            IsActive = true
+//        };
+//        var result = await userManager.CreateAsync(admin, adminPassword);
+//        if (result.Succeeded)
+//            await userManager.AddToRoleAsync(admin, "Admin");
+
+//        Log.Information("Admin created: {Email}", adminEmail);
+//    }
+//}
