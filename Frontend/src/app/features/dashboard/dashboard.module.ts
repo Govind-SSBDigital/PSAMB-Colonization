@@ -19,8 +19,12 @@ import { Footer } from './footer/footer';
         children: [
           {
             path: '',
-            redirectTo: 'register-property',
+            redirectTo: 'home',
             pathMatch: 'full',
+          },
+          {
+            path: 'home',
+            loadComponent: () => import('./dashboard-home/dashboard-home').then((m) => m.DashboardHome),
           },
           {
             path: 'register-property',
@@ -45,10 +49,7 @@ import { Footer } from './footer/footer';
           },
           {
             path: 'profile',
-            loadChildren: () =>
-              import('./profile/profile.module').then(
-                (m) => m.ProfileModule,
-              ),
+            loadChildren: () => import('./profile/profile.module').then((m) => m.ProfileModule),
           },
           {
             path: 'verification-view',
@@ -56,7 +57,7 @@ import { Footer } from './footer/footer';
               import('../verification-view/verification-view.module').then(
                 (m) => m.VerificationViewModule,
               ),
-          }
+          },
         ],
       },
     ]),
