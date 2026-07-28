@@ -1,0 +1,240 @@
+<div class="login-page d-flex align-items-center justify-content-center min-vh-100 p-0 p-md-0">
+  <div class="login-card d-flex flex-column flex-lg-row overflow-hidden w-100">
+
+    <!-- Left panel: building photo, text pinned to bottom via Bootstrap position utilities -->
+    <div class="illustration-panel d-none d-lg-block position-relative overflow-hidden">
+
+            <!-- <button type="button" class="btn border d-flex align-items-center gap-2 custom-btn position-absolute top-0 start-0 m-4 z-3"> 
+      <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ 
+      </button> -->
+
+      <img
+        class="illustration-photo position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+        src="assets/pmb_office_img.webp"
+        alt="Colonization Department Punjab building"
+      />
+      <div class="illustration-scrim position-absolute top-0 start-0 w-100 h-100"></div>
+
+      <div class="illustration-glass position-absolute bottom-10 start-0 end-0 m-4 p-4 rounded-4">
+        <h2 class="illustration-title fw-semibold mb-0">Colonization Department Punjab</h2>
+        <p class="illustration-eyebrow text-uppercase small fw-semibold mb-2">Property &amp; e-Auction Portal</p>
+        <p class="fw-normal mb-0 text-white">Managing the digital property records, allotments, e-Auctions, and development schemes of commercial plots, mandi estates, and colonized property sectors across the state of Punjab.</p>
+      </div>
+    </div>
+
+    <!-- Right panel: form -->
+    <div class="form-panel position-relative d-flex flex-column p-4 p-md-1">
+
+      <button
+        class="btn border d-flex align-items-center gap-2 custom-btn back-btn position-absolute top-0 start-0 m-4"
+        (click)="backToHome()">
+        <i class="fas fa-arrow-left"></i>Back
+      </button>
+
+      <div class="mx-auto w-100 form-content" style="max-width: 380px;">
+
+        <!-- MODULE 1: Username / password login-->
+        <ng-container *ngIf="loginMode === 'password'">
+          <h1 class="login-title fw-semibold mb-2 text-center">Log In</h1>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+            <div class="mb-3">
+              <label for="username" class="form-label fw-medium">Username</label>
+              <div class="position-relative">
+                <i class="fa-solid fa-user icon-muted position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input
+                  id="username"
+                  type="text"
+                  class="form-control custom-input ps-5"
+                  placeholder="Enter your username"
+                  formControlName="username"
+                  [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+                />
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+                Username is required.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label fw-medium">Password</label>
+              <div class="position-relative">
+                <i class="fa-solid fa-lock icon-muted position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input
+                  id="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control custom-input ps-5 pe-5"
+                  placeholder="Enter your password"
+                  formControlName="password"
+                  [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                />
+                <button
+                  type="button"
+                  class="btn btn-link icon-muted p-0 position-absolute top-50 end-0 translate-middle-y me-3 text-decoration-none border-0"
+                  (click)="togglePassword()"
+                  [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                >
+                  <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                Password is required.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-medium">Captcha</label>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="captcha-box flex-grow-1 text-center rounded-3 py-2 px-3">{{ captchaCode }}</div>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 captcha-refresh-btn"
+                  (click)="refreshCaptcha()"
+                  aria-label="Refresh captcha"
+                >
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+              </div>
+              <div class="position-relative">
+                <i class="fa-solid fa-shield icon-muted position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input
+                  type="text"
+                  class="form-control custom-input ps-5"
+                  placeholder="Enter captcha code"
+                  formControlName="captchaInput"
+                  [class.is-invalid]="loginForm.get('captchaInput')?.invalid && loginForm.get('captchaInput')?.touched"
+                />
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="loginForm.get('captchaInput')?.invalid && loginForm.get('captchaInput')?.touched">
+                Captcha code is required.
+              </div>
+            </div>
+
+            <div class="text-end mb-3">
+              <a href="javascript:void(0)" class="forgot-link fw-medium">Forgot Password?</a>
+            </div>
+
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2" *ngIf="loginError">
+              <i class="bi bi-exclamation-circle"></i>{{ loginError }}
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2 mb-4">
+              <button type="submit" class="btn btn-primary-custom rounded-3 fw-semibold flex-grow-1" [disabled]="isSubmitting">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                <i class="bi bi-box-arrow-in-right me-2" *ngIf="!isSubmitting"></i>
+                {{ isSubmitting ? 'Logging in...' : 'Log In' }}
+              </button>
+              <button type="button" class="btn btn-outline-custom rounded-3 fw-semibold flex-grow-1" (click)="loginWithMobile()">
+                <i class="fa-solid fa-mobile-screen-button me-1"></i> Login with Mobile
+              </button>
+            </div>
+
+          </form>
+
+          <p class="text-center register-text mb-0">
+            Don't have an account?
+            <a href="javascript:void(0)" class="register-link fw-semibold">Register as Applicant</a>
+          </p>
+
+        </ng-container>
+
+        <!-- ================= MODULE 2: Login with mobile OTP ================= -->
+        <ng-container *ngIf="loginMode === 'otp'">
+
+          <h1 class="login-title fw-semibold mb-2 text-center">Login</h1>
+
+          <!-- Step 2a: enter mobile number -->
+          <form *ngIf="otpStep === 'mobile'" [formGroup]="mobileForm" (ngSubmit)="sendOtp()" novalidate>
+
+            <div class="mb-4">
+              <label for="mobileNumber" class="form-label fw-medium">Mobile Number</label>
+              <div class="position-relative">
+                <i class="fa-solid fa-mobile-screen icon-muted position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input
+                  id="mobileNumber"
+                  type="tel"
+                  inputmode="numeric"
+                  maxlength="10"
+                  class="form-control custom-input ps-5"
+                  placeholder="Enter Mobile Number"
+                  formControlName="mobileNumber"
+                  [class.is-invalid]="mobileForm.get('mobileNumber')?.invalid && mobileForm.get('mobileNumber')?.touched"
+                />
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="mobileForm.get('mobileNumber')?.invalid && mobileForm.get('mobileNumber')?.touched">
+                Enter a valid 10-digit mobile number.
+              </div>
+            </div>
+
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2" *ngIf="otpError">
+              <i class="bi bi-exclamation-circle"></i>{{ otpError }}
+            </div>
+
+            <button type="submit" class="btn btn-primary-custom rounded-3 fw-semibold w-100 mb-4" [disabled]="isSendingOtp">
+              <span *ngIf="isSendingOtp" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isSendingOtp ? 'Sending OTP...' : 'Send OTP' }}
+            </button>
+
+            <p class="text-center register-text mb-0">
+              Don't have an account?
+              <a href="javascript:void(0)" class="register-link fw-semibold">Register as Applicant</a>
+            </p>
+          </form>
+
+          <!-- Step 2b: enter the OTP that was sent -->
+          <form *ngIf="otpStep === 'verify'" [formGroup]="otpForm" (ngSubmit)="verifyOtp()" novalidate>
+
+            <p class="otp-hint text-center mb-4">
+              Enter the 6-digit code sent to <span class="fw-semibold">{{ maskedMobile }}</span>
+              <br />
+              <a href="javascript:void(0)" class="forgot-link" (click)="changeMobileNumber()">Change number</a>
+            </p>
+
+            <div class="d-flex justify-content-between gap-2 mb-2" formArrayName="digits">
+              <input
+                *ngFor="let digit of otpDigitControls.controls; let i = index"
+                [id]="'otp-digit-' + i"
+                type="text"
+                inputmode="numeric"
+                maxlength="1"
+                class="form-control custom-input otp-digit-input text-center fw-semibold"
+                [formControlName]="i"
+                (input)="onOtpDigitInput($event, i)"
+                (keydown)="onOtpDigitKeydown($event, i)"
+                (paste)="i === 0 ? onOtpPaste($event) : null"
+              />
+            </div>
+            <div class="invalid-feedback d-block mb-2" *ngIf="otpForm.invalid && otpForm.touched">
+              Enter the complete 6-digit code.
+            </div>
+
+            <div class="text-center mb-3">
+              <span class="resend-text" *ngIf="resendSeconds > 0">Resend OTP in {{ resendSeconds }}s</span>
+              <a
+                href="javascript:void(0)"
+                class="forgot-link fw-medium"
+                *ngIf="resendSeconds === 0"
+                (click)="resendOtp()"
+              >
+                Resend OTP
+              </a>
+            </div>
+
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2" *ngIf="otpError">
+              <i class="bi bi-exclamation-circle"></i>{{ otpError }}
+            </div>
+
+            <button type="submit" class="btn btn-primary-custom rounded-3 fw-semibold w-100 mb-4" [disabled]="isVerifyingOtp">
+              <span *ngIf="isVerifyingOtp" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isVerifyingOtp ? 'Verifying...' : 'Verify & Log In' }}
+            </button>
+          </form>
+
+        </ng-container>
+
+      </div>
+    </div>
+
+  </div>
+</div>

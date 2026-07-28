@@ -8,9 +8,10 @@ import { App } from './app';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import { ToastrModule } from 'ngx-toastr';
+import { Navbar } from './features/navbar/navbar';
 @NgModule({
   declarations: [App],
-  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule, ToastrModule.forRoot()],
+  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule, Navbar, ToastrModule.forRoot()],
   providers: [provideHttpClient(withInterceptorsFromDi()), provideAnimationsAsync()],
   bootstrap: [App],
 })

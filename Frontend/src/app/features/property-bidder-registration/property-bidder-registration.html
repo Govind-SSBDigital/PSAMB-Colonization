@@ -16,52 +16,54 @@
               </div>
  
               <div class="row g-3">
- 
-                <!-- <div class="col-12">
-                  <label for="propertySearch"
+
+                <div class="col-12">
+                  <label for="propertycode"
                     class="form-label small text-dark fw-semibold text-uppercase">Search/Property Code </label>
                   <div class="input-group">
-                    <input id="propertySearch" type="search" class="form-control bg-light custom-input-color"
-                      placeholder="Search by Property Code" />
+                    <input id="propertycode" type="search" class="form-control bg-light custom-input-color"
+                      placeholder="Search by Property Code" formControlName="propertycode"
+                      [class.is-invalid]="isInvalid('propertycode')" />
                       <button class="btn btn-success rounded-end-3" type="button">Search</button>
                   </div>
-                </div> -->
-                <div class="col-sm-12">
-                  <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">District <span
-                      class="text-danger">*</span></label>
-                  <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color" list="mandis"
-                    placeholder="Select or Type District" formControlName="mandi"
-                    [class.is-invalid]="isInvalid('mandi')" />
-                  <datalist id="mandis">
-                    @for (mandi of mandis; track mandi) {
-                    <option [value]="mandi"></option>
-                    }
-                  </datalist>
-                  @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
+                  @if (isInvalid('propertycode')) { <div class="invalid-feedback">Property code is required.</div> }
                 </div>
                 <div class="col-sm-6">
-                  <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Market Committee <span
+                  <label for="district" class="form-label small text-dark fw-semibold text-uppercase">District <span
                       class="text-danger">*</span></label>
-                  <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color" list="mandis"
-                    placeholder="Select or Type Market Committee" formControlName="mandi"
-                    [class.is-invalid]="isInvalid('mandi')" />
-                  <datalist id="mandis">
-                    @for (mandi of mandis; track mandi) {
-                    <option [value]="mandi"></option>
+                  <input id="district" type="text" class="form-control bg-light rounded-3 custom-input-color" list="districtList"
+                    placeholder="Select or Type District" formControlName="district"
+                    [class.is-invalid]="isInvalid('district')" />
+                  <datalist id="districtList">
+                    @for (item of districts; track item) {
+                    <option [value]="item"></option>
                     }
                   </datalist>
-                  @if (isInvalid('mandi')) { <div class="invalid-feedback">Market Committee is required.</div> }
+                  @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
+                </div>
+                <div class="col-sm-6">
+                  <label for="marketCommittee" class="form-label small text-dark fw-semibold text-uppercase">Market Committee <span
+                      class="text-danger">*</span></label>
+                  <input id="marketCommittee" type="text" class="form-control bg-light rounded-3 custom-input-color" list="marketCommittees"
+                    placeholder="Select or Type Market Committee" formControlName="marketCommittee"
+                    [class.is-invalid]="isInvalid('marketCommittee')" />
+                  <datalist id="marketCommittees">
+                    @for (committee of mandis; track committee) {
+                    <option [value]="committee"></option>
+                    }
+                  </datalist>
+                  @if (isInvalid('marketCommittee')) { <div class="invalid-feedback">Market Committee is required.</div> }
                 </div>
  
                 <div class="col-sm-6">
                   <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Mandi <span
                       class="text-danger">*</span></label>
-                  <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color" list="mandis"
+                  <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color" list="mandisList"
                     placeholder="Select or Type Mandi" formControlName="mandi"
                     [class.is-invalid]="isInvalid('mandi')" />
-                  <datalist id="mandis">
-                    @for (mandi of mandis; track mandi) {
-                    <option [value]="mandi"></option>
+                  <datalist id="mandisList">
+                    @for (mandiItem of mandis; track mandiItem) {
+                    <option [value]="mandiItem"></option>
                     }
                   </datalist>
                   @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
@@ -74,7 +76,7 @@
                     placeholder="e.g., B-12" formControlName="plotno" [class.is-invalid]="isInvalid('plotno')" />
                   @if (isInvalid('plotno')) { <div class="invalid-feedback">Plot no. is required.</div> }
                 </div>
-                <!-- <div class="col-sm-6">
+                <div class="col-sm-6">
                   <label for="branch" class="form-label small text-dark fw-semibold text-uppercase">Branch <span
                       class="text-danger">*</span></label>
                   <input id="branch" type="text" class="form-control bg-light rounded-3 custom-input-color"
@@ -86,8 +88,8 @@
                     }
                   </datalist>
                   @if (isInvalid('branch')) { <div class="invalid-feedback">Branch is required.</div> }
-                </div> -->
- 
+                </div>
+
                  <div class="col-sm-6">
                   <label for="plottype" class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
                       class="text-danger">*</span></label>
@@ -108,8 +110,8 @@
                     [class.is-invalid]="isInvalid('plotsize')" />
                   @if (isInvalid('plotsize')) { <div class="invalid-feedback">Plot size is required.</div> }
                 </div>
- 
-                <!-- <div class="col-sm-6">
+
+                <div class="col-sm-6">
                   <label for="plotstatus" class="form-label small text-dark fw-semibold text-uppercase">Plot Status
                     <span class="text-danger">*</span></label>
                   <select id="plotstatus" class="form-select bg-light rounded-3 custom-input-color"
@@ -120,8 +122,8 @@
                     }
                   </select>
                   @if (isInvalid('plotstatus')) { <div class="invalid-feedback">Plot status is required.</div> }
-                </div> -->
- 
+                </div>
+
                 <div class="col-sm-6">
                   <label for="plan" class="form-label small text-dark fw-semibold text-uppercase">Plan <span
                       class="text-danger">*</span></label>
@@ -129,8 +131,8 @@
                     placeholder="Standard Allocation" formControlName="plan" [class.is-invalid]="isInvalid('plan')" />
                   @if (isInvalid('plan')) { <div class="invalid-feedback">Plan is required.</div> }
                 </div>
- 
-                <!-- <div class="col-sm-6">
+
+                <div class="col-sm-6">
                   <label for="propertycategory" class="form-label small text-dark fw-semibold text-uppercase">Property
                     Category <span class="text-danger">*</span></label>
                   <select id="propertycategory" class="form-select bg-light rounded-3 custom-input-color"
@@ -142,8 +144,8 @@
                   </select>
                   @if (isInvalid('propertycategory')) { <div class="invalid-feedback">Property category is required.
                   </div> }
-                </div> -->
- 
+                </div>
+
               </div>
             </div>
           </div>

@@ -52,13 +52,12 @@
     padding: 24px;
 }
 
-/* Updated form-group-custom to prevent height jumping */
 .form-group-custom {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    position: relative; /* Anchor for absolute error positioning */
-    padding-bottom: 20px; /* Safe space reservation for error text */
+    position: relative;
+    padding-bottom: 20px;
 }
 
 .form-label-custom {
@@ -143,7 +142,6 @@
     overflow: hidden;
 }
 
-/* Absolute Positioned Errors (No UI Jumping) */
 .error-message {
     position: absolute;
     bottom: 0;
@@ -176,22 +174,21 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    min-height: 38px; /* Stabilizes row height */
+    min-height: 38px;
 }
 
-/* Ensure the main input takes remaining space */
 .input-with-action input:first-child {
     flex: 1;
 }
 
 .otp-input-inline {
-    width: 120px !important; /* Fixed width to prevent shifting */
+    width: 120px !important;
     flex-shrink: 0;
     text-align: center;
     letter-spacing: 2px;
     font-weight: 700;
     border: 1px dashed #064e3b !important;
-    background-color: #f0fdf4 !important; /* Light green tint when active */
+    background-color: #f0fdf4 !important;
 }
 
 .btn-verify-inline {
@@ -221,4 +218,49 @@
     align-items: center;
     gap: 4px;
     margin-left: 8px;
+}
+
+/* Relation Type / Managing Partner toggle - Bootstrap btn-group + btn-check, brand color override */
+.relation-toggle-group {
+    grid-column: 1 / -1;
+    padding-bottom: 4px;
+}
+
+.btn-outline-success {
+    color: #064e3b;
+    border-color: #064e3b;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus {
+    color: #064e3b;
+    background-color: #f0fdf4;
+    border-color: #064e3b;
+    box-shadow: none;
+}
+
+.btn-check:checked + .btn-outline-success,
+.btn-check:active + .btn-outline-success,
+.btn-outline-success.active,
+.btn-outline-success:active {
+    background-color: #064e3b !important;
+    border-color: #064e3b !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(6, 78, 59, 0.25);
+}
+
+.toggle-section {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
 }

@@ -134,6 +134,39 @@
                     </div>
                 </div>
             </div>
+            
+        </div>
+        <!-- Only show Business Documents for specific entity types -->
+<ng-container *ngIf="['Partnership Firm'].includes(selectedEntityType)">
+    <div class="business-office-bar">
+        <i class="fa-solid fa-file"></i> &nbsp; Business Documents (ਵਪਾਰਕ ਦਸਤਾਵੇਜ਼)
+    </div>
+
+    <div class="row gx-4 gy-2 padding-form-container mb-2">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="form-group-custom">
+                <label class="form-label-custom"> PAN Number <span class="required-star">*</span></label>
+                <input type="text" name="idDocumentNumber" [(ngModel)]="signUpData.idDocumentNumber"
+                    class="form-input-custom" placeholder="Enter Document Number" #idDocNumber="ngModel" required [maxlength]="10">
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="form-group-custom">
+                <label class="form-label-custom">Upload PAN <span class="required-star">*</span></label>
+                <div class="custom-file-wrapper">
+                    <div class="choose-file-container">
+                        <button type="button" class="choose-file-btn" (click)="idDocInput.click()">Choose File</button>
+                        <span class="file-chosen-text" [class.text-muted]="!signUpData.idDocumentFileName">
+                            {{ signUpData.idDocumentFileName || 'No file chosen' }}
+                        </span>
+                        <input #idDocInput type="file" class="d-none">
+                    </div>
+                </div>
+                <input type="hidden" name="idDocumentFileName" [(ngModel)]="signUpData.idDocumentFileName" #idFile="ngModel" required>
+                </div>
         </div>
     </div>
-</div>
+            </ng-container>
+            </div>
+        </div>

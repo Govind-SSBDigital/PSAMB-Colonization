@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, ElementRef,Output, HostListener,EventEmitter } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -11,19 +11,54 @@ import { CommonModule } from '@angular/common';
 })
 export class Navbar {
   isMobileMenuOpen = false;
-  isDownloadsDropdownOpen = false;
-
+ isDownloadsOpen = false;
+private readonly desktopBreakpoint = 1024;
   @Output() messageSelected = new EventEmitter<string>();
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,private elRef: ElementRef) {}
 
-  toggleMobileMenu() {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+toggleMobileMenu(): void {
+  this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  this.setBodyScroll();
+}
+
+toggleDownloads(event: Event): void {
+  event.preventDefault();
+  event.stopPropagation(); // prevent the outside-click listener firing on this same click
+  this.isDownloadsOpen = !this.isDownloadsOpen;
+}
+closeMobileMenu(): void {
+  this.isMobileMenuOpen = false;
+  this.isDownloadsOpen = false;
+  this.setBodyScroll();
+}
+private setBodyScroll(): void {
+  document.body.style.overflow = this.isMobileMenuOpen ? 'hidden' : '';
+}
+@HostListener('document:click', ['$event'])
+onDocumentClick(event: MouseEvent): void {
+  if (window.innerWidth <= this.desktopBreakpoint) {
+    return;
   }
 
-  closeMobileMenu() {
-    this.isMobileMenuOpen = false;
+  if (!this.isDownloadsOpen) {
+    return;
   }
+
+  const clickedInsideDropdown = this.elRef.nativeElement
+    .querySelector('.nav-item.dropdown')
+    ?.contains(event.target as Node);
+
+  if (!clickedInsideDropdown) {
+    this.isDownloadsOpen = false;
+  }
+}
+@HostListener('window:resize')
+onWindowResize(): void {
+  if (window.innerWidth <= this.desktopBreakpoint && this.isDownloadsOpen) {
+    return;
+  }
+}
 
   clickMessages(event: Event) {
     event.preventDefault();
@@ -38,11 +73,13 @@ export class Navbar {
         }, 150);
       });
     }
+    this.selectMessageTab('all');
   }
 
-  toggleDownloadsDropdown(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDownloadsDropdownOpen = !this.isDownloadsDropdownOpen;
+   selectMessageTab(tab: string) {
+    const element = document.getElementById('messages-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }

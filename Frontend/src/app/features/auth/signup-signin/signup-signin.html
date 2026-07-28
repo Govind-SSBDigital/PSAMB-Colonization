@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<app-navbar></app-navbar>
+<!-- <app-navbar></app-navbar> -->
 
 <div class="portal-wrapper" [class.signin-bg]="authMode === 'signin' && !isLoggedIn">
     <!-- Portal Header banner -->
@@ -53,32 +53,6 @@
                         title="Dismiss">
                         <mat-icon>close</mat-icon>
                     </button>
-                </div>
-
-                <!-- Demo credentials helper -->
-                <div class="demo-credentials-banner-material" *ngIf="showRegistrationSuccessAlert">
-                    <div class="banner-heading-material">
-                        <mat-icon>science</mat-icon> <strong>Demo Test Credentials (ਈਮੇਲ ਸਿਮੂਲੇਟਰ)</strong>
-                    </div>
-                    <p>For testing, copy the generated credentials:</p>
-                    <div class="demo-fields-grid-material">
-                        <div class="demo-field-material">
-                            <span class="df-lbl">User ID:</span>
-                            <span class="df-val">{{ generatedUserId }}</span>
-                            <button type="button" class="btn-copy" (click)="copyToClipboard(generatedUserId)"
-                                title="Copy ID">
-                                <mat-icon>content_copy</mat-icon>
-                            </button>
-                        </div>
-                        <div class="demo-field-material">
-                            <span class="df-lbl">Password:</span>
-                            <span class="df-val">{{ generatedPassword }}</span>
-                            <button type="button" class="btn-copy" (click)="copyToClipboard(generatedPassword)"
-                                title="Copy Password">
-                                <mat-icon>content_copy</mat-icon>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ERROR BANNER -->
@@ -216,65 +190,55 @@
                     <div class="instructions-card-container">
                         <div class="row g-4">
                             <!-- English Column -->
-                            <div class="col-md-6 border-end-desktop">
-                                <h2 class="ins-title-en">General Instructions (English)</h2>
-                                <p class="ins-intro-en">You are requested to choose the category accordingly in which
-                                    you want to Sign up for the <strong>E-Services</strong></p>
-                                <span class="ins-subtitle-en">(Registrations for E-Auctions, Citizen Services, and
-                                    Property Bidders)</span>
+                        <div class="col-md-6 border-end-desktop">
+         <h2 class="ins-title-en">General Instructions (English)</h2>
+            <p class="ins-intro-en">Please select the appropriate category under which you wish to sign up for <strong>E-Services</strong>:</p>
+            <span class="ins-subtitle-en">(Registration for E-Auctions, Citizen Services, and Property Bidders)</span>
+    
+            <ul class="ins-list-en mt-3">
+             <li>Individual</li>
+             <li>Sole Proprietorship</li>
+             <li>Partnership Firm</li>
+             <li>Hindu Undivided Family (HUF)</li>
+            <li>Public Limited Company</li>
+             <li>Private Limited Company</li>
+             <li>Limited Liability Partnership</li>
+            <li>Procurement Agency</li>
+             </ul>
 
-                                <ul class="ins-list-en mt-3">
-                                    <li>Individual</li>
-                                    <li>Sole Proprietorship</li>
-                                    <li>Partnership Firm</li>
-                                    <li>Hindu Undivided Family(HUF)</li>
-                                    <li>Public Limited Company</li>
-                                    <li>Private Limited Company</li>
-                                    <li>Limited Liability Partnership</li>
-                                    <li>Procurement Agency</li>
-                                </ul>
-
-                                <h3 class="ins-heading-en mt-4">Instructions to fill the form</h3>
-                                <ul class="ins-sublist-en">
-                                    <li>Kindly scan your photo and required documents (Format- jpg, png, jpeg. Maximum
-                                        Size Limit for Applicant Photo is 100 KB and for all other documents is 500 KB)
-                                    </li>
-                                    <li>All (*) Marked fields are Mandatory to be filled.</li>
-                                    <li>Fill correct Mobile Number and Email address. The username/password will be sent
-                                        on this registered email/mobile number.</li>
-                                </ul>
-
-                            </div>
+            <h3 class="ins-heading-en mt-4">Instructions to Fill the Form</h3>
+            <ul class="ins-sublist-en">
+            <li>Please scan your photograph and required documents (Formats: JPG, PNG, JPEG. The maximum size limit is 100 KB for the applicant's photo and 500 KB for all other documents).</li>
+            <li>All fields marked with an asterisk (*) are mandatory to fill.</li>
+            <li>Enter a valid mobile number and email address. The username and password will be sent to your registered mobile number/email.</li>
+            </ul>
+        </div>
 
                             <!-- Punjabi Column -->
                             <div class="col-md-6">
-                                <h2 class="ins-title-pb">ਆਮ ਹਦਾਇਤਾਂ (ਪੰਜਾਬੀ)</h2>
-                                <p class="ins-intro-pb">ਤੁਹਾਨੂੰ ਉਸ ਅਨੁਸਾਰ ਸ਼੍ਰੇਣੀ ਦੀ ਚੋਣ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਜਿਸ
-                                    ਵਿੱਚ ਤੁਸੀਂ <strong>ਈ-ਸੇਵਾਵਾਂ</strong> ਲਈ ਸਾਈਨ ਅੱਪ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ</p>
-                                <span class="ins-subtitle-pb">(ਈ-ਨੀਲਾਮੀ, ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਅਤੇ ਜਾਇਦਾਦ ਬੋਲੀਕਾਰਾਂ ਲਈ
-                                    ਰਜਿਸਟ੍ਰੇਸ਼ਨ)</span>
+            <h2 class="ins-title-pb">ਆਮ ਹਦਾਇਤਾਂ (ਪੰਜਾਬੀ)</h2>
+            <p class="ins-intro-pb">ਕਿਰਪਾ ਕਰਕੇ ਉਹ ਸ਼੍ਰੇਣੀ ਚੁਣੋ ਜਿਸ ਅਧੀਨ ਤੁਸੀਂ <strong>ਈ-ਸੇਵਾਵਾਂ</strong> ਲਈ ਰਜਿਸਟਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ:</p>
+            <br>
+            <span class="ins-subtitle-pb">(ਈ-ਨੀਲਾਮੀ, ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਅਤੇ ਜਾਇਦਾਦ ਬੋਲੀਕਾਰਾਂ ਲਈ ਰਜਿਸਟ੍ਰੇਸ਼ਨ)</span>
+    
+            <ul class="ins-list-pb mt-3">
+                <li>ਵਿਅਕਤੀਗਤ</li>
+                <li>ਇਕਲੌਤੀ ਮਾਲਕੀ</li>
+                <li>ਭਾਈਵਾਲੀ ਫਰਮ</li>
+                <li>ਹਿੰਦੂ ਅਣਵੰਡਿਆ ਪਰਿਵਾਰ (HUF)</li>
+                <li>ਪਬਲਿਕ ਲਿਮਟਿਡ ਕੰਪਨੀ</li>
+                <li>ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ ਕੰਪਨੀ</li>
+                <li>ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ</li>
+                <li>ਖਰੀਦ ਏਜੰਸੀ</li>
+            </ul>
 
-                                <ul class="ins-list-pb mt-3">
-                                    <li>ਵਿਅਕਤੀਗਤ</li>
-                                    <li>ਇਕੱਲੇ ਮਾਲਕ ਦਾ ਅਧਿਕਾਰ</li>
-                                    <li>ਭਾਈਵਾਲੀ ਫਰਮ</li>
-                                    <li>ਹਿੰਦੂ ਅਣਵੰਡਿਆ ਪਰਿਵਾਰ (HUF)</li>
-                                    <li>ਪਬਲਿਕ ਲਿਮਟਿਡ ਕੰਪਨੀ</li>
-                                    <li>ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ ਕੰਪਨੀ</li>
-                                    <li>ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ</li>
-                                    <li>ਖਰੀਦ ਏਜੰਸੀ</li>
-                                </ul>
-
-                                <h3 class="ins-heading-pb mt-4">ਫਾਰਮ ਭਰਨ ਲਈ ਹਦਾਇਤਾਂ</h3>
-                                <ul class="ins-sublist-pb">
-                                    <li>ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਫੋਟੋ ਅਤੇ ਲੋੜੀਂਦੇ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਸਕੈਨ ਕਰੋ (ਫਾਰਮੈਟ- jpg, png,
-                                        jpeg. ਬਿਿਨੈਕਾਰ ਫੋਟੋ ਲਈ ਵੱਧ ਤੋਂ ਵੱਧ ਆਕਾਰ ਸੀਮਾ 100 KB ਅਤੇ ਹੋਰ ਸਾਰੇ ਦਸਤਾਵੇਜ਼ਾਂ ਲਈ
-                                        500 KB ਹੈ)</li>
-                                    <li>ਸਾਰੇ (*) ਚਿੰਨ੍ਹਤ ਖੇਤਰ ਭਰੇ ਜਾਣੇ ਲਾਜ਼ਮੀ ਹਨ।</li>
-                                    <li>ਸਹੀ ਮੋਬਾਈਲ ਨੰਬਰ ਅਤੇ ਈਮੇਲ ਭਰੋ। ਯੂਜ਼ਰ ਨਾਮ/ਪਾਸਵਰਡ ਤੁਹਾਡੀ ਰਜਿਸਟਰਡ ਈਮੇਲ/ਮੋਬਾਈਲ ਨੰਬਰ
-                                        'ਤੇ ਭੇਜਿਆ ਜਾਵੇਗਾ।</li>
-                                </ul>
-                            </div>
+             <h3 class="ins-heading-pb mt-4">ਫਾਰਮ ਭਰਨ ਲਈ ਹਦਾਇਤਾਂ</h3>
+             <ul class="ins-sublist-pb">
+                <li>ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਫੋਟੋ ਅਤੇ ਲੋੜੀਂਦੇ ਦਸਤਾਵੇਜ਼ ਸਕੈਨ ਕਰੋ (ਫਾਰਮੈਟ: JPG, PNG, JPEG। ਬਿਨੈਕਾਰ ਦੀ ਫੋਟੋ ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਸਾਈਜ਼ 100 KB ਅਤੇ ਬਾਕੀ ਦਸਤਾਵੇਜ਼ਾਂ ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਸਾਈਜ਼ 500 KB ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ)।</li>
+                <li>ਤਾਰਾ (*) ਚਿੰਨ੍ਹ ਵਾਲੇ ਸਾਰੇ ਖੇਤਰ ਭਰਨੇ ਲਾਜ਼ਮੀ ਹਨ।</li>
+                <li>ਸਹੀ ਮੋਬਾਈਲ ਨੰਬਰ ਅਤੇ ਈਮੇਲ ਆਈ.ਡੀ. ਦਰਜ ਕਰੋ। ਯੂਜ਼ਰ ਨਾਮ / ਪਾਸਵਰਡ ਤੁਹਾਡੇ ਰਜਿਸਟਰਡ ਮੋਬਾਈਲ ਨੰਬਰ ਅਤੇ ਈਮੇਲ 'ਤੇ ਭੇਜਿਆ ਜਾਵੇਗਾ।</li>
+             </ul>
+            </div>
                         </div>
 
                         <!-- Parallel Query Boxes Row -->
@@ -307,6 +271,8 @@
                     <div class="category-selection-card mt-4">
                         <div class="category-inline-row">
                             <div class="category-dropdown-wrap">
+                                <label for="entityDropdown" class="form-label-custom mb-2">Select Category - (ਸ਼੍ਰੇਣੀ ਚੁਣੋ) <span class="required-star">*</span></label>
+                                <select id="entityDropdown" [(ngModel)]="selectedEntityType" class="form-input-custom inline-select">
                                 <label for="entityDropdown" class="form-label-custom mb-2">Select Category - (ਸ਼੍ਰੇਣੀ
                                     ਚੁਣੋ) <span class="required-star">*</span></label>
                                 <select id="entityDropdown" [(ngModel)]="selectedEntityType"
@@ -326,7 +292,7 @@
                 </div>
 
                 <!-- Continuous Sections Wrapper (Shown only if entity type selected and proceeded) -->
-                <div class="signup-step-container" *ngIf="selectedEntityType && proceedToForm">
+                <div class="signup-step-container" *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
                     <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData">
                     </app-personal-details>
 
@@ -337,14 +303,24 @@
                     </app-documents-and-address>
 
                     <!-- SECTION 3: BUSINESS DETAILS -->
-                    <app-business-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
-                        (toastMessage)="triggerToast($event.message, $event.type)">
-                    </app-business-details>
+                            <app-business-details *ngIf="shouldShowBusinessDetails()"
+                                [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
+                                [states]="states" [districts]="districts" [cities]="cities"
+                                (toastMessage)="triggerToast($event.message, $event.type)">
+                        </app-business-details>
 
                 </div>
 
+                <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
+                    <app-procurement [selectedEntityType]="selectedEntityType"
+                        (backClicked)="onBackToInstructions()"
+                        
+                        (toastMessage)="triggerToast($event.message, $event.type)">
+                    </app-procurement>
+                </div>
+
                 <!-- Footer Actions (Shown only if entity type selected and proceeded to form) -->
-                <div class="wizard-footer-actions" *ngIf="selectedEntityType && proceedToForm">
+                <div class="wizard-footer-actions" *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
                     <button type="button" class="btn-wizard-back" (click)="onBackToInstructions()">
                         Back (ਵਾਪਸ ਜਾਓ)
                     </button>
@@ -355,274 +331,6 @@
 
             </div>
 
-        </div>
-
-        <!-- CITIZEN PORTAL DASHBOARD (Shown when logged in) -->
-        <div class="dashboard-wrapper-material animated fade-in" *ngIf="isLoggedIn">
-
-            <!-- Dashboard Header -->
-            <mat-card class="dashboard-header-card">
-                <div class="dashboard-user-header-material">
-                    <div class="user-profile-meta">
-                        <div class="avatar-circle-material">
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Individual'">person</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Company'">business</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'HUF'">groups</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Partnership Firm'">handshake</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Sole Proprietorship'">work</mat-icon>
-                            <mat-icon
-                                *ngIf="loggedInUser.entityType === 'Other' || !loggedInUser.entityType">more_horiz</mat-icon>
-                        </div>
-                        <div class="user-text-info">
-                            <h2>Welcome, {{ loggedInUser.fullName }}</h2>
-                            <p>Registered as: <strong>{{ loggedInUser.entityType }}</strong> | User ID: <strong>{{
-                                    loggedInUser.userId
-                                    }}</strong></p>
-                        </div>
-                    </div>
-
-                    <button mat-raised-button color="btn-landing-primary" (click)="logout()">
-                        <mat-icon>logout</mat-icon> Logout
-                    </button>
-                </div>
-            </mat-card>
-
-            <!-- Stats Quick Overview Cards -->
-            <div class="stats-overview-grid-material">
-
-                <mat-card class="stat-card bg-light-blue-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-blue"><mat-icon>gavel</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>2</h3>
-                            <p>Active e-Auctions</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-                <mat-card class="stat-card bg-light-teal-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-teal"><mat-icon>assignment</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>0</h3>
-                            <p>Digital Properties</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-                <mat-card class="stat-card bg-light-orange-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-orange"><mat-icon>pending_actions</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>0</h3>
-                            <p>Pending Applications</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-                <mat-card class="stat-card bg-light-green-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-green"><mat-icon>notifications_active</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>5</h3>
-                            <p>System Notifications</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-            </div>
-
-            <!-- Dashboard Services Grid -->
-            <div class="dashboard-actions-title">
-                <h2>Available Colonization Services</h2>
-            </div>
-
-            <div class="actions-grid-container-material">
-
-                <!-- Card 1: Access Dashboard -->
-                <mat-card class="action-card-material" (click)="runDashboardAction('Access Dashboard')">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-blue"><mat-icon>trending_up</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Access Dashboard</h3>
-                            <!-- <p>Review comprehensive stats of your properties, bid results, lease status, and pending payments.</p> -->
-                        </div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card>
-
-                <!-- Card 2: Participate in e-Auctions -->
-                <mat-card class="action-card-material highlighted"
-                    (click)="runDashboardAction('Participate in e-Auctions')">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-purple"><mat-icon>gavel</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Participate in e-Auctions</h3>
-                            <!-- <p>Browse auction calendars, purchase terms, bid security deposits, and place bids in ongoing e-auctions. -->
-                            <!-- </p> -->
-                        </div>
-                        <div class="card-badge">LIVE</div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card>
-
-                <!-- Card 3: Register Existing Properties -->
-                <mat-card class="action-card-material" (click)="runDashboardAction('Register Existing Properties')">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-teal"><mat-icon>border_color</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Register Existing Properties</h3>
-                            <!-- <p>Digitize your records by submitting existing colonization property deeds for verification and access. -->
-                            <!-- </p> -->
-                        </div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card>
-
-                <!-- Card 4: Apply for Online Services -->
-                <mat-card class="action-card-material" (click)="runDashboardAction('Apply for Online Services')">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-orange"><mat-icon>devices</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Apply for Online Services</h3>
-                            <!-- <p>Submit applications for Mutation, Lease Extension, Title Transfer, No Objection Certificate (NOC), and
-                more.</p> -->
-                        </div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- MOCK SIGNUP OTP VERIFICATION MODAL OVERLAY -->
-<div class="modal-overlay-custom animated fade-in" *ngIf="otpModalOpen">
-    <div class="otp-dialog-box">
-        <div class="otp-dialog-header">
-            <h3>OTP Security Verification / ਸੁਰੱਖਿਆ ਪੁਸ਼ਟੀਕਰਨ</h3>
-            <button type="button" class="btn-close-modal" (click)="closeOtpModal()">&times;</button>
-        </div>
-
-        <div class="otp-dialog-body">
-            <p class="verification-subtext">Verification OTPs have been sent to your registered credentials.</p>
-
-            <div class="otp-fields-stack">
-                <!-- Mobile OTP -->
-                <div class="otp-item-card" [class.verified]="otpData.mobileVerified">
-                    <div class="otp-item-header">
-                        <div class="o-icon bg-mobile"><i class="fas fa-mobile-alt"></i></div>
-                        <div class="o-meta">
-                            <h4>Mobile OTP</h4>
-                            <span>Sent to: {{ signUpData.mobileNumber }}</span>
-                        </div>
-                        <span class="verified-badge" *ngIf="otpData.mobileVerified"><i class="fas fa-check-circle"></i>
-                            Verified</span>
-                    </div>
-
-                    <div class="otp-item-inputs" *ngIf="!otpData.mobileVerified">
-                        <input type="text" maxlength="6" [(ngModel)]="otpData.mobileOtpInput"
-                            placeholder="Enter 6-digit Mobile OTP" class="otp-code-input">
-                        <div class="timer-row">
-                            <span *ngIf="otpData.mobileTimer > 0">Resend in: <strong>{{ otpData.mobileTimer
-                                    }}s</strong></span>
-                            <button type="button" class="btn-resend-otp-action" *ngIf="otpData.mobileTimer === 0"
-                                (click)="sendMobileOtp()">Resend Mobile OTP</button>
-                        </div>
-                        <button type="button" class="btn-verify-otp-action" (click)="verifyMobileOtp()">Verify Mobile
-                            OTP</button>
-                    </div>
-                </div>
-
-                <!-- Email OTP -->
-                <div class="otp-item-card" [class.verified]="otpData.emailVerified">
-                    <div class="otp-item-header">
-                        <div class="o-icon bg-email"><i class="fas fa-envelope"></i></div>
-                        <div class="o-meta">
-                            <h4>Email OTP</h4>
-                            <span>Sent to: {{ signUpData.emailAddress }}</span>
-                        </div>
-                        <span class="verified-badge" *ngIf="otpData.emailVerified"><i class="fas fa-check-circle"></i>
-                            Verified</span>
-                    </div>
-
-                    <div class="otp-item-inputs" *ngIf="!otpData.emailVerified">
-                        <input type="text" maxlength="6" [(ngModel)]="otpData.emailOtpInput"
-                            placeholder="Enter 6-digit Email OTP" class="otp-code-input">
-                        <div class="timer-row">
-                            <span *ngIf="otpData.emailTimer > 0">Resend in: <strong>{{ otpData.emailTimer
-                                    }}s</strong></span>
-                            <button type="button" class="btn-resend-otp-action" *ngIf="otpData.emailTimer === 0"
-                                (click)="sendEmailOtp()">Resend Email OTP</button>
-                        </div>
-                        <button type="button" class="btn-verify-otp-action" (click)="verifyEmailOtp()">Verify Email
-                            OTP</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Test mode helper -->
-            <div class="otp-banner-helper">
-                <i class="fas fa-info-circle"></i>
-                <span><strong>Testing Helper:</strong> Use Mobile OTP <strong>123456</strong> and Email OTP
-                    <strong>654321</strong>.</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- MOCK ROLE-BASED LOGIN OTP VERIFICATION MODAL OVERLAY -->
-<div class="modal-overlay-custom animated fade-in" *ngIf="loginOtpModalOpen">
-    <div class="otp-dialog-box">
-        <div class="otp-dialog-header">
-            <h3>Login OTP Verification / ਲਾਗਇਨ ਓ.ਟੀ.ਪੀ</h3>
-            <button type="button" class="btn-close-modal" (click)="closeLoginOtpModal()">&times;</button>
-        </div>
-
-        <div class="otp-dialog-body">
-            <p class="verification-subtext">This account has role-based security enabled. Please enter the Login OTP
-                sent to
-                your registered mobile number: <strong>{{ pendingLoginUser?.mobile }}</strong></p>
-
-            <div class="otp-fields-stack">
-                <div class="otp-item-card">
-                    <div class="otp-item-header">
-                        <div class="o-icon bg-mobile"><i class="fas fa-shield-alt"></i></div>
-                        <div class="o-meta">
-                            <h4>Security login OTP</h4>
-                            <span>User: {{ pendingLoginUser?.userId }}</span>
-                        </div>
-                    </div>
-
-                    <div class="otp-item-inputs">
-                        <input type="text" maxlength="6" [(ngModel)]="loginOtpInput"
-                            placeholder="Enter 6-digit Login OTP" class="otp-code-input">
-                        <div class="timer-row">
-                            <span *ngIf="loginOtpTimer > 0">Resend in: <strong>{{ loginOtpTimer }}s</strong></span>
-                            <button type="button" class="btn-resend-otp-action" *ngIf="loginOtpTimer === 0"
-                                (click)="resendLoginOtp()">Resend OTP</button>
-                        </div>
-                        <button type="button" class="btn-verify-otp-action" (click)="verifyLoginOtp()">Verify & Sign
-                            In</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Test mode helper -->
-            <div class="otp-banner-helper">
-                <i class="fas fa-info-circle"></i>
-                <span><strong>Testing Helper:</strong> Use login OTP <strong>778899</strong>.</span>
-            </div>
         </div>
     </div>
 </div>
