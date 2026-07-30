@@ -1,4 +1,4 @@
 export const environment = {
     production: false,
-    baseUrl: '',
+    apiUrl: 'https://apidircolon.emandikaran-pb.in/api'
 };

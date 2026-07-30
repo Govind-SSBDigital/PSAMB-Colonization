@@ -10,6 +10,7 @@ import { DocumentsAndAddress } from './documents-and-address/documents-and-addre
 import { PersonalDetails } from './personal-details/personal-details';
 import { BusinessDetails } from './business-details/business-details';
 import { Procurement } from './procurement/procurement';
+import { AuthService } from '../../../core/service/auth.service';
 
 interface EntityType {
   id: string;
@@ -61,28 +62,82 @@ export class SignupSignin implements OnInit {
   otpModalOpen = false;
   proceedToForm = false;
 
+  // signUpData = {
+  //   // Step 1: Profile Details
+  //   gender: '',
+  //   dob: '',
+  //   firstName: '',
+  //   lastName: '',
+  //   fatherFirstName: '',
+  //   fatherLastName: '',
+  //   motherFirstName: '',
+  //   motherLastName: '',
+  //   emailAddress: '',
+  //   mobileNumber: '',
+  //   password: '',
+  //   confirmPassword: '',
+
+  //   // Step 2: Document Details
+  //   idDocumentType: '',
+  //   idDocumentNumber: '',
+  //   idDocumentFileName: '',
+  //   shareAadhaarDetails: false,
+  //   panNumber: '',
+  //   panFileName: '',
+  //   photoFileName: '',
+
+  //   // Step 2: Address Details
+  //   addressState: '',
+  //   addressDistrict: '',
+  //   addressCity: '',
+  //   addressPincode: '',
+  //   addressLandmark: '',
+  //   addressDocType: '',
+  //   addressDocNumber: '',
+  //   addressDocFileName: '',
+
+  //   // Step 3: Business Details
+  //   firmName: '',
+  //   gstNumber: '',
+
+  //   // Step 3: Business Address
+  //   isSameAddress: false,
+  //   businessState: '',
+  //   businessDistrict: '',
+  //   businessCity: '',
+  //   businessPincode: '',
+  //   businessLandmark: '',
+  //   officePhotoFileName: '',
+  //   mandiPropertyCode: ''
+  // };
+
+  // Mock Upload states
+  uploadProgress: { [key: string]: number } = {};
+  uploadingStates: { [key: string]: boolean } = {};
   signUpData = {
-    // Step 1: Profile Details
+    // Personal
     gender: '',
     dob: '',
     firstName: '',
     lastName: '',
+    relationType: 'father', // Default to 'father' for initial state
     fatherFirstName: '',
     fatherLastName: '',
     motherFirstName: '',
     motherLastName: '',
     spouseFirstName: '',
     spouseLastName: '',
-      fatherSectionVisible: false,
-      spouseSectionVisible: false,
-      isManagingPartner: null,
-      emailAddress: '',
+    fatherSectionVisible: false,
+    spouseSectionVisible: false,
+    isManagingPartner: null,
+    emailAddress: '',
     mobileNumber: '',
     password: '',
     confirmPassword: '',
 
-    // Step 2: Document Details
+    // Documents
     idDocumentType: '',
+    idDocumentTypeId: 0,
     idDocumentNumber: '',
     idDocumentFileName: '',
     shareAadhaarDetails: false,
@@ -90,35 +145,35 @@ export class SignupSignin implements OnInit {
     panFileName: '',
     photoFileName: '',
 
-    // Step 2: Address Details
+    // Address
     addressState: '',
+    addressStateId: 0,
     addressDistrict: '',
+    addressDistrictId: 0,
     addressCity: '',
+    addressCityId: 0,
     addressPincode: '',
     addressLandmark: '',
     addressDocType: '',
+    addressDocTypeId: 0,
     addressDocNumber: '',
     addressDocFileName: '',
 
-    // Step 3: Business Details
+    // Business
     firmName: '',
     gstNumber: '',
-
-    // Step 3: Business Address
     isSameAddress: false,
     businessState: '',
+    businessStateId: 0,
     businessDistrict: '',
+    businessDistrictId: 0,
     businessCity: '',
+    businessCityId: 0,
     businessPincode: '',
     businessLandmark: '',
     officePhotoFileName: '',
     mandiPropertyCode: ''
-  };
-
-  // Mock Upload states
-  uploadProgress: { [key: string]: number } = {};
-  uploadingStates: { [key: string]: boolean } = {};
-
+  }
   // OTP data (Signup)
   otpData = {
     mobileOtpInput: '',
@@ -173,7 +228,7 @@ export class SignupSignin implements OnInit {
     mobile: ''
   };
 
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  constructor(private route: ActivatedRoute, private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
     // Seed test accounts in localStorage if not already present
@@ -256,9 +311,9 @@ export class SignupSignin implements OnInit {
     return this.selectedEntityType === 'Procurement Agency';
   }
 
-  // onEntityTypeChange() {
-  //   this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
-  // }
+  onEntityTypeChange() {
+    this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
+  }
 
   openSignUp() {
     if (!this.router.url.includes('/register')) {
@@ -513,10 +568,10 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter Business Office Plot/Street/Landmark / ਪਲਾਟ/ਗਲੀ/ਲੈਂਡਮਾਰਕ ਦਰਜ ਕਰੋ', 'error');
       return false;
     }
-    if (!this.signUpData.officePhotoFileName) {
-      this.triggerToast('Please upload Front Photograph of Office Property / ਦਫ਼ਤਰ ਦੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ', 'error');
-      return false;
-    }
+    // if (!this.signUpData.officePhotoFileName) {
+    //   this.triggerToast('Please upload Front Photograph of Office Property / ਦਫ਼ਤਰ ਦੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ', 'error');
+    //   return false;
+    // }
     return true;
   }
 
@@ -534,7 +589,8 @@ export class SignupSignin implements OnInit {
       return;
     }
 
-    this.openOtpModal();
+    //this.openOtpModal();
+    this.completeRegistration();
   }
 
   // File Upload Simulations
@@ -633,47 +689,130 @@ export class SignupSignin implements OnInit {
       }, 600);
     }
   }
-
   completeRegistration() {
     this.closeOtpModal();
 
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
-    this.generatedUserId = `CP${randomNum}`;
-    this.generatedPassword = this.signUpData.password;
+    // Backend ke hisaab se request banao
+    const request = {
+      categoryId: this.getCategoryId(this.selectedEntityType),
+      gender: this.signUpData.gender === 'Male' ? 1 : 2,
+      dateOfBirth: this.signUpData.dob,
+      firstName: this.signUpData.firstName,
+      lastName: this.signUpData.lastName,
+      relationType:this.signUpData.relationType === 'father' ? 1 : 2, // 1 for Father, 2 for Husband
+      fatherHusbandFirstName: this.signUpData.fatherFirstName,
+      fatherHusbandLastName: this.signUpData.fatherLastName,
+      motherFirstName: this.signUpData.motherFirstName,
+      motherLastName: this.signUpData.motherLastName,
+      email: this.signUpData.emailAddress,
+      mobileNo: this.signUpData.mobileNumber,
+      password: this.signUpData.password,
+      confirmPassword: this.signUpData.confirmPassword,
 
-    const existingUsersRaw = localStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
+      // Documents
+      identDocTypeId: this.signUpData.idDocumentTypeId,
+      identDocNumber: this.signUpData.idDocumentNumber,
+      panNumber: this.signUpData.panNumber,
 
-    const fullName = `${this.signUpData.firstName} ${this.signUpData.lastName}`.trim();
-    const newUser = {
-      userId: this.generatedUserId,
-      password: this.generatedPassword,
-      fullName: fullName,
-      entityType: this.selectedEntityType,
-      mobile: this.signUpData.mobileNumber,
-      email: this.signUpData.emailAddress
+      // Address
+      individualStateId: this.signUpData.addressStateId,
+      individualDistrictId: this.signUpData.addressDistrictId,
+      individualCityId: this.signUpData.addressCityId,
+      individualPinCode: this.signUpData.addressPincode,
+      individualPlotStreetLandmark: this.signUpData.addressLandmark,
+      addrDocTypeId: this.signUpData.addressDocTypeId,
+      addrDocNumber: this.signUpData.addressDocNumber,
+
+      // Business
+      firmName: this.signUpData.firmName,
+      gstNumber: this.signUpData.gstNumber,
+      mandiPropertyCode: this.signUpData.mandiPropertyCode,
+      isSameAsIndividualAddress: this.signUpData.isSameAddress,
+      businessStateId: this.signUpData.businessStateId,
+      businessDistrictId: this.signUpData.businessDistrictId,
+      businessCityId: this.signUpData.businessCityId,
+      businessPinCode: this.signUpData.businessPincode,
+      businessPlotStreetLandmark: this.signUpData.businessLandmark
     };
 
-    existingUsers.push(newUser);
-    localStorage.setItem('cp_users', JSON.stringify(existingUsers));
+    this.authService.register(request).subscribe({
+      next: (response) => {
+        // Token save karo
+        localStorage.setItem('token', response.data.token);
 
-    // Prefill login form
-    this.loginData.userId = this.generatedUserId;
-    sessionStorage.setItem('registration_success', 'true');
-    sessionStorage.setItem('registered_user_id', this.generatedUserId);
-    this.router.navigate(['/auth/login']);
-    this.generateCaptcha(); // Refresh captcha
+        const sessionData = {
+          userId: response.data.userId,
+          fullName: response.data.fullName,
+          email: response.data.email,
+          entityType: this.selectedEntityType
+        };
+        localStorage.setItem('cp_session', JSON.stringify(sessionData));
 
-    this.triggerToast('Account registered successfully!', 'success');
+        sessionStorage.setItem('registration_success', 'true');
+        sessionStorage.setItem('registered_user_id', response.data.userId);
+
+        this.router.navigate(['/auth/login']);
+        this.triggerToast('Account registered successfully!', 'success');
+      },
+      error: (err) => {
+        this.triggerToast(err.message || 'Registration failed. Please try again.', 'error');
+      }
+    });
   }
+  getCategoryId(entityType: string): number {
+    const map: { [key: string]: number } = {
+      'Individual': 1,
+      'Sole Proprietorship': 2,
+      'HUF': 3,
+      'Partnership Firm': 4,
+      'Company': 5,
+      'Procurement Agency': 6,
+      'Other': 7
+    };
+    return map[entityType] || 1;
+  }
+  // completeRegistration() {
+  //   this.closeOtpModal();
+
+  //   const randomNum = Math.floor(100000 + Math.random() * 900000);
+  //   this.generatedUserId = `CP${randomNum}`;
+  //   this.generatedPassword = this.signUpData.password;
+
+  //   const existingUsersRaw = localStorage.getItem('cp_users');
+  //   const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
+
+  //   const fullName = `${this.signUpData.firstName} ${this.signUpData.lastName}`.trim();
+  //   const newUser = {
+  //     userId: this.generatedUserId,
+  //     password: this.generatedPassword,
+  //     fullName: fullName,
+  //     entityType: this.selectedEntityType,
+  //     mobile: this.signUpData.mobileNumber,
+  //     email: this.signUpData.emailAddress
+  //   };
+
+  //   existingUsers.push(newUser);
+  //   localStorage.setItem('cp_users', JSON.stringify(existingUsers));
+
+  //   // Prefill login form
+  //   this.loginData.userId = this.generatedUserId;
+  //   sessionStorage.setItem('registration_success', 'true');
+  //   sessionStorage.setItem('registered_user_id', this.generatedUserId);
+  //   this.router.navigate(['/auth/login']);
+  //   this.generateCaptcha(); // Refresh captcha
+
+  //   this.triggerToast('Account registered successfully!', 'success');
+  // }
 
   // Reset Forms
   resetSignUpForm() {
     this.signUpData = {
+      // Personal
       gender: '',
       dob: '',
       firstName: '',
       lastName: '',
+      relationType: 'father', // Default to 'father' for initial state
       fatherFirstName: '',
       fatherLastName: '',
       motherFirstName: '',
@@ -687,32 +826,46 @@ export class SignupSignin implements OnInit {
       mobileNumber: '',
       password: '',
       confirmPassword: '',
+
+      // Documents
       idDocumentType: '',
+      idDocumentTypeId: 0,
       idDocumentNumber: '',
       idDocumentFileName: '',
       shareAadhaarDetails: false,
       panNumber: '',
       panFileName: '',
       photoFileName: '',
+
+      // Address
       addressState: '',
+      addressStateId: 0,
       addressDistrict: '',
+      addressDistrictId: 0,
       addressCity: '',
+      addressCityId: 0,
       addressPincode: '',
       addressLandmark: '',
       addressDocType: '',
+      addressDocTypeId: 0,
       addressDocNumber: '',
       addressDocFileName: '',
+
+      // Business
       firmName: '',
       gstNumber: '',
       isSameAddress: false,
       businessState: '',
+      businessStateId: 0,
       businessDistrict: '',
+      businessDistrictId: 0,
       businessCity: '',
+      businessCityId: 0,
       businessPincode: '',
       businessLandmark: '',
       officePhotoFileName: '',
       mandiPropertyCode: ''
-    };
+    }
     this.otpData = {
       mobileOtpInput: '',
       emailOtpInput: '',
@@ -735,7 +888,7 @@ export class SignupSignin implements OnInit {
 
   // Sign-In via user/pass + captcha + role-based OTP
   onSignInSubmit() {
-    debugger
+    debugger;
     this.errorMessage = '';
     const { userId, password } = this.loginData;
 
@@ -750,79 +903,114 @@ export class SignupSignin implements OnInit {
       return;
     }
 
-    const existingUsersRaw = localStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
+    this.authService.login(userId, password).subscribe({
+      next: (response) => {
+        // Token save karo
+        localStorage.setItem('token', response.data.token);
 
-    const user = existingUsers.find((u: any) => u.userId.toLowerCase() === userId.trim().toLowerCase() && u.password === password);
+        // Session save karo
+        const sessionData = {
+          userId: response.data.user?.id || '',
+          fullName: response.data.user?.fullName || '',
+          email: response.data.user?.email || '',
+          entityType: response.data.entityType || 'Individual'
+        };
+        localStorage.setItem('cp_session', JSON.stringify(sessionData));
 
-    if (user) {
-      if (this.requiresLoginOtp(user)) {
-        this.pendingLoginUser = user;
-        // this.openLoginOtpModal();
-      } else {
-        this.loginSuccess(user);
+        this.triggerToast(`Welcome back!`, 'success');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Invalid User ID or Password.';
+        this.triggerToast(this.errorMessage, 'error');
+        this.generateCaptcha();
       }
-    } else {
-      this.errorMessage = 'Invalid User ID or Password. Please check and try again.';
-      this.triggerToast(this.errorMessage, 'error');
-      this.generateCaptcha();
-    }
+    }); // <-- subscribe properly close
   }
+  //  onSignInSubmit() {
+  //     debugger
+  //     this.errorMessage = '';
+  //     const { userId, password } = this.loginData;
+
+  //     if (!userId || !password) {
+  //       this.triggerToast('Please enter User ID and Password', 'error');
+  //       return;
+  //     }
+
+  //     if (!this.captchaInput || this.captchaInput.trim() !== this.captchaText) {
+  //       this.triggerToast('Invalid Captcha / ਅਵੈਧ ਕੈਪਚਾ', 'error');
+  //       this.generateCaptcha();
+  //       return;
+  //     }
+
+  //     const existingUsersRaw = localStorage.getItem('cp_users');
+  //     const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
+
+  //     const user = existingUsers.find((u: any) => u.userId.toLowerCase() === userId.trim().toLowerCase() && u.password === password);
+
+  //     if (user) {
+  //       if (this.requiresLoginOtp(user)) {
+  //         this.pendingLoginUser = user;
+  //         this.openLoginOtpModal();
+  //       } else {
+  //         this.loginSuccess(user);
+  //       }
+  //     } else {
+  //       this.errorMessage = 'Invalid User ID or Password. Please check and try again.';
+  //       this.triggerToast(this.errorMessage, 'error');
+  //       this.generateCaptcha();
+  //     }
+  //   }
+
 
   onSignInOtpSubmit() {
     this.errorMessage = '';
-    const { mobileNumber, otpInput, sentOtp } = this.loginOtpData;
+    const { mobileNumber, otpInput } = this.loginOtpData;
 
     if (!mobileNumber || !otpInput) {
       this.triggerToast('Please enter Mobile Number and OTP', 'error');
       return;
     }
 
-    if (otpInput !== sentOtp) {
-      this.errorMessage = 'Invalid OTP. Please use code: 112233';
-      this.triggerToast(this.errorMessage, 'error');
-      return;
-    }
-
-    const existingUsersRaw = localStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-    const user = existingUsers.find((u: any) => u.mobile === mobileNumber);
-
-    if (user) {
-      this.loginSuccess(user);
-      this.router.navigate(['/register']);
-    } else {
-      this.errorMessage = 'Account match error. Please register first.';
-      this.triggerToast(this.errorMessage, 'error');
-    }
+    this.authService.loginWithOtp(mobileNumber, otpInput).subscribe({
+      next: (response) => {
+        localStorage.setItem('token', response.data.token);
+        const sessionData = {
+          userId: response.data.user?.id || '',
+          fullName: response.data.user?.fullName || '',
+          email: response.data.user?.email || '',
+          entityType: 'Individual'
+        };
+        localStorage.setItem('cp_session', JSON.stringify(sessionData));
+        this.triggerToast('Welcome back!', 'success');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Invalid OTP';
+        this.triggerToast(this.errorMessage, 'error');
+      }
+    });
   }
 
   sendLoginOtp() {
+    debugger
     if (!this.loginOtpData.mobileNumber || !/^\d{10}$/.test(this.loginOtpData.mobileNumber)) {
       this.triggerToast('Please enter a valid registered 10-digit Mobile Number', 'error');
       return;
     }
 
-    const existingUsersRaw = localStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-    const matchedUser = existingUsers.find((u: any) => u.mobile === this.loginOtpData.mobileNumber);
-
-    if (!matchedUser) {
-      this.triggerToast('Mobile Number not registered. Please sign up first.', 'error');
-      return;
-    }
-
-    this.loginOtpData.otpSent = true;
-    this.loginOtpData.timer = 30;
-    this.triggerToast(`Login OTP sent (Use: 112233)`, 'info');
-
-    const interval = setInterval(() => {
-      if (this.loginOtpData.timer > 0) {
-        this.loginOtpData.timer--;
-      } else {
-        clearInterval(interval);
+    this.authService.sendLoginOtp(this.loginOtpData.mobileNumber).subscribe({
+      next: (res) => {
+        if (res.success) {
+          debugger
+          this.loginOtpData.otpSent = true;
+          this.triggerToast('OTP sent to your mobile', 'success');
+        }
+      },
+      error: (err) => {
+        this.triggerToast(err.error?.message || 'Failed to send OTP', 'error');
       }
-    }, 1000);
+    });
   }
 
   loginSuccess(user: any) {
@@ -835,7 +1023,7 @@ export class SignupSignin implements OnInit {
     localStorage.setItem('cp_session', JSON.stringify(this.loggedInUser));
     this.isLoggedIn = true;
     this.triggerToast(`Welcome back, ${user.fullName}!`, 'success');
-    
+
     if (user.userId.toLowerCase() === 'dataentryoprt') {
       this.router.navigate(['/register']);
     }

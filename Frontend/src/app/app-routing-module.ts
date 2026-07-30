@@ -8,6 +8,7 @@ const routes: Routes = [
     loadComponent: () => import('./features/home-page/home-page').then(m => m.HomePage),
     pathMatch: 'full'
   },
+
   {
     path: 'login',
     redirectTo: 'auth/login',
