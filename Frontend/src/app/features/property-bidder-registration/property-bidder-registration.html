@@ -5,7 +5,11 @@
         <h1 class="h4 text-dark mt-0 mb-0">Property &amp; Bidder Detail Registration</h1>
       </div>
     </div> -->
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     <form [formGroup]="registerationForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="row g-4 mb-4">
         <div class="col-lg-8">
@@ -27,8 +31,38 @@
                       <button class="btn btn-success rounded-end-3" type="button">Search</button>
                   </div>
                   @if (isInvalid('propertycode')) { <div class="invalid-feedback">Property code is required.</div> }
+<<<<<<< HEAD
+=======
                 </div>
                 <div class="col-sm-6">
+                  <label for="district" class="form-label small text-dark fw-semibold text-uppercase">District <span
+                      class="text-danger">*</span></label>
+                  <input id="district" type="text" class="form-control bg-light rounded-3 custom-input-color" list="districtList"
+                    placeholder="Select or Type District" formControlName="district"
+                    [class.is-invalid]="isInvalid('district')" />
+                  <datalist id="districtList">
+                    @for (item of districts; track item) {
+                    <option [value]="item"></option>
+                    }
+                  </datalist>
+                  @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
+                </div>
+                <div class="col-sm-6">
+                  <label for="marketCommittee" class="form-label small text-dark fw-semibold text-uppercase">Market Committee <span
+                      class="text-danger">*</span></label>
+                  <input id="marketCommittee" type="text" class="form-control bg-light rounded-3 custom-input-color" list="marketCommittees"
+                    placeholder="Select or Type Market Committee" formControlName="marketCommittee"
+                    [class.is-invalid]="isInvalid('marketCommittee')" />
+                  <datalist id="marketCommittees">
+                    @for (committee of mandis; track committee) {
+                    <option [value]="committee"></option>
+                    }
+                  </datalist>
+                  @if (isInvalid('marketCommittee')) { <div class="invalid-feedback">Market Committee is required.</div> }
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
+                </div>
+                <div class="col-sm-6">
+<<<<<<< HEAD
                   <label for="district" class="form-label small text-dark fw-semibold text-uppercase">District <span
                       class="text-danger">*</span></label>
                   <input id="district" type="text" class="form-control bg-light rounded-3 custom-input-color" list="districtList"
@@ -56,6 +90,8 @@
                 </div>
  
                 <div class="col-sm-6">
+=======
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                   <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Mandi <span
                       class="text-danger">*</span></label>
                   <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color" list="mandisList"
@@ -174,7 +210,11 @@
           </div>
         </div>
       </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
       <div class="auction-status-card card border-0 rounded-4 shadow-sm text-white mb-4">
         <div class="card-body p-4">
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
@@ -258,7 +298,11 @@
                   </div> }
                 </div>
               </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               @if (registerationForm.get('transfered')?.value) {
                 <div class="col-md-12 mt-3 border border-secondary rounded-3 bg-light p-2">
                   <h6 class="small text-dark fw-semibold">Allotee Names</h6>
@@ -276,7 +320,11 @@
                   }
                 </div>
               }
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <div class="col-md-4">
                 <label for="relation" class="form-label small text-dark fw-semibold text-uppercase">Relation</label>
                 <select id="relation" class="form-select bg-light rounded-3 custom-input-color"
@@ -337,11 +385,19 @@
             </div>
           </div>
         </div>
+<<<<<<< HEAD
  
         <div class="registration-card card border-0 rounded-4 shadow-sm mt-3">
           <div class="card-body p-4">
             <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
  
+=======
+
+        <div class="registration-card card border-0 rounded-4 shadow-sm mt-3">
+          <div class="card-body p-4">
+            <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <h2 class="h5 mb-0">Financial Breakdowns</h2>
             </div>
  
@@ -423,7 +479,11 @@
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
             <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money
                 Milestone <span class="text-danger">*</span></h3>
@@ -446,24 +506,40 @@
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
             <div class="financial-panel bg-light border rounded-4 p-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp;
                 Installment Scheduler <span class="text-danger">*</span></h3>
              
               <div class="row g-3">
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
   <div class="col-sm-6 col-lg-6">
     <label class="form-label small text-dark fw-semibold text-uppercase">Due Amount (Principal)</label>
     <input type="number" class="form-control bg-light custom-input-color fw-bold text-success" formControlName="dueAmount" readonly />
   </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
   <div class="col-sm-6 col-lg-6">
     <label class="form-label small text-dark fw-semibold text-uppercase">Total Due (Inc. Interest)</label>
     <input type="number" class="form-control bg-light custom-input-color fw-bold text-danger" formControlName="totalDueAmount" readonly />
   </div>
 </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
 <div class="col-12 mt-4">
   <div class="border rounded-4 bg-white p-3 shadow-sm">
     <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
@@ -471,7 +547,11 @@
         <i class="fa-solid fa-calendar me-2 custom-color"></i>Complete 6-Month Installments Overview Schedule
       </h4>
     </div>
+<<<<<<< HEAD
    
+=======
+    
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     <div class="table-responsive table-responsive-scroll">
       <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
         <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
@@ -489,8 +569,13 @@
     <tr [class.table-primary-subtle]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel">
       <td class="text-start fw-semibold ps-4 py-2">
         <!-- Colored status indicator dot -->
+<<<<<<< HEAD
         <span class="dot-indicator me-2"
               [class.bg-primary]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel"
+=======
+        <span class="dot-indicator me-2" 
+              [class.bg-primary]="registerationForm.get('installmentNo')?.value === schedule.installmentLabel" 
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               [class.bg-light]="registerationForm.get('installmentNo')?.value !== schedule.installmentLabel">
         </span>
         {{ schedule.installmentLabel }}
@@ -502,7 +587,7 @@
         {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
       </td>
       <td class="text-muted fw-semibold">
-        {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
+        {{ schedule.interestAmount > 0 ? ('₹' + (schedule.interestAmount | number:'1.2-2')) : '—' }}
       </td>
       <td class="text-end fw-semibold text-success pe-3">
         {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
@@ -522,7 +607,11 @@
   </div>
 </div>
             </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
         <div class="financial-panel bg-light border rounded-4 p-3 mt-3" [formGroup]="registerationForm">
   <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
     <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
@@ -530,7 +619,11 @@
       <i class="fa-solid fa-plus me-1"></i> Add Record
     </button>
   </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
   <div class="col-sm-12">
     <div class="table-responsive table-responsive-scroll rounded-3 overflow-hidden border shadow-sm bg-white">
       <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap" formArrayName="receiptsFormArray" scrollable="true">
@@ -561,7 +654,11 @@
                   <span class="fw-semibold text-secondary">{{ row.get('receiptNo')?.value }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                    <input type="date" class="form-control form-control-sm font-monospace" formControlName="receiptDate" />
@@ -569,7 +666,11 @@
                   <span class="font-monospace text-dark">{{ row.get('receiptDate')?.value | date:'dd/MM/yyyy' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="text" class="form-control form-control-sm text-center" formControlName="draftNo" placeholder="DRF..." />
@@ -577,7 +678,11 @@
                   <span class="font-monospace text-muted">{{ row.get('draftNo')?.value }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="number" step="0.01" class="form-control form-control-sm text-center fw-bold" formControlName="draftAmount" />
@@ -585,7 +690,11 @@
                   <span class="fw-bold text-dark">{{ row.get('draftAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="date" class="form-control form-control-sm font-monospace" formControlName="draftDate" />
@@ -593,7 +702,11 @@
                   <span class="font-monospace text-dark">{{ row.get('draftDate')?.value | date:'dd/MM/yyyy' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="text" class="form-control form-control-sm" formControlName="draftBank" placeholder="Bank" />
@@ -601,7 +714,11 @@
                   <span>{{ row.get('draftBank')?.value }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="number" step="0.01" class="form-control form-control-sm text-center text-success fw-bold" formControlName="principalAmount" />
@@ -609,7 +726,11 @@
                   <span class="text-success fw-bold">{{ row.get('principalAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="number" step="0.01" class="form-control form-control-sm text-center text-danger" formControlName="interestAmount" />
@@ -617,7 +738,11 @@
                   <span class="text-danger">{{ row.get('interestAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="number" step="0.01" class="form-control form-control-sm text-center" formControlName="otherAmount" />
@@ -625,7 +750,11 @@
                   <span class="text-muted">{{ row.get('otherAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="number" step="0.01" class="form-control form-control-sm text-center text-warning-dark" formControlName="penaltyAmount" />
@@ -633,7 +762,11 @@
                   <span class="text-warning-dark">{{ row.get('penaltyAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="text" class="form-control form-control-sm" formControlName="penaltyType" />
@@ -641,7 +774,11 @@
                   <span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value }}</span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td>
                 @if (row.get('isEditing')?.value) {
                   <input type="text" class="form-control form-control-sm" formControlName="remarks" placeholder="..." />
@@ -651,7 +788,11 @@
                   </span>
                 }
               </td>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
               <td class="text-end pe-3">
                 <div class="btn-group btn-group-sm">
                   @if (row.get('isEditing')?.value) {
@@ -685,12 +826,20 @@
     </div>
   </div>
 </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
           </div>
         </div>
       </div>
       }
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
       <div class="form-actions d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
           (click)="resetForm()">Cancel</button>

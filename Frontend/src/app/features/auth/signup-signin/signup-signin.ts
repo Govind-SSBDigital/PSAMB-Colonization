@@ -10,7 +10,10 @@ import { DocumentsAndAddress } from './documents-and-address/documents-and-addre
 import { PersonalDetails } from './personal-details/personal-details';
 import { BusinessDetails } from './business-details/business-details';
 import { Procurement } from './procurement/procurement';
+<<<<<<< HEAD
 import { AuthService } from '../../../core/service/auth.service';
+=======
+>>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
 
 interface EntityType {
   id: string;
@@ -626,41 +629,41 @@ export class SignupSignin implements OnInit {
     this.otpData.emailVerified = false;
     this.otpData.mobileOtpInput = '';
     this.otpData.emailOtpInput = '';
-    this.sendMobileOtp();
-    this.sendEmailOtp();
+    // this.sendMobileOtp();
+    // this.sendEmailOtp();
   }
 
   closeOtpModal() {
     this.otpModalOpen = false;
   }
 
-  sendMobileOtp() {
-    this.otpData.mobileSent = true;
-    this.otpData.mobileTimer = 30;
-    this.triggerToast(`Mobile OTP sent (Use: 123456)`, 'info');
+  // sendMobileOtp() {
+  //   this.otpData.mobileSent = true;
+  //   this.otpData.mobileTimer = 30;
+  //   this.triggerToast(`Mobile OTP sent (Use: 123456)`, 'info');
 
-    const interval = setInterval(() => {
-      if (this.otpData.mobileTimer > 0) {
-        this.otpData.mobileTimer--;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
+  //   const interval = setInterval(() => {
+  //     if (this.otpData.mobileTimer > 0) {
+  //       this.otpData.mobileTimer--;
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 1000);
+  // }
 
-  sendEmailOtp() {
-    this.otpData.emailSent = true;
-    this.otpData.emailTimer = 30;
-    this.triggerToast(`Email OTP sent (Use: 654321)`, 'info');
+  // sendEmailOtp() {
+  //   this.otpData.emailSent = true;
+  //   this.otpData.emailTimer = 30;
+  //   this.triggerToast(`Email OTP sent (Use: 654321)`, 'info');
 
-    const interval = setInterval(() => {
-      if (this.otpData.emailTimer > 0) {
-        this.otpData.emailTimer--;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
+  //   const interval = setInterval(() => {
+  //     if (this.otpData.emailTimer > 0) {
+  //       this.otpData.emailTimer--;
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 1000);
+  // }
 
   verifyMobileOtp() {
     if (this.otpData.mobileOtpInput === this.otpData.sentMobileOtp) {
