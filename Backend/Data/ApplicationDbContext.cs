@@ -12,26 +12,21 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         : base(options)
     {
     }
-
-<<<<<<< HEAD
-
-    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<ApplicantAuth> ApplicantAuths => Set<ApplicantAuth>();
     public DbSet<MobileOTPs> MobileOTPs { get; set; }
     public DbSet<StateMaster> StateMasters { get; set; }
     public DbSet<DistrictMaster> DistrictMasters { get; set; }
     public DbSet<CityMaster> CityMasters { get; set; }
     public DbSet<EmailOtp> EmailOtps { get; set; }
-=======
-    public DbSet<ApplicationUsers> ApplicationUsers { get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
         builder.Entity<StateMaster>()
-         .ToTable("StateMaster", t => t.ExcludeFromMigrations())
-         .HasKey(x => x.StateId);
+            .ToTable("StateMaster", t => t.ExcludeFromMigrations())
+            .HasKey(x => x.StateId);
 
         builder.Entity<DistrictMaster>()
             .ToTable("DistrictMaster", t => t.ExcludeFromMigrations())
@@ -40,24 +35,24 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         builder.Entity<CityMaster>()
             .ToTable("CityMaster", t => t.ExcludeFromMigrations())
             .HasKey(x => x.CityId);
+
         builder.Entity<EmailOtp>()
-    .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
-    .HasKey(x => x.OTPId);
-        // ── ApplicationUser ───────────────────────────
+            .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
+            .HasKey(x => x.OTPId);
+
+        // ApplicationUser
+        // ApplicationUser
         builder.Entity<ApplicationUser>(b =>
         {
             b.ToTable("ApplicationUser");
-
             b.HasKey(x => x.ApplicantId);
-
-            b.Property(x => x.ApplicantId)
-             .UseIdentityColumn(100, 1);
+            b.Property(x => x.ApplicantId).UseIdentityColumn(100, 1);
             b.Property(x => x.IdentityUserId).HasMaxLength(450);
             b.HasIndex(x => x.IdentityUserId).IsUnique();
             b.Property(x => x.FirstName).HasMaxLength(200).IsRequired();
             b.Property(x => x.LastName).HasMaxLength(100);
             b.Property(x => x.Email).HasMaxLength(255).IsRequired();
-            b.Property(x => x.MobileNo).HasMaxLength(15).IsRequired();
+            b.Property(x => x.MobileNo).HasMaxLength(15);  // IsRequired hatao
             b.Property(x => x.PANNumber).HasMaxLength(10);
             b.Property(x => x.GSTNumber).HasMaxLength(20);
             b.Property(x => x.IndividualPinCode).HasMaxLength(10);
@@ -73,45 +68,31 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             b.Property(x => x.OfficePropertyPhotoPath).HasMaxLength(500);
             b.Property(x => x.IndividualPlotStreetLandmark).HasMaxLength(500);
             b.Property(x => x.BusinessPlotStreetLandmark).HasMaxLength(500);
-
             b.HasIndex(x => x.Email).IsUnique();
-            b.HasIndex(x => x.MobileNo).IsUnique();
-
-            // Soft delete filter
-            //b.HasQueryFilter(x => !x.IsDeleted);
+            // MobileNo unique index hatao -- duplicate allow karo testing ke liye
+            // b.HasIndex(x => x.MobileNo).IsUnique();
         });
 
-        // ── ApplicantAuth ─────────────────────────────
+        // ApplicantAuth
         builder.Entity<ApplicantAuth>(b =>
         {
             b.ToTable("ApplicantAuth");
-
             b.HasKey(x => x.AuthId);
-
-            b.Property(x => x.AuthId)
-             .UseIdentityColumn(1, 1);
-
+            b.Property(x => x.AuthId).UseIdentityColumn(1, 1);
             b.Property(x => x.Username).HasMaxLength(255).IsRequired();
             b.Property(x => x.PasswordHash).HasMaxLength(500).IsRequired();
             b.Property(x => x.SaltKey).HasMaxLength(255).IsRequired();
             b.Property(x => x.LastLoginIP).HasMaxLength(50);
-
             b.HasIndex(x => x.Username).IsUnique();
-            b.HasIndex(x => x.ApplicantId).IsUnique(); // one-to-one
-
-            //b.HasQueryFilter(x => !x.IsDeleted);
+            b.HasIndex(x => x.ApplicantId).IsUnique();
         });
 
-        // ── MobileOTPs ────────────────────────────────
+        // MobileOTPs
         builder.Entity<MobileOTPs>(b =>
         {
             b.ToTable("MobileOTP");
-
             b.HasKey(x => x.OTPId);
-
-            b.Property(x => x.OTPId)
-             .UseIdentityColumn(1, 1);
-
+            b.Property(x => x.OTPId).UseIdentityColumn(1, 1);
             b.Property(x => x.MobileNumber).HasMaxLength(15).IsRequired();
             b.Property(x => x.OTP).HasMaxLength(10).IsRequired();
         });

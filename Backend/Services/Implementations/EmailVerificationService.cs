@@ -88,7 +88,7 @@ namespace Backend.Services.Implementations
                 .Where(x => x.Email == email
                     && x.OTP == otp
                     && x.IsUsed == false
-                    && x.CreatedAt >= DateTime.Now.AddMinutes(-5))
+                    )
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefault();
 
