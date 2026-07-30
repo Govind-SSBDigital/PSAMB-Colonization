@@ -22,18 +22,25 @@ namespace Backend.Controllers
         [HttpGet("states")]
         public async Task<ActionResult<ApiResponse<List<StateResponse>>>> GetStates()
         {
-            var states = await _context.StateMasters
-                .Where(x => x.IsDeleted == false && x.IsActive == true)
-                .OrderBy(x => x.StateName)
-                .Select(x => new StateResponse
-                {
-                    StateId = x.StateId,
-                    StateName = x.StateName,
-                    StateCode = x.StateCode
-                })
-                .ToListAsync();
+            try
+            {
+                var states = await _context.StateMasters
+                    .Where(x => x.IsDeleted == false && x.IsActive == true)
+                    .OrderBy(x => x.StateName)
+                    .Select(x => new StateResponse
+                    {
+                        StateId = x.StateId,
+                        StateName = x.StateName,
+                        StateCode = x.StateCode
+                    })
+                    .ToListAsync();
 
-            return Ok(ApiResponse<List<StateResponse>>.Ok(states));
+                return Ok(ApiResponse<List<StateResponse>>.Ok(states));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<List<StateResponse>>.Fail(ex.Message));
+            }
         }
 
         // GET api/Location/districts/1

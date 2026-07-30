@@ -14,6 +14,9 @@ public class ApplicationUser
     public string? FatherHusbandLastName { get; set; }
     public string? MotherFirstName { get; set; }
     public string? MotherLastName { get; set; }
+    //public int RelationType { get; set; } = 1;
+    //public string? SpouseFirstName { get; set; }
+    //public string? SpouseLastName { get; set; }
     public string Email { get; set; } = string.Empty;
     public string MobileNo { get; set; } = string.Empty;
     public string? PhotoPath { get; set; }

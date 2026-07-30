@@ -162,6 +162,7 @@ try
     builder.Services.AddHttpClient();
     builder.Services.AddScoped<IMobileVerificationService, MobileVerificationService>();
     //
+    builder.Services.AddScoped<ISendCredUserService, SendCredUserService>();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {

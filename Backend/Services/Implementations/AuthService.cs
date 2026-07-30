@@ -35,6 +35,8 @@ namespace Backend.Services.Implementations
             //if (request.Password != request.ConfirmPassword)
             //    throw new ArgumentException("Passwords do not match");
             request.Password = "Test@123";
+
+            //request.Email = "ps8087775@gmail.com";
             var existing = await _userManager.FindByEmailAsync(request.Email);
             if (existing != null)
                 throw new ArgumentException("Email already registered");
@@ -273,6 +275,29 @@ namespace Backend.Services.Implementations
                 PhoneNumber = applicant.MobileNo,
                 Roles = roles,
                 CreatedAt = applicant.CreatedDate
+            };
+        }
+        public async Task<LoginResponse> GenerateTokenForUser(ApplicationUser user)
+        {
+            // IdentityUser dhundo using IdentityUserId
+            var identityUser = await _userManager.FindByIdAsync(user.IdentityUserId ?? string.Empty);
+
+            if (identityUser == null)
+                throw new UnauthorizedAccessException("User not found");
+
+            var expiresAt = DateTime.UtcNow.AddDays(7);
+            var token = GenerateJwtToken(identityUser, user, expiresAt);
+
+            return new LoginResponse
+            {
+                Token = token,
+                ExpiresAt = expiresAt,
+                User = new UserResponse
+                {
+                    Id = identityUser.Id,
+                    FullName = user.FirstName + " " + user.LastName,
+                    Email = identityUser.Email ?? string.Empty
+                }
             };
         }
     }

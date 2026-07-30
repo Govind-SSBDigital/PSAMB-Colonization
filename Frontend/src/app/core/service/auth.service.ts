@@ -31,4 +31,12 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
+
+  sendLoginOtp(mobileNumber: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/send-login-otp`, { mobileNumber });
+  }
+
+  loginWithOtp(mobileNumber: string, otp: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login-with-otp`, { mobileNumber, otp });
+}
 }

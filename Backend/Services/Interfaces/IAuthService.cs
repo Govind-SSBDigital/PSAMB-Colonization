@@ -1,4 +1,5 @@
 ﻿using Backend.Models.DTOs;
+using Backend.Models.Entities;
 
 namespace Backend.Services.Interfaces
 {
@@ -9,5 +10,6 @@ namespace Backend.Services.Interfaces
         Task<UserResponse> GetProfileAsync(string userId);
         Task<UserResponse> UpdateProfileAsync(string userId, UpdateProfileRequest request);
         Task ChangePasswordAsync(string userId, ChangePasswordRequest request);
+        Task<LoginResponse> GenerateTokenForUser(ApplicationUser user);
     }
 }

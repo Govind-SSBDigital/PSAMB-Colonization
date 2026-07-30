@@ -13,10 +13,14 @@
         public DateTime DateOfBirth { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string? LastName { get; set; }
+        //public int RelationType { get; set; } = 1;
+
         public string? FatherHusbandFirstName { get; set; }
         public string? FatherHusbandLastName { get; set; }
         public string? MotherFirstName { get; set; }
         public string? MotherLastName { get; set; }
+        //public string? SpouseFirstName { get; set; }
+        //public string? SpouseLastName { get; set; }
         public string Email { get; set; } = string.Empty;
         public string MobileNo { get; set; } = string.Empty;
 
@@ -55,7 +59,11 @@
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
-
+    public class MobileOtpLoginRequest
+    {
+        public string MobileNumber { get; set; } = string.Empty;
+        public string Otp { get; set; } = string.Empty;
+    }
     public class ChangePasswordRequest
     {
         public string CurrentPassword { get; set; } = string.Empty;

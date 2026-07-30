@@ -120,16 +120,17 @@ export class SignupSignin implements OnInit {
     dob: '',
     firstName: '',
     lastName: '',
+    relationType: 'father', // Default to 'father' for initial state
     fatherFirstName: '',
     fatherLastName: '',
     motherFirstName: '',
     motherLastName: '',
     spouseFirstName: '',
     spouseLastName: '',
-      fatherSectionVisible: false,
-      spouseSectionVisible: false,
-      isManagingPartner: null,
-      emailAddress: '',
+    fatherSectionVisible: false,
+    spouseSectionVisible: false,
+    isManagingPartner: null,
+    emailAddress: '',
     mobileNumber: '',
     password: '',
     confirmPassword: '',
@@ -310,9 +311,9 @@ export class SignupSignin implements OnInit {
     return this.selectedEntityType === 'Procurement Agency';
   }
 
-  // onEntityTypeChange() {
-  //   this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
-  // }
+  onEntityTypeChange() {
+    this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
+  }
 
   openSignUp() {
     if (!this.router.url.includes('/register')) {
@@ -698,6 +699,7 @@ export class SignupSignin implements OnInit {
       dateOfBirth: this.signUpData.dob,
       firstName: this.signUpData.firstName,
       lastName: this.signUpData.lastName,
+      relationType:this.signUpData.relationType === 'father' ? 1 : 2, // 1 for Father, 2 for Husband
       fatherHusbandFirstName: this.signUpData.fatherFirstName,
       fatherHusbandLastName: this.signUpData.fatherLastName,
       motherFirstName: this.signUpData.motherFirstName,
@@ -810,6 +812,7 @@ export class SignupSignin implements OnInit {
       dob: '',
       firstName: '',
       lastName: '',
+      relationType: 'father', // Default to 'father' for initial state
       fatherFirstName: '',
       fatherLastName: '',
       motherFirstName: '',
@@ -889,7 +892,6 @@ export class SignupSignin implements OnInit {
     this.errorMessage = '';
     const { userId, password } = this.loginData;
 
-    // Validation
     if (!userId || !password) {
       this.triggerToast('Please enter User ID and Password', 'error');
       return;
@@ -908,25 +910,22 @@ export class SignupSignin implements OnInit {
 
         // Session save karo
         const sessionData = {
-          userId: response.data.userId,
-          fullName: response.data.fullName,
-          email: response.data.email,
+          userId: response.data.user?.id || '',
+          fullName: response.data.user?.fullName || '',
+          email: response.data.user?.email || '',
           entityType: response.data.entityType || 'Individual'
         };
         localStorage.setItem('cp_session', JSON.stringify(sessionData));
 
-    if (user) {
-      if (this.requiresLoginOtp(user)) {
-        this.pendingLoginUser = user;
-        // this.openLoginOtpModal();
-      } else {
-        this.loginSuccess(user);
+        this.triggerToast(`Welcome back!`, 'success');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Invalid User ID or Password.';
+        this.triggerToast(this.errorMessage, 'error');
+        this.generateCaptcha();
       }
-    } else {
-      this.errorMessage = 'Invalid User ID or Password. Please check and try again.';
-      this.triggerToast(this.errorMessage, 'error');
-      this.generateCaptcha();
-    }
+    }); // <-- subscribe properly close
   }
   //  onSignInSubmit() {
   //     debugger
@@ -966,58 +965,52 @@ export class SignupSignin implements OnInit {
 
   onSignInOtpSubmit() {
     this.errorMessage = '';
-    const { mobileNumber, otpInput, sentOtp } = this.loginOtpData;
+    const { mobileNumber, otpInput } = this.loginOtpData;
 
     if (!mobileNumber || !otpInput) {
       this.triggerToast('Please enter Mobile Number and OTP', 'error');
       return;
     }
 
-    if (otpInput !== sentOtp) {
-      this.errorMessage = 'Invalid OTP. Please use code: 112233';
-      this.triggerToast(this.errorMessage, 'error');
-      return;
-    }
-
-    const existingUsersRaw = localStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-    const user = existingUsers.find((u: any) => u.mobile === mobileNumber);
-
-    if (user) {
-      this.loginSuccess(user);
-      this.router.navigate(['/register']);
-    } else {
-      this.errorMessage = 'Account match error. Please register first.';
-      this.triggerToast(this.errorMessage, 'error');
-    }
+    this.authService.loginWithOtp(mobileNumber, otpInput).subscribe({
+      next: (response) => {
+        localStorage.setItem('token', response.data.token);
+        const sessionData = {
+          userId: response.data.user?.id || '',
+          fullName: response.data.user?.fullName || '',
+          email: response.data.user?.email || '',
+          entityType: 'Individual'
+        };
+        localStorage.setItem('cp_session', JSON.stringify(sessionData));
+        this.triggerToast('Welcome back!', 'success');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Invalid OTP';
+        this.triggerToast(this.errorMessage, 'error');
+      }
+    });
   }
 
   sendLoginOtp() {
+    debugger
     if (!this.loginOtpData.mobileNumber || !/^\d{10}$/.test(this.loginOtpData.mobileNumber)) {
       this.triggerToast('Please enter a valid registered 10-digit Mobile Number', 'error');
       return;
     }
 
-    const existingUsersRaw = localStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-    const matchedUser = existingUsers.find((u: any) => u.mobile === this.loginOtpData.mobileNumber);
-
-    if (!matchedUser) {
-      this.triggerToast('Mobile Number not registered. Please sign up first.', 'error');
-      return;
-    }
-
-    this.loginOtpData.otpSent = true;
-    this.loginOtpData.timer = 30;
-    this.triggerToast(`Login OTP sent (Use: 112233)`, 'info');
-
-    const interval = setInterval(() => {
-      if (this.loginOtpData.timer > 0) {
-        this.loginOtpData.timer--;
-      } else {
-        clearInterval(interval);
+    this.authService.sendLoginOtp(this.loginOtpData.mobileNumber).subscribe({
+      next: (res) => {
+        if (res.success) {
+          debugger
+          this.loginOtpData.otpSent = true;
+          this.triggerToast('OTP sent to your mobile', 'success');
+        }
+      },
+      error: (err) => {
+        this.triggerToast(err.error?.message || 'Failed to send OTP', 'error');
       }
-    }, 1000);
+    });
   }
 
   loginSuccess(user: any) {

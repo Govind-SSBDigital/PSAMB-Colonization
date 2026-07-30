@@ -1,4 +1,5 @@
-﻿using Backend.Models.Entities;
+﻿using Backend.Models.DTOs;
+using Backend.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

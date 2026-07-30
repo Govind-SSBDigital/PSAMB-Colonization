@@ -68,6 +68,46 @@ namespace Backend.Services.Implementations
                 return false;
             }
         }
+        //public async Task<bool> SendCredAsync(string mobileNo, string message,string Password)
+        //{
+        //    try
+        //    {
+
+        //        var mobileOtp = new MobileOTPs
+        //        {
+        //            ApplicantId = applicantId,
+        //            MobileNumber = mobileNo,
+        //            OTP = otp,
+        //            IsUsed = false,
+        //            CreatedAt = DateTime.Now
+        //        };
+        //        await _context.MobileOTPs.AddAsync(mobileOtp);
+        //        await _context.SaveChangesAsync();
+
+
+        //        if (!mobileNo.StartsWith("91"))
+        //            mobileNo = "91" + mobileNo;
+
+        //        string requestUrl = "https://api.onex-aura.com/api/sms?key=vFhwd8sy&to="
+        //            + mobileNo
+        //            + "&from=PMBSMS&body="
+        //            + message
+        //            + "&entityid=1001395680000010147&templateid=1007166920052959008";         //1007166920052959008              1007169087211671887
+
+        //        _logger.LogInformation("SMS 1007166920052959008: {Url}", requestUrl);
+
+        //        var response = await _httpClient.GetAsync(requestUrl);
+        //        var responseBody = await response.Content.ReadAsStringAsync();
+
+        //        _logger.LogInformation("SMS Response: {Response}", responseBody);
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "SMS failed for {MobileNo}", mobileNo);
+        //        return false;
+        //    }
+        //}
 
         public async Task<bool> VerifyOtpAsync(string mobileNo, string otp)
         {
