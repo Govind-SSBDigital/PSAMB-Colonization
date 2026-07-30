@@ -415,14 +415,14 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter a valid 10-digit Mobile Number / 10-ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ', 'error');
       return false;
     }
-    if (!this.signUpData.password || this.signUpData.password.length < 6) {
-      this.triggerToast('Password must be at least 6 characters / ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 6 ਅੱਖਰਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ', 'error');
-      return false;
-    }
-    if (this.signUpData.password !== this.signUpData.confirmPassword) {
-      this.triggerToast('Passwords do not match / ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ', 'error');
-      return false;
-    }
+    // if (!this.signUpData.password || this.signUpData.password.length < 6) {
+    //   this.triggerToast('Password must be at least 6 characters / ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 6 ਅੱਖਰਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ', 'error');
+    //   return false;
+    // }
+    // if (this.signUpData.password !== this.signUpData.confirmPassword) {
+    //   this.triggerToast('Passwords do not match / ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ', 'error');
+    //   return false;
+    // }
     return true;
   }
 
@@ -570,41 +570,41 @@ export class SignupSignin implements OnInit {
     this.otpData.emailVerified = false;
     this.otpData.mobileOtpInput = '';
     this.otpData.emailOtpInput = '';
-    this.sendMobileOtp();
-    this.sendEmailOtp();
+    // this.sendMobileOtp();
+    // this.sendEmailOtp();
   }
 
   closeOtpModal() {
     this.otpModalOpen = false;
   }
 
-  sendMobileOtp() {
-    this.otpData.mobileSent = true;
-    this.otpData.mobileTimer = 30;
-    this.triggerToast(`Mobile OTP sent (Use: 123456)`, 'info');
+  // sendMobileOtp() {
+  //   this.otpData.mobileSent = true;
+  //   this.otpData.mobileTimer = 30;
+  //   this.triggerToast(`Mobile OTP sent (Use: 123456)`, 'info');
 
-    const interval = setInterval(() => {
-      if (this.otpData.mobileTimer > 0) {
-        this.otpData.mobileTimer--;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
+  //   const interval = setInterval(() => {
+  //     if (this.otpData.mobileTimer > 0) {
+  //       this.otpData.mobileTimer--;
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 1000);
+  // }
 
-  sendEmailOtp() {
-    this.otpData.emailSent = true;
-    this.otpData.emailTimer = 30;
-    this.triggerToast(`Email OTP sent (Use: 654321)`, 'info');
+  // sendEmailOtp() {
+  //   this.otpData.emailSent = true;
+  //   this.otpData.emailTimer = 30;
+  //   this.triggerToast(`Email OTP sent (Use: 654321)`, 'info');
 
-    const interval = setInterval(() => {
-      if (this.otpData.emailTimer > 0) {
-        this.otpData.emailTimer--;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
+  //   const interval = setInterval(() => {
+  //     if (this.otpData.emailTimer > 0) {
+  //       this.otpData.emailTimer--;
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 1000);
+  // }
 
   verifyMobileOtp() {
     if (this.otpData.mobileOtpInput === this.otpData.sentMobileOtp) {

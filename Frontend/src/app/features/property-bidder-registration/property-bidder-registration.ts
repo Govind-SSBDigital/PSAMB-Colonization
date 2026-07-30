@@ -25,6 +25,7 @@ export interface InstallmentScheduleView {
   installmentLabel: string;
   dueDate: string;
   baseAmountDue: number;
+  interestAmount: number;
   totalWithInterest: number;
 }
 
@@ -52,7 +53,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   plotStatuses = ['Sold', 'Unsold'];
   // Array that holds the calculated installments displayed in the HTML table
   calculatedSchedulesMatrix: InstallmentScheduleView[] = [];
-
+  installmentDateError: string | null = null;
   statusFields = [
     { control: 'isAssetResumed', label: 'Asset Resumed' },
     { control: 'IsAssetSurrendered', label: 'Asset Surrendered' },
@@ -444,87 +445,195 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     // CORE CALCULATION ALGORITHM
 
     // Core calculation logic for dynamic installment schedule generation and UI binding
-   private calculateUIInstallments(): void {
+  //  private calculateUIInstallments(): void {
+  //   // 1. Fetch form variables safely
+  //   const finalBidderPrice = Number(this.registerationForm.get('h1BidderFinalPrice')?.value) || 0;
+  //   const emdPaid = Number(this.registerationForm.get('emdPaidAmount')?.value) || 0;
+  //   const allotmentPaid_25_percentage= Number(this.registerationForm.get('allotmentPaidAmount')?.value) || 0;
+  //   const milestoneDateStr = this.registerationForm.get('allotmentTransactionDate')?.value;
+  //   const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
+  //   const currentInterest = Number(this.registerationForm.get('accumulatedInterest')?.value) || 0;
+
+  //   // 2. Calculate TOTAL Outstanding Principal Balance
+  //   // const downPaymentsTotal = emdPaid + allotmentPaid;
+  //   const outstandingPrincipal = finalBidderPrice - allotmentPaid_25_percentage;
+
+  //   // Compute the base installment rate (1/6th of total outstanding principal)
+  //   let computedDueAmount = 0;
+  //   if (outstandingPrincipal > 0) {
+  //     computedDueAmount = outstandingPrincipal / 6;
+  //     computedDueAmount = Math.round((computedDueAmount + Number.EPSILON) * 100) / 100;
+  //   }
+
+  //   // NEW: Divide the interest evenly across all 6 installments
+  //   let computedInterestPerInstallment = 0;
+  //   if (currentInterest > 0) {
+  //     computedInterestPerInstallment = currentInterest / 6;
+  //     computedInterestPerInstallment = Math.round((computedInterestPerInstallment + Number.EPSILON) * 100) / 100;
+  //   }
+
+  //   // 3. Generate the 6-part amortization matrix table
+  //   const generatedMatrix: InstallmentScheduleView[] = [];
+
+  //   //date calculation part below 
+  //   for (let step = 1; step <= 6; step++) {
+  //     let calculatedDateStr = '';
+      
+  //     if (milestoneDateStr) {
+  //       const parts = milestoneDateStr.split('-'); 
+  //       if (parts.length === 3) {
+  //         const baseYear = parseInt(parts[0], 10);
+  //         const baseMonth = parseInt(parts[1], 10) - 1; 
+  //         const baseDay = parseInt(parts[2], 10);
+          
+  //         const targetTotalMonths = baseMonth + (step * 6);
+  //         const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
+  //         const targetMonth = targetTotalMonths % 12;
+          
+  //         const targetDateObj = new Date(targetYear, targetMonth, baseDay);
+          
+  //         if (targetDateObj.getDate() !== baseDay) {
+  //           targetDateObj.setDate(0); 
+  //         }
+          
+  //         const pad = (num: number) => num.toString().padStart(2, '0');
+  //         calculatedDateStr = `${targetDateObj.getFullYear()}-${pad(targetDateObj.getMonth() + 1)}-${pad(targetDateObj.getDate())}`;
+  //       }
+  //     }
+
+  //     const currentLabel = `Installment ${step}`;
+      
+  //     // Calculate total amount for this row (Base Principal + Evenly Split Interest)
+  //     const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestPerInstallment) : 0;
+
+  //     generatedMatrix.push({
+  //       index: step,
+  //       installmentLabel: currentLabel,
+  //       dueDate: calculatedDateStr,
+  //       baseAmountDue: computedDueAmount,
+  //       totalWithInterest: Math.round((stepTotalWithInterest + Number.EPSILON) * 100) / 100
+  //     });
+  //   }
+
+  //   this.calculatedSchedulesMatrix = generatedMatrix;
+
+  //   // 4. Calculate total overall due (Full Principal + Accumulated Interest)
+  //   const finalTotalDueIncludingInterest = outstandingPrincipal > 0 ? (outstandingPrincipal + currentInterest) : 0;
+  //   const activeNode = generatedMatrix.find(item => item.installmentLabel === selectedInstallmentString);
+  //   const activeDueDate = activeNode ? activeNode.dueDate : '';
+
+  //   // 5. Patch corrected, high-level overview values to UI inputs
+  //   this.registerationForm.patchValue({
+  //     dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : '', // Displays 27,500.00
+  //     dueDate: activeDueDate,
+  //     totalDueAmount: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : '' // Displays 32,000.00
+  //   }, { emitEvent: false });
+  // }
+
+  private calculateUIInstallments(): void {
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('h1BidderFinalPrice')?.value) || 0;
-    const emdPaid = Number(this.registerationForm.get('emdPaidAmount')?.value) || 0;
-    const allotmentPaid = Number(this.registerationForm.get('allotmentPaidAmount')?.value) || 0;
+    const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentPaidAmount')?.value) || 0;
     const milestoneDateStr = this.registerationForm.get('allotmentTransactionDate')?.value;
     const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
-    const currentInterest = Number(this.registerationForm.get('accumulatedInterest')?.value) || 0;
 
     // 2. Calculate TOTAL Outstanding Principal Balance
-    const downPaymentsTotal = emdPaid + allotmentPaid;
-    const outstandingPrincipal = finalBidderPrice - downPaymentsTotal;
+    const outstandingPrincipal = finalBidderPrice - allotmentPaid_25_percentage;
 
-    // Compute the base installment rate (1/6th of total outstanding principal)
+    // Compute the base installment principal (1/6th of total outstanding principal)
     let computedDueAmount = 0;
     if (outstandingPrincipal > 0) {
       computedDueAmount = outstandingPrincipal / 6;
       computedDueAmount = Math.round((computedDueAmount + Number.EPSILON) * 100) / 100;
     }
 
-    // NEW: Divide the interest evenly across all 6 installments
-    let computedInterestPerInstallment = 0;
-    if (currentInterest > 0) {
-      computedInterestPerInstallment = currentInterest / 6;
-      computedInterestPerInstallment = Math.round((computedInterestPerInstallment + Number.EPSILON) * 100) / 100;
+    // 3. Validate milestone date presence BEFORE computing any interest
+    this.installmentDateError = null;
+    let baseYear = 0, baseMonth = 0, baseDay = 0;
+    let dateIsValid = false;
+
+    if (milestoneDateStr) {
+      const parts = milestoneDateStr.split('-');
+      if (parts.length === 3) {
+        baseYear = parseInt(parts[0], 10);
+        baseMonth = parseInt(parts[1], 10) - 1;
+        baseDay = parseInt(parts[2], 10);
+        dateIsValid = !isNaN(baseYear) && !isNaN(baseMonth) && !isNaN(baseDay);
+      }
     }
 
-    // 3. Generate the 6-part amortization matrix table
+    if (!dateIsValid) {
+      this.installmentDateError = 'Please select the 25% Allotment Transaction Date to calculate installment interest.';
+    }
+
+    // 4. Determine interest rate based on the allotment transaction year
+    //    < 1992 -> 6%, >= 1992 -> 12%
+    const rateOfInterest = dateIsValid ? (baseYear < 1992 ? 6 : 12) : 0;
+
+    // 5. Generate the 6-part amortization matrix table
     const generatedMatrix: InstallmentScheduleView[] = [];
-    
+    let totalInterestAcrossInstallments = 0;
+
     for (let step = 1; step <= 6; step++) {
       let calculatedDateStr = '';
-      
-      if (milestoneDateStr) {
-        const parts = milestoneDateStr.split('-'); 
-        if (parts.length === 3) {
-          const baseYear = parseInt(parts[0], 10);
-          const baseMonth = parseInt(parts[1], 10) - 1; 
-          const baseDay = parseInt(parts[2], 10);
-          
-          const targetTotalMonths = baseMonth + (step * 6);
-          const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
-          const targetMonth = targetTotalMonths % 12;
-          
-          const targetDateObj = new Date(targetYear, targetMonth, baseDay);
-          
-          if (targetDateObj.getDate() !== baseDay) {
-            targetDateObj.setDate(0); 
-          }
-          
-          const pad = (num: number) => num.toString().padStart(2, '0');
-          calculatedDateStr = `${targetDateObj.getFullYear()}-${pad(targetDateObj.getMonth() + 1)}-${pad(targetDateObj.getDate())}`;
+
+      if (dateIsValid) {
+        const targetTotalMonths = baseMonth + (step * 6);
+        const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
+        const targetMonth = targetTotalMonths % 12;
+
+        const targetDateObj = new Date(targetYear, targetMonth, baseDay);
+        if (targetDateObj.getDate() !== baseDay) {
+          targetDateObj.setDate(0);
         }
+
+        const pad = (num: number) => num.toString().padStart(2, '0');
+        calculatedDateStr = `${targetDateObj.getFullYear()}-${pad(targetDateObj.getMonth() + 1)}-${pad(targetDateObj.getDate())}`;
       }
 
       const currentLabel = `Installment ${step}`;
-      
-      // Calculate total amount for this row (Base Principal + Evenly Split Interest)
-      const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestPerInstallment) : 0;
+
+      // Declining-balance interest calculation
+      // remainingPrincipal(i) = outstandingPrincipal - (computedDueAmount * (i - 1))
+      let computedInterestForStep = 0;
+      if (dateIsValid && outstandingPrincipal > 0 && computedDueAmount > 0) {
+        const remainingPrincipal = outstandingPrincipal - (computedDueAmount * (step - 1));
+        const basisForInterest = remainingPrincipal > 0 ? remainingPrincipal : 0;
+
+        computedInterestForStep = (basisForInterest * rateOfInterest * 182.5) / (365 * 100);
+        computedInterestForStep = Math.round((computedInterestForStep + Number.EPSILON) * 100) / 100;
+      }
+
+      totalInterestAcrossInstallments += computedInterestForStep;
+
+      const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestForStep) : 0;
 
       generatedMatrix.push({
         index: step,
         installmentLabel: currentLabel,
         dueDate: calculatedDateStr,
         baseAmountDue: computedDueAmount,
+        interestAmount: computedInterestForStep,          // NEW: expose per-row interest to template
         totalWithInterest: Math.round((stepTotalWithInterest + Number.EPSILON) * 100) / 100
       });
     }
 
     this.calculatedSchedulesMatrix = generatedMatrix;
+    totalInterestAcrossInstallments = Math.round((totalInterestAcrossInstallments + Number.EPSILON) * 100) / 100;
 
-    // 4. Calculate total overall due (Full Principal + Accumulated Interest)
-    const finalTotalDueIncludingInterest = outstandingPrincipal > 0 ? (outstandingPrincipal + currentInterest) : 0;
+    // 6. Calculate total overall due (Full Principal + Sum of computed interest)
+    const finalTotalDueIncludingInterest = outstandingPrincipal > 0
+      ? (outstandingPrincipal + totalInterestAcrossInstallments)
+      : 0;
+
     const activeNode = generatedMatrix.find(item => item.installmentLabel === selectedInstallmentString);
     const activeDueDate = activeNode ? activeNode.dueDate : '';
 
-    // 5. Patch corrected, high-level overview values to UI inputs
+    // 7. Patch corrected, high-level overview values to UI inputs
     this.registerationForm.patchValue({
-      dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : '', // Displays 27,500.00
+      dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : '',
       dueDate: activeDueDate,
-      totalDueAmount: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : '' // Displays 32,000.00
+      totalDueAmount: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : ''
     }, { emitEvent: false });
   }
 }

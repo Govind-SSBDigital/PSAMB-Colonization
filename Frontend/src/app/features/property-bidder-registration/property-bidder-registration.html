@@ -502,7 +502,7 @@
         {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
       </td>
       <td class="text-muted fw-semibold">
-        {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
+        {{ schedule.interestAmount > 0 ? ('₹' + (schedule.interestAmount | number:'1.2-2')) : '—' }}
       </td>
       <td class="text-end fw-semibold text-success pe-3">
         {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}
