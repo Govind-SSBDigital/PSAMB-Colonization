@@ -94,7 +94,7 @@
           </app-personal-details>
 
           <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
-              [states]="states" [districts]="districts" [cities]="cities" [idDocTypes]="idDocTypes"
+               [idDocTypes]="idDocTypes"
               [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
               [uploadingStates]="uploadingStates"
               (fileSelected)="onFileSelected($event.event, $event.docType)">
@@ -103,7 +103,7 @@
           <!-- SECTION 3: BUSINESS DETAILS -->
           <app-business-details *ngIf="shouldShowBusinessDetails()"
               [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
-              [states]="states" [districts]="districts" [cities]="cities">
+              >
           </app-business-details>
         </div>
       </ng-container>

@@ -7,22 +7,12 @@
 
     <div class="collapsible-content" [class.collapsed]="!sectionsExpanded.documents">
         <div class="wizard-form-grid mb-1">
-<<<<<<< HEAD
-
-=======
-            
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
             <div class="form-group-custom">
                 <label class="form-label-custom">Identification Document (ਪਛਾਣ ਦਸਤਾਵੇਜ਼)
                     <span class="required-star">*</span>
                 </label>
-<<<<<<< HEAD
                 <select name="idDocumentType" [(ngModel)]="signUpData.idDocumentType" #idDocType="ngModel" required
                     class="form-input-custom" (change)="onDocumentTypeChange()">
-=======
-                <select name="idDocumentType" [(ngModel)]="signUpData.idDocumentType" #idDocType="ngModel" required class="form-input-custom"
-                    (change)="onDocumentTypeChange()">
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                     <option value="" disabled selected>Select Document</option>
                     <option *ngFor="let doc of idDocTypes" [value]="doc">{{ doc }}</option>
                 </select>
@@ -57,15 +47,10 @@
                         <div class="p-fill" [style.width.%]="uploadProgress['idDoc']"></div>
                     </div>
                 </div>
-<<<<<<< HEAD
                 <input type="hidden" name="idDocumentFileName" [(ngModel)]="signUpData.idDocumentFileName"
                     #idFile="ngModel" required>
                 <div class="error-message"
                     *ngIf="idFile.invalid && (idDocNumber.touched || idDocType.touched || idFile.dirty)">
-=======
-                <input type="hidden" name="idDocumentFileName" [(ngModel)]="signUpData.idDocumentFileName" #idFile="ngModel" required>
-                <div class="error-message" *ngIf="idFile.invalid && (idDocNumber.touched || idDocType.touched || idFile.dirty)">
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                     <span *ngIf="idFile.errors?.['required']">Please upload a valid document file.</span>
                 </div>
             </div>
@@ -85,12 +70,8 @@
                         <div class="p-fill" [style.width.%]="uploadProgress['photo']"></div>
                     </div>
                 </div>
-<<<<<<< HEAD
                 <input type="hidden" name="photoFileName" [(ngModel)]="signUpData.photoFileName" #photoFile="ngModel"
                     required>
-=======
-                <input type="hidden" name="photoFileName" [(ngModel)]="signUpData.photoFileName" #photoFile="ngModel" required>
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                 <div class="error-message" *ngIf="photoFile.invalid && (photoFile.dirty || photoFile.touched)">
                     <span *ngIf="photoFile.errors?.['required']">Profile photo upload is required.</span>
                 </div>
@@ -111,7 +92,6 @@
         <div class="wizard-form-grid">
             <div class="form-group-custom">
                 <label class="form-label-custom">State (ਰਾਜ) <span class="required-star">*</span></label>
-<<<<<<< HEAD
                 <select name="addressState" [(ngModel)]="signUpData.addressState" (ngModelChange)="onStateChange()"
                     [disabled]="isLoadingStates" class="form-input-custom">
                     <option value="" disabled selected>
@@ -150,52 +130,15 @@
                         {{ $any(c).cityName }}
                     </option>
                 </select>
-=======
-                <select name="addressState" [(ngModel)]="signUpData.addressState" #addressState="ngModel" required class="form-input-custom">
-                    <option value="" disabled selected>---Select State---</option>
-                    <option *ngFor="let s of states" [value]="s">{{ s }}</option>
-                </select>
-                <div class="error-message" *ngIf="addressState.invalid && (addressState.dirty || addressState.touched)">
-                    <span *ngIf="addressState.errors?.['required']">State selection is required.</span>
-                </div>
-            </div>
-
-            <div class="form-group-custom">
-                <label class="form-label-custom">District (ਜ਼ਿਲ੍ਹਾ) <span class="required-star">*</span></label>
-                <select name="addressDistrict" [(ngModel)]="signUpData.addressDistrict" #addressDistrict="ngModel" required class="form-input-custom">
-                    <option value="" disabled selected>---Select District---</option>
-                    <option *ngFor="let d of districts" [value]="d">{{ d }}</option>
-                </select>
-                <div class="error-message" *ngIf="addressDistrict.invalid && (addressDistrict.dirty || addressDistrict.touched)">
-                    <span *ngIf="addressDistrict.errors?.['required']">District selection is required.</span>
-                </div>
-            </div>
-
-            <div class="form-group-custom">
-                <label class="form-label-custom">City (ਸ਼ਹਿਰ) <span class="required-star">*</span></label>
-                <select name="addressCity" [(ngModel)]="signUpData.addressCity" #addressCity="ngModel" required class="form-input-custom">
-                    <option value="" disabled selected>---Select City---</option>
-                    <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
-                </select>
-                <div class="error-message" *ngIf="addressCity.invalid && (addressCity.dirty || addressCity.touched)">
-                    <span *ngIf="addressCity.errors?.['required']">City selection is required.</span>
-                </div>
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
             </div>
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Pin Code (ਪਿੰਨ ਕੋਡ) <span class="required-star">*</span></label>
-<<<<<<< HEAD
                 <input type="text" name="addressPincode" maxlength="6" [(ngModel)]="signUpData.addressPincode"
                     #addressPincode="ngModel" required pattern="^[0-9]{6}$" class="form-input-custom"
                     placeholder="Enter Pin Code">
                 <div class="error-message"
                     *ngIf="addressPincode.invalid && (addressPincode.dirty || addressPincode.touched)">
-=======
-                <input type="text" name="addressPincode" maxlength="6" [(ngModel)]="signUpData.addressPincode" 
-                    #addressPincode="ngModel" required pattern="^[0-9]{6}$" class="form-input-custom" placeholder="Enter Pin Code">
-                <div class="error-message" *ngIf="addressPincode.invalid && (addressPincode.dirty || addressPincode.touched)">
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                     <span *ngIf="addressPincode.errors?.['required']">Postal Pin code is required.</span>
                     <span *ngIf="addressPincode.errors?.['pattern']">Pin code must be a 6-digit number.</span>
                 </div>
@@ -204,7 +147,6 @@
             <div class="form-group-custom full-width">
                 <label class="form-label-custom">Plot No/Street No/Landmark(If any) (ਪਲਾਟ ਨੰਬਰ/ਗਲੀ
                     ਨੰਬਰ/ਲੈਂਡਮਾਰਕ (ਜੇ ਕੋਈ ਹੋਵੇ)) <span class="required-star">*</span></label>
-<<<<<<< HEAD
                 <textarea rows="2" name="addressLandmark" [(ngModel)]="signUpData.addressLandmark"
                     #addressLandmark="ngModel" required class="form-input-custom"
                     placeholder="Enter Plot No/Street No/Landmark(If any)"></textarea>
@@ -212,19 +154,12 @@
                     *ngIf="addressLandmark.invalid && (addressLandmark.dirty || addressLandmark.touched)">
                     <span *ngIf="addressLandmark.errors?.['required']">Address structural street/plot tracking line
                         location information is required.</span>
-=======
-                <textarea rows="2" name="addressLandmark" [(ngModel)]="signUpData.addressLandmark" #addressLandmark="ngModel" required 
-                    class="form-input-custom" placeholder="Enter Plot No/Street No/Landmark(If any)"></textarea>
-                <div class="error-message" *ngIf="addressLandmark.invalid && (addressLandmark.dirty || addressLandmark.touched)">
-                    <span *ngIf="addressLandmark.errors?.['required']">Address structural street/plot tracking line location information is required.</span>
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                 </div>
             </div>
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Select Address Document (ਪਤਾ ਦਸਤਾਵੇਜ਼ ਚੁਣੋ) <span
                         class="required-star">*</span></label>
-<<<<<<< HEAD
                 <select name="addressDocType" [(ngModel)]="signUpData.addressDocType" #addressDocType="ngModel" required
                     class="form-input-custom">
                     <option value="" disabled selected>Select Document</option>
@@ -234,20 +169,11 @@
                     *ngIf="addressDocType.invalid && (addressDocType.dirty || addressDocType.touched)">
                     <span *ngIf="addressDocType.errors?.['required']">Address document selection type target reference
                         field value option is required.</span>
-=======
-                <select name="addressDocType" [(ngModel)]="signUpData.addressDocType" #addressDocType="ngModel" required class="form-input-custom">
-                    <option value="" disabled selected>Select Document</option>
-                    <option *ngFor="let doc of addressDocTypes" [value]="doc">{{ doc }}</option>
-                </select>
-                <div class="error-message" *ngIf="addressDocType.invalid && (addressDocType.dirty || addressDocType.touched)">
-                    <span *ngIf="addressDocType.errors?.['required']">Address document selection type target reference field value option is required.</span>
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                 </div>
             </div>
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Number (ਨੰਬਰ) <span class="required-star">*</span></label>
-<<<<<<< HEAD
                 <input type="text" name="addressDocNumber" [(ngModel)]="signUpData.addressDocNumber"
                     #addressDocNumber="ngModel" required class="form-input-custom"
                     placeholder="Enter Address Proof Number">
@@ -255,12 +181,6 @@
                     *ngIf="addressDocNumber.invalid && (addressDocNumber.dirty || addressDocNumber.touched)">
                     <span *ngIf="addressDocNumber.errors?.['required']">Address document registration target structural
                         identification reference code or number sequence parameter is required.</span>
-=======
-                <input type="text" name="addressDocNumber" [(ngModel)]="signUpData.addressDocNumber" #addressDocNumber="ngModel" required 
-                    class="form-input-custom" placeholder="Enter Address Proof Number">
-                <div class="error-message" *ngIf="addressDocNumber.invalid && (addressDocNumber.dirty || addressDocNumber.touched)">
-                    <span *ngIf="addressDocNumber.errors?.['required']">Address document registration target structural identification reference code or number sequence parameter is required.</span>
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                 </div>
             </div>
 
@@ -269,7 +189,6 @@
                         class="required-star">*</span></label>
                 <div class="custom-file-wrapper">
                     <div class="choose-file-container">
-<<<<<<< HEAD
                         <button type="button" class="choose-file-btn" (click)="addressDocInput.click()">Choose
                             File</button>
                         <span class="file-chosen-text" [class.text-muted]="!signUpData.addressDocFileName">
@@ -277,30 +196,17 @@
                         </span>
                         <input #addressDocInput type="file" (change)="emitFileSelected($event, 'addressDoc')"
                             class="d-none">
-=======
-                        <button type="button" class="choose-file-btn" (click)="addressDocInput.click()">Choose File</button>
-                        <span class="file-chosen-text" [class.text-muted]="!signUpData.addressDocFileName">
-                            {{ signUpData.addressDocFileName || 'No file chosen' }}
-                        </span>
-                        <input #addressDocInput type="file" (change)="emitFileSelected($event, 'addressDoc')" class="d-none">
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                     </div>
                     <div class="progress-bar-inline" *ngIf="uploadingStates['addressDoc']">
                         <div class="p-fill" [style.width.%]="uploadProgress['addressDoc']"></div>
                     </div>
                 </div>
-<<<<<<< HEAD
                 <input type="hidden" name="addressDocFileName" [(ngModel)]="signUpData.addressDocFileName"
                     #addressFile="ngModel" required>
                 <div class="error-message"
                     *ngIf="addressFile.invalid && (addressDocNumber.touched || addressDocType.touched || addressFile.dirty)">
                     <span *ngIf="addressFile.errors?.['required']">Please upload an address verification record document
                         copy or file.</span>
-=======
-                <input type="hidden" name="addressDocFileName" [(ngModel)]="signUpData.addressDocFileName" #addressFile="ngModel" required>
-                <div class="error-message" *ngIf="addressFile.invalid && (addressDocNumber.touched || addressDocType.touched || addressFile.dirty)">
-                    <span *ngIf="addressFile.errors?.['required']">Please upload an address verification record document copy or file.</span>
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
                 </div>
             </div>
         </div>

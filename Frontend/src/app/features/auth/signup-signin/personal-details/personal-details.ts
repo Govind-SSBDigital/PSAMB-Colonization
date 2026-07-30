@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
-// Updated d:\Projects\PSAMB-Colonization\Frontend\src\app\features\auth\signup-signin\personal-details\personal-details.ts
-
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-<<<<<<< HEAD
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-=======
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
 
 @Component({
   selector: 'app-personal-details',
@@ -35,18 +27,14 @@ export class PersonalDetails implements OnInit {
   ];
 
   // Verification state
-<<<<<<< HEAD
   toastMessage = '';
   toastType: 'success' | 'error' | 'info' = 'info';
   showToast = false;
 
-=======
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
   verification = {
     emailSent: false,
     emailVerified: false,
     emailOtpInput: '',
-<<<<<<< HEAD
     emailTimer: 0,
     mobileSent: false,
     mobileVerified: false,
@@ -57,23 +45,11 @@ export class PersonalDetails implements OnInit {
   sectionsExpanded = { profile: true };
 
   constructor(private http: HttpClient) {}
-=======
-    mobileSent: false,
-    mobileVerified: false,
-    mobileOtpInput: ''
-  };
-  constructor(private http: HttpClient) { }
-
-  sectionsExpanded = {
-    profile: true
-  };
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
 
   ngOnInit() {
     this.maxDob = this.formatDate(new Date());
   }
 
-<<<<<<< HEAD
   triggerToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
     this.toastMessage = message;
     this.toastType = type;
@@ -209,8 +185,6 @@ export class PersonalDetails implements OnInit {
     }, 1000);
   }
 
-=======
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
   toggleSection(section: 'profile') {
     this.sectionsExpanded[section] = !this.sectionsExpanded[section];
   }
@@ -240,14 +214,7 @@ export class PersonalDetails implements OnInit {
   }
 
   onTextInput(field: string, value: string) {
-<<<<<<< HEAD
     if (!this.signUpData) return;
-=======
-    if (!this.signUpData) {
-      return;
-    }
-
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     const sanitized = value.replace(/[^A-Za-z\s'-]/g, '');
     this.signUpData[field] = sanitized;
   }
@@ -259,7 +226,6 @@ export class PersonalDetails implements OnInit {
   validateDob() {
     this.ageError = false;
     this.futureDobError = false;
-<<<<<<< HEAD
     if (!this.signUpData?.dob) return;
     const dob = new Date(this.signUpData.dob);
     const today = new Date();
@@ -267,23 +233,6 @@ export class PersonalDetails implements OnInit {
     if (dob > today) {
       this.futureDobError = true;
     }
-=======
-
-    if (!this.signUpData?.dob) {
-      return;
-    }
-
-    const dob = new Date(this.signUpData.dob);
-    const today = new Date();
-    if (isNaN(dob.getTime())) {
-      return;
-    }
-
-    if (dob > today) {
-      this.futureDobError = true;
-    }
-
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     const age = this.calculateAge(dob);
     if (age < 18) {
       this.ageError = true;
@@ -296,17 +245,9 @@ export class PersonalDetails implements OnInit {
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
     const dayDiff = today.getDate() - birth.getDate();
-<<<<<<< HEAD
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
       age -= 1;
     }
-=======
-
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      age -= 1;
-    }
-
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     return age;
   }
 
@@ -372,22 +313,11 @@ export class PersonalDetails implements OnInit {
   }
 
   getDynamicTitle(): string {
-<<<<<<< HEAD
     if (!this.selectedEntityType) return 'Personal Details / ਨਿੱਜੀ ਵੇਰਵੇ';
-=======
-    if (!this.selectedEntityType) {
-      return 'Personal Details / ਨਿੱਜੀ ਵੇਰਵੇ';
-    }
-
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     const type = this.selectedEntityType;
     if (type === 'Sole Proprietorship') {
       return 'Personal Details of Sole Proprietor (ਇਕੱਲੇ ਮਾਲਕ ਦੇ ਨਿੱਜੀ ਵੇਰਵੇ)';
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     const punjabi = this.getPunjabiLabel(type);
     return `Personal Details of ${type} (${punjabi} ਦੇ ਨਿੱਜੀ ਵੇਰਵੇ)`;
   }

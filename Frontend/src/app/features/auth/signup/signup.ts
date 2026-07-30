@@ -16,13 +16,13 @@ interface EntityType {
 
 @Component({
   selector: 'app-signup',
-  imports: [CommonModule,FormsModule,PersonalDetails, DocumentsAndAddress, BusinessDetails, Procurement],
+  imports: [CommonModule, FormsModule, PersonalDetails, DocumentsAndAddress, BusinessDetails, Procurement],
   standalone: true,
   templateUrl: './signup.html',
   styleUrl: './signup.scss',
 })
 export class Signup {
- constructor(private router: Router) {}
+  constructor(private router: Router) { }
   // categories = [
   //   { value: 'individual', label: 'Individual (ਵਿਅਕਤੀਗਤ)' },
   //   { value: 'sole_proprietorship', label: 'Sole Proprietorship (ਇਕੱਲੇ ਮਾਲਕ ਦਾ ਅਧਿਕਾਰ)' },
@@ -33,7 +33,7 @@ export class Signup {
   //   { value: 'llp', label: 'Limited Liability Partnership (ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ)' },
   //   { value: 'procurement_agency', label: 'Procurement Agency (ਖਰੀਦ ਏਜੰਸੀ)' }
   // ];
- 
+
   selectedCategory: string = '';
   otpModalOpen = false;
   selectedEntityType = '';
@@ -41,7 +41,7 @@ export class Signup {
   uploadProgress: { [key: string]: number } = {};
   uploadingStates: { [key: string]: boolean } = {};
 
-   entityTypes: EntityType[] = [
+  entityTypes: EntityType[] = [
     { id: 'Individual', label: 'Individual', icon: 'person', desc: 'Any individual citizen of India' },
     { id: 'Sole Proprietorship', label: 'Sole Proprietorship', icon: 'work', desc: 'Single-owner business or trade' },
     { id: 'HUF', label: 'Hindu Undivided Family (HUF)', icon: 'groups', desc: 'Family-owned traditional business' },
@@ -55,11 +55,11 @@ export class Signup {
   states = ['Punjab', 'Haryana', 'Delhi', 'Himachal Pradesh'];
   districts = ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala', 'Bathinda', 'Gurdaspur'];
   cities = ['Amritsar City', 'Ludhiana City', 'Jalandhar City', 'Patiala City', 'Bathinda City', 'Gurdaspur City', 'Other City'];
-   idDocTypes = ['Aadhaar Card', 'Voter Card', 'Passport', 'Driving License'];
+  idDocTypes = ['Aadhaar Card', 'Voter Card', 'Passport', 'Driving License'];
   addressDocTypes = ['Aadhaar Card', 'Passport', 'Electricity Bill', 'Water Bill', 'Rent Agreement', 'Registry Deed'];
 
 
-    getPunjabiLabel(typeId: string): string {
+  getPunjabiLabel(typeId: string): string {
     switch (typeId) {
       case 'Individual': return 'ਵਿਅਕਤੀਗਤ';
       case 'Sole Proprietorship': return 'ਇਕੱਲੇ ਮਾਲਕ';
@@ -73,7 +73,7 @@ export class Signup {
       default: return 'Individual';
     }
   }
-   signUpData = {
+  signUpData = {
     // Step 1: Profile Details
     gender: '',
     dob: '',
@@ -85,10 +85,10 @@ export class Signup {
     motherLastName: '',
     spouseFirstName: '',
     spouseLastName: '',
-      fatherSectionVisible: false,
-      spouseSectionVisible: false,
-      isManagingPartner: null,
-      emailAddress: '',
+    fatherSectionVisible: false,
+    spouseSectionVisible: false,
+    isManagingPartner: null,
+    emailAddress: '',
     mobileNumber: '',
     password: '',
     confirmPassword: '',
@@ -126,7 +126,7 @@ export class Signup {
     officePhotoFileName: '',
     mandiPropertyCode: ''
   };
-    otpData = {
+  otpData = {
     mobileOtpInput: '',
     emailOtpInput: '',
     sentMobileOtp: '123456',
@@ -143,7 +143,7 @@ export class Signup {
   shouldShowProcurementSection(): boolean {
     return this.selectedEntityType === 'Procurement Agency';
   }
-    onFileSelected(event: any, docType: string) {
+  onFileSelected(event: any, docType: string) {
     const file = event.target.files[0];
     if (file) {
       this.uploadingStates[docType] = true;
@@ -166,14 +166,14 @@ export class Signup {
       }, 120);
     }
   }
-   shouldShowBusinessDetails(): boolean {
+  shouldShowBusinessDetails(): boolean {
     return this.selectedEntityType !== 'Individual' && this.selectedEntityType !== 'Procurement Agency';
   }
-   onBackToInstructions() {
+  onBackToInstructions() {
     this.proceedToForm = false;
     window.scrollTo(0, 0);
   }
-  
+
   onSubmitSignup() {
     if (this.signUpData.isSameAddress) {
       this.signUpData.businessState = this.signUpData.addressState;
@@ -189,7 +189,7 @@ export class Signup {
 
     this.openOtpModal();
   }
- openOtpModal() {
+  openOtpModal() {
     this.otpModalOpen = true;
     this.otpData.mobileVerified = false;
     this.otpData.emailVerified = false;
@@ -223,7 +223,7 @@ export class Signup {
   //     }
   //   }, 1000);
   // }
-   validateFullForm(): boolean {
+  validateFullForm(): boolean {
     if (!this.validateStep1()) return false;
     if (!this.validateStep2()) return false;
 
@@ -256,7 +256,7 @@ export class Signup {
     return true;
   }
 
-validateStep1(): boolean {
+  validateStep1(): boolean {
     if (!this.selectedEntityType) {
       return false;
     }
@@ -344,18 +344,18 @@ validateStep1(): boolean {
     // wire up navigation / auth flow here
     console.log('Sign In clicked');
   }
- 
+
   onSignUp(): void {
     console.log('Sign Up clicked');
   }
- 
+
   onProceed(): void {
     if (!this.selectedCategory) {
       return;
     }
     console.log('Proceeding with category:', this.selectedCategory);
   }
-   backToHome(): void {
+  backToHome(): void {
     this.router.navigate(['/']);
   }
   onProceedToForm() {
