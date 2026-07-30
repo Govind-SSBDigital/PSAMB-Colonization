@@ -293,55 +293,49 @@
                                     </option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="category-inline-buttons">
-                            <button type="button" class="btn-proceed-signup" [disabled]="!selectedEntityType"
-                                (click)="onProceedToForm()">
-                                Proceed (ਅੱਗੇ ਵਧੋ)
-                            </button>
+                            <div class="category-inline-buttons">
+                                <button type="button" class="btn-proceed-signup" [disabled]="!selectedEntityType"
+                                    (click)="onProceedToForm()">
+                                    Proceed (ਅੱਗੇ ਵਧੋ)
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Continuous Sections Wrapper (Shown only if entity type selected and proceeded) -->
-            <div class="signup-step-container"
-                *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
-                <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData">
-                </app-personal-details>
-
-                <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
-                    [idDocTypes]="idDocTypes" [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
-                    [uploadingStates]="uploadingStates" (fileSelected)="onFileSelected($event.event, $event.docType)">
-                </app-documents-and-address>
-
-                <!-- SECTION 3: BUSINESS DETAILS -->
-                <app-business-details *ngIf="shouldShowBusinessDetails()" [selectedEntityType]="selectedEntityType"
-                    [signUpData]="signUpData"
-                    (toastMessage)="triggerToast($event.message, $event.type)">
-                </app-business-details>
-
-                <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
-                    <app-procurement [selectedEntityType]="selectedEntityType" (backClicked)="onBackToInstructions()"
-                        (toastMessage)="triggerToast($event.message, $event.type)">
-                    </app-procurement>
-                </div>
-
-                <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
-                    <app-procurement [selectedEntityType]="selectedEntityType" (backClicked)="onBackToInstructions()"
-                        (toastMessage)="triggerToast($event.message, $event.type)">
-                    </app-procurement>
-                </div>
-
-                <!-- Footer Actions (Shown only if entity type selected and proceeded to form) -->
-                <div class="wizard-footer-actions"
+                <!-- Continuous Sections Wrapper (Shown only if entity type selected and proceeded) -->
+                <div class="signup-step-container"
                     *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
-                    <button type="button" class="btn-wizard-back" (click)="onBackToInstructions()">
-                        Back (ਵਾਪਸ ਜਾਓ)
-                    </button>
-                    <button type="button" class="btn-wizard-submit" (click)="onSubmitSignup()">
-                        Submit (ਜਮ੍ਹਾ ਕਰੋ)
-                    </button>
+                    <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData">
+                    </app-personal-details>
+
+                    <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
+                        [idDocTypes]="idDocTypes" [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
+                        [uploadingStates]="uploadingStates" (fileSelected)="onFileSelected($event.event, $event.docType)">
+                    </app-documents-and-address>
+
+                    <!-- SECTION 3: BUSINESS DETAILS -->
+                    <app-business-details *ngIf="shouldShowBusinessDetails()" [selectedEntityType]="selectedEntityType"
+                        [signUpData]="signUpData"
+                        (toastMessage)="triggerToast($event.message, $event.type)">
+                    </app-business-details>
+
+                    <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
+                        <app-procurement [selectedEntityType]="selectedEntityType" (backClicked)="onBackToInstructions()"
+                            (toastMessage)="triggerToast($event.message, $event.type)">
+                        </app-procurement>
+                    </div>
+
+                    <!-- Footer Actions (Shown only if entity type selected and proceeded to form) -->
+                    <div class="wizard-footer-actions"
+                        *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
+                        <button type="button" class="btn-wizard-back" (click)="onBackToInstructions()">
+                            Back (ਵਾਪਸ ਜਾਓ)
+                        </button>
+                        <button type="button" class="btn-wizard-submit" (click)="onSubmitSignup()">
+                            Submit (ਜਮ੍ਹਾ ਕਰੋ)
+                        </button>
+                    </div>
                 </div>
             </div>
 
