@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Profile } from './profile';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastrModule } from 'ngx-toastr';
 
@@ -11,15 +11,15 @@ import { ToastrModule } from 'ngx-toastr';
   declarations: [Profile],
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatTooltipModule,
     ToastrModule,
     RouterModule.forChild([
-          {
-            path: '',
-            component: Profile
-          }
-        ])
-      ]
-    })
-    export class ProfileModule {}
+      {
+        path: '',
+        component: Profile
+      }
+    ])
+  ]
+})
+export class ProfileModule {}

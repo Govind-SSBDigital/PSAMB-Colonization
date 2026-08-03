@@ -160,10 +160,17 @@
 
                 <ng-container *ngIf="!verification.emailVerified">
                     <button type="button" class="btn-verify-inline" *ngIf="!verification.emailSent"
-                        (click)="sendEmailOtp()">Verify</button>
-                    <input type="text" maxlength="6" *ngIf="verification.emailSent"
-                        [(ngModel)]="verification.emailOtpInput" (input)="onEmailOtpInput()"
-                        class="form-input-custom otp-input-inline" placeholder="123456" name="emailOtp">
+                        [disabled]="verification.emailSending" (click)="sendEmailOtp()">Verify</button>
+
+                    <ng-container *ngIf="verification.emailSent">
+                        <input type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                            [(ngModel)]="verification.emailOtpInput" (input)="onEmailOtpInput()"
+                            class="form-input-custom otp-input-inline" placeholder="OTP" name="emailOtp">
+                        <button type="button" class="btn-resend-icon" matTooltip="Resend Otp" matTooltipPosition="above"
+                            [disabled]="verification.emailSending" (click)="sendEmailOtp()">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </ng-container>
                 </ng-container>
             </div>
             <div class="error-message" *ngIf="emailAddress.invalid && (emailAddress.dirty || emailAddress.touched)">
@@ -186,10 +193,17 @@
 
                 <ng-container *ngIf="!verification.mobileVerified">
                     <button type="button" class="btn-verify-inline" *ngIf="!verification.mobileSent"
-                        (click)="sendMobileOtp()">Verify</button>
-                    <input type="text" maxlength="6" *ngIf="verification.mobileSent"
-                        [(ngModel)]="verification.mobileOtpInput" (input)="onMobileOtpInput()"
-                        class="form-input-custom otp-input-inline" placeholder="654321" name="mobileOtp">
+                        [disabled]="verification.mobileSending" (click)="sendMobileOtp()">Verify</button>
+
+                    <ng-container *ngIf="verification.mobileSent">
+                        <input type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                            [(ngModel)]="verification.mobileOtpInput" (input)="onMobileOtpInput()"
+                            class="form-input-custom otp-input-inline" placeholder="OTP" name="mobileOtp">
+                        <button type="button" class="btn-resend-icon" matTooltip="Resend Otp" matTooltipPosition="above"
+                            [disabled]="verification.mobileSending" (click)="sendMobileOtp()">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </ng-container>
                 </ng-container>
             </div>
             <div class="error-message" *ngIf="mobileNumber.invalid && (mobileNumber.dirty || mobileNumber.touched)">

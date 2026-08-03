@@ -163,7 +163,7 @@
 .portal-wrapper {
     margin: 0;
     width: 100%;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 69px);
     padding: 10px 20px;
     font-family: 'Poppins', sans-serif;
     color: var(--text-main);
@@ -181,7 +181,7 @@
 }
 
 .portal-wrapper.signin-bg {
-    background-image: linear-gradient(rgba(2, 44, 34, 0.75), rgba(2, 44, 34, 0.85)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600');
+    background-image: linear-gradient(rgba(2, 44, 34, 0.45), rgba(2, 44, 34, 0.75)), url('/assets/pmb_office_img.webp');   
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

@@ -68,6 +68,14 @@
 	border-color: #fbbf24;
 	box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.25);
 }
+.procurement-control.is-invalid {
+	border-color: #ef4444;
+}
+.error-text {
+	color: #ef4444;
+	font-size: 0.78rem;
+	margin-top: 4px;
+}
 
 .procurement-actions {
 	display: flex;

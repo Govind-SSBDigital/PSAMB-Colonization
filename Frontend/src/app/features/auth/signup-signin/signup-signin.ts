@@ -50,10 +50,6 @@ export class SignupSignin implements OnInit {
     { id: 'Procurement Agency', label: 'Procurement Agency', icon: 'assignment', desc: 'Government or private procurement agency' }
   ];
 
-  states = ['Punjab', 'Haryana', 'Delhi', 'Himachal Pradesh'];
-  districts = ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala', 'Bathinda', 'Gurdaspur'];
-  cities = ['Amritsar City', 'Ludhiana City', 'Jalandhar City', 'Patiala City', 'Bathinda City', 'Gurdaspur City', 'Other City'];
-
   idDocTypes = ['Aadhaar Card', 'Voter Card', 'Passport', 'Driving License'];
   addressDocTypes = ['Aadhaar Card', 'Passport', 'Electricity Bill', 'Water Bill', 'Rent Agreement', 'Registry Deed'];
 
