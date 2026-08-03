@@ -1,13 +1,16 @@
-name: CD / Deploy Develop
+name: CD / Deploy Develop Backend
 
 on:
   push:
     branches:
       - develop
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/deploy-develop-backend.yml'
 
 jobs:
-  build-develop:
-    name: Build & Package (Dev)
+  build-develop-backend:
+    name: Build & Package Backend (Dev)
     runs-on: ubuntu-latest
     environment: Local-Dev
 
@@ -15,20 +18,11 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Setup .NET & Node
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
-        cache-dependency-path: Frontend/package-lock.json
-
-    # Build and Publish Backend
     - name: Restore & Build Backend
       run: |
         dotnet restore Backend/Backend.csproj
@@ -40,26 +34,9 @@ jobs:
     - name: Publish Backend
       run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
 
-    # Build Frontend
-    - name: Install Frontend Dependencies
-      run: npm ci
-      working-directory: Frontend
-
-    - name: Build Frontend (Development)
-      run: npm run build -- --configuration=development
-      working-directory: Frontend
-
-    # Upload build artifacts for manual deployment
     - name: Upload Backend Artifact
       uses: actions/upload-artifact@v4
       with:
         name: backend-dev-build
         path: ./publish-backend
-        retention-days: 7
-
-    - name: Upload Frontend Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-dev-build
-        path: ./Frontend/dist/
         retention-days: 7

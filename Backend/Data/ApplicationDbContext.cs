@@ -13,8 +13,6 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     {
     }
 
-<<<<<<< HEAD
-
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<ApplicantAuth> ApplicantAuths => Set<ApplicantAuth>();
     public DbSet<MobileOTPs> MobileOTPs { get; set; }
@@ -22,10 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     public DbSet<DistrictMaster> DistrictMasters { get; set; }
     public DbSet<CityMaster> CityMasters { get; set; }
     public DbSet<EmailOtp> EmailOtps { get; set; }
-=======
-    public DbSet<ApplicationUsers> ApplicationUsers { get; set; }
 
->>>>>>> 2ecc0f677ecb2ec440065cbcc7bb3771dba5051e
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -40,9 +35,11 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         builder.Entity<CityMaster>()
             .ToTable("CityMaster", t => t.ExcludeFromMigrations())
             .HasKey(x => x.CityId);
+
         builder.Entity<EmailOtp>()
-    .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
-    .HasKey(x => x.OTPId);
+            .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
+            .HasKey(x => x.OTPId);
+
         // ── ApplicationUser ───────────────────────────
         builder.Entity<ApplicationUser>(b =>
         {

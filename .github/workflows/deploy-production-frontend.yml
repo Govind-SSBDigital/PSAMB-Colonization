@@ -1,0 +1,50 @@
+name: CD / Deploy Production Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Frontend/**'
+      - '.github/workflows/deploy-production-frontend.yml'
+
+jobs:
+  build-production-frontend:
+    name: Build & Package Frontend (Production)
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Build Frontend (Production)
+      run: npm run build -- --configuration=production
+      working-directory: Frontend
+
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-production-build
+        path: ./Frontend/dist/
+        retention-days: 30
+
+    - name: Deployment Summary
+      run: |
+        echo "## 🚀 Production Frontend Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Frontend build artifacts are ready for manual deployment." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts:" >> $GITHUB_STEP_SUMMARY
+        echo "- **frontend-production-build** — Angular production bundle" >> $GITHUB_STEP_SUMMARY
