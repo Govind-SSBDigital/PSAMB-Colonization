@@ -1,0 +1,41 @@
+name: CD / Deploy Staging Frontend
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - 'Frontend/**'
+      - '.github/workflows/deploy-staging-frontend.yml'
+
+jobs:
+  build-staging-frontend:
+    name: Build & Package Frontend (Staging)
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Build Frontend (Staging)
+      run: npm run build -- --configuration=production
+      working-directory: Frontend
+
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-staging-build
+        path: ./Frontend/dist/
+        retention-days: 14
