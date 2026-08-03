@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260724060654_add-init")]
+    partial class addinit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,64 +282,6 @@ namespace Backend.Migrations
                     b.ToTable("DistrictMaster");
                 });
 
-            modelBuilder.Entity("Backend.Models.Entities.InstallmentDetails", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("DraftAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("DraftBank")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DraftDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DraftNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Interest")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("OtherAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("PenaltyAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Principal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("PropertyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ReceiptDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReceiptNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InstallmentDetails");
-                });
-
             modelBuilder.Entity("Backend.Models.Entities.MandiMaster", b =>
                 {
                     b.Property<int>("MandiId")
@@ -525,7 +470,7 @@ namespace Backend.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PlotType")
+                    b.Property<string>("PlotTypeName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PropertyTypeId")
@@ -562,9 +507,6 @@ namespace Backend.Migrations
                     b.Property<bool>("AnyComplaint")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ApplicationStatusId")
                         .HasColumnType("int");
 
@@ -598,6 +540,18 @@ namespace Backend.Migrations
                     b.Property<int>("DistrictId")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("DraftAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DraftBank")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DraftDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DraftNo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal?>("DueAmount")
                         .HasColumnType("decimal(18,2)");
 
@@ -627,6 +581,9 @@ namespace Backend.Migrations
 
                     b.Property<DateTime?>("FormTxnDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("InterestAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -664,8 +621,17 @@ namespace Backend.Migrations
                     b.Property<bool>("NdcIssued")
                         .HasColumnType("bit");
 
+                    b.Property<decimal?>("OtherAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("PANNo")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PenaltyAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("PlanId")
                         .HasColumnType("int");
@@ -676,22 +642,20 @@ namespace Backend.Migrations
                     b.Property<decimal?>("PlotSize")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("PlotStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("PlotTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PropertyCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PropertyCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal?>("PrincipalAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("PropertyTypeId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReceiptDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReceiptNo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Relation")
                         .HasColumnType("nvarchar(max)");
@@ -724,41 +688,6 @@ namespace Backend.Migrations
                     b.HasIndex("PropertyTypeId");
 
                     b.ToTable("PropertyBidderRegistration");
-                });
-
-            modelBuilder.Entity("Backend.Models.Entities.PropertyCategoryMaster", b =>
-                {
-                    b.Property<int>("PropertyCategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PropertyCategoryId"));
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<long?>("ModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("PropertyCategoryId");
-
-                    b.ToTable("PropertyCategoryMaster");
                 });
 
             modelBuilder.Entity("Backend.Models.Entities.PropertyType", b =>

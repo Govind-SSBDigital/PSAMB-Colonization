@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260728063000_RemoveReceiptColumns")]
+    partial class RemoveReceiptColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -676,19 +679,8 @@ namespace Backend.Migrations
                     b.Property<decimal?>("PlotSize")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("PlotStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("PlotTypeId")
                         .HasColumnType("int");
-
-                    b.Property<int>("PropertyCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PropertyCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PropertyTypeId")
                         .HasColumnType("int");
@@ -724,41 +716,6 @@ namespace Backend.Migrations
                     b.HasIndex("PropertyTypeId");
 
                     b.ToTable("PropertyBidderRegistration");
-                });
-
-            modelBuilder.Entity("Backend.Models.Entities.PropertyCategoryMaster", b =>
-                {
-                    b.Property<int>("PropertyCategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PropertyCategoryId"));
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<long?>("ModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("PropertyCategoryId");
-
-                    b.ToTable("PropertyCategoryMaster");
                 });
 
             modelBuilder.Entity("Backend.Models.Entities.PropertyType", b =>

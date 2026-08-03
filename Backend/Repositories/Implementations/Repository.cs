@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Backend.Repositories;
@@ -52,5 +52,9 @@ public class Repository<T> : IRepository<T> where T : class
     public virtual void RemoveRange(IEnumerable<T> entities)
     {
         _dbSet.RemoveRange(entities);
+    }
+    public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.Where(predicate).ToListAsync();
     }
 }

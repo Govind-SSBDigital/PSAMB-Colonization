@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Backend.Repositories;
 
@@ -12,4 +12,5 @@ public interface IRepository<T> where T : class
     void Update(T entity);
     void Remove(T entity);
     void RemoveRange(IEnumerable<T> entities);
+    Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate);
 }

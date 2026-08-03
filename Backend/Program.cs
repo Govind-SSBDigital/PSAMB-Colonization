@@ -1,3 +1,8 @@
+using Backend.Data;
+using Backend.Repositories;
+using Backend.Services.Implementations;
+using Backend.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
@@ -5,16 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
-using Backend.Data;
-using Backend.Repositories;
-using FluentValidation;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog from appsettings
+// ? Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -26,18 +28,25 @@ try
 {
     Log.Information("Configuring services...");
 
-    // Add controllers
+    // ? Add Controllers
     builder.Services.AddControllers();
 
-    // Register FluentValidation
+    // ? FluentValidation
     builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+    // ? DB Connection
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-    // Register DbContext with SQL Server
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseSqlServer(connectionString));
 
-    // Configure ASP.NET Core Identity
+    // ? Dependency Injection
+    builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+    builder.Services.AddScoped<IPropertyBidderRegistration, PropertyBidderRegistration>();
+    builder.Services.AddScoped<ICommon, Common>();
+
+    // ? Identity
     builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.Password.RequireDigit = true;
@@ -55,7 +64,7 @@ try
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-    // Configure JWT Bearer Tokens Authentication
+    // ? JWT
     var jwtSettings = builder.Configuration.GetSection("JwtSettings");
     var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
@@ -81,48 +90,46 @@ try
         };
     });
 
-    // Configure CORS Policy
+    // ? ? CORS (CORRECT PLACE)
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy", policy =>
         {
-            policy.WithOrigins("http://localhost:4200") // Frontend URL
+            policy.WithOrigins("http://localhost:4200")
                   .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
+                  .AllowAnyHeader();
         });
     });
 
-    // Configure Rate Limiting (Fixed Window)
+    // ? Rate Limiter
     builder.Services.AddRateLimiter(options =>
     {
-        options.AddFixedWindowLimiter(policyName: "FixedWindowLimit", limitOptions =>
+        options.AddFixedWindowLimiter("FixedWindowLimit", limitOptions =>
         {
             limitOptions.PermitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit");
             limitOptions.Window = TimeSpan.FromSeconds(builder.Configuration.GetValue<int>("RateLimiting:WindowInSeconds"));
             limitOptions.QueueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit");
             limitOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         });
+
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
 
-    // Register Repositories and Unit of Work
-    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-    builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-    // Configure Swagger Documentation with Bearer security definitions
+    // ? Swagger
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "PSAMB Colonization REST API", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Colonization API", Version = "v1" });
+
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Description = "Enter JWT token",
             Name = "Authorization",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.ApiKey,
             Scheme = "Bearer"
         });
+
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
@@ -141,25 +148,7 @@ try
 
     var app = builder.Build();
 
-    // Verify TDE in Staging / Production
-    if (!app.Environment.IsDevelopment())
-    {
-        using (var scope = app.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            // Verify TDE check. (Optional check, throws only if explicitly failing TDE verification)
-            try
-            {
-                await db.VerifyTdeAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "TDE Verification warning. If database is sys.databases restricted (e.g. Azure SQL / LocalDB), this is normal.");
-            }
-        }
-    }
-
-    // Configure the HTTP request pipeline
+    // ? Pipeline
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -172,7 +161,7 @@ try
 
     app.UseHttpsRedirection();
 
-    app.UseCors("CorsPolicy");
+    app.UseCors("CorsPolicy"); 
 
     app.UseRateLimiter();
 
@@ -181,7 +170,7 @@ try
 
     app.MapControllers();
 
-    Log.Information("Host configured successfully. Running application...");
+    Log.Information("App running...");
     app.Run();
 }
 catch (Exception ex)

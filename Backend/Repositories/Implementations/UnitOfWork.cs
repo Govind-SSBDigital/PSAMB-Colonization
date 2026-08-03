@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,4 +41,9 @@ public class UnitOfWork : IUnitOfWork
         _context.Dispose();
         GC.SuppressFinalize(this);
     }
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
+
 }

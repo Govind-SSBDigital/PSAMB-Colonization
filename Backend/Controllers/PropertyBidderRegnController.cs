@@ -1,0 +1,90 @@
+using Backend.Models.Dtos;
+using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Backend.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PropertyBidderRegnController : ControllerBase
+    {
+        private readonly IPropertyBidderRegistration _service;
+
+        public PropertyBidderRegnController(IPropertyBidderRegistration service)
+        {
+            _service = service;
+        }
+
+        [HttpPost("registerProperty")]
+        public async Task<IActionResult> RegisterProperty([FromBody] Models.Dtos.PropertyBidderRegistrationDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var response = await _service.RegisterPropertyAsync(dto);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("getRegistrationById")]
+        public async Task<IActionResult> GetRegistrationById(int id)
+        {
+            var response = await _service.GetRegistrationByIdAsync(id);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("getAllPropertyRegistrations")]
+        public async Task<IActionResult> GetAllRegistrations()
+        {
+            var response = await _service.GetAllRegistrationsAsync();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("search/{propertyCode}")]
+        public async Task<IActionResult> GetRegistrationByPropertyCode(string propertyCode)
+        {
+            var response = await _service.GetRegistrationByPropertyCodeAsync(propertyCode);
+            //if (!response.Success)
+            //{
+            //    if (response.Message == "no record found")
+            //    {
+            //        return NotFound(response);
+            //    }
+            //    return BadRequest(response);
+            //}
+
+            return Ok(response);
+        }
+
+        [HttpPut("UpdateRegisterPropertyAsync")]
+        public async Task<IActionResult> UpdateRegisterPropertyAsync([FromBody] PropertyBidderRegistrationDto dto)
+        {
+            if (dto.Id <= 0)
+                return BadRequest("Invalid Property Id");
+
+            var result = await _service.UpdateRegisterPropertyAsync(dto);
+
+            if (!result.Success)
+                return NotFound(result);
+
+            return Ok(result);
+        }
+    }
+}
