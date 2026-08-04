@@ -13,48 +13,61 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     {
     }
 
-    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
+    // ── IDENTITY & CUSTOM USER DBSETS ─────────────────────
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<ApplicantAuth> ApplicantAuths => Set<ApplicantAuth>();
     public DbSet<MobileOTPs> MobileOTPs { get; set; }
+
+    // ── MASTER TABLES ─────────────────────────────────────
     public DbSet<StateMaster> StateMasters { get; set; }
     public DbSet<DistrictMaster> DistrictMasters { get; set; }
     public DbSet<CityMaster> CityMasters { get; set; }
     public DbSet<EmailOtp> EmailOtps { get; set; }
+    public DbSet<BranchMaster> BranchMaster { get; set; }
+    public DbSet<MandiMaster> MandiMaster { get; set; }
+    public DbSet<PlotSizeMaster> PlotSizeMaster { get; set; }
+    public DbSet<PlotTypeMaster> PlotTypeMaster { get; set; }
+    public DbSet<PlanMaster> PlanMaster { get; set; }
+    public DbSet<PropertyType> PropertyType { get; set; }
+    public DbSet<BidderTypeMaster> BidderTypeMaster { get; set; }
+    public DbSet<ApplicationStatusMaster> ApplicationStatusMaster { get; set; }
+    public DbSet<PropertyCategoryMaster> PropertyCategoryMaster { get; set; }
+
+    // ── TRANSACTIONAL / FEATURE DBSETS ────────────────────
+    public DbSet<PropertyBidderRegistration> PropertyBidderRegistration { get; set; }
+    public DbSet<InstallmentDetails> InstallmentDetails { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<StateMaster>()
-         .ToTable("StateMaster", t => t.ExcludeFromMigrations())
-         .HasKey(x => x.StateId);
 
-        builder.Entity<DistrictMaster>()
-            .ToTable("DistrictMaster", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.DistrictId);
+        // 1. GLOBAL DECIMAL PRECISION (Prevents EF Core decimal truncation warnings)
+        foreach (var property in builder.Model.GetEntityTypes()
+                    .SelectMany(t => t.GetProperties())
+                    .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+        {
+            property.SetPrecision(18);
+            property.SetScale(2);
+        }
 
-        builder.Entity<CityMaster>()
-            .ToTable("CityMaster", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.CityId);
+        // 2. EXCLUDED EXISTING MASTERS
+        builder.Entity<StateMaster>().ToTable("StateMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.StateId);
+        builder.Entity<DistrictMaster>().ToTable("DistrictMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.DistrictId);
+        builder.Entity<CityMaster>().ToTable("CityMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.CityId);
+        builder.Entity<EmailOtp>().ToTable("EmailOTP", t => t.ExcludeFromMigrations()).HasKey(x => x.OTPId);
 
-        builder.Entity<EmailOtp>()
-            .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.OTPId);
-
-        // ── ApplicationUser ───────────────────────────
+        // 3. ApplicationUser ENTITY CONFIGURATION
         builder.Entity<ApplicationUser>(b =>
         {
             b.ToTable("ApplicationUser");
-
             b.HasKey(x => x.ApplicantId);
-
-            b.Property(x => x.ApplicantId)
-             .UseIdentityColumn(100, 1);
+            b.Property(x => x.ApplicantId).UseIdentityColumn(100, 1);
             b.Property(x => x.IdentityUserId).HasMaxLength(450);
             b.HasIndex(x => x.IdentityUserId).IsUnique();
             b.Property(x => x.FirstName).HasMaxLength(200).IsRequired();
             b.Property(x => x.LastName).HasMaxLength(100);
             b.Property(x => x.Email).HasMaxLength(255).IsRequired();
-            b.Property(x => x.MobileNo).HasMaxLength(15).IsRequired();
+            b.Property(x => x.MobileNo).HasMaxLength(15);
             b.Property(x => x.PANNumber).HasMaxLength(10);
             b.Property(x => x.GSTNumber).HasMaxLength(20);
             b.Property(x => x.IndividualPinCode).HasMaxLength(10);
@@ -73,49 +86,35 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
 
             b.HasIndex(x => x.Email).IsUnique();
             b.HasIndex(x => x.MobileNo).IsUnique();
-
-            // Soft delete filter
-            //b.HasQueryFilter(x => !x.IsDeleted);
         });
 
-        // ── ApplicantAuth ─────────────────────────────
+        // 4. ApplicantAuth ENTITY CONFIGURATION
         builder.Entity<ApplicantAuth>(b =>
         {
             b.ToTable("ApplicantAuth");
-
             b.HasKey(x => x.AuthId);
-
-            b.Property(x => x.AuthId)
-             .UseIdentityColumn(1, 1);
-
+            b.Property(x => x.AuthId).UseIdentityColumn(1, 1);
             b.Property(x => x.Username).HasMaxLength(255).IsRequired();
             b.Property(x => x.PasswordHash).HasMaxLength(500).IsRequired();
             b.Property(x => x.SaltKey).HasMaxLength(255).IsRequired();
             b.Property(x => x.LastLoginIP).HasMaxLength(50);
-
             b.HasIndex(x => x.Username).IsUnique();
-            b.HasIndex(x => x.ApplicantId).IsUnique(); // one-to-one
-
-            //b.HasQueryFilter(x => !x.IsDeleted);
+            b.HasIndex(x => x.ApplicantId).IsUnique();
         });
 
-        // ── MobileOTPs ────────────────────────────────
+        // 5. MobileOTPs ENTITY CONFIGURATION
         builder.Entity<MobileOTPs>(b =>
         {
             b.ToTable("MobileOTP");
-
             b.HasKey(x => x.OTPId);
-
-            b.Property(x => x.OTPId)
-             .UseIdentityColumn(1, 1);
-
+            b.Property(x => x.OTPId).UseIdentityColumn(1, 1);
             b.Property(x => x.MobileNumber).HasMaxLength(15).IsRequired();
             b.Property(x => x.OTP).HasMaxLength(10).IsRequired();
         });
     }
 
-    // ── TDE Verify ───────────────────────────────────
-    public async Task VerifyTdeAsync()
+    // ── SAFE TDE CHECK ───────────────────────────────────
+    public async Task<bool> VerifyTdeAsync(bool throwOnFailure = false)
     {
         try
         {
@@ -128,8 +127,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText =
-                    "SELECT is_encrypted FROM sys.databases WHERE name = DB_NAME()";
+                command.CommandText = "SELECT is_encrypted FROM sys.databases WHERE name = DB_NAME()";
                 var result = await command.ExecuteScalarAsync();
                 if (result != null && result != DBNull.Value)
                     isEncrypted = Convert.ToInt32(result) == 1;
@@ -138,13 +136,17 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             if (!wasOpen)
                 await Database.CloseConnectionAsync();
 
-            if (!isEncrypted)
-                throw new InvalidOperationException(
-                    "CRITICAL: TDE is NOT enabled on the target database.");
+            if (!isEncrypted && throwOnFailure)
+                throw new InvalidOperationException("CRITICAL: TDE is NOT enabled on the target database.");
+
+            return isEncrypted;
         }
         catch (Exception ex) when (ex is not InvalidOperationException)
         {
-            throw new InvalidOperationException("TDE verification failed.", ex);
+            if (throwOnFailure)
+                throw new InvalidOperationException("TDE verification failed.", ex);
+
+            return false;
         }
     }
 }

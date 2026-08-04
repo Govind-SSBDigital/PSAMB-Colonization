@@ -16,32 +16,36 @@ namespace Backend.Services.Implementations
         private readonly UserManager<IdentityApplicationUser> _userManager;
         private readonly IConfiguration _config;
         private readonly ILogger<AuthService> _logger;
+        private readonly ISendCredUserService _sendCredUserService;
         private readonly ApplicationDbContext _context;
 
         public AuthService(
             UserManager<IdentityApplicationUser> userManager,
             IConfiguration config,
             ILogger<AuthService> logger,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            ISendCredUserService sendCredUserService)
         {
             _userManager = userManager;
             _config = config;
             _logger = logger;
             _context = context;
+            _sendCredUserService = sendCredUserService;
         }
 
         public async Task<LoginResponse> RegisterAsync(RegisterRequest request)
         {
-            //if (request.Password != request.ConfirmPassword)
-            //    throw new ArgumentException("Passwords do not match");
-            request.Password = "Test@123";
+            var generatedPassword = GenerateUniquePassword();
 
-            //request.Email = "ps8087775@gmail.com";
             var existing = await _userManager.FindByEmailAsync(request.Email);
             if (existing != null)
                 throw new ArgumentException("Email already registered");
 
-            // 1. Identity User — login ke liye
+            var existingMobile = await _context.ApplicationUsers
+                .FirstOrDefaultAsync(x => x.MobileNo == request.MobileNo && x.IsDeleted == false);
+            if (existingMobile != null)
+                throw new ArgumentException("Mobile number already registered");
+
             var identityUser = new IdentityApplicationUser
             {
                 UserName = request.Email.ToLower().Trim(),
@@ -49,8 +53,7 @@ namespace Backend.Services.Implementations
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
-
-            var result = await _userManager.CreateAsync(identityUser, request.Password);
+            var result = await _userManager.CreateAsync(identityUser, generatedPassword);
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
@@ -59,8 +62,8 @@ namespace Backend.Services.Implementations
 
             await _userManager.AddToRoleAsync(identityUser, "User");
 
-            // 2. ApplicationUser — form data ke liye
-            var applicant = new ApplicationUser {
+            var applicant = new ApplicationUser
+            {
                 IdentityUserId = identityUser.Id,
                 CategoryId = request.CategoryId,
                 Gender = request.Gender,
@@ -72,7 +75,7 @@ namespace Backend.Services.Implementations
                 MotherFirstName = request.MotherFirstName,
                 MotherLastName = request.MotherLastName,
                 Email = request.Email.ToLower().Trim(),
-                MobileNo = request.MobileNo,
+                MobileNo = string.IsNullOrEmpty(request.MobileNo) ? null : request.MobileNo,
                 IdentDocTypeId = request.IdentDocTypeId,
                 IdentDocNumber = request.IdentDocNumber,
                 PANNumber = request.PANNumber,
@@ -99,7 +102,6 @@ namespace Backend.Services.Implementations
             _context.ApplicationUsers.Add(applicant);
             await _context.SaveChangesAsync();
 
-            // 3. ApplicantAuth — security ke liye
             var salt = Guid.NewGuid().ToString("N");
             var auth = new ApplicantAuth
             {
@@ -114,10 +116,25 @@ namespace Backend.Services.Implementations
 
             _context.ApplicantAuths.Add(auth);
             await _context.SaveChangesAsync();
+            await _sendCredUserService.SendCredentialsAsync(new SendCredModel
+            {
+                MobileNumber = request.MobileNo,
+                EmailId = request.Email,
+                Password = generatedPassword 
+            });
 
             _logger.LogInformation("Applicant registered: {Email}", request.Email);
-            return BuildLoginResponse(identityUser, applicant);
 
+            return BuildLoginResponse(identityUser, applicant);
+        }
+
+        private string GenerateUniquePassword()
+        {
+            var upper = Guid.NewGuid().ToString("N").Substring(0, 4).ToUpper();
+            var lower = Guid.NewGuid().ToString("N").Substring(0, 4).ToLower();
+            var number = new Random().Next(10, 99).ToString();
+            return $"Pss@{upper}{lower}{number}";
+            // Example: Ps@A1B2c3d456
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
