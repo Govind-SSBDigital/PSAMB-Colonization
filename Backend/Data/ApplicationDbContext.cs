@@ -12,33 +12,36 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         : base(options)
     {
     }
+
+    // ── IDENTITY & CUSTOM USER DBSETS ─────────────────────
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<ApplicantAuth> ApplicantAuths => Set<ApplicantAuth>();
     public DbSet<MobileOTPs> MobileOTPs { get; set; }
+
+    // ── MASTER TABLES ─────────────────────────────────────
     public DbSet<StateMaster> StateMasters { get; set; }
     public DbSet<DistrictMaster> DistrictMasters { get; set; }
     public DbSet<CityMaster> CityMasters { get; set; }
     public DbSet<EmailOtp> EmailOtps { get; set; }
     public DbSet<BranchMaster> BranchMaster { get; set; }
     public DbSet<MandiMaster> MandiMaster { get; set; }
-    public DbSet<PropertyBidderRegistration> PropertyBidderRegistration { get; set; }
     public DbSet<PlotSizeMaster> PlotSizeMaster { get; set; }
     public DbSet<PlotTypeMaster> PlotTypeMaster { get; set; }
     public DbSet<PlanMaster> PlanMaster { get; set; }
     public DbSet<PropertyType> PropertyType { get; set; }
     public DbSet<BidderTypeMaster> BidderTypeMaster { get; set; }
     public DbSet<ApplicationStatusMaster> ApplicationStatusMaster { get; set; }
-    public DbSet<InstallmentDetails> InstallmentDetails { get; set; }
     public DbSet<PropertyCategoryMaster> PropertyCategoryMaster { get; set; }
+
+    // ── TRANSACTIONAL / FEATURE DBSETS ────────────────────
+    public DbSet<PropertyBidderRegistration> PropertyBidderRegistration { get; set; }
+    public DbSet<InstallmentDetails> InstallmentDetails { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<StateMaster>()
-            .ToTable("StateMaster", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.StateId);
-
-        // 1. FIX EF CORE DECIMAL PRECISION WARNINGS GLOBALLY
+        // 1. GLOBAL DECIMAL PRECISION (Prevents EF Core decimal truncation warnings)
         foreach (var property in builder.Model.GetEntityTypes()
                     .SelectMany(t => t.GetProperties())
                     .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
@@ -47,18 +50,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             property.SetScale(2);
         }
 
-        // Existing Excluded Masters
+        // 2. EXCLUDED EXISTING MASTERS
         builder.Entity<StateMaster>().ToTable("StateMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.StateId);
         builder.Entity<DistrictMaster>().ToTable("DistrictMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.DistrictId);
         builder.Entity<CityMaster>().ToTable("CityMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.CityId);
         builder.Entity<EmailOtp>().ToTable("EmailOTP", t => t.ExcludeFromMigrations()).HasKey(x => x.OTPId);
 
-        builder.Entity<EmailOtp>()
-            .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.OTPId);
-
-        // ApplicationUser
-        // ApplicationUser
+        // 3. ApplicationUser ENTITY CONFIGURATION
         builder.Entity<ApplicationUser>(b =>
         {
             b.ToTable("ApplicationUser");
@@ -69,7 +67,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             b.Property(x => x.FirstName).HasMaxLength(200).IsRequired();
             b.Property(x => x.LastName).HasMaxLength(100);
             b.Property(x => x.Email).HasMaxLength(255).IsRequired();
-            b.Property(x => x.MobileNo).HasMaxLength(15);  // IsRequired hatao
+            b.Property(x => x.MobileNo).HasMaxLength(15);
             b.Property(x => x.PANNumber).HasMaxLength(10);
             b.Property(x => x.GSTNumber).HasMaxLength(20);
             b.Property(x => x.IndividualPinCode).HasMaxLength(10);
@@ -85,11 +83,12 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             b.Property(x => x.OfficePropertyPhotoPath).HasMaxLength(500);
             b.Property(x => x.IndividualPlotStreetLandmark).HasMaxLength(500);
             b.Property(x => x.BusinessPlotStreetLandmark).HasMaxLength(500);
+
             b.HasIndex(x => x.Email).IsUnique();
             b.HasIndex(x => x.MobileNo).IsUnique();
         });
 
-        // ApplicantAuth
+        // 4. ApplicantAuth ENTITY CONFIGURATION
         builder.Entity<ApplicantAuth>(b =>
         {
             b.ToTable("ApplicantAuth");
@@ -103,7 +102,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             b.HasIndex(x => x.ApplicantId).IsUnique();
         });
 
-        // MobileOTPs
+        // 5. MobileOTPs ENTITY CONFIGURATION
         builder.Entity<MobileOTPs>(b =>
         {
             b.ToTable("MobileOTP");
@@ -114,7 +113,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         });
     }
 
-    // ── Safe TDE Check ───────────────────────────────────
+    // ── SAFE TDE CHECK ───────────────────────────────────
     public async Task<bool> VerifyTdeAsync(bool throwOnFailure = false)
     {
         try
