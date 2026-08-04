@@ -64,6 +64,7 @@ export class BusinessDetails implements OnInit {
       this.isLoadingDistricts = true;
       this.locationService.getDistricts(selected.stateId).subscribe({
         next: (res) => {
+          this.businessDistricts = res.data;  // ← YE LINE MISSING THI
           this.isLoadingDistricts = false;
         },
         error: (err) => {

@@ -22,21 +22,49 @@ export class AuthService {
   register(request: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, request);
   }
+  refreshToken(): Observable<any> {
+    const refreshToken = localStorage.getItem('refresh_token');
+    return this.http.post(`${this.apiUrl}/refresh-token`, { refreshToken });
+  }
+  logout(): void {
+    const refreshToken = localStorage.getItem('refresh_token');
 
-  logout() {
+    if (refreshToken) {
+      this.http.post(`${this.apiUrl}/logout`, { refreshToken })
+        .subscribe({
+          next: () => console.log('Logged out from server'),
+          error: (err) => console.error('Logout error:', err)
+        });
+    }
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('cp_session');
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiry = payload.exp * 1000;
+      if (Date.now() > expiry) {
+        this.logout();
+        return false;
+      }
+      return true;
+    } catch {
+      return false;
+    }
   }
-
+  getSession(): any {
+    const session = localStorage.getItem('cp_session');
+    return session ? JSON.parse(session) : null;
+  }
   sendLoginOtp(mobileNumber: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/send-login-otp`, { mobileNumber });
   }
 
   loginWithOtp(mobileNumber: string, otp: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login-with-otp`, { mobileNumber, otp });
-}
+  }
 }
