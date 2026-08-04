@@ -115,7 +115,7 @@ namespace Backend.Services.Implementations
                 .Where(x => x.MobileNumber == mobileNo
                     && x.OTP == otp
                     && x.IsUsed == false
-                    && x.CreatedAt >= DateTime.Now.AddMinutes(-5))
+                    )
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
 
