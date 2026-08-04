@@ -1,35 +1,28 @@
-name: CD / Deploy Production
+name: CD / Deploy Production Backend
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/deploy-production-backend.yml'
 
 jobs:
-  build-production:
-    name: Build & Package (Production)
+  build-production-backend:
+    name: Build & Package Backend (Production)
     runs-on: ubuntu-latest
-    # Freezes the pipeline here until approved by authorized reviewers in GitHub UI
     environment: Production
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Setup .NET & Node
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
-        cache-dependency-path: Frontend/package-lock.json
-
-    # Build and Publish Backend
     - name: Restore & Build Backend
       run: |
         dotnet restore Backend/Backend.csproj
@@ -41,16 +34,6 @@ jobs:
     - name: Publish Backend
       run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
 
-    # Build Frontend
-    - name: Install Frontend Dependencies
-      run: npm ci
-      working-directory: Frontend
-
-    - name: Build Frontend (Production)
-      run: npm run build -- --configuration=production
-      working-directory: Frontend
-
-    # Generate EF Core Migration Script (for manual DB updates)
     - name: Install EF Tool
       run: dotnet tool install --global dotnet-ef
 
@@ -58,19 +41,11 @@ jobs:
       run: dotnet ef migrations script --project Backend/Backend.csproj --idempotent --output ./migration-production.sql
       continue-on-error: true
 
-    # Upload build artifacts for manual deployment
     - name: Upload Backend Artifact
       uses: actions/upload-artifact@v4
       with:
         name: backend-production-build
         path: ./publish-backend
-        retention-days: 30
-
-    - name: Upload Frontend Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-production-build
-        path: ./Frontend/dist/
         retention-days: 30
 
     - name: Upload Migration Script
@@ -82,16 +57,12 @@ jobs:
         retention-days: 30
         if-no-files-found: ignore
 
-    # Summary
     - name: Deployment Summary
       run: |
-        echo "## 🚀 Production Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "## 🚀 Production Backend Build Complete" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Build artifacts are ready for manual deployment." >> $GITHUB_STEP_SUMMARY
+        echo "Backend build artifacts are ready for manual deployment." >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Artifacts:" >> $GITHUB_STEP_SUMMARY
         echo "- **backend-production-build** — Published .NET API" >> $GITHUB_STEP_SUMMARY
-        echo "- **frontend-production-build** — Angular production bundle" >> $GITHUB_STEP_SUMMARY
         echo "- **migration-script-production** — Idempotent SQL migration script" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Download artifacts from the Actions run page and deploy to your server." >> $GITHUB_STEP_SUMMARY

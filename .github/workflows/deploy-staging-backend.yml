@@ -1,13 +1,16 @@
-name: CD / Deploy Staging
+name: CD / Deploy Staging Backend
 
 on:
   push:
     branches:
       - staging
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/deploy-staging-backend.yml'
 
 jobs:
-  build-staging:
-    name: Build & Package (Staging / UAT)
+  build-staging-backend:
+    name: Build & Package Backend (Staging)
     runs-on: ubuntu-latest
     environment: Staging
 
@@ -15,20 +18,11 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Setup .NET & Node
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
-        cache-dependency-path: Frontend/package-lock.json
-
-    # Build and Publish Backend
     - name: Restore & Build Backend
       run: |
         dotnet restore Backend/Backend.csproj
@@ -40,16 +34,6 @@ jobs:
     - name: Publish Backend
       run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
 
-    # Build Frontend
-    - name: Install Frontend Dependencies
-      run: npm ci
-      working-directory: Frontend
-
-    - name: Build Frontend (Staging)
-      run: npm run build -- --configuration=production
-      working-directory: Frontend
-
-    # Generate EF Core Migration Script (for manual DB updates)
     - name: Install EF Tool
       run: dotnet tool install --global dotnet-ef
 
@@ -57,19 +41,11 @@ jobs:
       run: dotnet ef migrations script --project Backend/Backend.csproj --idempotent --output ./migration-staging.sql
       continue-on-error: true
 
-    # Upload build artifacts for manual deployment
     - name: Upload Backend Artifact
       uses: actions/upload-artifact@v4
       with:
         name: backend-staging-build
         path: ./publish-backend
-        retention-days: 14
-
-    - name: Upload Frontend Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-staging-build
-        path: ./Frontend/dist/
         retention-days: 14
 
     - name: Upload Migration Script
