@@ -15,22 +15,22 @@
 
             <div class="d-flex gap-2 flex-wrap">
 
-                <div class="stat-pill">
+                <div class="stat-pill" (click)="OpenTotalRegistration()">
                     <span class="stat-pill-value">{{ filteredPropertyList.length }}</span>
                     <span class="stat-pill-label">Total</span>
                 </div>
 
-                <div class="stat-pill stat-pill-pending">
+                <div class="stat-pill stat-pill-pending" (click)="OpenPendingRegistration()">
                     <span class="stat-pill-value">{{ pendingCount }}</span>
                     <span class="stat-pill-label">Pending</span>
                 </div>
 
-                <div class="stat-pill stat-pill-verified">
+                <div class="stat-pill stat-pill-verified" (click)="OpenVerifiedRegistration()">
                     <span class="stat-pill-value">{{ verifiedCount }}</span>
                     <span class="stat-pill-label">Verified</span>
                 </div>
 
-                <div class="stat-pill stat-pill-rejected">
+                <div class="stat-pill stat-pill-rejected" (click)="OpenRejectedRegistration()">
                     <span class="stat-pill-value">{{ rejectedCount }}</span>
                     <span class="stat-pill-label">Rejected</span>
                 </div>
