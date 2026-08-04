@@ -49,5 +49,15 @@ namespace Backend.Repositories.Implementations
 
         public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
             => await _dbSet.AnyAsync(predicate);
+
+        public void RemoveRange(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+        }
+
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
     }
 }

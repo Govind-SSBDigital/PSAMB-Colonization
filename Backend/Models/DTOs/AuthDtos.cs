@@ -93,9 +93,9 @@
         public string Token { get; set; } = string.Empty;
         public DateTime ExpiresAt { get; set; }
         public UserResponse User { get; set; } = null!;
-        public string UserId { get; set; }
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string EntityType { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string EntityType { get; set; } = string.Empty;
     }
 }

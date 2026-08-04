@@ -18,7 +18,17 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     public DbSet<DistrictMaster> DistrictMasters { get; set; }
     public DbSet<CityMaster> CityMasters { get; set; }
     public DbSet<EmailOtp> EmailOtps { get; set; }
-    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    public DbSet<BranchMaster> BranchMaster { get; set; }
+    public DbSet<MandiMaster> MandiMaster { get; set; }
+    public DbSet<PropertyBidderRegistration> PropertyBidderRegistration { get; set; }
+    public DbSet<PlotSizeMaster> PlotSizeMaster { get; set; }
+    public DbSet<PlotTypeMaster> PlotTypeMaster { get; set; }
+    public DbSet<PlanMaster> PlanMaster { get; set; }
+    public DbSet<PropertyType> PropertyType { get; set; }
+    public DbSet<BidderTypeMaster> BidderTypeMaster { get; set; }
+    public DbSet<ApplicationStatusMaster> ApplicationStatusMaster { get; set; }
+    public DbSet<InstallmentDetails> InstallmentDetails { get; set; }
+    public DbSet<PropertyCategoryMaster> PropertyCategoryMaster { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -28,13 +38,20 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             .ToTable("StateMaster", t => t.ExcludeFromMigrations())
             .HasKey(x => x.StateId);
 
-        builder.Entity<DistrictMaster>()
-            .ToTable("DistrictMaster", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.DistrictId);
+        // 1. FIX EF CORE DECIMAL PRECISION WARNINGS GLOBALLY
+        foreach (var property in builder.Model.GetEntityTypes()
+                    .SelectMany(t => t.GetProperties())
+                    .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+        {
+            property.SetPrecision(18);
+            property.SetScale(2);
+        }
 
-        builder.Entity<CityMaster>()
-            .ToTable("CityMaster", t => t.ExcludeFromMigrations())
-            .HasKey(x => x.CityId);
+        // Existing Excluded Masters
+        builder.Entity<StateMaster>().ToTable("StateMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.StateId);
+        builder.Entity<DistrictMaster>().ToTable("DistrictMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.DistrictId);
+        builder.Entity<CityMaster>().ToTable("CityMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.CityId);
+        builder.Entity<EmailOtp>().ToTable("EmailOTP", t => t.ExcludeFromMigrations()).HasKey(x => x.OTPId);
 
         builder.Entity<EmailOtp>()
             .ToTable("EmailOTP", t => t.ExcludeFromMigrations())
@@ -69,8 +86,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             b.Property(x => x.IndividualPlotStreetLandmark).HasMaxLength(500);
             b.Property(x => x.BusinessPlotStreetLandmark).HasMaxLength(500);
             b.HasIndex(x => x.Email).IsUnique();
-            // MobileNo unique index hatao -- duplicate allow karo testing ke liye
-            // b.HasIndex(x => x.MobileNo).IsUnique();
+            b.HasIndex(x => x.MobileNo).IsUnique();
         });
 
         // ApplicantAuth
@@ -98,8 +114,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         });
     }
 
-    // ── TDE Verify ───────────────────────────────────
-    public async Task VerifyTdeAsync()
+    // ── Safe TDE Check ───────────────────────────────────
+    public async Task<bool> VerifyTdeAsync(bool throwOnFailure = false)
     {
         try
         {
@@ -112,8 +128,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText =
-                    "SELECT is_encrypted FROM sys.databases WHERE name = DB_NAME()";
+                command.CommandText = "SELECT is_encrypted FROM sys.databases WHERE name = DB_NAME()";
                 var result = await command.ExecuteScalarAsync();
                 if (result != null && result != DBNull.Value)
                     isEncrypted = Convert.ToInt32(result) == 1;
@@ -122,13 +137,17 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             if (!wasOpen)
                 await Database.CloseConnectionAsync();
 
-            if (!isEncrypted)
-                throw new InvalidOperationException(
-                    "CRITICAL: TDE is NOT enabled on the target database.");
+            if (!isEncrypted && throwOnFailure)
+                throw new InvalidOperationException("CRITICAL: TDE is NOT enabled on the target database.");
+
+            return isEncrypted;
         }
         catch (Exception ex) when (ex is not InvalidOperationException)
         {
-            throw new InvalidOperationException("TDE verification failed.", ex);
+            if (throwOnFailure)
+                throw new InvalidOperationException("TDE verification failed.", ex);
+
+            return false;
         }
     }
 }
