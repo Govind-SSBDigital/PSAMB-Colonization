@@ -10,7 +10,6 @@ import { SharedModule } from './shared/shared.module';
 import { ToastrModule } from 'ngx-toastr';
 import { Navbar } from './features/navbar/navbar';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-
 import { Footer } from './features/footer/footer';
 @NgModule({
   declarations: [App],
@@ -20,6 +19,7 @@ import { Footer } from './features/footer/footer';
     CoreModule,
     SharedModule,
     Navbar,
+    Footer,
     ToastrModule.forRoot()
   ],
   providers: [
@@ -31,16 +31,6 @@ import { Footer } from './features/footer/footer';
       multi: true
     }
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    CoreModule,
-    SharedModule,
-    Navbar,
-    Footer,
-    ToastrModule.forRoot(),
-  ],
-  providers: [provideHttpClient(withInterceptorsFromDi()), provideAnimationsAsync()],
   bootstrap: [App],
 })
 export class AppModule {}
