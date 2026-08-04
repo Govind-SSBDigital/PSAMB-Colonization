@@ -1,0 +1,267 @@
+<main class="bg-light py-3 py-lg-4">
+  <div class="container-xl">
+    <div class="bg-white rounded-4 p-3 p-lg-4 mb-3 border shadow-sm">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+          <h1 class="h4 fw-bold text-success mb-1">Register Your Property</h1>
+          <!-- <p class="small text-success fw-semibold text-uppercase mb-1">Property ownership service</p> -->
+          <p class="text-dark mb-0 ">Search allottee details or submit the complete property and owner information below.</p>
+        </div>
+        <form class="col-12 col-lg-4" [formGroup]="propertyForm">
+          <label for="allotteeCode" class="form-label small text-dark fw-semibold text-uppercase mb-1">Search Allottee Code</label>
+          <div class="input-group">
+            <input id="allotteeCode" type="search" class="form-control bg-light rounded-start-3 custom-input-color"
+              placeholder="Format AAA1-1" formControlName="allotteeCode"
+              [class.is-invalid]="isInvalid('allotteeCode')" />
+            <button class="btn btn-success fw-semibold rounded-end-3" type="button">Search</button>
+          </div>
+          @if (isInvalid('allotteeCode')) {
+          <div class="invalid-feedback d-block">Only letters, numbers, slash and hyphen are allowed.</div>
+          }
+        </form>
+      </div>
+    </div>
+
+    <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="alert alert-success rounded-4 mb-3 fw-semibold" role="alert">
+        If you do not have the allottee code, please enter your property details below.
+      </div>
+
+      <section class="card register-section-card border-0 rounded-4 shadow-sm mb-4">
+        <div class="card-body p-3 p-lg-4">
+          <div class="border-bottom pb-3 mb-3 section-header">
+            <h2 class="h5 fw-semibold mb-1">Property Details (Location, committee and plot information)</h2>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6 col-xl-3">
+              <label for="district" class="form-label small text-dark fw-semibold text-uppercase">District <span class="text-danger">*</span></label>
+              <select id="district" class="form-select bg-light rounded-3 custom-input-color" formControlName="district"
+                [class.is-invalid]="isInvalid('district')">
+                <option value="" disabled>Select district</option>
+                @for (district of districts; track district) {
+                <option [value]="district">{{ district }}</option>
+                }
+              </select>
+              @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="marketCommittee" class="form-label small text-dark fw-semibold text-uppercase">Market Committee <span class="text-danger">*</span></label>
+              <select id="marketCommittee" class="form-select bg-light rounded-3 custom-input-color" formControlName="marketCommittee"
+                [class.is-invalid]="isInvalid('marketCommittee')">
+                <option value="" disabled>Select committee</option>
+                @for (committee of marketCommittees; track committee) {
+                <option [value]="committee">{{ committee }}</option>
+                }
+              </select>
+              @if (isInvalid('marketCommittee')) { <div class="invalid-feedback">Market committee is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Mandi <span class="text-danger">*</span></label>
+              <select id="mandi" class="form-select bg-light rounded-3 custom-input-color" formControlName="mandi"
+                [class.is-invalid]="isInvalid('mandi')">
+                <option value="" disabled>Select mandi</option>
+                @for (mandi of mandis; track mandi) {
+                <option [value]="mandi">{{ mandi }}</option>
+                }
+              </select>
+              @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="plotNumber" class="form-label small text-dark fw-semibold text-uppercase">Plot Number / Property No. <span class="text-danger">*</span></label>
+              <select id="plotNumber" class="form-select bg-light rounded-3 custom-input-color" formControlName="plotNumber"
+                [class.is-invalid]="isInvalid('plotNumber')">
+                <option value="" disabled>Select plot</option>
+                @for (plot of plots; track plot) {
+                <option [value]="plot">{{ plot }}</option>
+                }
+              </select>
+              @if (isInvalid('plotNumber')) { <div class="invalid-feedback">Plot/property no. is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="plotType" class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span class="text-danger">*</span></label>
+              <select id="plotType" class="form-select bg-light rounded-3 custom-input-color" formControlName="plotType"
+                [class.is-invalid]="isInvalid('plotType')">
+                <option value="" disabled>Select plot type</option>
+                @for (type of plotTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+                }
+              </select>
+              @if (isInvalid('plotType')) { <div class="invalid-feedback">Plot type is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="plotSize" class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span class="text-danger">*</span></label>
+              <input id="plotSize" type="text" class="form-control bg-light rounded-3 custom-input-color"
+                placeholder="Enter plot size" formControlName="plotSize" [class.is-invalid]="isInvalid('plotSize')" />
+              @if (isInvalid('plotSize')) { <div class="invalid-feedback">Plot size is required.</div> }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card register-section-card border-0 rounded shadow-sm mb-4">
+        <div class="card-body p-3 p-lg-4">
+          <div class="border-bottom pb-3 mb-3 section-header">
+            <h2 class="h5 fw-semibold mb-1">Owner Information (Applicant identity and communication details)</h2>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6 col-xl-3">
+              <label for="currentOwnerName" class="form-label small text-dark fw-semibold text-uppercase">Current Owner Name <small class="text-success text-capitalize">(As per document)</small> <span class="text-danger">*</span></label>
+              <input id="currentOwnerName" class="form-control bg-light rounded-3 custom-input-color" placeholder="Current owner"
+                formControlName="currentOwnerName" [class.is-invalid]="isInvalid('currentOwnerName')" />
+              @if (isInvalid('currentOwnerName')) { <div class="invalid-feedback">Current owner name is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="guardianName" class="form-label small text-dark fw-semibold text-uppercase">Father's / Husband Name <span class="text-danger">*</span></label>
+              <input id="guardianName" class="form-control bg-light rounded-3 custom-input-color" placeholder="Father's / husband name"
+                formControlName="guardianName" [class.is-invalid]="isInvalid('guardianName')" />
+              @if (isInvalid('guardianName')) { <div class="invalid-feedback">Father's / husband name is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="mobileNumber" class="form-label small text-dark fw-semibold text-uppercase">Mobile Number <span class="text-danger">*</span></label>
+              <input id="mobileNumber" type="tel" maxlength="10" class="form-control bg-light rounded-3 custom-input-color"
+                placeholder="10 digit mobile number" formControlName="mobileNumber"
+                [class.is-invalid]="isInvalid('mobileNumber')" />
+              @if (isInvalid('mobileNumber')) { <div class="invalid-feedback">Enter a valid 10 digit mobile number.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="email" class="form-label small text-dark fw-semibold text-uppercase">Email <span class="text-danger">*</span></label>
+              <input id="email" type="email" class="form-control bg-light rounded-3 custom-input-color" placeholder="name@example.com"
+                formControlName="email" [class.is-invalid]="isInvalid('email')" />
+              @if (isInvalid('email')) { <div class="invalid-feedback">Enter a valid email address.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="state" class="form-label small text-dark fw-semibold text-uppercase">State <span class="text-danger">*</span></label>
+              <select id="state" class="form-select bg-light rounded-3 custom-input-color" formControlName="state"
+                [class.is-invalid]="isInvalid('state')">
+                <option value="" disabled>Select state</option>
+                @for (state of states; track state) {
+                <option [value]="state">{{ state }}</option>
+                }
+              </select>
+              @if (isInvalid('state')) { <div class="invalid-feedback">State is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="ownerDistrict" class="form-label small text-dark fw-semibold text-uppercase">District <span class="text-danger">*</span></label>
+              <select id="ownerDistrict" class="form-select bg-light rounded-3 custom-input-color" formControlName="ownerDistrict"
+                [class.is-invalid]="isInvalid('ownerDistrict')">
+                <option value="" disabled>Select district</option>
+                @for (district of districts; track district) {
+                <option [value]="district">{{ district }}</option>
+                }
+              </select>
+              @if (isInvalid('ownerDistrict')) { <div class="invalid-feedback">Owner district is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="city" class="form-label small text-dark fw-semibold text-uppercase">City <span class="text-danger">*</span></label>
+              <select id="city" class="form-select bg-light rounded-3 custom-input-color" formControlName="city"
+                [class.is-invalid]="isInvalid('city')">
+                <option value="" disabled>Select city</option>
+                @for (city of cities; track city) {
+                <option [value]="city">{{ city }}</option>
+                }
+              </select>
+              @if (isInvalid('city')) { <div class="invalid-feedback">City is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="address" class="form-label small text-dark fw-semibold text-uppercase">Address <span class="text-danger">*</span></label>
+              <input id="address" class="form-control bg-light rounded-3 custom-input-color" placeholder="Complete address"
+                formControlName="address" [class.is-invalid]="isInvalid('address')" />
+              @if (isInvalid('address')) { <div class="invalid-feedback">Address is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="aadhaarNumber" class="form-label small text-dark fw-semibold text-uppercase">Aadhaar Number <span class="text-danger">*</span></label>
+              <input id="aadhaarNumber" maxlength="13" class="form-control bg-light rounded-3 custom-input-color"
+                placeholder="XXXXXXXX1234" formControlName="aadhaarNumber" (input)="maskInput($event)"
+                [class.is-invalid]="isInvalid('aadhaarNumber')" />
+              @if (isInvalid('aadhaarNumber')) { <div class="invalid-feedback">Enter a valid 4 digit Aadhaar number.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="aadhaarProof" class="form-label small text-dark fw-semibold text-uppercase">Upload Aadhaar Card Proof <span class="text-danger">*</span></label>
+              <input id="aadhaarProof" type="file" class="form-control bg-light rounded-3 custom-input-color" [accept]="allowedFileTypes"
+                (change)="onFileChange($event, 'aadhaarProof')" [class.is-invalid]="isInvalid('aadhaarProof')" />
+              @if (isInvalid('aadhaarProof')) { <div class="invalid-feedback d-block">JPEG, JPG, PNG or PDF file is required.</div> }
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="passportNumber" class="form-label small text-dark fw-semibold text-uppercase">Passport Number</label>
+              <input id="passportNumber" class="form-control bg-light rounded-3 custom-input-color" placeholder="Passport number"
+                formControlName="passportNumber" />
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+              <label for="passportProof" class="form-label small text-dark fw-semibold text-uppercase">Upload Passport Proof</label>
+              <input id="passportProof" type="file" class="form-control bg-light rounded-3 custom-input-color" [accept]="allowedFileTypes"
+                (change)="onFileChange($event, 'passportProof')" [class.is-invalid]="isInvalid('passportProof')" />
+              @if (isInvalid('passportProof')) { <div class="invalid-feedback d-block">Only JPEG, JPG, PNG or PDF files are allowed.</div> }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card register-section-card border-0 rounded-4 shadow-sm mb-4">
+        <div class="card-body p-3 p-lg-4">
+          <div class="border-bottom pb-3 mb-3 section-header">
+            <h2 class="h5 fw-semibold mb-1">Upload Documents (At least one supporting document with file upload is required)</h2>
+          </div>
+
+          @if (hasDocumentError()) {
+          <div class="alert alert-warning rounded-3 py-2">Select and upload at least Two documents.</div>
+          }
+
+          <div class="row g-3">
+            @for (document of documents; track document.key) {
+            <div class="col-12 col-lg-6">
+              <div class="border rounded-3 bg-light p-3 h-100">
+                <div class="row g-3 align-items-center">
+                  <div class="col-12 col-md-5">
+                    <div class="form-check">
+                      <input class="form-check-input custom-checkbox-color" type="checkbox"
+                        [id]="document.key + 'Selected'" [formControlName]="document.key + 'Selected'" />
+                      <label class="form-check-label fw-semibold" style="color: #064e3b;" [for]="document.key + 'Selected'">
+                        {{ document.label }}
+                        @if (document.hint) {
+                        <small class="d-block text-secondary fw-normal">{{ document.hint }}</small>
+                        }
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-7">
+                    <input [id]="document.key + 'File'" type="file" class="form-control bg-white rounded-3 custom-input-color"
+                      [accept]="allowedFileTypes" (change)="onFileChange($event, document.key + 'File')" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mb-4">
+        <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
+          (click)="resetForm()">Cancel</button>
+        <button type="submit" class="btn btn-success rounded-3 px-4 py-2 fw-semibold shadow-sm">
+          Save Property
+        </button>
+      </div>
+    </form>
+
+  </div>
+</main>

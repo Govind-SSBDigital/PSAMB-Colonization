@@ -1,0 +1,41 @@
+name: CD / Deploy Develop Frontend
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'Frontend/**'
+      - '.github/workflows/deploy-develop-frontend.yml'
+
+jobs:
+  build-develop-frontend:
+    name: Build & Package Frontend (Dev)
+    runs-on: ubuntu-latest
+    environment: Local-Dev
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Build Frontend (Development)
+      run: npm run build -- --configuration=development
+      working-directory: Frontend
+
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-dev-build
+        path: ./Frontend/dist/
+        retention-days: 7

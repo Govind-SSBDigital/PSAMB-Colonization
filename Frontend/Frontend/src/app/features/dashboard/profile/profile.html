@@ -1,0 +1,140 @@
+<div class="profile-wrapper py-2 bg-light">
+  <div class="container">
+    <div class="profile-card shadow-sm rounded-4 overflow-hidden">
+      <div class="profile-card-header d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 p-2 p-md-3 border-bottom">
+        <div class="d-flex align-items-center gap-4">
+          <div class="avatar-wrapper">
+          <div class="avatar-container">
+            <div *ngIf="!user.avatarUrl" class="profile-avatar profile-avatar-placeholder">
+              <i class="fa-solid fa-circle-user"></i>
+            </div>
+            <img *ngIf="user.avatarUrl" [src]="user.avatarUrl" alt="Profile Image" class="profile-avatar">
+            <button type="button" class="avatar-edit-btn" (click)="fileInput.click()" matTooltip="Upload Image" matTooltipPosition="right">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <input #fileInput type="file" (change)="onAvatarChange($event)" class="d-none" accept="image/*">
+            </div>
+            <div *ngIf="errorMessage" class="text-danger small mt-1">
+              {{ errorMessage }}
+            </div>
+          </div>
+          <div>
+            <h2 class="h4 mb-1 fw-semibold text-dark">{{ user.name || 'User Profile' }}</h2>
+            <p class="mb-0 text-muted small">{{ user.email }}</p>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-success btn-sm" (click)="changePassword()">
+            <i class="bi bi-key me-1"></i>Change Password
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetForm()">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-card-body p-3 p-md-4">
+        <form (ngSubmit)="saveProfile()" #profileForm="ngForm">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control minimal-input" name="name" [(ngModel)]="user.name" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control minimal-input" name="email" [(ngModel)]="user.email" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Mobile No.</label>
+              <input type="tel" class="form-control minimal-input" name="mobile" [(ngModel)]="user.mobile" required [minlength]="10" maxlength="10">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Alternate Contact No.</label>
+              <input type="tel" class="form-control minimal-input" name="altMobile" [(ngModel)]="user.altMobile" [minlength]="10" maxlength="10">
+            </div>
+
+            <div class="col-12 mt-4">
+              <h3 class="h6 text-success text-uppercase mb-3 fw-semibold">Address Details</h3>
+            </div>  
+
+            <div class="col-12">
+              <label class="form-label">Street Address</label>
+              <input type="text" class="form-control minimal-input" name="address" [(ngModel)]="user.address" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">City</label>
+              <input type="text" class="form-control minimal-input" name="city" [(ngModel)]="user.city" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">District</label>
+              <input type="text" class="form-control minimal-input" name="district" [(ngModel)]="user.district" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">State</label>
+              <input type="text" class="form-control minimal-input" name="state" [(ngModel)]="user.state" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Pincode</label>
+              <input type="text" class="form-control minimal-input" name="pincode" [(ngModel)]="user.pincode" required [minlength]="6" maxlength="6">
+            </div>
+
+            <div class="col-12 mt-3 pt-3 border-top d-flex justify-content-end">
+              <button type="submit" class="btn btn-success px-3" [disabled]="!profileForm.valid">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade show d-block" *ngIf="passwordModalOpen" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content rounded-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Change Password</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closePasswordModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="savePassword()" #passwordFormRef="ngForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-control" name="oldPassword" [(ngModel)]="passwordForm.oldPassword" required [minlength]="8" maxlength="50">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-control" name="newPassword" [(ngModel)]="passwordForm.newPassword" required [minlength]="8" maxlength="50">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="passwordForm.confirmPassword" required [minlength]="8" maxlength="50">
+            </div>
+
+            <div *ngIf="passwordError" class="alert alert-danger py-2">
+              {{ passwordError }}
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-outline-secondary" (click)="closePasswordModal()">Cancel</button>
+              <button type="submit" class="btn btn-success" [disabled]="!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword">
+                Save Password
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" *ngIf="passwordModalOpen"></div>
+</div>

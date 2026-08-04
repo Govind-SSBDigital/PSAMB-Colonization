@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+  --dashboard-header-height: 64px;
+  --dashboard-footer-height: 72px;
+}
+
+.dashboard-shell {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dashboard-main {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.dashboard-content {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dashboard-content-scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Mobile sidebar overlay */
+.mobile-sidebar {
+  position: fixed;
+  /* place the overlay below the sticky header so header remains visible */
+  top: calc(var(--dashboard-header-height));
+  left: 0;
+  right: 0;
+  /* keep the overlay above the page but stop above footer */
+  bottom: calc(var(--dashboard-footer-height));
+  background: rgba(0, 0, 0, 0.4);
+  /* lower than header z-index (header uses 1030) so header stays on top */
+  z-index: 1020;
+  display: flex;
+  align-items: stretch;
+}
+
+.mobile-sidebar-panel {
+  width: 280px;
+  max-width: 85%;
+  height: 100%;
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}

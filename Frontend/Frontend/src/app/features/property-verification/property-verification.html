@@ -1,0 +1,159 @@
+<div class="property-list-wrapper rounded-3 overflow-hidden shadow-sm">
+
+    <div class="hero-panel px-3 py-3 px-md-4 py-md-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+            <div>
+                <h6 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                    <mat-icon class="align-middle header-icon">verified_user</mat-icon>
+                    Registration Verification 
+                </h6>
+                <p class="text-white-50 small mb-0 header-subtitle">
+                    Review and verify registered properties efficiently
+                </p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <div class="stat-pill">
+                    <span class="stat-pill-value">{{ filteredPropertyList.length }}</span>
+                    <span class="stat-pill-label">Total</span>
+                </div>
+
+                <div class="stat-pill stat-pill-pending">
+                    <span class="stat-pill-value">{{ pendingCount }}</span>
+                    <span class="stat-pill-label">Pending</span>
+                </div>
+
+                <div class="stat-pill stat-pill-verified">
+                    <span class="stat-pill-value">{{ verifiedCount }}</span>
+                    <span class="stat-pill-label">Verified</span>
+                </div>
+
+                <div class="stat-pill stat-pill-rejected">
+                    <span class="stat-pill-value">{{ rejectedCount }}</span>
+                    <span class="stat-pill-label">Rejected</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="p-2 p-lg-3 bg-surface">
+
+        <div class="property-card-item card rounded-3 border-0 shadow-sm mb-2"
+             *ngFor="let property of pagedPropertyList"
+             [ngClass]="{
+                'status-verified': property.status === 'Verified',
+                'status-pending': property.status === 'Pending',
+                'status-rejected': property.status === 'Rejected'
+             }">
+
+            <div class="card-body p-3">
+                <div class="row g-2 align-items-center">
+
+                    <!-- Icon -->
+                    <div class="col-auto">
+                        <div class="property-avatar-box"
+                             [ngClass]="{
+                                'avatar-verified': property.status === 'Verified',
+                                'avatar-pending': property.status === 'Pending',
+                                'avatar-rejected': property.status === 'Rejected'
+                             }">
+                            <mat-icon>home_work</mat-icon>
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="col">
+
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-1">
+
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+                                <h6 class="fw-bold mb-0 text-success">{{ property.propertyNo }}</h6>
+                            </div>
+                            <!-- <button mat-icon-button
+                                    [matMenuTriggerFor]="menu"
+                                    [matMenuTriggerData]="{prop: property}"
+                                    class="action-button">
+                                <mat-icon>more_vert</mat-icon>
+                            </button> -->
+                        </div>
+
+                        <div class="property-details text-secondary small d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <span class="d-flex align-items-center gap-1">
+                                <mat-icon class="meta-icon">person</mat-icon>
+                                <strong class="text-success">{{ property.ownerName }}</strong>
+                            </span>
+                            <span class="d-flex align-items-center gap-1">
+                                <mat-icon class="meta-icon">category</mat-icon>
+                                {{ property.category }}
+                            </span>
+                            <span class="d-flex align-items-center gap-1">
+                                <mat-icon class="meta-icon">account_balance</mat-icon>
+                                {{ property.branch }}
+                            </span>
+                            <span class="d-flex align-items-center gap-1">
+                                <mat-icon class="meta-icon">location_on</mat-icon>
+                                {{ property.district }}, {{ property.village }}
+                            </span>
+                            <span class="d-flex align-items-center gap-1">
+                                <mat-icon class="meta-icon">event</mat-icon>
+                                {{ property.registrationDate | date:'dd-MM-yyyy' }}
+                            </span>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap border-top pt-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-ghost-slate fw-bold rounded-lg px-3"
+                                    [routerLink]="['/verification-view']"  matTooltip="View Details" matTooltipPosition="above">
+                                <mat-icon class="btn-icon">visibility</mat-icon>
+                                View Details
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-accent-solid text-dark fw-bold rounded-lg px-3"
+                                    (click)="editProperty(property)"  matTooltip="Edit Record" matTooltipPosition="above">
+                                <mat-icon class="btn-icon text-dark">edit</mat-icon>
+                                Edit Record
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center py-5 empty-state" *ngIf="filteredPropertyList.length === 0">
+            <mat-icon class="mb-2">layers_clear</mat-icon>
+            <p class="mb-0 small fw-medium">No properties found matching your criteria.</p>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="mt-3 border-0 rounded-3 bg-white shadow-sm" *ngIf="filteredPropertyList.length > 0">
+    <mat-paginator
+            [length]="filteredPropertyList.length"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[10, 20, 50]"
+            [pageIndex]="pageIndex"
+            (page)="onPageChange($event)">
+    </mat-paginator>
+</div>
+
+<!-- <mat-menu #menu="matMenu" xPosition="before">
+    <ng-template matMenuContent let-property="prop">
+        <button mat-menu-item (click)="viewDetails(property)">
+            <mat-icon class="me-2" style="color: var(--theme-teal-light)">visibility</mat-icon>
+            <span>View Details</span>
+        </button>
+        <button mat-menu-item (click)="editProperty(property)">
+            <mat-icon class="me-2" style="color: var(--theme-slate-500)">edit</mat-icon>
+            <span>Edit Record</span>
+        </button>
+    </ng-template>
+</mat-menu> -->

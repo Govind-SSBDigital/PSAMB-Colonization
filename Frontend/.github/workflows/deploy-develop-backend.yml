@@ -1,0 +1,42 @@
+name: CD / Deploy Develop Backend
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/deploy-develop-backend.yml'
+
+jobs:
+  build-develop-backend:
+    name: Build & Package Backend (Dev)
+    runs-on: ubuntu-latest
+    environment: Local-Dev
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore & Build Backend
+      run: |
+        dotnet restore Backend/Backend.csproj
+        dotnet build Backend/Backend.csproj --no-restore --configuration Release
+
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+    - name: Publish Backend
+      run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-dev-build
+        path: ./publish-backend
+        retention-days: 7

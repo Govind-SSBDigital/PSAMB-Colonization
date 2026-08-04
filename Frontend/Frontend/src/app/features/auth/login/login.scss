@@ -1,0 +1,271 @@
+// ---- Tokens (the only reason these exist: Bootstrap doesn't know your brand palette) ----
+$ink: #081a12;
+$forest: #123626;
+$moss: #1f4a3a;
+$teal: #4fb59a;
+$teal-dark: #3a9680;
+$gold: #d9a54c;
+$cream: #faf8f3;
+$text-dark: #16281f;
+$text-muted: #6b8577;
+
+// ---------- Page background
+.login-page {
+  font-family: 'Poppins', sans-serif;
+  // margin-top: -28px !important;
+  background-image: linear-gradient(rgba(2, 44, 34, 0.75), rgba(2, 44, 34, 0.85)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.custom-btn{
+  // background-color: var(--theme-primary);
+  background-color: #ffffff;
+  // color: #ffffff;
+  color: #000;
+  font-size: 14px;
+  &:hover{
+    // background-color: transparent;
+    background-color: var(--theme-primary);
+    color: #fff;
+  }
+}
+
+.back-btn {
+  z-index: 2;
+}
+
+.form-content {
+  margin-top: 4.75rem;
+}
+
+@media (max-width: 575.98px) {
+  .form-content {
+    margin-top: 4.25rem;
+  }
+}
+
+.border-secondary {
+  border-color: var(--theme-primary) !important;
+}
+input::placeholder{
+  color: #6b8577 !important;
+}
+
+.login-card {
+  max-width: 1120px;
+  border-radius: 28px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  min-height: 640px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card { animation: none; }
+}
+
+// ---------- Left illustration panel ----------
+.illustration-panel {
+  flex: 1 1 55%;
+  background: $forest; // fallback color while photo loads
+}
+
+.illustration-photo {
+  filter: saturate(1.05) contrast(1.03);
+}
+
+// bottom-weighted scrim so the glass panel text stays legible — gradients aren't in Bootstrap
+.illustration-scrim {
+  background:
+    linear-gradient(to top, rgba(2, 44, 34, 0.95) 0%, rgba(2, 44, 34, 0.9)30%, rgba(6, 22, 15, 0.05) 65%, transparent 85%),
+    linear-gradient(to bottom, rgba(6, 22, 15, 0.55) 0%, transparent 30%);
+}
+
+
+.illustration-eyebrow {
+  letter-spacing: 0.14em;
+  color: $gold;
+}
+
+.illustration-title {
+  font-size: 1.7rem;
+  color: #fff;
+  line-height: 1.25;
+}
+
+// ---------- Right form panel ----------
+.form-panel {
+  flex: 1 1 45%;
+  background: $cream;
+}
+
+.login-title {
+  font-size: 2rem;
+  color: $text-dark;
+}
+
+.form-label {
+  color: $text-dark;
+  font-size: 0.85rem;
+}
+
+.icon-muted {
+  color: $text-muted;
+  z-index: 2;
+}
+
+.custom-input {
+  background: #fff;
+  border: 1.5px solid var(--theme-primary);
+  color: $text-dark;
+  border-radius: 14px;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #a3b5ac;
+  }
+
+  &:focus {
+    background: #fff;
+    color: $text-dark;
+    box-shadow: 0 0 0 0.2rem rgba(79, 181, 154, 0.16);
+  }
+
+  &.is-invalid {
+    border-color: #d9534f;
+  }
+}
+
+// ---- Captcha ----
+.captcha-box {
+  background: $forest;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  letter-spacing: 4px;
+  font-style: italic;
+  color: #ffffff;
+  user-select: none;
+}
+
+.captcha-refresh-btn {
+  width: 42px;
+  height: 42px;
+  color: $teal-dark;
+  border-color: rgba(22, 40, 31, 0.1);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--theme-primary);
+    color: $teal-dark;
+    transform: rotate(90deg);
+  }
+}
+
+.forgot-link {
+  color: var(--theme-primary);
+  font-size: 0.85rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ---- Buttons
+.btn-primary-custom {
+  background: linear-gradient(135deg, $forest 0%, $moss 100%);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 8px 20px rgba(18, 54, 38, 0.3);
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+  }
+}
+
+.btn-outline-custom {
+  background: #fff;
+  color: $text-dark;
+  padding: 0.75rem 1.5rem;
+  border: 1.5px solid var(--theme-primary);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    color: var(--theme-primary);
+    transform: translateY(-1px);
+  }
+}
+
+.register-text {
+  color: $text-muted;
+  font-size: 0.9rem;
+}
+
+.register-link {
+  color: var(--theme-primary);
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--theme-primary);
+  }
+}
+
+// ---------- OTP module 
+.otp-hint {
+  color: $text-muted;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.otp-digit-input {
+  width: 100%;
+  max-width: 46px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.resend-text {
+  color: $text-muted;
+  font-size: 0.85rem;
+}
+
+// ---------- Responsive ----------
+@media (max-width: 991.98px) {
+  .login-card {
+    border-radius: 20px;
+    min-height: auto;
+  }
+
+  .form-panel {
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .login-title {
+    font-size: 1.6rem;
+  }
+
+  .form-panel {
+    padding: 1.75rem !important;
+  }
+  .otp-digit-input {
+    max-width: 40px;
+    font-size: 1.1rem;
+  }
+}
