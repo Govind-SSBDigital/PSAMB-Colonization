@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 interface PropertyVerificationModel {
   id: number;
@@ -11,6 +12,7 @@ interface PropertyVerificationModel {
   village: string;
   status: string;
   registrationDate: string;
+  label: 'User' | 'DEO';
 }
 
 @Component({
@@ -20,6 +22,8 @@ interface PropertyVerificationModel {
   styleUrl: './property-verification.scss'
 })
 export class PropertyVerification implements OnInit {
+
+  constructor(private router: Router) {}
 
   // Search & Filter Bindings
   searchText = '';
@@ -55,7 +59,8 @@ export class PropertyVerification implements OnInit {
         district: 'Chandigarh',
         village: 'Sector 22',
         status: 'Pending',
-        registrationDate: '15-Jul-2026'
+        registrationDate: '15-Jul-2026',
+        label: 'User'
       },
       {
         id: 2,
@@ -66,7 +71,8 @@ export class PropertyVerification implements OnInit {
         district: 'Ludhiana',
         village: 'Model Town',
         status: 'Verified',
-        registrationDate: '16-Jul-2026'
+        registrationDate: '16-Jul-2026',
+        label: 'User'
       },
       {
         id: 3,
@@ -77,7 +83,8 @@ export class PropertyVerification implements OnInit {
         district: 'Mohali',
         village: 'Phase 8',
         status: 'Rejected',
-        registrationDate: '18-Jul-2026'
+        registrationDate: '18-Jul-2026',
+        label: 'DEO'
       }
     ];
 
@@ -130,7 +137,8 @@ export class PropertyVerification implements OnInit {
   }
 
   viewDetails(property: PropertyVerificationModel): void {
-    console.log('Viewing Details:', property);
+    const targetRoute = property.label === 'DEO' ? '/deo-verification' : '/verification-view';
+    this.router.navigateByUrl(targetRoute);
   }
 
   editProperty(property: PropertyVerificationModel): void {

@@ -57,8 +57,18 @@ const routes: Routes = [
     loadComponent:() => import('./features/auth/signup/signup').then(m =>m.Signup),
   },
   {
+    path: "about-us",
+    loadComponent: () => import('./features/about-us/about-us').then(m => m.AboutUs),
+  },
+  {
     path: "citizen-services",
-    loadComponent: () => import('./features/citizen-services/citizen-services').then(m => m.CitizenServices),
+    redirectTo: 'dashboard/citizen-services',
+    pathMatch: 'full'
+  },
+  {
+    path: "deo-verification",
+    redirectTo: 'dashboard/deo-verification',
+    pathMatch: 'full'
   },
   {
     path: '**',

@@ -1,6 +1,7 @@
 export interface PropertyBidderRegistrationModel {
   // Property Information
   propertycode: string;
+  district: string;
   branch: string;
   mandi: string;
   plotsize: string;
@@ -19,6 +20,7 @@ export interface PropertyBidderRegistrationModel {
   IsNDCGenerated: boolean;
   IsNDCIssued: boolean;
   IsAssetVerified: boolean;
+  IsCourtCase: boolean;
 
   // Auction Information
   Isauctioned: boolean;
