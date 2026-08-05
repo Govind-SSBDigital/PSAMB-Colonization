@@ -1,0 +1,112 @@
+:host {
+  --brand-dark: #0b4d3c;
+  --brand-darker: #08382b;
+  --brand-gold: #d4af37;
+  display: block;
+  background: #f2f4f3;
+}
+
+.clerk-page {
+  min-height: 100%;
+  padding: 0.95rem;
+}
+
+.page-header {
+  background: var(--brand-dark);
+  padding: 1rem 1.25rem;
+  width: 100%;
+}
+
+.bg-brand {
+  background: var(--brand-dark) !important;
+}
+
+.btn-brand {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
+
+  &:hover,
+  &:focus {
+    background: var(--brand-darker);
+    border-color: var(--brand-darker);
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.section-card {
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+  background: var(--brand-dark);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 0.85rem 1.1rem;
+}
+
+.subsection {
+  background: #fbfbfa;
+  border: 1px solid #e6e6e3;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.subsection-title {
+  color: var(--brand-dark);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #333;
+}
+
+.form-check-input:checked {
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+
+// Read-only (view mode) visual cue — disabled inputs look flat, not greyed like broken fields
+.form-control:disabled,
+.form-select:disabled,
+.form-control[readonly] {
+  background-color: #f7f8f7;
+  opacity: 1;
+  color: #444;
+}
+
+table input.form-control-sm,
+table select.form-select-sm {
+  min-width: 110px;
+}
+
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
