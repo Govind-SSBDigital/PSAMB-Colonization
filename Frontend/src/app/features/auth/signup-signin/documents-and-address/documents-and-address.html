@@ -43,9 +43,9 @@
                         </span>
                         <input #idDocInput type="file" (change)="emitFileSelected($event, 'idDoc')" class="d-none">
                     </div>
-                    <div class="progress-bar-inline" *ngIf="uploadingStates['idDoc']">
+                    <!-- <div class="progress-bar-inline" *ngIf="uploadingStates['idDoc']">
                         <div class="p-fill" [style.width.%]="uploadProgress['idDoc']"></div>
-                    </div>
+                    </div> -->
                 </div>
                 <input type="hidden" name="idDocumentFileName" [(ngModel)]="signUpData.idDocumentFileName"
                     #idFile="ngModel" required>
@@ -66,9 +66,9 @@
                         </span>
                         <input #photoInput type="file" (change)="emitFileSelected($event, 'photo')" class="d-none">
                     </div>
-                    <div class="progress-bar-inline" *ngIf="uploadingStates['photo']">
+                    <!-- <div class="progress-bar-inline" *ngIf="uploadingStates['photo']">
                         <div class="p-fill" [style.width.%]="uploadProgress['photo']"></div>
-                    </div>
+                    </div> -->
                 </div>
                 <input type="hidden" name="photoFileName" [(ngModel)]="signUpData.photoFileName" #photoFile="ngModel"
                     required>
@@ -152,13 +152,12 @@
                     placeholder="Enter Plot No/Street No/Landmark(If any)"></textarea>
                 <div class="error-message"
                     *ngIf="addressLandmark.invalid && (addressLandmark.dirty || addressLandmark.touched)">
-                    <span *ngIf="addressLandmark.errors?.['required']">Address structural street/plot tracking line
-                        location information is required.</span>
+                    <span *ngIf="addressLandmark.errors?.['required']">Address is required.</span>
                 </div>
             </div>
 
             <div class="form-group-custom">
-                <label class="form-label-custom">Select Address Document (ਪਤਾ ਦਸਤਾਵੇਜ਼ ਚੁਣੋ) <span
+                <label class="form-label-custom">Address Document (ਪਤਾ ਦਸਤਾਵੇਜ਼ ਚੁਣੋ) <span
                         class="required-star">*</span></label>
                 <select name="addressDocType" [(ngModel)]="signUpData.addressDocType" #addressDocType="ngModel" required
                     class="form-input-custom">
@@ -167,8 +166,7 @@
                 </select>
                 <div class="error-message"
                     *ngIf="addressDocType.invalid && (addressDocType.dirty || addressDocType.touched)">
-                    <span *ngIf="addressDocType.errors?.['required']">Address document selection type target reference
-                        field value option is required.</span>
+                    <span *ngIf="addressDocType.errors?.['required']">Address document is required.</span>
                 </div>
             </div>
 
@@ -179,8 +177,7 @@
                     placeholder="Enter Address Proof Number">
                 <div class="error-message"
                     *ngIf="addressDocNumber.invalid && (addressDocNumber.dirty || addressDocNumber.touched)">
-                    <span *ngIf="addressDocNumber.errors?.['required']">Address document registration target structural
-                        identification reference code or number sequence parameter is required.</span>
+                    <span *ngIf="addressDocNumber.errors?.['required']">Document number is required.</span>
                 </div>
             </div>
 
@@ -197,16 +194,15 @@
                         <input #addressDocInput type="file" (change)="emitFileSelected($event, 'addressDoc')"
                             class="d-none">
                     </div>
-                    <div class="progress-bar-inline" *ngIf="uploadingStates['addressDoc']">
+                    <!-- <div class="progress-bar-inline" *ngIf="uploadingStates['addressDoc']">
                         <div class="p-fill" [style.width.%]="uploadProgress['addressDoc']"></div>
-                    </div>
+                    </div> -->
                 </div>
                 <input type="hidden" name="addressDocFileName" [(ngModel)]="signUpData.addressDocFileName"
                     #addressFile="ngModel" required>
                 <div class="error-message"
                     *ngIf="addressFile.invalid && (addressDocNumber.touched || addressDocType.touched || addressFile.dirty)">
-                    <span *ngIf="addressFile.errors?.['required']">Please upload an address verification record document
-                        copy or file.</span>
+                    <span *ngIf="addressFile.errors?.['required']">Please upload an address verification document</span>
                 </div>
             </div>
         </div>

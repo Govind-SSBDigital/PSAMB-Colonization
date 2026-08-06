@@ -1,0 +1,147 @@
+$badge-active-bg:   #1e7e34;
+$badge-deactive-bg: #c0392b;
+$radius-card:        6px;
+
+.citizen-services-card {
+  background: var(--theme-white);
+  border: 1px solid var(--theme-slate-300);
+  border-radius: $radius-card;
+  overflow: hidden;
+  box-shadow: var(--theme-header-shadow);
+}
+
+// Header bar 
+.cs-header {
+  background: var(--theme-forest-dark);
+  background-image: var(--theme-forest-gradient);
+  border-bottom: 3px solid var(--theme-gold);
+  padding: 12px 18px;
+
+  .cs-header-title {
+    color: var(--theme-white);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.2px;
+  }
+}
+
+// Table
+.cs-table {
+  margin-bottom: 0;
+  font-size: 0.92rem;
+  color: var(--theme-slate-900);
+
+  thead th {
+    background: var(--theme-slate-100);
+    color: var(--theme-slate-900);
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--theme-slate-300);
+    white-space: nowrap;
+    padding: 12px 10px;
+  }
+
+  tbody td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--theme-slate-300);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background-color: var(--theme-primary-soft);
+  }
+
+  .col-service {
+    text-align: left;
+    min-width: 220px;
+  }
+
+  .col-charges {
+    min-width: 170px;
+  }
+
+  .col-fees {
+    min-width: 220px;
+    color: var(--theme-slate-500);
+  }
+
+  .cs-srno {
+    color: var(--theme-teal);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Status badges 
+.cs-badge {
+  display: inline-block;
+  min-width: 78px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 4px;
+  color: var(--theme-white);
+}
+
+.cs-badge-active {
+  background-color: $badge-active-bg;
+}
+
+.cs-badge-deactive {
+  background-color: $badge-deactive-bg;
+}
+
+// Apply Now button 
+.cs-apply-btn {
+  background-color: var(--theme-primary);
+  border: 1px solid var(--theme-primary);
+  color: var(--theme-white);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: var(--theme-forest-dark);
+    border-color: var(--theme-forest-dark);
+    color: var(--theme-white);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem var(--theme-primary-border);
+  }
+}
+
+// Responsive tweaks 
+@media (max-width: 767px) {
+  .cs-table {
+    font-size: 0.82rem;
+
+    thead th,
+    tbody td {
+      padding: 8px 6px;
+    }
+  }
+
+  .cs-apply-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .cs-badge {
+    min-width: 64px;
+    font-size: 0.7rem;
+  }
+}

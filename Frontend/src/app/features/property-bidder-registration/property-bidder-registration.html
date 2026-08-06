@@ -21,12 +21,10 @@
                     class="form-label small text-dark fw-semibold text-uppercase">Search/Property Code </label>
                   <div class="input-group">
                     <input id="propertycode" type="search" class="form-control bg-light custom-input-color"
-                      placeholder="Enter Allottee Code" formControlName="propertycode"
-                      [class.is-invalid]="isInvalid('propertycode')" />
-                    <button class="btn btn-success rounded-end-3" type="button" (click)="onSearch()">Search</button>
+                      placeholder="Search by Property Code" formControlName="propertycode"/>
+                    <button class="btn btn-success rounded-end-3" type="button">Search</button>
                   </div>
-                  @if (isInvalid('propertycode')) { <div class="invalid-feedback d-block">Allottee code is required.
-                  </div> }
+                  <!-- @if (isInvalid('propertycode')) { <div class="invalid-feedback">Property code is required.</div> } -->
                 </div>
                 <div class="col-sm-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">
@@ -128,7 +126,7 @@
                     }
                   </datalist>
                   @if (isInvalid('branch')) { <div class="invalid-feedback">Branch is required.</div> }
-                </div>  -->
+                </div> -->
 
                 <div class="col-sm-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
@@ -453,8 +451,7 @@
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <div class="financial-tile bg-light border rounded-4 p-3 h-100">
-                  <label for="reservePrice" class="form-label small text-dark fw-semibold text-uppercase">Reserve
-                    Price</label>
+                  <label for="reservePrice" class="form-label small text-dark fw-semibold text-uppercase">Reserve Price</label>
                   <div class="input-group">
                     <span class="input-group-text bg-white">Rs.</span>
                     <input id="reservePrice" type="number" step="0.01"
@@ -467,8 +464,9 @@
               </div>
               <div class="col-md-6">
                 <div class="financial-tile bg-light border rounded-4 p-3 h-100">
-                  <label for="h1BidderFinalPrice" class="form-label small text-dark fw-semibold text-uppercase">Highest
-                    Bidder / Allotment Amount <span class="text-danger">*</span></label>
+                  <label for="h1BidderFinalPrice"
+                    class="form-label small text-dark fw-semibold text-uppercase">Highest Bidder / Allotment Amount <span
+                      class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-white ">Rs.</span>
                     <input id="finalBidPrice" type="number" step="0.01"

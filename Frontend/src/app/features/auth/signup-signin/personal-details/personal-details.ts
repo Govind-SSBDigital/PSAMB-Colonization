@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-personal-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule,MatTooltipModule],
   templateUrl: './personal-details.html',
   styleUrl: './personal-details.scss',
 })
@@ -36,13 +37,17 @@ export class PersonalDetails implements OnInit {
     emailVerified: false,
     emailOtpInput: '',
     emailTimer: 0,
+    emailSending: false,
     mobileSent: false,
     mobileVerified: false,
     mobileOtpInput: '',
-    mobileTimer: 0
+    mobileTimer: 0,
+    mobileSending: false
   };
 
   sectionsExpanded = { profile: true };
+  private emailTimerInterval: any;
+  private mobileTimerInterval: any;
 
   constructor(private http: HttpClient) {}
 
@@ -59,128 +64,182 @@ export class PersonalDetails implements OnInit {
 
   // Email OTP
   sendEmailOtp() {
+    if (this.verification.emailVerified) {
+      return;
+    }
+
     if (!this.signUpData?.emailAddress) {
       this.triggerToast('Please enter Email ID first', 'error');
       return;
     }
 
+    if (this.verification.emailSending) {
+      return;
+    }
+
+    this.verification.emailSending = true;
+    this.verification.emailSent = true;
+    this.verification.emailOtpInput = '';
+
     this.http.post(`${environment.apiUrl}/EmailVerification/send-otp`, {
       email: this.signUpData.emailAddress
     }).subscribe({
       next: (res: any) => {
+        this.verification.emailSending = false;
         if (res.success) {
-          this.verification.emailSent = true;
-          this.verification.emailOtpInput = '';
           this.startEmailTimer();
           this.triggerToast('OTP sent to your email', 'success');
         } else {
+          this.verification.emailSent = false;
           this.triggerToast(res.message || 'Failed to send OTP', 'error');
         }
       },
       error: () => {
+        this.verification.emailSending = false;
+        this.verification.emailSent = false;
         this.triggerToast('Failed to send OTP. Try again.', 'error');
       }
     });
   }
 
   onEmailOtpInput() {
+    this.verification.emailOtpInput = this.verification.emailOtpInput.replace(/\D/g, '').slice(0, 6);
     if (this.verification.emailOtpInput.length === 6) {
       this.verifyEmailOtp();
     }
   }
 
   verifyEmailOtp() {
+    const otp = this.verification.emailOtpInput.trim();
+    if (otp.length !== 6) {
+      this.triggerToast('Please enter a valid 6 digit OTP', 'error');
+      return;
+    }
+
     this.http.post(`${environment.apiUrl}/EmailVerification/verify-otp`, {
       email: this.signUpData.emailAddress,
-      otp: this.verification.emailOtpInput
+      otp
     }).subscribe({
       next: (res: any) => {
         if (res.verified) {
           this.verification.emailVerified = true;
           this.verification.emailSent = false;
+          this.verification.emailOtpInput = '';
           this.triggerToast('Email verified successfully!', 'success');
         } else {
-          this.triggerToast('Invalid OTP. Please try again.', 'error');
           this.verification.emailOtpInput = '';
+          this.triggerToast(res.message || 'Invalid OTP. Please try again.', 'error');
         }
       },
       error: () => {
+        this.verification.emailOtpInput = '';
         this.triggerToast('Verification failed. Try again.', 'error');
       }
     });
   }
 
   startEmailTimer() {
-    this.verification.emailTimer = 30;
-    const interval = setInterval(() => {
+    if (this.emailTimerInterval) {
+      clearInterval(this.emailTimerInterval);
+    }
+
+    this.verification.emailTimer = 10;
+    this.emailTimerInterval = setInterval(() => {
       if (this.verification.emailTimer > 0) {
         this.verification.emailTimer--;
       } else {
-        clearInterval(interval);
+        clearInterval(this.emailTimerInterval);
       }
     }, 1000);
   }
 
   // Mobile OTP
   sendMobileOtp() {
+    if (this.verification.mobileVerified) {
+      return;
+    }
+
     if (!this.signUpData?.mobileNumber || this.signUpData.mobileNumber.length !== 10) {
       this.triggerToast('Please enter valid 10 digit mobile number first', 'error');
       return;
     }
 
+    if (this.verification.mobileSending) {
+      return;
+    }
+
+    this.verification.mobileSending = true;
+    this.verification.mobileSent = true;
+    this.verification.mobileOtpInput = '';
+
     this.http.post(`${environment.apiUrl}/MobileVerification/send-mobile-otp`, {
       mobileNumber: this.signUpData.mobileNumber
     }).subscribe({
       next: (res: any) => {
+        this.verification.mobileSending = false;
         if (res.success) {
-          this.verification.mobileSent = true;
-          this.verification.mobileOtpInput = '';
           this.startMobileTimer();
           this.triggerToast('OTP sent to your mobile', 'success');
         } else {
+          this.verification.mobileSent = false;
           this.triggerToast(res.message || 'Failed to send OTP', 'error');
         }
       },
       error: () => {
+        this.verification.mobileSending = false;
+        this.verification.mobileSent = false;
         this.triggerToast('Failed to send OTP. Try again.', 'error');
       }
     });
   }
 
   onMobileOtpInput() {
+    this.verification.mobileOtpInput = this.verification.mobileOtpInput.replace(/\D/g, '').slice(0, 6);
     if (this.verification.mobileOtpInput.length === 6) {
       this.verifyMobileOtp();
     }
   }
 
   verifyMobileOtp() {
+    const otp = this.verification.mobileOtpInput.trim();
+    if (otp.length !== 6) {
+      this.triggerToast('Please enter a valid 6 digit OTP', 'error');
+      return;
+    }
+
     this.http.post(`${environment.apiUrl}/MobileVerification/verify-mobile-otp`, {
       mobileNumber: this.signUpData.mobileNumber,
-      otp: this.verification.mobileOtpInput
+      otp
     }).subscribe({
       next: (res: any) => {
         if (res.success) {
           this.verification.mobileVerified = true;
           this.verification.mobileSent = false;
+          this.verification.mobileOtpInput = '';
           this.triggerToast('Mobile verified successfully!', 'success');
         } else {
-          this.triggerToast('Invalid OTP. Please try again.', 'error');
           this.verification.mobileOtpInput = '';
+          this.triggerToast(res.message || 'Invalid OTP. Please try again.', 'error');
         }
       },
       error: () => {
+        this.verification.mobileOtpInput = '';
         this.triggerToast('Verification failed. Try again.', 'error');
       }
     });
   }
 
   startMobileTimer() {
-    this.verification.mobileTimer = 30;
-    const interval = setInterval(() => {
+    if (this.mobileTimerInterval) {
+      clearInterval(this.mobileTimerInterval);
+    }
+
+    this.verification.mobileTimer = 10;
+    this.mobileTimerInterval = setInterval(() => {
       if (this.verification.mobileTimer > 0) {
         this.verification.mobileTimer--;
       } else {
-        clearInterval(interval);
+        clearInterval(this.mobileTimerInterval);
       }
     }, 1000);
   }

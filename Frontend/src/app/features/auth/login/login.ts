@@ -5,13 +5,25 @@ import { Router } from '@angular/router';
 type LoginMode = 'password' | 'otp';
 type OtpStep = 'mobile' | 'verify';
 
+// Regex patterns fot the login page
+// Username: 4-20 chars, letters/numbers/dot/underscore only
+const USERNAME_PATTERN = /^[a-zA-Z0-9._-]{4,20}$/;
+// Password: at least 6 chars, at least one letter and one number
+const PASSWORD_PATTERN = /^(?=.*[A-Za-z]).{6,}$/;
+// Mobile: valid Indian 10-digit mobile number starting 6-9
+const MOBILE_PATTERN = /^[6-9]\d{9}$/;
+// OTP digit: single numeric digit
+const OTP_DIGIT_PATTERN = /^\d$/;
+// Captcha: matches the character set used by generateCaptcha(), exactly 6 chars
+const CAPTCHA_PATTERN = /^[ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789]{6}$/;
+
 @Component({
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login implements OnDestroy{
+export class Login implements OnDestroy {
   loginForm: FormGroup;
   showPassword = false;
   isSubmitting = false;
@@ -19,9 +31,8 @@ export class Login implements OnDestroy{
 
   // Simple captcha state — swap this for your real captcha service call
   captchaCode = this.generateCaptcha();
-  // ---- Mode switch: which module is showing in the right-hand panel ----
+  // Mode switch: which module is showing in the right-hand panel
   loginMode: LoginMode = 'password';
-  // ---- OTP login ----
   otpStep: OtpStep = 'mobile';
   mobileForm: FormGroup;
   otpForm: FormGroup;
@@ -34,19 +45,19 @@ export class Login implements OnDestroy{
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-      captchaInput: ['', [Validators.required]],
+      username: ['', [Validators.required, Validators.pattern(USERNAME_PATTERN)]],
+      password: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
+      captchaInput: ['', [Validators.required, Validators.pattern(CAPTCHA_PATTERN)]],
     });
 
     this.mobileForm = this.fb.group({
-      mobileNumber: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
+      mobileNumber: ['', [Validators.required, Validators.pattern(MOBILE_PATTERN)]],
     });
 
     this.otpForm = this.fb.group({
       digits: this.fb.array(
         Array.from({ length: this.otpDigits }, () =>
-          this.fb.control('', [Validators.required, Validators.pattern(/^\d$/)])
+          this.fb.control('', [Validators.required, Validators.pattern(OTP_DIGIT_PATTERN)])
         )
       ),
     });

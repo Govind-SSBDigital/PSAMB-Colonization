@@ -58,6 +58,14 @@ import { Footer } from './footer/footer';
                 (m) => m.VerificationViewModule,
               ),
           },
+          {
+            path: "citizen-services",
+            loadComponent: () => import('../citizen-services/citizen-services').then(m => m.CitizenServices),
+          },
+          {
+            path: "deo-verification",
+            loadComponent: () => import('../deo-verification/deo-verification').then(m => m.DeoVerification),
+          }
         ],
       },
     ]),

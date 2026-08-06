@@ -51,6 +51,9 @@
         text-transform: uppercase;
         letter-spacing: .04em;
     }
+    & :hover{
+        cursor: pointer;
+    }
 }
 
 // ---------- Property cards ----------
