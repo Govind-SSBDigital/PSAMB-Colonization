@@ -49,3 +49,5 @@ Desktop.ini
 *.bak
 *.tmp
 *.temp
+/Backend/Properties/PublishProfiles/FolderProfile.pubxml
+/Frontend/dist.zip
