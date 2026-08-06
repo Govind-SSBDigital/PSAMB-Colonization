@@ -10,7 +10,7 @@ import { SharedModule } from './shared/shared.module';
 import { ToastrModule } from 'ngx-toastr';
 import { Navbar } from './features/navbar/navbar';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-
+import { Footer } from './features/footer/footer';
 @NgModule({
   declarations: [App],
   imports: [
@@ -19,6 +19,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     CoreModule,
     SharedModule,
     Navbar,
+    Footer,
     ToastrModule.forRoot()
   ],
   providers: [
