@@ -44,4 +44,22 @@ namespace Backend.Models.Entities
         public DateTime? MandiClosedDate { get; set; }
 
     }
+
+    public class BranchMandiAssociation
+    {
+        [Key]
+        public int BranchMandiAssociationId { get; set; }
+
+        public int BranchId { get; set; }
+
+        public int MandiId { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+
+        public int? CreatedBy { get; set; }
+
+        public DateTime? ModifiedDate { get; set; }
+
+        public int? ModifiedBy { get; set; }
+    }
 }

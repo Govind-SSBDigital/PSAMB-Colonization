@@ -1,4 +1,5 @@
-﻿using Backend.Models.Dtos;
+﻿using Backend.Helpers;
+using Backend.Models.Dtos;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -83,6 +84,39 @@ namespace Backend.Controllers
 
             if (!result.Success)
                 return NotFound(result);
+
+            return Ok(result);
+        }
+
+        [HttpGet("GetPendingForClerk")]
+        public async Task<IActionResult> GetPendingForClerk()
+        {
+            var response = await _service.GetPendingForClerk();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+        [HttpPost("VerifyByClerk")]
+        public async Task<IActionResult> VerifyByClerk([FromBody] PropertyBidderRegistrationDto dto)
+        {
+            if (dto == null || dto.Id == 0)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Invalid request"
+                });
+            }
+
+            var result = await _service.VerifyByClerk(dto);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
 
             return Ok(result);
         }

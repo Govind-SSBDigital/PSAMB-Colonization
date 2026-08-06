@@ -89,31 +89,31 @@ namespace Backend.Services.Implementations
             }
         }
 
-        //public async Task<ApiResponse<List<MandiDto>>> GetMandisByDistrictAsync(int branchID)
-        //{
-        //    try
-        //    {
-        //        var list = await (from b in _context.BranchMaster
-        //                          join ba in _context.BranchMandiAssociation on b.BranchId equals ba.BranchId
-        //                          join m in _context.MandiMaster on ba.MandiId equals m.MandiId
-        //                          where b.branchid == branchID && b.IsActive && !b.IsDeleted && ba.IsActive && !ba.IsDeleted && m.IsActive && !m.IsDeleted
-        //                          select new MandiDto
-        //                          {
-        //                              MandiId = m.MandiId,
-        //                              DistrictId = m.DistrictId,
-        //                              MandiName = m.MandiName,
-        //                              MandiCode = m.MandiCode
-        //                          }
-        //            ).Distinct().ToListAsync();
+        public async Task<ApiResponse<List<MandiDto>>> GetMandisByMarketCommiteeByDistrictAsync(int branchID)
+        {
+            try
+            {
+                var list = await (from b in _context.BranchMaster
+                                  join ba in _context.BranchMandiAssociation on b.BranchId equals ba.BranchId
+                                  join m in _context.MandiMaster on ba.MandiId equals m.MandiId
+                                  where b.BranchId == branchID && b.IsActive && !b.IsDeleted && m.IsActive && !m.IsDeleted
+                                  select new MandiDto
+                                  {
+                                      MandiId = m.MandiId,
+                                      DistrictId = m.DistrictId,
+                                      MandiName = m.MandiName,
+                                      MandiCode = m.MandiCode
+                                  }
+                    ).Distinct().ToListAsync();
 
 
-        //        return ApiResponse<List<MandiDto>>.Ok(list, "Mandi fetched successfully");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return ApiResponse<List<MandiDto>>.Fail(ex.Message);
-        //    }
-        //}
+                return ApiResponse<List<MandiDto>>.Ok(list, "Mandi fetched successfully");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<MandiDto>>.Fail(ex.Message);
+            }
+        }
 
         public async Task<ApiResponse<List<PlotTypeDto>>> GetPlotTypesAsync(int? propertyTypeId)
         {
