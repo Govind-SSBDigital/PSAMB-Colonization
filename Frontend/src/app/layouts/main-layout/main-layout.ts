@@ -31,12 +31,12 @@ export class MainLayout {
 
   protected get showPublicNavbar(): boolean {
     const url = this.currentUrl() ?? '/';
-    return !url.startsWith('/dashboard');
+    return !this.isDashboardRoute(url);
   }
 
   protected get showPublicFooter(): boolean {
     const url = this.currentUrl() ?? '/';
-    const isDashboardRoute = url.startsWith('/dashboard');
+    const isDashboardRoute = this.isDashboardRoute(url);
     const isHiddenAuthRoute = Array.from(this.hiddenLayoutPaths).some((path) =>
       url === path || url.startsWith(`${path}/`),
     );
@@ -50,5 +50,10 @@ export class MainLayout {
     }
 
     return this.router.url;
+  }
+
+  private isDashboardRoute(url: string): boolean {
+    const path = url.split(/[?#]/, 1)[0].toLowerCase();
+    return /(?:^|\/)dashboard(?:\/|$)/.test(path);
   }
 }
