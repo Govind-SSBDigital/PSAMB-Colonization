@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -201,6 +201,8 @@ export class SignupSignin implements OnInit {
   loginOtpInput = '';
   loginOtpTimer = 0;
   pendingLoginUser: any = null;
+  // 0 = User, 1 = Officer
+  loginRole: boolean | number = false; // Default to User
 
   loginOtpData = {
     mobileNumber: '',
@@ -216,6 +218,7 @@ export class SignupSignin implements OnInit {
   showToast = false;
   showRegistrationSuccessAlert = false;
   errorMessage = '';
+  private toastHideTimer: any = null;
 
   loggedInUser = {
     userId: '',
@@ -224,7 +227,12 @@ export class SignupSignin implements OnInit {
     mobile: ''
   };
 
-  constructor(private route: ActivatedRoute, private router: Router, private authService: AuthService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     // Seed test accounts in localStorage if not already present
@@ -273,15 +281,33 @@ export class SignupSignin implements OnInit {
       }
     });
   }
+  ngOnDestroy(): void {
+    if (this.toastHideTimer) {
+      clearTimeout(this.toastHideTimer);
+      this.toastHideTimer = null;
+    }
+  }
+  private hideToast(): void {
+    this.showToast = false;
+    this.toastMessage = '';
+    this.cdr.detectChanges();
+  }
 
   // Toast Helper
   triggerToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+    if (this.toastHideTimer) {
+      clearTimeout(this.toastHideTimer);
+    }
+
     this.toastMessage = message;
     this.toastType = type;
     this.showToast = true;
-    setTimeout(() => {
-      this.showToast = false;
-    }, 4000);
+    this.cdr.detectChanges();
+
+    this.toastHideTimer = setTimeout(() => {
+      this.hideToast();
+      this.toastHideTimer = null;
+    }, 5000);
   }
 
   getPunjabiLabel(typeId: string): string {
@@ -358,6 +384,10 @@ export class SignupSignin implements OnInit {
     if (method === 'password') {
       this.generateCaptcha();
     }
+  }
+  
+  setLoginRole(flag: boolean) {
+    this.loginRole = flag;
   }
   goBackFromLogin() {
     if (this.loginMethod === 'otp') {
@@ -884,7 +914,7 @@ export class SignupSignin implements OnInit {
 
   // Sign-In via user/pass + captcha + role-based OTP
   onSignInSubmit() {
-    debugger;
+    // debugger;
     this.errorMessage = '';
     const { userId, password } = this.loginData;
 
@@ -898,8 +928,8 @@ export class SignupSignin implements OnInit {
       this.generateCaptcha();
       return;
     }
-
-    this.authService.login(userId, password).subscribe({
+    this.loginRole= this.loginRole === true ? 1 : 0 ;
+    this.authService.login(userId, password, this.loginRole).subscribe({
       next: (response) => {
         // Token save karo
         localStorage.setItem('token', response.data.token);
@@ -967,8 +997,8 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter Mobile Number and OTP', 'error');
       return;
     }
-
-    this.authService.loginWithOtp(mobileNumber, otpInput).subscribe({
+    this.loginRole= this.loginRole === true ;
+    this.authService.loginWithOtp(mobileNumber, otpInput, this.loginRole).subscribe({
       next: (response) => {
         localStorage.setItem('token', response.data.token);
         const sessionData = {
@@ -989,7 +1019,7 @@ export class SignupSignin implements OnInit {
   }
 
   sendLoginOtp() {
-    debugger
+    // debugger
     if (!this.loginOtpData.mobileNumber || !/^\d{10}$/.test(this.loginOtpData.mobileNumber)) {
       this.triggerToast('Please enter a valid registered 10-digit Mobile Number', 'error');
       return;
@@ -998,7 +1028,7 @@ export class SignupSignin implements OnInit {
     this.authService.sendLoginOtp(this.loginOtpData.mobileNumber).subscribe({
       next: (res) => {
         if (res.success) {
-          debugger
+          // debugger
           this.loginOtpData.otpSent = true;
           this.triggerToast('OTP sent to your mobile', 'success');
         }

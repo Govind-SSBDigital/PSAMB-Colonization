@@ -173,8 +173,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    color: var(--theme-primary);
 }
 
 .stat-icon-wrapper mat-icon {
