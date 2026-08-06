@@ -139,11 +139,21 @@ namespace Backend.Services.Implementations
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
-            var identityUser = await _userManager.FindByEmailAsync(request.Email)
-                ?? throw new UnauthorizedAccessException("Invalid email or" +
-                "" +
-                "" +
-                " password");
+            IdentityApplicationUser? identityUser = null;
+            if (!request.IsHRMSOrUser)
+            {
+                identityUser = await _userManager.FindByEmailAsync(request.Email);
+            }
+            else
+            {
+                var applicantUser = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == request.Email);
+                if (applicantUser != null && !string.IsNullOrEmpty(applicantUser.IdentityUserId))
+                {
+                    identityUser = await _userManager.FindByIdAsync(applicantUser.IdentityUserId);
+                }
+            }
+            if (identityUser == null)
+                throw new UnauthorizedAccessException("Invalid email or password");
 
             if (!identityUser.IsActive)
                 throw new UnauthorizedAccessException("Your account has been deactivated");
@@ -152,7 +162,6 @@ namespace Backend.Services.Implementations
             if (!valid)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
-            // Try by IdentityUserId first, then fallback to email to handle seeding/mismatch cases.
             ApplicationUser? applicant = await _context.ApplicationUsers
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(x => x.IdentityUserId == identityUser.Id);
