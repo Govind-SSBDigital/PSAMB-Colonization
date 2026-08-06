@@ -21,7 +21,8 @@
         target="_blank" rel="noopener noreferrer" (click)="closeMobileMenu()">e-Auctions</a>
       <a class="nav-link-item" routerLinkActive="active" routerLink="/auth/login" (click)="closeMobileMenu()">Citizen Services</a>
       <a class="nav-link-item" (click)="clickMessages($event)">Messages</a>
-      <a class="nav-link-item" href="#introduction" (click)="closeMobileMenu()">About Us</a>
+      <!-- <a class="nav-link-item" href="#introduction" (click)="closeMobileMenu()">About Us</a> -->
+      <a class="nav-link-item" routerLink="/about-us" (click)="closeMobileMenu()">About Us</a>
       <!-- Downloads Dropdown Menu -->
       <div class="nav-item dropdown" [class.open]="isDownloadsOpen">
         <button type="button" class="nav-link-item dropdown-toggle"

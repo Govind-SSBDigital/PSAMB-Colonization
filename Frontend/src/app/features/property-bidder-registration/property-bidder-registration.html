@@ -27,52 +27,92 @@
                   <!-- @if (isInvalid('propertycode')) { <div class="invalid-feedback">Property code is required.</div> } -->
                 </div>
                 <div class="col-sm-6">
-                  <label for="district" class="form-label small text-dark fw-semibold text-uppercase">District <span
-                      class="text-danger">*</span></label>
-                  <input id="district" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    list="districtList" placeholder="Select or Type District" formControlName="district"
-                    [class.is-invalid]="isInvalid('district')" />
-                  <datalist id="districtList">
-                    @for (item of districts; track item) {
-                    <option [value]="item"></option>
-                    }
-                  </datalist>
-                  @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
-                </div>
-                <div class="col-sm-6">
-                  <label for="marketCommittee" class="form-label small text-dark fw-semibold text-uppercase">Market
-                    Committee <span class="text-danger">*</span></label>
-                  <input id="marketCommittee" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    list="marketCommittees" placeholder="Select or Type Market Committee"
-                    formControlName="marketCommittee" [class.is-invalid]="isInvalid('marketCommittee')" />
-                  <datalist id="marketCommittees">
-                    @for (committee of mandis; track committee) {
-                    <option [value]="committee"></option>
-                    }
-                  </datalist>
-                  @if (isInvalid('marketCommittee')) { <div class="invalid-feedback">Market Committee is required.</div>
+                  <label class="form-label small text-dark fw-semibold text-uppercase">
+                    District <span class="text-danger">*</span>
+                  </label>
+                  <div class="custom-select-wrapper position-relative">
+                    <div
+                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                      [class.is-invalid]="isInvalid('districtId')" [class.open]="isDistrictDropdownOpen"
+                      (click)="toggleDistrictDropdown($event)">
+                      <span class="text-truncate" [class.text-muted]="!getSelectedDistrictName()">
+                        {{ getSelectedDistrictName() || 'Select District' }}
+                      </span>
+                    </div>
+
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isDistrictDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" (click)="selectDistrict('')">
+                        Select District
+                      </div>
+                      @for (item of districts; track item.districtId) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isDistrictSelected(item)"
+                        (click)="selectDistrict(item.districtId)">
+                        {{ item.districtName }}
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  @if (isInvalid('districtId')) {
+                  <div class="invalid-feedback d-block">District is required.</div>
                   }
                 </div>
                 <div class="col-sm-6">
-                  <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">Mandi <span
-                      class="text-danger">*</span></label>
-                  <input id="mandi" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    list="mandisList" placeholder="Select or Type Mandi" formControlName="mandi"
-                    [class.is-invalid]="isInvalid('mandi')" />
-                  <datalist id="mandisList">
-                    @for (mandiItem of mandis; track mandiItem) {
-                    <option [value]="mandiItem"></option>
+                  <label for="branchId" class="form-label small text-dark fw-semibold text-uppercase">Market Committee
+                    <span class="text-danger">*</span></label>
+                  <select id="branchId" class="form-select bg-light rounded-3 custom-input-color"
+                    formControlName="branchId" [class.is-invalid]="isInvalid('branchId')">
+                    <option value="" disabled>{{ isLoadingCommittees ? 'Loading Committees...' : 'Select Market
+                      Committee' }}</option>
+                    @for (committee of marketCommittees; track $index) {
+                    <option [value]="committee.marketCommitteeId || committee.id || committee.branchId">
+                      {{ committee.marketCommitteeName || committee.name || committee.branchName }}
+                    </option>
                     }
-                  </datalist>
-                  @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
+                  </select>
+                  @if (isInvalid('branchId')) { <div class="invalid-feedback">Market Committee is required.</div> }
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">
+                    Mandi <span class="text-danger">*</span>
+                  </label>
+                  <div class="custom-select-wrapper position-relative">
+                    <div
+                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                      [class.is-invalid]="isInvalid('mandiId')" [class.open]="isMandiDropdownOpen"
+                      (click)="toggleMandiDropdown($event)">
+                      <span class="text-truncate" [class.text-muted]="!getSelectedMandiName()">
+                        {{ isLoadingMandis ? 'Loading Mandis...' : (getSelectedMandiName() || 'Select Mandi') }}
+                      </span>
+                    </div>
+
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isMandiDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" *ngIf="isLoadingMandis">
+                        Loading Mandis...
+                      </div>
+                      <ng-container *ngIf="!isLoadingMandis">
+                        <div class="custom-dropdown-item text-muted" (click)="selectMandi('')">
+                          Select Mandi
+                        </div>
+                        @for (mandiItem of mandis; track mandiItem.mandiId) {
+                        <div class="custom-dropdown-item text-truncate" [class.active]="isMandiSelected(mandiItem)"
+                          (click)="selectMandi(mandiItem.mandiId || mandiItem.id)">
+                          {{ mandiItem.mandiName || mandiItem.name }}
+                        </div>
+                        }
+                      </ng-container>
+                    </div>
+                  </div>
+                  @if (isInvalid('mandiId')) {
+                  <div class="invalid-feedback d-block">Mandi is required.</div>
+                  }
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plotno" class="form-label small text-dark fw-semibold text-uppercase">Plot No. <span
+                  <label for="plotNo" class="form-label small text-dark fw-semibold text-uppercase">Plot No. <span
                       class="text-danger">*</span></label>
-                  <input id="plotno" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    placeholder="e.g., B-12" formControlName="plotno" [class.is-invalid]="isInvalid('plotno')" />
-                  @if (isInvalid('plotno')) { <div class="invalid-feedback">Plot no. is required.</div> }
+                  <input id="plotNo" type="text" class="form-control bg-light rounded-3 custom-input-color"
+                    placeholder="e.g., B-12" formControlName="plotNo" [class.is-invalid]="isInvalid('plotNo')" />
+                  @if (isInvalid('plotNo')) { <div class="invalid-feedback">Plot no. is required.</div> }
                 </div>
                 <!-- <div class="col-sm-6">
                   <label for="branch" class="form-label small text-dark fw-semibold text-uppercase">Branch <span
@@ -89,16 +129,31 @@
                 </div> -->
 
                 <div class="col-sm-6">
-                  <label for="plottype" class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
                       class="text-danger">*</span></label>
-                  <select id="plottype" class="form-select bg-light rounded-3 custom-input-color"
-                    formControlName="plottype" [class.is-invalid]="isInvalid('plottype')">
-                    <option value="" disabled>Select plot type</option>
-                    @for (type of plotTypes; track type) {
-                    <option [value]="type">{{ type }}</option>
-                    }
-                  </select>
-                  @if (isInvalid('plottype')) { <div class="invalid-feedback">Plot type is required.</div> }
+                  <div class="custom-select-wrapper position-relative">
+                    <div
+                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                      [class.is-invalid]="isInvalid('plotTypeId')" [class.open]="isPlotTypeDropdownOpen"
+                      (click)="togglePlotTypeDropdown($event)">
+                      <span class="text-truncate" [class.text-muted]="!getSelectedPlotTypeName()">
+                        {{ getSelectedPlotTypeName() || 'Select Plot Type' }}
+                      </span>
+                    </div>
+
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotTypeDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" (click)="selectPlotType('')">
+                        Select Plot Type
+                      </div>
+                      @for (type of plotTypes; track (type.plotTypeId || type.id || type)) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isPlotTypeSelected(type)"
+                        (click)="selectPlotType(type.plotTypeId || type.id || type)">
+                        {{ type.plotType || type.plotType || type }}
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  @if (isInvalid('plotTypeId')) { <div class="invalid-feedback d-block">Plot type is required.</div> }
                 </div>
                 <div class="col-sm-6">
                   <label for="plotsize" class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span
@@ -109,38 +164,62 @@
                   @if (isInvalid('plotsize')) { <div class="invalid-feedback">Plot size is required.</div> }
                 </div>
 
+
                 <div class="col-sm-6">
-                  <label for="plotstatus" class="form-label small text-dark fw-semibold text-uppercase">Plot Status
+                  <label for="plotStatus" class="form-label small text-dark fw-semibold text-uppercase">Plot Status
                     <span class="text-danger">*</span></label>
-                  <select id="plotstatus" class="form-select bg-light rounded-3 custom-input-color"
-                    formControlName="plotstatus" [class.is-invalid]="isInvalid('plotstatus')">
+                  <select id="plotStatus" class="form-select bg-light rounded-3 custom-input-color"
+                    formControlName="plotStatus" [class.is-invalid]="isInvalid('plotStatus')">
                     <option value="" disabled>Select status</option>
                     @for (status of plotStatuses; track status) {
                     <option [value]="status">{{ status }}</option>
                     }
                   </select>
-                  @if (isInvalid('plotstatus')) { <div class="invalid-feedback">Plot status is required.</div> }
+                  @if (isInvalid('plotStatus')) { <div class="invalid-feedback">Plot status is required.</div> }
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="plan" class="form-label small text-dark fw-semibold text-uppercase">Plan <span
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Plan <span
                       class="text-danger">*</span></label>
-                  <input id="plan" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    placeholder="Standard Allocation" formControlName="plan" [class.is-invalid]="isInvalid('plan')" />
-                  @if (isInvalid('plan')) { <div class="invalid-feedback">Plan is required.</div> }
+                  <div class="custom-select-wrapper position-relative">
+                    <div
+                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                      [class.is-invalid]="isInvalid('planId')" [class.open]="isPlanDropdownOpen"
+                      (click)="togglePlanDropdown($event)">
+                      <span class="text-truncate" [class.text-muted]="!getSelectedPlanName()">
+                        {{ getSelectedPlanName() || 'Select Plan' }}
+                      </span>
+                    </div>
+
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlanDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" (click)="selectPlan('')">
+                        Select Plan
+                      </div>
+                      @for (plan of plans; track (plan.planId || plan.id || plan)) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isPlanSelected(plan)"
+                        (click)="selectPlan(plan.planId || plan.id || plan)">
+                        {{ plan.planName || plan.name || plan }}
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  @if (isInvalid('planId')) { <div class="invalid-feedback d-block">Plan is required.</div> }
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="propertycategory" class="form-label small text-dark fw-semibold text-uppercase">Property
+                  <label for="propertyCategoryId" class="form-label small text-dark fw-semibold text-uppercase">Property
                     Category <span class="text-danger">*</span></label>
-                  <select id="propertycategory" class="form-select bg-light rounded-3 custom-input-color"
-                    formControlName="propertycategory" [class.is-invalid]="isInvalid('propertycategory')">
+                  <select id="propertyCategoryId" class="form-select bg-light rounded-3 custom-input-color"
+                    formControlName="propertyCategoryId" [class.is-invalid]="isInvalid('propertyCategoryId')">
                     <option value="" disabled>Select category</option>
-                    @for (category of propertyCategories; track category) {
-                    <option [value]="category">{{ category }}</option>
+                    @for (category of propertyCategories; track (category.propertyCategoryId || category.id ||
+                    category)) {
+                    <option [value]="category.propertyCategoryId || category.id || category">
+                      {{ category.categoryName || category.name || category.categoryName || category }}
+                    </option>
                     }
                   </select>
-                  @if (isInvalid('propertycategory')) { <div class="invalid-feedback">Property category is required.
+                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback">Property category is required.
                   </div> }
                 </div>
 
@@ -183,15 +262,15 @@
             </div>
             <div
               class="form-check form-check-reverse form-switch d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 px-3 py-2 m-0">
-              <label class="form-check-label fw-semibold text-white" for="Isauctioned">Auctioned</label>
+              <label class="form-check-label fw-semibold text-white" for="isAuctioned">Auctioned</label>
               <input class="form-check-input float-none m-0 custom-switch-color" type="checkbox" role="switch"
-                id="Isauctioned" formControlName="Isauctioned" />
+                id="isAuctioned" formControlName="isAuctioned" />
             </div>
           </div>
         </div>
       </div>
 
-      @if (registerationForm.get('Isauctioned')?.value) {
+      @if (registerationForm.get('isAuctioned')?.value) {
       <div class="d-grid gap-2 mb-3">
         <div class="registration-card card border-0 rounded-4 shadow-sm">
           <div class="card-body p-4">
@@ -201,63 +280,70 @@
 
             <div class="row g-2">
               <div class="col-md-4">
-                <label for="auctionDateTime" class="form-label small text-dark fw-semibold text-uppercase">Auction Date
+                <label for="auctionDate" class="form-label small text-dark fw-semibold text-uppercase">Auction Date
                   &amp; Time <span class="text-danger">*</span></label>
-                <input id="auctionDateTime" type="datetime-local"
-                  class="form-control bg-light rounded-3 custom-input-color uppercase" formControlName="auctionDateTime"
-                  [class.is-invalid]="isInvalid('auctionDateTime')" />
-                @if (isInvalid('auctionDateTime')) { <div class="invalid-feedback">Auction date &amp; time is required.
+                <input id="auctionDate" type="datetime-local"
+                  class="form-control bg-light rounded-3 custom-input-color uppercase" formControlName="auctionDate"
+                  [class.is-invalid]="isInvalid('auctionDate')" />
+                @if (isInvalid('auctionDate')) { <div class="invalid-feedback">Auction date &amp; time is required.
                 </div> }
               </div>
+
               <div class="col-md-4">
-                <label for="bidderType" class="form-label small text-dark fw-semibold text-uppercase">Bidder
+                <label for="bidderTypeId" class="form-label small text-dark fw-semibold text-uppercase">Bidder
                   Type</label>
-                <select id="bidderType" class="form-select bg-light rounded-3 custom-input-color"
-                  formControlName="bidderType" [class.is-invalid]="isInvalid('bidderType')">
-                  @for (type of bidderTypes; track type) { <option [value]="type">{{ type }}</option> }
+                <select id="bidderTypeId" class="form-select bg-light rounded-3 custom-input-color"
+                  formControlName="bidderTypeId" [class.is-invalid]="isInvalid('bidderTypeId')">
+                  <option value="" disabled>Select Bidder Type</option>
+                  @for (type of bidderTypes; track (type.bidderTypeId || type.id || type)) {
+                  <option [value]="type.bidderTypeId || type.id || type">
+                    {{ type.bidderTypeName || type.name || type }}
+                  </option>
+                  }
                 </select>
-                @if (isInvalid('bidderType')) { <div class="invalid-feedback">Bidder type is required.</div> }
+                @if (isInvalid('bidderTypeId')) { <div class="invalid-feedback">Bidder type is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="emailId" class="form-label small text-dark fw-semibold text-uppercase">Email ID <span
+                <label for="email" class="form-label small text-dark fw-semibold text-uppercase">Email ID <span
                     class="text-danger">*</span></label>
-                <input id="emailId" type="email" class="form-control bg-light rounded-3 custom-input-color"
-                  placeholder="bidder@domain.com" formControlName="emailId" [class.is-invalid]="isInvalid('emailId')" />
-                @if (isInvalid('emailId')) { <div class="invalid-feedback">{{ getErrorMessage('emailId', 'Email ID') }}
+                <input id="email" type="email" class="form-control bg-light rounded-3 custom-input-color"
+                  placeholder="bidder@domain.com" formControlName="email" [class.is-invalid]="isInvalid('email')" />
+                @if (isInvalid('email')) { <div class="invalid-feedback">{{ getErrorMessage('email', 'Email ID') }}
                 </div> }
               </div>
               <div class="col-md-8">
                 <label for="h1BidderName" class="form-label small text-dark fw-semibold text-uppercase">Allotee Name
                   <span class="text-danger">*</span></label>
                 <div class="input-group">
-                  <input id="h1BidderName" type="text" class="form-control bg-light rounded-start-3 custom-input-color"
-                    placeholder="Enter full name of highest bidder" formControlName="h1BidderName"
-                    [class.is-invalid]="isInvalid('h1BidderName')" />
-                  @if (registerationForm.get('transfered')?.value) {
+                  <input id="bidderName" type="text" class="form-control bg-light rounded-start-3 custom-input-color"
+                    placeholder="Enter full name of highest bidder" formControlName="bidderName"
+                    [class.is-invalid]="isInvalid('bidderName')" />
+                  @if (registerationForm.get('isTransferred')?.value) {
                   <button type="button" class="btn btn-outline-secondary rounded-end-3" (click)="addBidderName()">+
                     Add</button>
                   }
                 </div>
-                @if (isInvalid('h1BidderName')) { <div class="invalid-feedback d-block">Allotee name is required.
+                @if (isInvalid('bidderName')) { <div class="invalid-feedback d-block">Allotee name is required.
                 </div> }
-                @if (registerationForm.get('transfered')?.value && bidderNamesFormArray.length) {
+                @if (registerationForm.get('isTransferred')?.value && bidderNamesFormArray.length) {
                 }
               </div>
 
               <div class="col-md-4">
-                <label class="form-label small text-secondary fw-bold text-uppercase" for="isTransfered">Is
+                <label class="form-label small text-secondary fw-bold text-uppercase" for="isTransferred">Is
                   Transfered<span class="text-danger"> *</span></label>
                 <div class="bg-light rounded-3 p-2 border-1 border-secondary">
                   <div class="form-check form-switch d-flex align-items-center justify-content-between m-0 p-0">
-                    <label class="form-check-label fw-semibold text-dark" for="isTransfered">Is Transfered</label>
+                    <label class="form-check-label fw-semibold text-dark" for="isTransferred">Is Transfered</label>
                     <input class="form-check-input m-0 custom-switch-color" type="checkbox" role="switch"
-                      id="isTransfered" formControlName="transfered" [class.is-invalid]="isInvalid('transfered')" />
+                      id="isTransferred" formControlName="isTransferred"
+                      [class.is-invalid]="isInvalid('isTransferred')" />
                   </div>
-                  @if (isInvalid('transfered')) { <div class="invalid-feedback d-block">Transfer status is required.
+                  @if (isInvalid('isTransferred')) { <div class="invalid-feedback d-block">Transfer status is required.
                   </div> }
                 </div>
               </div>
-              @if (registerationForm.get('transfered')?.value) {
+              @if (registerationForm.get('isTransferred')?.value) {
               <div class="col-md-12 mt-3 border border-secondary rounded-3 bg-light p-2">
                 <h6 class="small text-dark fw-semibold">Allotee Names</h6>
                 @if (bidderNamesFormArray.length) {
@@ -285,12 +371,13 @@
                 @if (isInvalid('relation')) { <div class="invalid-feedback">Relation is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="guardianName" class="form-label small text-dark fw-semibold text-uppercase">Father /
+                <label for="fatherOrHusbandName" class="form-label small text-dark fw-semibold text-uppercase">Father /
                   Husband Name <span class="text-danger">*</span></label>
-                <input id="guardianName" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                  placeholder="Guardian Name" formControlName="guardianName"
-                  [class.is-invalid]="isInvalid('guardianName')" />
-                @if (isInvalid('guardianName')) { <div class="invalid-feedback">Father / husband name is required.</div>
+                <input id="fatherOrHusbandName" type="text" class="form-control bg-light rounded-3 custom-input-color"
+                  placeholder="Guardian Name" formControlName="fatherOrHusbandName"
+                  [class.is-invalid]="isInvalid('fatherOrHusbandName')" />
+                @if (isInvalid('fatherOrHusbandName')) { <div class="invalid-feedback">Father / husband name is
+                  required.</div>
                 }
               </div>
               <div class="col-md-4">
@@ -301,11 +388,11 @@
                 @if (isInvalid('panNo')) { <div class="invalid-feedback">PAN no. is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="aadharNo" class="form-label small text-dark fw-semibold text-uppercase">Aadhar No.</label>
-                <input id="aadharNo" type="text" maxlength="12"
+                <label for="aadhaarNo" class="form-label small text-dark fw-semibold text-uppercase">Aadhar No.</label>
+                <input id="aadhaarNo" type="text" maxlength="12"
                   class="form-control bg-light rounded-3 font-monospace custom-input-color" placeholder="XXXXXXXX1234"
-                  formControlName="aadharNo" (input)="maskInput($event)" [class.is-invalid]="isInvalid('aadharNo')" />
-                @if (isInvalid('aadharNo')) { <div class="invalid-feedback">Enter a valid 4 digit Aadhaar number.</div>
+                  formControlName="aadhaarNo" (input)="maskInput($event)" [class.is-invalid]="isInvalid('aadhaarNo')" />
+                @if (isInvalid('aadhaarNo')) { <div class="invalid-feedback">Enter a valid 4 digit Aadhaar number.</div>
                 }
               </div>
               <div class="col-md-4">
@@ -315,23 +402,39 @@
                 @if (isInvalid('mobileNo')) { <div class="invalid-feedback">Mobile no. is required.</div> }
               </div>
               <div class="col-md-4">
-                <label for="auctionPropertyType" class="form-label small text-dark fw-semibold text-uppercase">Property
-                  Type</label>
-                <select id="auctionPropertyType" class="form-select bg-light rounded-3 custom-input-color"
-                  formControlName="auctionPropertyType" [class.is-invalid]="isInvalid('auctionPropertyType')">
-                  @for (type of auctionPropertyTypes; track type) { <option [value]="type">{{ type }}</option> }
-                </select>
-                @if (isInvalid('auctionPropertyType')) { <div class="invalid-feedback">Property type is required.</div>
-                }
+                <label class="form-label small text-dark fw-semibold text-uppercase">Property Type</label>
+                <div class="custom-select-wrapper position-relative">
+                  <div
+                    class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                    [class.is-invalid]="isInvalid('auctionPropertyType')" [class.open]="isPropTypeDropdownOpen"
+                    (click)="togglePropTypeDropdown($event)">
+                    <span class="text-truncate" [class.text-muted]="!getSelectedPropTypeName()">
+                      {{ getSelectedPropTypeName() || 'Select Property Type' }}
+                    </span>
+                  </div>
+
+                  <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropTypeDropdownOpen">
+                    <div class="custom-dropdown-item text-muted" (click)="selectPropType('')">
+                      Select Property Type
+                    </div>
+                    @for (type of auctionPropertyTypes; track (type.propertyTypeId || type.id || type)) {
+                    <div class="custom-dropdown-item text-truncate" [class.active]="isPropTypeSelected(type)"
+                      (click)="selectPropType(type.propertyTypeId || type.id || type)">
+                      {{ type.propertyTypeName || type.propertyTypeName || type.propertyTypeName || type }}
+                    </div>
+                    }
+                  </div>
+                </div>
+                @if (isInvalid('auctionPropertyType')) { <div class="invalid-feedback d-block">Property type is
+                  required.</div> }
               </div>
               <div class="col-12">
-                <label for="communicationAddress"
-                  class="form-label small text-dark fw-semibold text-uppercase">Permanent Communication Address <span
-                    class="text-danger">*</span></label>
-                <textarea id="communicationAddress" rows="3" class="form-control bg-light rounded-3 custom-input-color"
-                  placeholder="Enter complete billing/residential address..." formControlName="communicationAddress"
-                  [class.is-invalid]="isInvalid('communicationAddress')"></textarea>
-                @if (isInvalid('communicationAddress')) { <div class="invalid-feedback">Permanent communication address
+                <label for="address" class="form-label small text-dark fw-semibold text-uppercase">Permanent
+                  Communication Address <span class="text-danger">*</span></label>
+                <textarea id="address" rows="3" class="form-control bg-light rounded-3 custom-input-color"
+                  placeholder="Enter complete billing/residential address..." formControlName="address"
+                  [class.is-invalid]="isInvalid('address')"></textarea>
+                @if (isInvalid('address')) { <div class="invalid-feedback">Permanent communication address
                   is required.</div> }
               </div>
             </div>
@@ -366,11 +469,11 @@
                       class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-white ">Rs.</span>
-                    <input id="h1BidderFinalPrice" type="number" step="0.01"
+                    <input id="finalBidPrice" type="number" step="0.01"
                       class="form-control bg-white fw-semibold custom-input-color" placeholder="0.00"
-                      formControlName="h1BidderFinalPrice" [class.is-invalid]="isInvalid('h1BidderFinalPrice')" />
+                      formControlName="finalBidPrice" [class.is-invalid]="isInvalid('finalBidPrice')" />
                   </div>
-                  @if (isInvalid('h1BidderFinalPrice')) { <div class="invalid-feedback d-block">Allotment amount is
+                  @if (isInvalid('finalBidPrice')) { <div class="invalid-feedback d-block">Allotment amount is
                     required.</div> }
                 </div>
               </div>
@@ -384,19 +487,18 @@
                   <div class="row g-2">
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
                         ID</label><input type="text" class="form-control bg-white font-monospace custom-input-color"
-                        formControlName="formFeeTransactionId"
-                        [class.is-invalid]="isInvalid('formFeeTransactionId')" />@if (isInvalid('formFeeTransactionId'))
+                        formControlName="formTransactionId" [class.is-invalid]="isInvalid('formTransactionId')" />@if
+                      (isInvalid('formTransactionId'))
                       { <div class="invalid-feedback">Transaction ID is required.</div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input
                         type="date" class="form-control bg-white custom-input-color uppercase"
-                        formControlName="formFeeTransactionDate"
-                        [class.is-invalid]="isInvalid('formFeeTransactionDate')" />@if
-                      (isInvalid('formFeeTransactionDate')) { <div class="invalid-feedback">Enter the date as
+                        formControlName="formTxnDate" [class.is-invalid]="isInvalid('formTxnDate')" />@if
+                      (isInvalid('formTxnDate')) { <div class="invalid-feedback">Enter the date as
                         DD/MM/YYYY.</div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Paid Amount
                         (Rs.)</label><input type="number" step="0.01" class="form-control bg-white custom-input-color"
-                        formControlName="formFeePaidAmount" [class.is-invalid]="isInvalid('formFeePaidAmount')" />@if
-                      (isInvalid('formFeePaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> }
+                        formControlName="formPaidAmount" [class.is-invalid]="isInvalid('formPaidAmount')" />@if
+                      (isInvalid('formPaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> }
                     </div>
                   </div>
                 </div>
@@ -408,19 +510,19 @@
                   <div class="row g-2 ">
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Txn ID</label><input
                         type="text" class="form-control bg-white font-monospace custom-input-color"
-                        formControlName="emdTransactionId" [class.is-invalid]="isInvalid('emdTransactionId')" />@if
-                      (isInvalid('emdTransactionId')) { <div class="invalid-feedback">EMD transaction ID is required.
+                        formControlName="emdTxnId" [class.is-invalid]="isInvalid('emdTxnId')" />@if
+                      (isInvalid('emdTxnId')) { <div class="invalid-feedback">EMD transaction ID is required.
                       </div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Date</label><input
-                        type="date" class="form-control bg-white custom-input-color uppercase"
-                        formControlName="emdTransactionDate" [class.is-invalid]="isInvalid('emdTransactionDate')" />@if
-                      (isInvalid('emdTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
+                        type="date" class="form-control bg-white custom-input-color uppercase" formControlName="emdDate"
+                        [class.is-invalid]="isInvalid('emdDate')" />@if
+                      (isInvalid('emdDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
                       </div> }
                     </div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Paid
                         (Rs.)</label><input type="number" step="0.01" class="form-control bg-white custom-input-color"
-                        formControlName="emdPaidAmount" [class.is-invalid]="isInvalid('emdPaidAmount')" />@if
-                      (isInvalid('emdPaidAmount')) { <div class="invalid-feedback">EMD paid amount is required.</div> }
+                        formControlName="emdAmount" [class.is-invalid]="isInvalid('emdAmount')" />@if
+                      (isInvalid('emdAmount')) { <div class="invalid-feedback">EMD paid amount is required.</div> }
                     </div>
                   </div>
                 </div>
@@ -432,20 +534,19 @@
               <div class="row g-2">
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">25% Milestone Txn
                     ID</label><input type="text" class="form-control bg-white font-monospace custom-input-color"
-                    formControlName="allotmentTransactionId"
-                    [class.is-invalid]="isInvalid('allotmentTransactionId')" />@if (isInvalid('allotmentTransactionId'))
+                    formControlName="allotmentTxnId" [class.is-invalid]="isInvalid('allotmentTxnId')" />@if
+                  (isInvalid('allotmentTxnId'))
                   { <div class="invalid-feedback">25% milestone transaction ID is required.</div> }</div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
                     Date</label><input type="date" class="form-control bg-white custom-input-color uppercase"
-                    formControlName="allotmentTransactionDate"
-                    [class.is-invalid]="isInvalid('allotmentTransactionDate')" />@if
-                  (isInvalid('allotmentTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
+                    formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />@if
+                  (isInvalid('allotmentDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
                   </div> }
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid
                     (Rs.)</label><input type="number" step="0.01" class="form-control bg-white custom-input-color"
-                    formControlName="allotmentPaidAmount" [class.is-invalid]="isInvalid('allotmentPaidAmount')" />@if
-                  (isInvalid('allotmentPaidAmount')) { <div class="invalid-feedback">Amount paid is required.</div> }
+                    formControlName="allotmentAmount" [class.is-invalid]="isInvalid('allotmentAmount')" />@if
+                  (isInvalid('allotmentAmount')) { <div class="invalid-feedback">Amount paid is required.</div> }
                 </div>
               </div>
             </div>
@@ -462,7 +563,7 @@
                 <div class="col-sm-6 col-lg-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">Total Due (Inc. Interest)</label>
                   <input type="number" class="form-control bg-light custom-input-color fw-bold text-danger"
-                    formControlName="totalDueAmount" readonly />
+                    formControlName="totalDueWithInterest" readonly />
                 </div>
               </div>
               <div class="col-12 mt-4">

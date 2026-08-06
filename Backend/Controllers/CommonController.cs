@@ -62,16 +62,16 @@ namespace Backend.Controllers
             return Ok(response);
         }
 
-        //[HttpGet("getMandis")]
-        //public async Task<IActionResult> GetMandis()
-        //{
-        //    var response = await _common.GetMandisByDistrictAsync();
-        //    if (!response.Success)
-        //    {
-        //        return BadRequest(response);
-        //    }
-        //    return Ok(response);
-        //}
+        [HttpGet("GetMandisByMarketCommiteeByDistrictAsync")]
+        public async Task<IActionResult> GetMandisByMarketCommiteeByDistrictAsync(int branchID)
+        {
+            var response = await _common.GetMandisByMarketCommiteeByDistrictAsync(branchID);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
 
         [HttpGet("getPlotTypes")]
         public async Task<IActionResult> GetPlotTypes(int? propertyTypeId)

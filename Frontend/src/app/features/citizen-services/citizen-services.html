@@ -1,1 +1,51 @@
-<p>citizen-services works!</p>
+<div class="citizen-services-card">
+
+  <!-- Header bar -->
+  <div class="cs-header">
+    <h5 class="cs-header-title mb-0">{{ title }}</h5>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="table cs-table mb-0">
+      <thead>
+        <tr>
+          <th class="col-sr">Sr.No.</th>
+          <th class="col-service">Services</th>
+          <th class="col-charges">PSAMB Online Charges (in Rs +GST)</th>
+          <th class="col-fees">PSAMB Fees</th>
+          <th class="col-cd">CD Fees</th>
+          <th class="col-status">Status</th>
+          <th class="col-action"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let service of services">
+          <td class="col-sr">
+            <a href="javascript:void(0)" class="cs-srno">{{ service.srNo }}.</a>
+          </td>
+          <td class="col-service">{{ service.serviceName }}</td>
+          <td class="col-charges">
+            <div *ngFor="let line of service.onlineCharges">{{ line }}</div>
+          </td>
+          <td class="col-fees">{{ service.psambFees }}</td>
+          <td class="col-cd">{{ service.cdFees }}</td>
+          <td class="col-status">
+            <span class="badge cs-badge">
+              {{ service.status }}
+            </span>
+          </td>
+          <td class="col-action">
+            <button *ngIf="service.status === 'Active'"
+                    type="button"
+                    class="btn cs-apply-btn"
+                    (click)="onApply(service)">
+              Apply Now
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

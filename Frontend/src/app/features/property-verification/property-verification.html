@@ -72,6 +72,10 @@
 
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <h6 class="fw-bold mb-0 text-success">{{ property.propertyNo }}</h6>
+                                <span class="badge rounded-pill"
+                                      [ngClass]="property.label === 'DEO' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-info-subtle text-info-emphasis'">
+                                    {{ property.label }}
+                                </span>
                             </div>
                             <!-- <button mat-icon-button
                                     [matMenuTriggerFor]="menu"
@@ -107,16 +111,16 @@
                         <div class="d-flex gap-2 flex-wrap border-top pt-2">
                             <button type="button"
                                     class="btn btn-sm btn-ghost-slate fw-bold rounded-lg px-3"
-                                    [routerLink]="['/verification-view']"  matTooltip="View Details" matTooltipPosition="above">
+                                    (click)="viewDetails(property)"  matTooltip="View Details" matTooltipPosition="above">
                                 <mat-icon class="btn-icon">visibility</mat-icon>
                                 View Details
                             </button>
-                            <button type="button"
+                            <!-- <button type="button"
                                     class="btn btn-sm btn-accent-solid text-dark fw-bold rounded-lg px-3"
                                     (click)="editProperty(property)"  matTooltip="Edit Record" matTooltipPosition="above">
                                 <mat-icon class="btn-icon text-dark">edit</mat-icon>
                                 Edit Record
-                            </button>
+                            </button> -->
                         </div>
 
                     </div>

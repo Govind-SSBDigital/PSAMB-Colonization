@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Navbar } from '../navbar/navbar';
-import { Footer } from '../footer/footer';
 
 interface Announcement {
   id: number;
@@ -33,7 +31,7 @@ interface PhotoItem {
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, Footer],
+  imports: [CommonModule, MatIconModule, MatButtonModule],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
