@@ -151,6 +151,19 @@ export class PropertyVerification implements OnInit {
  // Add these three getters to your existing component class
 // (e.g. VerificationQueueComponent). They power the stat pills
 // in the new hero header — no other logic changes required.
+OpenTotalRegistration(){
+// console.log("T");
+}
+OpenPendingRegistration(){
+// console.log("P");
+}
+OpenVerifiedRegistration(){
+// console.log("V");
+}
+OpenRejectedRegistration(){
+// console.log("R");
+}
+
 
 get pendingCount(): number {
     return this.filteredPropertyList.filter(p => p.status === 'Pending').length;

@@ -57,6 +57,10 @@ const routes: Routes = [
     loadComponent:() => import('./features/auth/signup/signup').then(m =>m.Signup),
   },
   {
+    path: "citizen-services",
+    loadComponent: () => import('./features/citizen-services/citizen-services').then(m => m.CitizenServices),
+  },
+  {
     path: '**',
     redirectTo: ''
   }

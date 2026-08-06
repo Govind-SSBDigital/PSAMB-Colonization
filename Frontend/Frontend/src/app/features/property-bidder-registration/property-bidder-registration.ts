@@ -63,6 +63,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     { control: 'IsNDCGenerated', label: 'NDC Generated' },
     { control: 'IsNDCIssued', label: 'NDC Issued' },
     { control: 'IsAssetVerified', label: 'Asset Verified' },
+    { control: 'IsCourtCase', label: 'Court Case'}
   ];
 
   private auctionRequiredControls = [

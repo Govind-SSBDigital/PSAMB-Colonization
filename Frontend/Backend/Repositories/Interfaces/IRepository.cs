@@ -16,5 +16,7 @@ namespace Backend.Repositories.Interfaces
         void Remove(T entity);
         Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null);
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
+        void RemoveRange(IEnumerable<T> entities);
+        Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate);
     }
 }
