@@ -44,8 +44,8 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: "verification-view",
-    redirectTo: 'dashboard/verification-view',
+    path: "user-verification-view",
+    redirectTo: 'dashboard/user-verification-view',
     pathMatch: 'full'
   },
   {
@@ -62,12 +62,16 @@ const routes: Routes = [
   },
   {
     path: "citizen-services",
-    redirectTo: 'dashboard/citizen-services',
-    pathMatch: 'full'
+    loadComponent: () => import('./features/citizen-services/citizen-services').then(m => m.CitizenServices),
   },
   {
     path: "deo-verification",
     redirectTo: 'dashboard/deo-verification',
+    pathMatch: 'full'
+  },
+  {
+    path: "deo-registration-status",
+    redirectTo: 'dashboard/deo-registration-status',
     pathMatch: 'full'
   },
   {

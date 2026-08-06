@@ -1,0 +1,86 @@
+<section class="deo-status-page">
+  <div class="deo-status-shell card border-0 shadow-sm overflow-hidden">
+    <div class="deo-status-header card-header border-0 px-3 py-3">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div>
+          <h5 class="deo-status-title mb-1">Digitized Property Registration Status</h5>
+          <p class="deo-status-subtitle mb-0">Track and manage form submissions processed by Data Entry Operators.</p>
+        </div>
+
+        <div class="deo-status-summary d-flex align-items-center gap-2 flex-wrap">
+          <span class="summary-chip summary-chip-total rounded-3">{{ filteredList.length }} Records</span>
+          <span class="summary-chip summary-chip-approved rounded-3">Approved</span>
+          <span class="summary-chip summary-chip-pending rounded-3">Pending</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 table-deo-status">
+          <thead class="table-head-portal">
+            <tr>
+              <th scope="col" class="text-center" style="width: 150px;">Allottee Code</th>
+              <th scope="col">Allottee Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">Remarks</th>
+              <th scope="col" class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredList">
+              <td>
+                <span class="fw-bold text-dark">{{ item.allotteeCode }}</span>
+              </td>
+
+              <td class="fw-semibold text-secondary">{{ item.allotteeName }}</td>
+
+              <td>
+                <span class="badge badge-status" [ngClass]="{
+                  'status-approved': item.approvalStatus === 'Approved',
+                  'status-rejected': item.approvalStatus === 'Rejected',
+                  'status-pending': item.approvalStatus === 'Pending'
+                }">
+                  {{ item.approvalStatus }}
+                </span>
+              </td>
+
+              <td class="text-wrap text-muted small deo-remarks">
+                {{ item.remarks || '—' }}
+              </td>
+
+              <td class="text-center">
+                <div class="action-stack">
+                  <button type="button" class="btn btn-action-icon btn-action-add" (click)="onExpand(item)" title="Expand Details">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+
+                  <button type="button" class="btn btn-action-icon" (click)="onView(item)" title="View Form Details">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredList.length === 0">
+              <td colspan="6" class="text-center py-4 text-muted">
+                No matching records found.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer deo-footer border-0 py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span class="small text-muted">Showing {{ filteredList.length }} entries</span>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+          <li class="page-item active"><a class="page-link border-secondary bg-secondary" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</section>
