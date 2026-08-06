@@ -36,6 +36,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     // ── TRANSACTIONAL / FEATURE DBSETS ────────────────────
     public DbSet<PropertyBidderRegistration> PropertyBidderRegistration { get; set; }
     public DbSet<InstallmentDetails> InstallmentDetails { get; set; }
+    public DbSet<BranchMandiAssociation>BranchMandiAssociation { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

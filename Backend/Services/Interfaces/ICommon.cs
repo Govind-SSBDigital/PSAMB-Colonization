@@ -9,7 +9,7 @@ namespace Backend.Services.Interfaces
         Task<List<DistrictDto>> GetAllDistrictsAsync();
         Task<ApiResponse<List<StateDto>>> GetAllStates();
         Task<ApiResponse<List<MarketCommitteeDto>>> GetMarketCommitteesAsync(int? districtId);
-        //Task<ApiResponse<List<MandiDto>>> GetMandisByDistrictAsync();
+        Task<ApiResponse<List<MandiDto>>> GetMandisByMarketCommiteeByDistrictAsync(int branchID);
         Task<ApiResponse<List<PlotTypeDto>>> GetPlotTypesAsync(int? propertyTypeId);
         Task<ApiResponse<List<PlotSizeDto>>> GetPlotSizesAsync();
         Task<ApiResponse<List<PlanDto>>> GetPlansAsync();

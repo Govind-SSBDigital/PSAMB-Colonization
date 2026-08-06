@@ -32,7 +32,7 @@ namespace Backend.Models.Entities
         public virtual PlanMaster? Plan { get; set; }
         public int ApplicantId { get; set; }
         public decimal? PlotSize { get; set; }
-        public string? PlotNo { get; set; }
+        public int? PlotNo { get; set; }
 
         // Compliance & Flags
         public bool AssetResumed { get; set; }

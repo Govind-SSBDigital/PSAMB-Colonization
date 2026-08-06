@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Backend.Models.Dtos
@@ -68,26 +68,26 @@ namespace Backend.Models.Dtos
         public int? PlotTypeId { get; set; }
         public int? PlanId { get; set; }
         public decimal? PlotSize { get; set; }
-        public string? PlotNo { get; set; }
-        public int ApplicantId { get; set; }
+        public int? PlotNo { get; set; }
+        public int? ApplicantId { get; set; }
 
         // Compliance & Flags
-        public bool AssetResumed { get; set; }
-        public bool AssetSurrendered { get; set; }
-        public bool IsAssetLocked { get; set; }
-        public bool IsDefaulter { get; set; }
-        public bool AnyComplaint { get; set; }
-        public bool NdcGenerated { get; set; }
-        public bool NdcIssued { get; set; }
-        public bool AssetVerified { get; set; }
+        public bool? AssetResumed { get; set; }
+        public bool? AssetSurrendered { get; set; }
+        public bool? IsAssetLocked { get; set; }
+        public bool? IsDefaulter { get; set; }
+        public bool? AnyComplaint { get; set; }
+        public bool? NdcGenerated { get; set; }
+        public bool? NdcIssued { get; set; }
+        public bool? AssetVerified { get; set; }
 
         // Auction Info
-        public bool IsAuctioned { get; set; }
+        public bool? IsAuctioned { get; set; }
         public DateTime? AuctionDate { get; set; }
         public int? BidderTypeId { get; set; }
         public string? BidderName { get; set; }
         public string? Email { get; set; }
-        public bool IsTransferred { get; set; }
+        public bool? IsTransferred { get; set; }
 
         // Personal Details
         public string? Relation { get; set; }
@@ -127,9 +127,9 @@ namespace Backend.Models.Dtos
 
         public List<InstallmentDetailsDto>? Installments { get; set; }
         public string PlotStatus { get; set; } = string.Empty;
-        public int PropertyCategoryId { get; set; }
-
-
+        public int? PropertyCategoryId { get; set; }
+        public long? CreatedBy { get; set; }
+        public long? ModifiedBy { get; set; }
     }
 
     public class PropertyCategoryDto
@@ -144,17 +144,17 @@ namespace Backend.Models.Dtos
         public string? ReceiptNo { get; set; }
         public DateTime? ReceiptDate { get; set; }
         public string? DraftNo { get; set; }
-        public decimal DraftAmount { get; set; }
+        public decimal? DraftAmount { get; set; }
         public DateTime? DraftDate { get; set; }
         public string? DraftBank { get; set; }
-        public decimal PrincipalAmount { get; set; }
-        public decimal InterestAmount { get; set; }
-        public decimal OtherAmount { get; set; }
-        public decimal PenaltyAmount { get; set; }
+        public decimal? PrincipalAmount { get; set; }
+        public decimal? InterestAmount { get; set; }
+        public decimal? OtherAmount { get; set; }
+        public decimal? PenaltyAmount { get; set; }
         public string? PenaltyType { get; set; }
         public string? Remarks { get; set; }
         public int ApplicantId { get; set; }
         public int? PropertyId { get; set; }
-        public bool IsVerified { get; set; }
+        public bool? IsVerified { get; set; }
     }
 }
