@@ -36,7 +36,7 @@
                     <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
                 </button>
 
-                <div class="auth-card-header-screenshot mt-3">
+                <div class="auth-card-header-screenshot mt-0 text-center">
                     <h2>Login</h2>
                 </div>
 
@@ -63,7 +63,17 @@
 
                 <!-- LOGIN FORM WITH CAPTCHA (MATCHING SCREENSHOT) -->
                 <form *ngIf="loginMethod === 'password'" (ngSubmit)="onSignInSubmit()"
-                    class="signin-form-screenshot animated fade-in">
+                    class="signin-form-screenshot animated fade-in mt-3">
+                    <div class="login-actions-row-parallel">
+                        <button type="button" class="login-role-btn flex-grow-1"
+                            (click)="setLoginRole(true)" [class.active]="loginRole === true">
+                            OFFICER LOGIN
+                        </button>
+                        <button type="button" class="login-role-btn" (click)="setLoginRole(false)"
+                            [class.active]="loginRole === false">
+                            USER LOGIN
+                        </button>
+                    </div>
 
                     <!-- User ID Input -->
                     <div class="form-input-box-screenshot">
@@ -72,7 +82,7 @@
                         </div>
                         <div class="vertical-divider-screenshot">|</div>
                         <input type="text" name="userId" [(ngModel)]="loginData.userId" required
-                            placeholder="Enter UserName">
+                            placeholder="Enter UserName/HRMS ID">
                     </div>
 
                     <!-- Password Input -->
@@ -306,7 +316,8 @@
                 <!-- Continuous Sections Wrapper (Shown only if entity type selected and proceeded) -->
                 <div class="signup-step-container"
                     *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
-                    <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData">
+                    <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
+                        (toastMessage)="triggerToast($event.message, $event.type)">
                     </app-personal-details>
 
                     <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"

@@ -137,7 +137,7 @@ export class PropertyVerification implements OnInit {
   }
 
   viewDetails(property: PropertyVerificationModel): void {
-    const targetRoute = property.label === 'DEO' ? '/deo-verification' : '/verification-view';
+    const targetRoute = property.label === 'DEO' ? '/deo-verification' : '/user-verification-view';
     this.router.navigateByUrl(targetRoute);
   }
 
