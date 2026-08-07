@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 interface RegistrationRecord {
   allotteeCode: string;
   allotteeName: string;
-  approvalStatus: 'Approved' | 'Rejected' | 'Pending';
+  approvalStatus: 'Approved' | 'Rejected' | 'Pending' | 'Objection';
   remarks: string;
 }
 
@@ -37,10 +38,18 @@ export class DeoRegistrationStatus implements OnInit {
       allotteeName: 'RAJESH SHARMA',
       approvalStatus: 'Pending',
       remarks: 'Awaiting senior officer approval.'
+    },
+    {
+      allotteeCode: 'ALL-2026-004',
+      allotteeName: 'SURESH KUMAR',
+      approvalStatus: 'Objection',
+      remarks: 'Documents returned for clarification.'
     }
   ];
 
   filteredList: RegistrationRecord[] = [];
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.filteredList = [...this.registrationList];
@@ -66,15 +75,33 @@ export class DeoRegistrationStatus implements OnInit {
     });
   }
 
-  onExpand(item: RegistrationRecord): void {
-    console.log('Expand details for:', item);
+  getApprovedCount(): number {
+    return this.filteredList.filter(item => item.approvalStatus === 'Approved').length;
   }
 
-  onPrint(item: RegistrationRecord): void {
-    console.log('Printing record:', item);
+  getPendingCount(): number {
+    return this.filteredList.filter(item => item.approvalStatus === 'Pending').length;
+  }
+
+  getObjectionCount(): number {
+    return this.filteredList.filter(item => item.approvalStatus === 'Objection').length;
   }
 
   onView(item: RegistrationRecord): void {
-    console.log('Viewing details for:', item);
+    this.router.navigate(['/dashboard/property-bidder-registration'], {
+      queryParams: {
+        mode: 'view',
+        propertyCode: item.allotteeCode
+      }
+    });
+  }
+
+  onEdit(item: RegistrationRecord): void {
+    this.router.navigate(['/dashboard/property-bidder-registration'], {
+      queryParams: {
+        mode: 'edit',
+        propertyCode: item.allotteeCode
+      }
+    });
   }
 }
