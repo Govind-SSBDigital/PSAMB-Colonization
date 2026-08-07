@@ -7,16 +7,25 @@ using Backend.Services.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -124,7 +133,7 @@ try
     {
         options.AddPolicy("CorsPolicy", policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "https://dircolon.emandikaran-pb.in/")
+            policy.WithOrigins("http://localhost:4200", "https://dircolon.emandikaran-pb.in")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();

@@ -1,5 +1,6 @@
 ﻿using Backend.Models.DTOs;
 using Backend.Models.Entities;
+using System.Threading.Tasks;
 
 namespace Backend.Services.Interfaces
 {

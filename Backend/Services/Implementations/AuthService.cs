@@ -4,10 +4,16 @@ using Backend.Models.Entities;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Backend.Services.Implementations
 {
@@ -140,13 +146,24 @@ namespace Backend.Services.Implementations
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
             IdentityApplicationUser? identityUser = null;
+            string? resolvedEmail = null;
             if (!request.IsHRMSOrUser)
             {
-                identityUser = await _userManager.FindByEmailAsync(request.Email);
+                resolvedEmail = request.Email;
+                identityUser = await _userManager.FindByEmailAsync(resolvedEmail);
             }
             else
             {
-                var applicantUser = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == request.Email);
+                var hrmsRecord = await _context.HRMSDatas.FirstOrDefaultAsync(x => x.HRMSCODE == request.Email);
+
+                if (hrmsRecord == null)
+                    throw new UnauthorizedAccessException("Invalid email or password");
+
+                resolvedEmail = hrmsRecord.Email;
+
+                var applicantUser = await _context.ApplicationUsers
+                    .FirstOrDefaultAsync(x => x.Email == resolvedEmail);
+
                 if (applicantUser != null && !string.IsNullOrEmpty(applicantUser.IdentityUserId))
                 {
                     identityUser = await _userManager.FindByIdAsync(applicantUser.IdentityUserId);
