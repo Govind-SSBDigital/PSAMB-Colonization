@@ -1,4 +1,4 @@
-using Backend.Data;
+﻿using Backend.Data;
 using Backend.Helpers;
 using Backend.Models.Dtos;
 using Backend.Models.Entities;
@@ -71,6 +71,7 @@ namespace Backend.Services.Implementations
                     NdcIssued = dto.NdcIssued ?? false,
                     AssetVerified = dto.AssetVerified ?? false,
                     IsAuctioned = dto.IsAuctioned ?? false,
+                    IsCourtCase = dto.IsCourtCase ?? false,
                     AuctionDate = dto.AuctionDate,
                     BidderTypeId = dto.BidderTypeId,
                     BidderName = dto.BidderName,
@@ -96,14 +97,13 @@ namespace Backend.Services.Implementations
                     AllotmentAmount = dto.AllotmentAmount,
                     DueAmount = dto.DueAmount,
                     TotalDueWithInterest = dto.TotalDueWithInterest,
-                    Remarks = dto.Remarks,
                     ApplicationStatusId = 1,
                     PlotStatus = dto.PlotStatus,
                     PropertyCategoryId = dto.PropertyCategoryId ?? 0,
                     IsActive = true,
                     IsDeleted = false,
                     CreatedDate = DateTime.UtcNow,
-                    CreatedBy = dto.ApplicantId ?? 0
+                    CreatedBy = dto.CreatedBy ?? dto.ApplicantId ?? 0
                 };
 
                 _context.PropertyBidderRegistration.Add(entity);
@@ -171,6 +171,7 @@ namespace Backend.Services.Implementations
                         IsDefaulter = x.IsDefaulter,
                         AnyComplaint = x.AnyComplaint,
                         NdcGenerated = x.NdcGenerated,
+                        IsCourtCase = x.IsCourtCase,
                         NdcIssued = x.NdcIssued,
                         AssetVerified = x.AssetVerified,
                         IsAuctioned = x.IsAuctioned,
@@ -199,10 +200,14 @@ namespace Backend.Services.Implementations
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
-                        Remarks = x.Remarks,
                         ApplicationStatusId = x.ApplicationStatusId,
                         PlotStatus = x.PlotStatus,
                         PropertyCategoryId = x.PropertyCategoryId,
+                        DistrictName = x.District != null ? x.District.DistrictName : "",
+                        BranchName = x.Branch != null ? x.Branch.BranchName : "",
+                        MandiName = x.Mandi != null ? x.Mandi.MandiName : "",
+                        Remarks=x.Remarks
+
                     })
                     .FirstOrDefaultAsync();
 
@@ -272,6 +277,7 @@ namespace Backend.Services.Implementations
                         NdcGenerated = x.NdcGenerated,
                         NdcIssued = x.NdcIssued,
                         AssetVerified = x.AssetVerified,
+                        IsCourtCase = x.IsCourtCase,
                         IsAuctioned = x.IsAuctioned,
                         AuctionDate = x.AuctionDate,
                         BidderTypeId = x.BidderTypeId,
@@ -298,7 +304,6 @@ namespace Backend.Services.Implementations
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
-                        Remarks = x.Remarks,
                         ApplicationStatusId = x.ApplicationStatusId,
                         PlotStatus = x.PlotStatus,
                         PropertyCategoryId = x.PropertyCategoryId,
@@ -365,6 +370,7 @@ namespace Backend.Services.Implementations
                         AssetResumed = x.AssetResumed,
                         AssetSurrendered = x.AssetSurrendered,
                         IsAssetLocked = x.IsAssetLocked,
+                        IsCourtCase = x.IsCourtCase,
                         IsDefaulter = x.IsDefaulter,
                         AnyComplaint = x.AnyComplaint,
                         NdcGenerated = x.NdcGenerated,
@@ -396,7 +402,6 @@ namespace Backend.Services.Implementations
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
-                        Remarks = x.Remarks,
                         ApplicationStatusId = x.ApplicationStatusId,
                         PlotStatus = x.PlotStatus,
                         PropertyCategoryId = x.PropertyCategoryId,
@@ -472,7 +477,7 @@ namespace Backend.Services.Implementations
                 entity.AssetVerified = dto.AssetVerified ?? false;
                 entity.IsAuctioned = dto.IsAuctioned ?? false;
                 entity.AuctionDate = dto.AuctionDate;
-
+                entity.IsCourtCase = dto.IsCourtCase ?? false;
                 entity.BidderTypeId = dto.BidderTypeId;
                 entity.BidderName = dto.BidderName;
                 entity.Email = dto.Email;
@@ -504,7 +509,6 @@ namespace Backend.Services.Implementations
                 entity.DueAmount = dto.DueAmount;
                 entity.TotalDueWithInterest = dto.TotalDueWithInterest;
 
-                entity.Remarks = dto.Remarks;
                 entity.ApplicationStatusId = 1;
                 entity.PlotStatus = dto.PlotStatus;
                 entity.PropertyCategoryId = dto.PropertyCategoryId ?? 0;
@@ -556,8 +560,24 @@ namespace Backend.Services.Implementations
         {
             try
             {
-                var list = await _context.PropertyBidderRegistration.AsNoTracking().Where(x => x.IsActive && !x.IsDeleted && x.ApplicationStatusId==1)
-                    .Select(x => new PropertyBidderRegistrationDto
+                var list = await (
+                    from x in _context.PropertyBidderRegistration
+
+                    join u in _context.ApplicationUsers
+                        on x.CreatedBy equals u.ApplicantId into userJoin
+                    from u in userJoin.DefaultIfEmpty()
+
+                    join ur in _context.UserRoles
+                        on u.IdentityUserId equals ur.UserId into userRoleJoin
+                    from ur in userRoleJoin.DefaultIfEmpty()
+
+                    join r in _context.Roles
+                        on ur.RoleId equals r.Id into roleJoin
+                    from r in roleJoin.DefaultIfEmpty()
+
+                    where x.IsActive && !x.IsDeleted 
+
+                    select new PropertyBidderRegistrationDto
                     {
                         Id = x.Id,
                         MandiId = x.MandiId,
@@ -576,6 +596,7 @@ namespace Backend.Services.Implementations
                         NdcGenerated = x.NdcGenerated,
                         NdcIssued = x.NdcIssued,
                         AssetVerified = x.AssetVerified,
+                        IsCourtCase = x.IsCourtCase,
                         IsAuctioned = x.IsAuctioned,
                         AuctionDate = x.AuctionDate,
                         BidderTypeId = x.BidderTypeId,
@@ -602,13 +623,24 @@ namespace Backend.Services.Implementations
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
-                        Remarks = x.Remarks,
                         ApplicationStatusId = x.ApplicationStatusId,
                         PlotStatus = x.PlotStatus,
                         PropertyCategoryId = x.PropertyCategoryId,
-                        PropertyCode=x.PropertyCode
-                    })
-                    .ToListAsync();
+                        PropertyCode = x.PropertyCode,
+                        CreatedBy = x.CreatedBy,
+                        Remarks=x.Remarks,
+                        DistrictName = x.District != null ? x.District.DistrictName : "",
+                        BranchName = x.Branch != null ? x.Branch.BranchName : "",
+                        MandiName = x.Mandi != null ? x.Mandi.MandiName : "",
+
+                        IdentityUserId = u != null ? u.IdentityUserId : null,
+                        UserId = ur != null ? ur.UserId : null,
+                        RoleName = r != null ? r.Name : null,
+                        FirstName= u.FirstName,
+
+                        Label = r != null && r.Name.ToUpper() == "DEO" ? "DEO" : "User"
+                    }
+                ).OrderByDescending(x=>x.Id).ToListAsync();
 
                 var propertyIds = list.Select(x => (int?)x.Id).ToList();
 
@@ -636,55 +668,51 @@ namespace Backend.Services.Implementations
                     })
                     .ToListAsync();
 
-                foreach (var reg in list)
-                {
-                    var installments = allInstallments.Where(i => i.PropertyId == reg.Id).ToList();
-                    reg.Installments = installments;
-                }
-
-                return ApiResponse<List<PropertyBidderRegistrationDto>>.Ok(list, "Registrations fetched successfully");
+                return ApiResponse<List<PropertyBidderRegistrationDto>>
+                    .Ok(list, "Registrations fetched successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<List<PropertyBidderRegistrationDto>>.Fail(ex.Message);
+                return ApiResponse<List<PropertyBidderRegistrationDto>>
+                    .Fail(ex.Message);
             }
         }
-
-        public async Task<ApiResponse<bool>> VerifyByClerk(PropertyBidderRegistrationDto dto)
+        public async Task<ApiResponse<bool>> VerifyByClerk(ClerkVerificationDto dto)
         {
             try
             {
-                var record = await _context.PropertyBidderRegistration.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDeleted == false);
+                var record = await _context.PropertyBidderRegistration
+                    .FirstOrDefaultAsync(x => x.Id == dto.Id && !x.IsDeleted);
 
                 if (record == null)
                     return ApiResponse<bool>.Fail("Record not found");
 
                 if (record.ApplicationStatusId == 2)
-                    return ApiResponse<bool>.Fail("Already verified");
+                    return ApiResponse<bool>.Fail("Already verified by clerk");
 
-                var dtoProperties = typeof(PropertyBidderRegistrationDto).GetProperties();
+                if (dto.Decision == "sendback" && string.IsNullOrWhiteSpace(dto.Remarks))
+                    return ApiResponse<bool>.Fail("Remarks required for send back");
 
-                foreach (var prop in dtoProperties)
+                if (dto.Decision == "approve")
                 {
-                    var value = prop.GetValue(dto);
-
-                    if (value == null || prop.Name == "Id")
-                        continue;
-
-                    var entityProp = record.GetType().GetProperty(prop.Name);
-
-                    if (entityProp != null && entityProp.CanWrite)
-                    {
-                        entityProp.SetValue(record, value);
-                    }
+                    record.ApplicationStatusId = 2;
+                }
+                else if (dto.Decision == "sendback")
+                {
+                    record.ApplicationStatusId = 7;
+                    record.Remarks = dto.Remarks;
+                }
+                else
+                {
+                    return ApiResponse<bool>.Fail("Invalid decision");
                 }
 
-                record.ApplicationStatusId = 2;
+                record.ModifiedBy = dto.ModifiedBy;
                 record.ModifiedDate = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
-                return ApiResponse<bool>.Ok(true, "Verified & Updated successfully");
+                return ApiResponse<bool>.Ok(true, "Action completed successfully");
             }
             catch (Exception ex)
             {

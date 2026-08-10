@@ -1,530 +1,471 @@
-<div class="clerk-page">
-
-  <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 rounded-3">
+<div class="card section-card mt-2 bg-brand text-white">
+  <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div>
       <h5 class="mb-1 text-white">Property Registration Verification</h5>
       <div class="d-flex align-items-center gap-2">
         <span class="text-white-50 small">Property Code:</span>
-        <span class="text-white fw-semibold">{{ form.get('propertycode')?.value || '—' }}</span>
-        <span [class]="statusBadgeClass()">{{ currentStatus() }}</span>
+        <span class="text-white fw-semibold">{{ form.get('propertyCode')?.value || '—' }}</span>
       </div>
-    </div>
-
-    <div class="d-flex gap-2">
-      <button type="button" class="btn btn-outline-light btn-sm" (click)="toggleHistoryPanel()">
-         <i class="fa-solid" [ngClass]="showHistoryPanel() ? 'fa-eye-slash' : 'fa-eye'"></i> Verification History
-      </button>
-
-      @if (!isEditMode()) {
-        <button type="button" class="btn btn-warning btn-sm fw-semibold" (click)="toggleEditMode()">
-          <i class="fa-solid fa-edit me-1"></i> Edit
-        </button>
-      } @else {
-        <button type="button" class="btn btn-light btn-sm" (click)="cancelEdit()">Cancel Edit</button>
-        <button type="button" class="btn btn-success btn-sm" [disabled]="isBusy" (click)="saveEdits()">
-          @if (isBusy) {
-            <span class="spinner-border spinner-border-sm me-1"></span>
-          }
-          Save Changes
-        </button>
-      }
     </div>
   </div>
+</div>
 
-  @if (showHistoryPanel()) {
-    <div class="card section-card m-3">
-      <div class="card-header section-header">Verification History</div>
-      <div class="card-body">
-        @if (localHistory().length === 0) {
-          <p class="text-muted mb-0">No history recorded yet.</p>
-        } @else {
-          <div class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
-              <thead>
-                <tr>
-                  <th>Action</th>
-                  <th>By</th>
-                  <th>Role</th>
-                  <th>Date &amp; Time</th>
-                  <th>Status</th>
-                  <th>Remarks</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (entry of localHistory(); track entry.id) {
-                  <tr>
-                    <td class="fw-semibold">{{ entry.action }}</td>
-                    <td>{{ entry.actionBy }}</td>
-                    <td>{{ entry.actionRole }}</td>
-                    <td>{{ entry.actionDate | date:'dd/MM/yyyy, h:mm a' }}</td>
-                    <td><span [class]="statusBadgeClass(entry.status)">{{ entry.status }}</span></td>
-                    <td>{{ entry.remarks }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-      </div>
-    </div>
-  }
+@if (isLoading()) {
+<div class="alert alert-info mt-3 mb-0">Loading registration details…</div>
+}
+@if (loadError()) {
+<div class="alert alert-warning mt-3 mb-0">{{ loadError() }}</div>
+}
 
-  <form [formGroup]="form" class="p-3">
+<form [formGroup]="form" class="mt-3">
 
-    <div class="row g-3">
-      <div class="col-12 col-xl-8">
-        <div class="card section-card h-100">
-          <div class="card-header section-header">Property Information</div>
-          <div class="card-body">
-            <div class="row g-3">
-
-              <div class="col-md-6">
-                  <label for="district" class="form-label">District <span
-                      class="text-danger">*</span></label>
-                  <input id="district" type="text" class="form-control custom-input-color"
-                    list="districtList" placeholder="Select District" formControlName="district"
-                    [class.is-invalid]="isInvalid('district')" />
-                  @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
-                </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Branch / Market Committee <span class="text-danger">*</span></label>
-                <input type="text" class="form-control custom-input-color" formControlName="branch"
-                       [class.is-invalid]="isInvalid('branch')" placeholder="Select or Type Market Committee">
-                @if (isInvalid('branch')) {
-                  <div class="invalid-feedback">Branch is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Mandi <span class="text-danger">*</span></label>
-                <input type="text" class="form-control custom-input-color" formControlName="mandi"
-                       [class.is-invalid]="isInvalid('mandi')" placeholder="Select or Type Mandi">
-                @if (isInvalid('mandi')) {
-                  <div class="invalid-feedback">Mandi is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Plot No. <span class="text-danger">*</span></label>
-                <input type="text" class="form-control custom-input-color" formControlName="plotno"
-                       [class.is-invalid]="isInvalid('plotno')" placeholder="e.g., B-12">
-                @if (isInvalid('plotno')) {
-                  <div class="invalid-feedback">Plot No. is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Plot Type <span class="text-danger">*</span></label>
-                <select class="form-select custom-input-color" formControlName="plottype" [class.is-invalid]="isInvalid('plottype')">
-                  <option value="">Select plot type</option>
-                  @for (p of plotTypeOptions; track p) {
-                    <option [value]="p">{{ p }}</option>
-                  }
-                </select>
-                @if (isInvalid('plottype')) {
-                  <div class="invalid-feedback">Plot Type is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Plot Size <span class="text-danger">*</span></label>
-                <input type="text" class="form-control custom-input-color" formControlName="plotsize"
-                       [class.is-invalid]="isInvalid('plotsize')" placeholder="e.g., 200 Sq. Yards">
-                @if (isInvalid('plotsize')) {
-                  <div class="invalid-feedback">Plot Size is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Plot Status <span class="text-danger">*</span></label>
-                <select class="form-select custom-input-color" formControlName="plotstatus" [class.is-invalid]="isInvalid('plotstatus')">
-                  <option value="">Select status</option>
-                  @for (s of plotStatusOptions; track s) {
-                    <option [value]="s">{{ s }}</option>
-                  }
-                </select>
-                @if (isInvalid('plotstatus')) {
-                  <div class="invalid-feedback">Plot Status is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Plan <span class="text-danger">*</span></label>
-                <input type="text" class="form-control custom-input-color" formControlName="plan" [class.is-invalid]="isInvalid('plan')">
-                @if (isInvalid('plan')) {
-                  <div class="invalid-feedback">Plan is required.</div>
-                }
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Property Category <span class="text-danger">*</span></label>
-                <select class="form-select custom-input-color" formControlName="propertycategory" [class.is-invalid]="isInvalid('propertycategory')">
-                  <option value="">Select category</option>
-                  @for (c of propertyCategoryOptions; track c) {
-                    <option [value]="c">{{ c }}</option>
-                  }
-                </select>
-                @if (isInvalid('propertycategory')) {
-                  <div class="invalid-feedback">Property Category is required.</div>
-                }
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-xl-4">
-        <div class="card section-card h-100">
-          <div class="card-header section-header">Asset Status</div>
-          <div class="card-body">
-            @for (flag of assetStatusFlags; track flag.key) {
-              <div class="form-check form-switch d-flex justify-content-between align-items-center py-2 border rounded-3 px-4 mb-2">
-                <label class="form-check-label small fw-semibold" [attr.for]="flag.key">{{ flag.label }}</label>
-                <input class="form-check-input custom-switch-color" type="checkbox" role="switch"
-                       [id]="flag.key" [formControlName]="flag.key">
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card section-card mt-3 bg-brand text-white">
-      <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-          <h6 class="mb-1 text-white">Has this asset been Auctioned?</h6>
-          <p class="mb-0 small text-white-50">Enabling this expands the Bidder &amp; Financial Details panels.</p>
-        </div>
-         <div
-              class="form-check form-check-reverse form-switch d-flex align-items-center gap-3 bg-white rounded-3 px-3 py-2 m-0">
-              <label class="form-check-label fw-semibold text-dark text-opacity-45" for="Isauctioned">Auctioned</label>
-              <input class="form-check-input float-none m-0 custom-switch-color" type="checkbox" role="switch"
-                id="Isauctioned" formControlName="Isauctioned" />
-            </div>
-      </div>
-    </div>
-
-    
-
-    @if (form.get('Isauctioned')?.value) {
-
-      <div class="card section-card mt-3">
-        <div class="card-header section-header">Bidder &amp; Auction Details</div>
+  <div class="row g-3">
+    <div class="col-12 col-xl-8">
+      <div class="card section-card h-100">
+        <div class="card-header section-header">Property Information</div>
         <div class="card-body">
           <div class="row g-3">
 
-            <div class="col-md-4">
-              <label class="form-label">Auction Date &amp; Time <span class="text-danger">*</span></label>
-              <input type="datetime-local" class="form-control custom-input-color" formControlName="auctionDateTime"
-                     [class.is-invalid]="isInvalid('auctionDateTime')">
-              @if (isInvalid('auctionDateTime')) {
-                <div class="invalid-feedback">Auction date &amp; time is required.</div>
-              }
+            <div class="col-md-6">
+              <label for="district" class="form-label">District <span class="text-danger">*</span></label>
+              <input id="district" type="text" class="form-control custom-input-color" list="districtList"
+                placeholder="Select District" formControlName="districtId"
+                [class.is-invalid]="isInvalid('districtId')" />
+              @if (isInvalid('districtId')) { <div class="invalid-feedback">District is required.</div> }
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Bidder Type</label>
-              <select class="form-select custom-input-color" formControlName="bidderType">
-                @for (b of bidderTypeOptions; track b) {
-                  <option [value]="b">{{ b }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Email ID</label>
-              <input type="email" class="form-control custom-input-color" formControlName="emailId"
-                     [class.is-invalid]="isInvalid('emailId')" placeholder="bidder@domain.com">
-              @if (isInvalid('emailId')) {
-                <div class="invalid-feedback">Enter a valid email address.</div>
+            <div class="col-md-6">
+              <label class="form-label">Branch / Market Committee <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom-input-color" formControlName="branchId"
+                [class.is-invalid]="isInvalid('branchId')" placeholder="Select or Type Market Committee">
+              @if (isInvalid('branchId')) {
+              <div class="invalid-feedback">Branch is required.</div>
               }
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">H1 Bidder Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control custom-input-color" formControlName="h1BidderName"
-                     [class.is-invalid]="isInvalid('h1BidderName')" placeholder="Enter full name of highest bidder">
-              @if (isInvalid('h1BidderName')) {
-                <div class="invalid-feedback">Bidder name is required.</div>
+              <label class="form-label">Mandi <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom-input-color" formControlName="mandiId"
+                [class.is-invalid]="isInvalid('mandiId')" placeholder="Select or Type Mandi">
+              @if (isInvalid('mandiId')) {
+              <div class="invalid-feedback">Mandi is required.</div>
               }
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="isTransfered">Is
-                  Transfered<span class="text-danger"> *</span></label>
-                <div class="rounded-3 p-2 border">
-                  <div class="form-check form-switch d-flex align-items-center justify-content-between m-0 p-0">
-                    <label class="form-check-label fw-normal text-dark" for="isTransfered">Is Transfered</label>
-                    <input class="form-check-input m-0 custom-switch-color" type="checkbox" role="switch"
-                      id="isTransfered" formControlName="transfered" [class.is-invalid]="isInvalid('transfered')" />
-                  </div>
-                  @if (isInvalid('transfered')) { <div class="invalid-feedback d-block">Transfer status is required.
-                  </div> }
-                </div>
-              </div>
+              <label class="form-label">Plot No. <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom-input-color" formControlName="plotNo"
+                [class.is-invalid]="isInvalid('plotNo')" placeholder="e.g., B-12">
+              @if (isInvalid('plotNo')) {
+              <div class="invalid-feedback">Plot No. is required.</div>
+              }
+            </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Relation</label>
-              <select class="form-select custom-input-color" formControlName="relation">
-                <option value="">Select relation</option>
-                @for (r of relationOptions; track r) {
-                  <option [value]="r">{{ r }}</option>
+            <div class="col-md-6">
+              <label class="form-label">Plot Type <span class="text-danger">*</span></label>
+              <select class="form-select custom-input-color" formControlName="plotTypeId"
+                [class.is-invalid]="isInvalid('plotTypeId')">
+                <option *ngFor="let item of plotTypes" [value]="item.plotTypeId">
+                  {{ item.plotType }}
+                </option>
+              </select>
+              @if (isInvalid('plotTypeId')) {
+              <div class="invalid-feedback">Plot Type is required.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Plot Size <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom-input-color" formControlName="plotSize"
+                [class.is-invalid]="isInvalid('plotSize')" placeholder="e.g., 200 Sq. Yards">
+              @if (isInvalid('plotSize')) {
+              <div class="invalid-feedback">Plot Size is required.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Plot Status <span class="text-danger">*</span></label>
+              <select class="form-select custom-input-color" formControlName="plotStatus"
+                [class.is-invalid]="isInvalid('plotStatus')">
+                <option value="">Select Status</option>
+                @for (s of plotStatusOptions; track s) {
+                <option [value]="s">{{ s }}</option>
                 }
               </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Guardian Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control custom-input-color" formControlName="guardianName"
-                     [class.is-invalid]="isInvalid('guardianName')" placeholder="Father / Husband Name">
-              @if (isInvalid('guardianName')) {
-                <div class="invalid-feedback">Guardian name is required.</div>
+              @if (isInvalid('plotStatus')) {
+              <div class="invalid-feedback">Plot Status is required.</div>
               }
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">PAN No.</label>
-              <input type="text" class="form-control text-uppercase custom-input-color" formControlName="panNo"
-                     [class.is-invalid]="isInvalid('panNo')" placeholder="ABCDE1234F" maxlength="10">
-              @if (isInvalid('panNo')) {
-                <div class="invalid-feedback">Format must be ABCDE1234F.</div>
+            <div class="col-md-6">
+              <label class="form-label">Plan <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom-input-color" formControlName="planId"
+                [class.is-invalid]="isInvalid('planId')">
+              @if (isInvalid('planId')) {
+              <div class="invalid-feedback">Plan is required.</div>
               }
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Aadhar No.</label>
-              <input type="text" class="form-control custom-input-color" formControlName="aadharNo"
-                     [class.is-invalid]="isInvalid('aadharNo')" placeholder="XXXXXXXX1234" maxlength="12">
-              @if (isInvalid('aadharNo')) {
-                <div class="invalid-feedback">Aadhar number must be 12 digits.</div>
-              }
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Mobile No.</label>
-              <input type="text" class="form-control custom-input-color" formControlName="mobileNo"
-                     [class.is-invalid]="isInvalid('mobileNo')" placeholder="+91 XXXXX XXXXX" maxlength="10">
-              @if (isInvalid('mobileNo')) {
-                <div class="invalid-feedback">Enter a valid 10-digit mobile number.</div>
-              }
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Auction Property Type</label>
-              <select class="form-select custom-input-color" formControlName="auctionPropertyType">
-                @for (t of auctionPropertyTypeOptions; track t) {
-                  <option [value]="t">{{ t }}</option>
+            <div class="col-md-6">
+              <label class="form-label">Property Category <span class="text-danger">*</span></label>
+              <select class="form-select custom-input-color" formControlName="propertyCategoryId"
+                [class.is-invalid]="isInvalid('propertyCategoryId')">
+                <option value="">Select Category</option>
+                @for (category of propertyCategories; track (category.propertyCategoryId || category.id || category)) {
+                <option [value]="category.propertyCategoryId || category.id || category">
+                  {{ category.categoryName || category.name || category }}
+                </option>
                 }
               </select>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Communication Address <span class="text-danger">*</span></label>
-              <textarea class="form-control custom-input-color" rows="3" formControlName="communicationAddress"
-                        [class.is-invalid]="isInvalid('communicationAddress')"
-                        placeholder="Enter complete billing/residential address..."></textarea>
-              @if (isInvalid('communicationAddress')) {
-                <div class="invalid-feedback">Address is required.</div>
+              @if (isInvalid('propertyCategoryId')) {
+              <div class="invalid-feedback">Property Category is required.</div>
               }
             </div>
 
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="card section-card mt-3">
-        <div class="card-header section-header">Financial Details</div>
+    <div class="col-12 col-xl-4">
+      <div class="card section-card h-100">
+        <div class="card-header section-header">Asset Status</div>
         <div class="card-body">
+          @for (flag of assetStatusFlags; track flag.key) {
+          <div
+            class="form-check form-switch d-flex justify-content-between align-items-center py-2 border rounded-3 px-4 mb-2">
+            <label class="form-check-label small fw-semibold" [attr.for]="flag.key">{{ flag.label }}</label>
+            <input class="form-check-input custom-switch-color" type="checkbox" role="switch" [id]="flag.key"
+              [formControlName]="flag.key">
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Reserve Price <span class="text-danger">*</span></label>
-              <div class="input-group">
-                <span class="input-group-text">Rs.</span>
-                <input type="number" class="form-control custom-input-color" formControlName="reservePrice"
-                       [class.is-invalid]="isInvalid('reservePrice')">
-              </div>
-              @if (isInvalid('reservePrice')) {
-                <div class="text-danger small mt-1">Reserve price must be 0 or more.</div>
+  <ng-container *ngIf="isAuctionSectionVisible">
+    <div class="card section-card mt-3">
+      <div class="card-header section-header">Bidder &amp; Auction Details</div>
+      <div class="card-body">
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label class="form-label">Auction Date &amp; Time <span class="text-danger">*</span></label>
+            <input type="datetime-local" class="form-control custom-input-color" formControlName="auctionDate"
+              [class.is-invalid]="isInvalid('auctionDate')">
+            <div *ngIf="isInvalid('auctionDate')" class="invalid-feedback">Auction date &amp; time is required.
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Bidder Type</label>
+            <select class="form-select custom-input-color" formControlName="bidderTypeId">
+              <option value="">Select Bidder Type</option>
+              @for (type of bidderTypes; track (type.bidderTypeId || type.id || type)) {
+              <option [value]="type.bidderTypeId || type.id || type">
+                {{ type.bidderTypeName || type.name || type }}
+              </option>
               }
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">H1 Bidder Final Price <span class="text-danger">*</span></label>
-              <div class="input-group">
-                <span class="input-group-text">Rs.</span>
-                <input type="number" class="form-control custom-input-color" formControlName="h1BidderFinalPrice"
-                       [class.is-invalid]="isInvalid('h1BidderFinalPrice')">
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Email ID</label>
+            <input type="email" class="form-control custom-input-color" formControlName="emailId"
+              [class.is-invalid]="isInvalid('emailId')" placeholder="bidder@domain.com">
+            <div *ngIf="isInvalid('emailId')" class="invalid-feedback">Enter a valid email address.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">H1 Bidder Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom-input-color" formControlName="bidderName"
+              [class.is-invalid]="isInvalid('bidderName')" placeholder="Enter full name of highest bidder">
+            <div *ngIf="isInvalid('bidderName')" class="invalid-feedback">Bidder name is required.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="isTransferred">Is Transfered<span class="text-danger"> *</span></label>
+            <div class="rounded-3 p-2 border">
+              <div class="form-check form-switch d-flex align-items-center justify-content-between m-0 p-0">
+                <label class="form-check-label fw-normal text-dark" for="isTransferred">Is Transfered</label>
+                <input class="form-check-input m-0 custom-switch-color" type="checkbox" role="switch" id="isTransferred"
+                  formControlName="isTransferred" [class.is-invalid]="isInvalid('isTransferred')" />
               </div>
-              @if (isInvalid('h1BidderFinalPrice')) {
-                <div class="text-danger small mt-1">Final price is required.</div>
+              <div *ngIf="isInvalid('isTransferred')" class="invalid-feedback d-block">Transfer status is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Relation</label>
+            <select class="form-select custom-input-color" formControlName="relation">
+              <option value="">Select relation</option>
+              <option *ngFor="let r of relationOptions" [value]="r">{{ r }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Guardian Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom-input-color" formControlName="fatherOrHusbandName"
+              [class.is-invalid]="isInvalid('fatherOrHusbandName')" placeholder="Father / Husband Name">
+            <div *ngIf="isInvalid('fatherOrHusbandName')" class="invalid-feedback">Guardian name is required.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">PAN No.</label>
+            <input type="text" class="form-control text-uppercase custom-input-color" formControlName="panNo"
+              [class.is-invalid]="isInvalid('panNo')" placeholder="ABCDE1234F" maxlength="10">
+            <div *ngIf="isInvalid('panNo')" class="invalid-feedback">Format must be ABCDE1234F.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Aadhar No.</label>
+            <input type="text" class="form-control custom-input-color" formControlName="aadhaarNo"
+              [class.is-invalid]="isInvalid('aadhaarNo')" placeholder="XXXXXXXX1234" maxlength="12">
+            <div *ngIf="isInvalid('aadhaarNo')" class="invalid-feedback">Aadhar number must be 12 digits.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Mobile No.</label>
+            <input type="text" class="form-control custom-input-color" formControlName="mobileNo"
+              [class.is-invalid]="isInvalid('mobileNo')" placeholder="+91 XXXXX XXXXX" maxlength="10">
+            <div *ngIf="isInvalid('mobileNo')" class="invalid-feedback">Enter a valid 10-digit mobile number.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Auction Property Type</label>
+            <select class="form-select custom-input-color" formControlName="propertyTypeId">
+              <option value="">Select Property Type</option>
+              @for (type of auctionPropertyTypes; track (type.propertyTypeId || type.id || type)) {
+              <option [value]="type.propertyTypeId || type.id || type">
+                {{ type.propertyTypeName || type.name || type }}
+              </option>
               }
-            </div>
+            </select>
           </div>
 
-          <!-- Form Fee -->
-          <div class="subsection mb-3">
-            <h6 class="subsection-title">Form Fee</h6>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label small">Transaction ID</label>
-                <input type="text" class="form-control custom-input-color" formControlName="formFeeTransactionId">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Transaction Date</label>
-                <input type="date" class="form-control custom-input-color" formControlName="formFeeTransactionDate">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Paid Amount (Rs.)</label>
-                <input type="number" class="form-control custom-input-color" formControlName="formFeePaidAmount">
-              </div>
-            </div>
-          </div>
-
-          <!-- EMD -->
-          <div class="subsection mb-3">
-            <h6 class="subsection-title">EMD Details <span class="text-danger">*</span></h6>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label small">EMD Transaction ID</label>
-                <input type="text" class="form-control custom-input-color" formControlName="emdTransactionId"
-                       [class.is-invalid]="isInvalid('emdTransactionId')">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">EMD Transaction Date</label>
-                <input type="date" class="form-control custom-input-color" formControlName="emdTransactionDate"
-                       [class.is-invalid]="isInvalid('emdTransactionDate')">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">EMD Paid Amount (Rs.)</label>
-                <input type="number" class="form-control custom-input-color" formControlName="emdPaidAmount"
-                       [class.is-invalid]="isInvalid('emdPaidAmount')">
-              </div>
-            </div>
-          </div>
-
-          <!-- 25% Allotment -->
-          <div class="subsection mb-3">
-            <h6 class="subsection-title">25% Allotment Details <span class="text-danger">*</span></h6>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label small">Allotment Transaction ID</label>
-                <input type="text" class="form-control custom-input-color" formControlName="allotmentTransactionId"
-                       [class.is-invalid]="isInvalid('allotmentTransactionId')">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Allotment Transaction Date</label>
-                <input type="date" class="form-control custom-input-color" formControlName="allotmentTransactionDate"
-                       [class.is-invalid]="isInvalid('allotmentTransactionDate')">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Allotment Paid Amount (Rs.)</label>
-                <input type="number" class="form-control custom-input-color" formControlName="allotmentPaidAmount"
-                       [class.is-invalid]="isInvalid('allotmentPaidAmount')">
-              </div>
-            </div>
-          </div>
-
-          <!-- Outstanding Dues -->
-          <div class="subsection">
-            <h6 class="subsection-title">Outstanding Dues</h6>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label small">Installment No.</label>
-                <input type="text" class="form-control custom-input-color" formControlName="installmentNo">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Due Date</label>
-                <input type="date" class="form-control custom-input-color" formControlName="dueDate">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Paid Status</label>
-                <select class="form-select custom-input-color" formControlName="paidStatus">
-                  <option value="">Select status</option>
-                  @for (p of paidStatusOptions; track p) {
-                    <option [value]="p">{{ p }}</option>
-                  }
-                </select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Due Amount (Rs.)</label>
-                <input type="number" class="form-control custom-input-color" formControlName="dueAmount">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Accumulated Interest (Rs.)</label>
-                <input type="number" class="form-control custom-input-color" formControlName="accumulatedInterest">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Total Due Amount (Rs.)</label>
-                <input type="number" class="form-control custom-input-color" formControlName="totalDueAmount">
-              </div>
-            </div>
+          <div class="col-12">
+            <label class="form-label">Communication Address <span class="text-danger">*</span></label>
+            <textarea class="form-control custom-input-color" rows="3" formControlName="address"
+              [class.is-invalid]="isInvalid('address')"
+              placeholder="Enter complete billing/residential address..."></textarea>
+            <div *ngIf="isInvalid('address')" class="invalid-feedback">Address is required.</div>
           </div>
 
         </div>
       </div>
-    }
-
-    <div class="d-flex justify-content-end gap-2 mt-3 mb-5">
-      <button type="button" class="btn btn-outline-danger" [disabled]="isBusy" (click)="openDecisionModal('REJECTED')">
-        Reject
-      </button>
-      <button type="button" class="btn btn-brand" [disabled]="isBusy || form.invalid" (click)="openDecisionModal('APPROVED')"> Approve &amp; Register
-      </button>
     </div>
 
-  </form>
+    <div class="card section-card mt-3">
+      <div class="card-header section-header">Financial Details</div>
+      <div class="card-body">
 
-  <!-- Approve/Reject remarks modal-->
-  @if (showDecisionModal()) {
-    <div class="modal-backdrop-custom" (click)="closeDecisionModal()"></div>
-    <div class="modal d-block" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header section-header">
-            <h5 class="modal-title text-white mb-0">
-              {{ pendingDecision() === 'APPROVED' ? 'Approve Registration' : 'Reject Registration' }}
-            </h5>
-            <button type="button" class="btn-close btn-close-white" (click)="closeDecisionModal()"></button>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Reserve Price <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">Rs.</span>
+              <input type="number" class="form-control custom-input-color" formControlName="reservePrice"
+                [class.is-invalid]="isInvalid('reservePrice')">
+            </div>
+            <div *ngIf="isInvalid('reservePrice')" class="text-danger small mt-1">Reserve price must be 0 or more.</div>
           </div>
-          <div class="modal-body">
-            <p class="text-muted small">
-              @if (pendingDecision() === 'APPROVED') {
-                This will mark the asset as verified and registered. Please provide a short remark for the record.
-              } @else {
-                This will send the form back to the data entry operator. Please explain the reason for rejection.
-              }
-            </p>
-            <label class="form-label">Remarks <span class="text-danger">*</span></label>
-            <textarea class="form-control" rows="4" [formControl]="remarksControl"
-                      [class.is-invalid]="remarksControl.invalid && remarksControl.touched"
-                      placeholder="Enter remarks..."></textarea>
-            @if (remarksControl.invalid && remarksControl.touched) {
-              <div class="invalid-feedback d-block">
-                @if (remarksControl.errors?.['required']) {
-                  Remarks are required.
-                } @else if (remarksControl.errors?.['minlength']) {
-                  Please enter at least 5 characters.
-                }
+          <div class="col-md-6">
+            <label class="form-label">H1 Bidder Final Price <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">Rs.</span>
+              <input type="number" class="form-control custom-input-color" formControlName="finalBidPrice"
+                [class.is-invalid]="isInvalid('finalBidPrice')">
+            </div>
+            <div *ngIf="isInvalid('finalBidPrice')" class="text-danger small mt-1">Final price is required.</div>
+          </div>
+        </div>
+
+        <!-- Form Fee -->
+        <div class="subsection mb-3">
+          <h6 class="subsection-title">Form Fee</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label small">Transaction ID</label>
+              <input type="text" class="form-control custom-input-color" formControlName="formTransactionId">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Transaction Date</label>
+              <input type="date" class="form-control custom-input-color" formControlName="formTxnDate">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Paid Amount (Rs.)</label>
+              <input type="number" class="form-control custom-input-color" formControlName="formPaidAmount">
+            </div>
+          </div>
+        </div>
+
+        <!-- EMD -->
+        <div class="subsection mb-3">
+          <h6 class="subsection-title">EMD Details <span class="text-danger">*</span></h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label small">EMD Transaction ID</label>
+              <input type="text" class="form-control custom-input-color" formControlName="emdTxnId"
+                [class.is-invalid]="isInvalid('emdTxnId')">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">EMD Transaction Date</label>
+              <input type="date" class="form-control custom-input-color" formControlName="emdDate"
+                [class.is-invalid]="isInvalid('emdDate')">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">EMD Paid Amount (Rs.)</label>
+              <input type="number" class="form-control custom-input-color" formControlName="emdAmount"
+                [class.is-invalid]="isInvalid('emdAmount')">
+            </div>
+          </div>
+        </div>
+
+        <!-- 25% Allotment -->
+        <div class="subsection mb-3">
+          <h6 class="subsection-title">25% Allotment Details <span class="text-danger">*</span></h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label small">Allotment Transaction ID</label>
+              <input type="text" class="form-control custom-input-color" formControlName="allotmentTxnId"
+                [class.is-invalid]="isInvalid('allotmentTxnId')">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Allotment Transaction Date</label>
+              <input type="date" class="form-control custom-input-color" formControlName="allotmentDate"
+                [class.is-invalid]="isInvalid('allotmentDate')">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Allotment Paid Amount (Rs.)</label>
+              <input type="number" class="form-control custom-input-color" formControlName="allotmentAmount"
+                [class.is-invalid]="isInvalid('allotmentAmount')">
+            </div>
+          </div>
+        </div>
+
+        <!-- Outstanding Dues -->
+        <div class="subsection">
+          <h6 class="subsection-title">Outstanding Dues</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small">Due Amount (Principal)</label>
+              <input type="number" class="form-control custom-input-color fw-semibold text-success"
+                formControlName="dueAmount" readonly />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small">Total Due (Inc. Interest)</label>
+              <input type="number" class="form-control custom-input-color fw-semibold text-danger"
+                formControlName="totalDueWithInterest" readonly />
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="border rounded-4 bg-white p-3 shadow-sm">
+              <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                <h4 class="h6 mb-0 fw-semibold text-uppercase text-secondary">
+                  <i class="bi bi-calendar2-week me-2"></i>
+                  Complete 6-Month Installments Overview Schedule
+                </h4>
               </div>
-            }
+
+              <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                  <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                    <tr>
+                      <th scope="col" class="text-start ps-3">Installments</th>
+                      <th scope="col">Calculated Due Date</th>
+                      <th scope="col">Base Principal</th>
+                      <th scope="col">Interest</th>
+                      <th scope="col" class="text-end pe-3">Total Estimated Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngIf="installmentSchedules.length > 0; else noSchedule">
+                      <tr *ngFor="let schedule of installmentSchedules">
+                        <td class="text-start fw-semibold ps-3">{{ schedule.installmentLabel }}</td>
+                        <td class="fw-medium text-dark">
+                          {{ formatDisplayDate(schedule.dueDate) }}
+                        </td>
+                        <td class="text-muted fw-semibold">
+                          {{ schedule.baseAmountDue > 0 ? ('₹' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}
+                        </td>
+                        <td class="text-muted fw-semibold">
+                          {{ schedule.interestAmount > 0 ? ('₹' + (schedule.interestAmount | number:'1.2-2')) : '—' }}
+                        </td>
+                        <td class="text-end fw-semibold text-success pe-3">
+                          {{ schedule.totalWithInterest > 0 ? ('₹' + (schedule.totalWithInterest | number:'1.2-2')) :
+                          '—' }}
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+                <ng-template #noSchedule>
+                  <div class="text-center py-4 text-muted">
+                    <i class="bi bi-exclamation-circle d-block mb-2 h4 text-black-50"></i>
+                    Installment schedule data is not available yet.
+                  </div>
+                </ng-template>
+              </div>
+            </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" (click)="closeDecisionModal()">Cancel</button>
-            <button type="button"
-                    [class]="pendingDecision() === 'APPROVED' ? 'btn btn-brand' : 'btn btn-danger'"
-                    [disabled]="isBusy"
-                    (click)="confirmDecision()">
-              @if (isBusy) {
-                <span class="spinner-border spinner-border-sm me-1"></span>
-              }
-              Confirm {{ pendingDecision() === 'APPROVED' ? 'Approval' : 'Rejection' }}
-            </button>
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+  <div class="pv-card mt-3" formGroupName="decision">
+    <div class="pv-section-header">
+      Verification Decision
+    </div>
+
+    <div class="p-3 p-md-4">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <button type="button" class="pv-decision-card w-100" [disabled]="isAlreadyVerified"
+            [class.pv-decision-selected-approve]="activeDecision === 'approve'" (click)="selectDecision('approve')">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>Approve</span>
+            <small>Confirms the details are correct and moves the request forward.</small>
+          </button>
+        </div>
+        <div class="col-12 col-md-6">
+          <button type="button" class="pv-decision-card w-100" [disabled]="isAlreadyVerified"
+            [class.pv-decision-selected-sendback]="activeDecision === 'sendback'" (click)="selectDecision('sendback')">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            <span>Send Back for Changes</span>
+            <small>Returns the request to the applicant with your remarks.</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-4" *ngIf="activeDecision && (!isAlreadyVerified || activeDecision === 'sendback')">
+        <ng-container *ngIf="activeDecision === 'sendback'">
+          <label class="pv-label">
+            Remarks
+            <span *ngIf="!isAlreadyVerified" class="text-danger">*</span>
+          </label>
+          <textarea class="form-control" rows="3" [formControl]="remarksControl"
+            placeholder="Explain what needs to be corrected...">
+          </textarea>
+          <div class="pv-error" *ngIf="showValidationHint && remarksControl.invalid">
+            Please add at least 10 characters explaining the required changes.
           </div>
+        </ng-container>
+
+        <div class="d-flex justify-content-end gap-2 mt-3" *ngIf="!isAlreadyVerified">
+          <button type="button" class="btn btn-outline-secondary" (click)="activeDecision = null">
+            Cancel
+          </button>
+          <button type="button" class="btn"
+            [ngClass]="activeDecision === 'approve' ? 'pv-btn-approve' : 'pv-btn-sendback'" [disabled]="submitting"
+            (click)="submitDecision()">
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="submitting"></span>
+            {{ activeDecision === 'approve' ? 'Confirm Approval' : 'Confirm Send Back' }}
+          </button>
         </div>
       </div>
     </div>
-  }
-
-</div>
+  </div>
+</form>

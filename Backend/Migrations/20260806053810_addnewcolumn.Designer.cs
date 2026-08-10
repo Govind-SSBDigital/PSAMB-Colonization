@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806053810_addnewcolumn")]
+    partial class addnewcolumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1125,6 +1128,8 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApplicationStatusId");
+
                     b.HasIndex("BidderTypeId");
 
                     b.HasIndex("BranchId");
@@ -1379,6 +1384,10 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Entities.PropertyBidderRegistration", b =>
                 {
+                    b.HasOne("Backend.Models.Entities.ApplicationStatusMaster", "ApplicationStatus")
+                        .WithMany()
+                        .HasForeignKey("ApplicationStatusId");
+
                     b.HasOne("Backend.Models.Entities.BidderTypeMaster", "BidderType")
                         .WithMany()
                         .HasForeignKey("BidderTypeId");
@@ -1412,6 +1421,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Entities.PropertyType", "PropertyType")
                         .WithMany()
                         .HasForeignKey("PropertyTypeId");
+
+                    b.Navigation("ApplicationStatus");
 
                     b.Navigation("BidderType");
 

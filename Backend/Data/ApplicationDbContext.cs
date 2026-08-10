@@ -37,6 +37,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     public DbSet<PropertyBidderRegistration> PropertyBidderRegistration { get; set; }
     public DbSet<InstallmentDetails> InstallmentDetails { get; set; }
     public DbSet<BranchMandiAssociation>BranchMandiAssociation { get; set; }
+    public DbSet<IdentityRole> Roles { get; set; }
+    public DbSet<IdentityUserRole<string>> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
