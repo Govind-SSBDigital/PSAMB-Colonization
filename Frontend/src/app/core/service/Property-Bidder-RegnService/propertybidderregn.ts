@@ -12,12 +12,12 @@ export class Propertybidderregn  {
 constructor(private http: HttpClient) { }
 
 registerProperty(payload: any): Observable<any> {
-  debugger
+  // debugger
   return this.http.post<any>(`${this.baseUrl}/PropertyBidderRegn/registerProperty`, payload);
 }
 
 getRegistrationById(id: any): Observable<any> {
-  debugger
+  // debugger
   return this.http.post<any>(`${this.baseUrl}/PropertyBidderRegn/getRegistrationById`, {params:{id}});
 }
 
@@ -30,7 +30,7 @@ getPropertyByCode(propertyCode: string): Observable<any> {
 }
 
 UpdateRegisterPropertyAsync(payload: any): Observable<any> {
-  debugger
+  // debugger
   return this.http.put<any>(`${this.baseUrl}/PropertyBidderRegn/UpdateRegisterPropertyAsync`, payload);
 }
 }

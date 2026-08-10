@@ -40,6 +40,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('cp_session');
+    localStorage.removeItem('cp_menus');
   }
 
   isLoggedIn(): boolean {

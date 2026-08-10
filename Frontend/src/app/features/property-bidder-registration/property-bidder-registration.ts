@@ -375,7 +375,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    debugger
+    // debugger
     this.loadDistricts();
     this.loadPropertyCategories();
     this.loadBidderTypes();
@@ -922,7 +922,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
 
   onSubmit(): void {
-    debugger
+    // debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];
@@ -1226,7 +1226,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   private setupCalculationListeners(): void {
-    debugger
+    // debugger
     this.registerationForm.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -1238,7 +1238,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (!this.registerationForm.get('isAuctioned')?.value) {
       return;
     }
-    debugger
+    // debugger
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('finalBidPrice')?.value) || 0;
     const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentAmount')?.value) || 0;

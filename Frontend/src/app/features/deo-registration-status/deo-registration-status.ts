@@ -88,7 +88,7 @@ export class DeoRegistrationStatus implements OnInit {
   }
 
   onView(item: RegistrationRecord): void {
-    this.router.navigate(['/dashboard/property-bidder-registration'], {
+    this.router.navigate(['/property-bidder-registration'], {
       queryParams: {
         mode: 'view',
         propertyCode: item.allotteeCode
@@ -97,7 +97,7 @@ export class DeoRegistrationStatus implements OnInit {
   }
 
   onEdit(item: RegistrationRecord): void {
-    this.router.navigate(['/dashboard/property-bidder-registration'], {
+    this.router.navigate(['/property-bidder-registration'], {
       queryParams: {
         mode: 'edit',
         propertyCode: item.allotteeCode

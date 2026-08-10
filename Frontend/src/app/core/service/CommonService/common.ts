@@ -50,5 +50,8 @@ export class Common {
   GetMandisByMarketCommiteeByDistrictAsync(branchID: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Common/GetMandisByMarketCommiteeByDistrictAsync`, { params: { branchID } });
   }
-
+  
+  getMenuItemsByRole(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Auth/profile`);
+  }
 }
