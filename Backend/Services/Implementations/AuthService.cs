@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using PunjabEstatePortal.Core.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -205,16 +207,118 @@ namespace Backend.Services.Implementations
             return BuildLoginResponse(identityUser, applicant);
         }
 
-        public async Task<UserResponse> GetProfileAsync(string userId)
+        public async Task<UserProfileWithMenuResponse> GetProfileAsync(string userId)
         {
-            var identityUser = await _userManager.FindByIdAsync(userId)
-                ?? throw new KeyNotFoundException("User not found");
-
-            var applicant = await _context.ApplicationUsers
-                .FirstOrDefaultAsync(x => x.Email == identityUser.Email)
-                ?? throw new KeyNotFoundException("Applicant not found");
-
-            return MapToResponse(identityUser, applicant);
+            var connection = _context.Database.GetDbConnection();
+            var wasOpen = connection.State == System.Data.ConnectionState.Open;
+            if (!wasOpen)
+                await connection.OpenAsync();
+            try
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = "FetchMyAllDetails";
+                command.CommandType = CommandType.StoredProcedure;
+                var param = command.CreateParameter();
+                param.ParameterName = "@UserId";
+                param.Value = userId;
+                command.Parameters.Add(param);
+                using var reader = await command.ExecuteReaderAsync();
+                IdentityUserFlatDto? identityUser = null;
+                if (await reader.ReadAsync())
+                {
+                    identityUser = new IdentityUserFlatDto
+                    {
+                        Id = reader["Id"].ToString()!,
+                        UserName = reader["UserName"].ToString()!,
+                        Email = reader["Email"].ToString()!
+                    };
+                }
+                if (identityUser == null)
+                    throw new KeyNotFoundException("User not found");
+                await reader.NextResultAsync();
+                ApplicationUser? applicant = null;
+                if (await reader.ReadAsync())
+                {
+                    applicant = new ApplicationUser
+                    {
+                        ApplicantId = reader["ApplicantId"] as long? ?? 0,
+                        FirstName = reader["FirstName"]?.ToString() ?? string.Empty,
+                        LastName = reader["LastName"]?.ToString(),
+                        Email = reader["Email"]?.ToString() ?? string.Empty,
+                        MobileNo = reader["MobileNo"]?.ToString()
+                    };
+                }
+                if (applicant == null)
+                    throw new KeyNotFoundException("Applicant not found");
+                await reader.NextResultAsync();
+                var roles = new List<string>();
+                while (await reader.ReadAsync())
+                {
+                    roles.Add(reader["RoleName"].ToString()!);
+                }
+                await reader.NextResultAsync();
+                var menuFlat = new List<MenuFlatResult>();
+                while (await reader.ReadAsync())
+                {
+                    menuFlat.Add(new MenuFlatResult
+                    {
+                        MenuId = (int)reader["MenuId"],
+                        MenuName = reader["MenuName"].ToString()!,
+                        MenuIcon = reader["MenuIcon"]?.ToString(),
+                        MenuSortOrder = (int)reader["MenuSortOrder"],
+                        SubMenuId = (int)reader["SubMenuId"],
+                        SubMenuName = reader["SubMenuName"].ToString()!,
+                        Route = reader["Route"].ToString()!,
+                        SubMenuIcon = reader["SubMenuIcon"]?.ToString(),
+                        SubMenuSortOrder = (int)reader["SubMenuSortOrder"]
+                    });
+                }
+                reader.Close();
+                var menuTree = menuFlat
+                    .GroupBy(x => new { x.MenuId, x.MenuName, x.MenuIcon, x.MenuSortOrder })
+                    .Select(g => new MenuDto
+                    {
+                        MenuId = g.Key.MenuId,
+                        MenuName = g.Key.MenuName,
+                        Icon = g.Key.MenuIcon,
+                        SortOrder = g.Key.MenuSortOrder,
+                        SubMenus = g.Select(x => new SubMenuDto
+                        {
+                            SubMenuId = x.SubMenuId,
+                            SubMenuName = x.SubMenuName,
+                            Route = x.Route,
+                            Icon = x.SubMenuIcon,
+                            SortOrder = x.SubMenuSortOrder
+                        })
+                        .OrderBy(x => x.SortOrder)
+                        .ToList()
+                    })
+                    .OrderBy(x => x.SortOrder)
+                    .ToList();
+                var profileResponse = MapToResponse(identityUser, applicant);
+                return new UserProfileWithMenuResponse
+                {
+                    Profile = profileResponse,
+                    Roles = roles,
+                    Menus = menuTree
+                };
+            }
+            finally
+            {
+                if (!wasOpen)
+                    await connection.CloseAsync();
+            }
+        }
+        private UserResponse MapToResponse(IdentityUserFlatDto identityUser, ApplicationUser applicant)
+        {
+            return new UserResponse
+            {
+                Id = identityUser.Id,
+                UserName = identityUser.UserName,
+                Email = identityUser.Email,
+                FullName = $"{applicant.FirstName} {applicant.LastName}".Trim(),
+                MobileNo = applicant.MobileNo
+            };
         }
         public async Task<UserResponse> UpdateProfileAsync(string userId, UpdateProfileRequest request)
         {

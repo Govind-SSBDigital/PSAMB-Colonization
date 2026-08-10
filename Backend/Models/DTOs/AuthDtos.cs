@@ -107,6 +107,8 @@ namespace Backend.Models.DTOs
         public string? PhoneNumber { get; set; }
         public IList<string> Roles { get; set; } = new List<string>();
         public DateTime CreatedAt { get; set; }
+        public string UserName { get; internal set; }
+        public string MobileNo { get; internal set; }
     }
 
     public class LoginResponse

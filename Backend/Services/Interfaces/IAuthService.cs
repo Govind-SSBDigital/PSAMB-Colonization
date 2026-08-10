@@ -8,7 +8,7 @@ namespace Backend.Services.Interfaces
     {
         Task<LoginResponse> RegisterAsync(RegisterRequest request);
         Task<LoginResponse> LoginAsync(LoginRequest request);
-        Task<UserResponse> GetProfileAsync(string userId);
+        Task<UserProfileWithMenuResponse> GetProfileAsync(string userId);
         Task<UserResponse> UpdateProfileAsync(string userId, UpdateProfileRequest request);
         Task ChangePasswordAsync(string userId, ChangePasswordRequest request);
         Task<LoginResponse> GenerateTokenForUser(ApplicationUser user);

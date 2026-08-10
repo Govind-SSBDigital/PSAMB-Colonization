@@ -1,4 +1,5 @@
 ﻿using Backend.Data;
+using Backend.Middleware;
 using Backend.Models.Entities;
 using Backend.Repositories.Implementations;
 using Backend.Repositories.Interfaces;
@@ -218,12 +219,20 @@ try
         }
     }
 
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-    else
+    //if (app.Environment.IsDevelopment())
+    //{
+    //    app.UseSwagger();
+    //    app.UseSwaggerUI();
+    //}
+    //else
+    //{
+    //    app.UseHsts();
+    //}
+    app.UseMiddleware<SwaggerAuthMiddleware>();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    if (!app.Environment.IsDevelopment())
     {
         app.UseHsts();
     }
@@ -266,31 +275,3 @@ async Task SeedRolesAsync(WebApplication app)
         logger.LogError(ex, "Error seeding roles");
     }
 }
-//static async Task SeedRolesAsync(WebApplication app)
-//{
-//    using var scope = app.Services.CreateScope();
-//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-//    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityApplicationUser>>();
-
-//    foreach (var role in new[] { "Admin", "User" })
-//        if (!await roleManager.RoleExistsAsync(role))
-//            await roleManager.CreateAsync(new IdentityRole(role));
-
-//    var adminEmail = "admin@psamb.com";
-//    var adminPassword = "Admin@12345";
-
-//    if (await userManager.FindByEmailAsync(adminEmail) == null)
-//    {
-//        var admin = new IdentityApplicationUser
-//        {
-//            UserName = adminEmail,
-//            Email = adminEmail,
-//            IsActive = true
-//        };
-//        var result = await userManager.CreateAsync(admin, adminPassword);
-//        if (result.Succeeded)
-//            await userManager.AddToRoleAsync(admin, "Admin");
-
-//        Log.Information("Admin created: {Email}", adminEmail);
-//    }
-//}
