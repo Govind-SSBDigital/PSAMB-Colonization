@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClient } from '@angular/common/http';
@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class PersonalDetails implements OnInit {
   @Input() selectedEntityType = '';
   @Input() signUpData: any;
+  @Output() toastMessage = new EventEmitter<{ message: string; type: 'success' | 'error' | 'info' }>();
 
   maxDob = '';
   ageError = false;
@@ -28,10 +29,6 @@ export class PersonalDetails implements OnInit {
   ];
 
   // Verification state
-  toastMessage = '';
-  toastType: 'success' | 'error' | 'info' = 'info';
-  showToast = false;
-
   verification = {
     emailSent: false,
     emailVerified: false,
@@ -56,10 +53,7 @@ export class PersonalDetails implements OnInit {
   }
 
   triggerToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
-    this.toastMessage = message;
-    this.toastType = type;
-    this.showToast = true;
-    setTimeout(() => this.showToast = false, 4000);
+    this.toastMessage.emit({ message, type });
   }
 
   // Email OTP

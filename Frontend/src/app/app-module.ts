@@ -11,8 +11,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { Navbar } from './features/navbar/navbar';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { Footer } from './features/footer/footer';
+import { MainLayout } from './layouts/main-layout/main-layout';
 @NgModule({
-  declarations: [App],
+  declarations: [App, MainLayout],
   imports: [
     BrowserModule,
     AppRoutingModule,

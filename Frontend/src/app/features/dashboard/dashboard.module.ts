@@ -52,19 +52,19 @@ import { Footer } from './footer/footer';
             loadChildren: () => import('./profile/profile.module').then((m) => m.ProfileModule),
           },
           {
-            path: 'verification-view',
+            path: 'user-verification-view',
             loadChildren: () =>
               import('../verification-view/verification-view.module').then(
                 (m) => m.VerificationViewModule,
               ),
           },
           {
-            path: "citizen-services",
-            loadComponent: () => import('../citizen-services/citizen-services').then(m => m.CitizenServices),
-          },
-          {
             path: "deo-verification",
             loadComponent: () => import('../deo-verification/deo-verification').then(m => m.DeoVerification),
+          },
+          {
+            path: "deo-registration-status",
+            loadComponent: () => import('../deo-registration-status/deo-registration-status').then(m => m.DeoRegistrationStatus),
           }
         ],
       },
