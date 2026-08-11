@@ -580,6 +580,32 @@ namespace Backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Backend.Models.Entities.HRMSData", b =>
+                {
+                    b.Property<string>("HRMSCODE")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("DesignationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("EmployeeName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("MobileNo")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("HRMSCODE");
+
+                    b.ToTable("HRMSData", (string)null);
+                });
+
             modelBuilder.Entity("Backend.Models.Entities.IdentityApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -1051,6 +1077,9 @@ namespace Backend.Migrations
                     b.Property<bool>("IsAuctioned")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsCourtCase")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDefaulter")
                         .HasColumnType("bit");
 
@@ -1121,8 +1150,6 @@ namespace Backend.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationStatusId");
 
                     b.HasIndex("BidderTypeId");
 
@@ -1378,10 +1405,6 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Entities.PropertyBidderRegistration", b =>
                 {
-                    b.HasOne("Backend.Models.Entities.ApplicationStatusMaster", "ApplicationStatus")
-                        .WithMany()
-                        .HasForeignKey("ApplicationStatusId");
-
                     b.HasOne("Backend.Models.Entities.BidderTypeMaster", "BidderType")
                         .WithMany()
                         .HasForeignKey("BidderTypeId");
@@ -1415,8 +1438,6 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Entities.PropertyType", "PropertyType")
                         .WithMany()
                         .HasForeignKey("PropertyTypeId");
-
-                    b.Navigation("ApplicationStatus");
 
                     b.Navigation("BidderType");
 

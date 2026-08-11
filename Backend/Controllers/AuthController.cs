@@ -64,7 +64,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<ApiResponse<UserResponse>>> GetProfile()
         {
             var result = await _authService.GetProfileAsync(GetUserId());
-            return Ok(ApiResponse<UserResponse>.Ok(result));
+            return Ok(ApiResponse<UserProfileWithMenuResponse>.Ok(result));
         }
 
         [HttpPut("profile")]

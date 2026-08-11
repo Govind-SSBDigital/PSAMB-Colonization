@@ -1,11 +1,23 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
- 
-import { PropertyBidderRegistrationModel } from './../../models/property-bidder-registration.model';
- 
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+
+import { InstallmentScheduleView, PropertyBidderRegistrationModel } from './../../models/property-bidder-registration.model';
+import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
+import { Common } from '../../core/service/CommonService/common';
+
 export type ClerkDecision = 'APPROVED' | 'REJECTED';
- 
+
+export interface VerificationHistoryEntry {
+  role: string;
+  actorName: string;
+  action: 'Approved' | 'Sent Back' | 'Submitted';
+  remarks: string;
+  date: string;
+}
+
 /** Local-only, UI-side concern — not part of the backend model. */
 export interface ClerkHistoryEntry {
   id: string;
@@ -16,14 +28,15 @@ export interface ClerkHistoryEntry {
   remarks: string;
   status: 'PENDING' | 'EDITED' | 'APPROVED' | 'REJECTED';
 }
- 
-const PLOT_TYPE_OPTIONS = ['Commercial', 'Residential', 'Industrial', 'Institutional'];
-const PLOT_STATUS_OPTIONS = ['Vacant', 'Allotted', 'Auctioned', 'Under Litigation'];
-const PROPERTY_CATEGORY_OPTIONS = ['General', 'Reserved', 'Corner Plot', 'Prime Location'];
-const BIDDER_TYPE_OPTIONS = ['Individual', 'Company', 'Partnership Firm', 'Trust'];
+
+// const PLOT_TYPE_OPTIONS = ['Commercial', 'Residential', 'Industrial', 'Institutional'];
+const PLOT_STATUS_OPTIONS = ['Sold', 'Unsold'];
+// const PROPERTY_CATEGORY_OPTIONS = ['General', 'Reserved', 'Corner Plot', 'Prime Location'];
+// const BIDDER_TYPE_OPTIONS = ['Individual', 'Company', 'Partnership Firm', 'Trust'];
 const RELATION_OPTIONS = ['Son of (S/o)', 'Daughter of (D/o)', 'Wife of (W/o)'];
-const AUCTION_PROPERTY_TYPE_OPTIONS = ['Commercial Plots', 'Residential Plots', 'Booth', 'SCO'];
-const PAID_STATUS_OPTIONS = ['Paid', 'Unpaid', 'Partially Paid', 'Overdue'];
+// const AUCTION_PROPERTY_TYPE_OPTIONS = ['Commercial Plots', 'Residential Plots', 'Booth', 'SCO'];
+// const PAID_STATUS_OPTIONS = ['Paid', 'Unpaid', 'Partially Paid', 'Overdue'];
+
 @Component({
   selector: 'app-deo-verification',
   imports: [CommonModule, ReactiveFormsModule],
@@ -33,207 +46,703 @@ const PAID_STATUS_OPTIONS = ['Paid', 'Unpaid', 'Partially Paid', 'Overdue'];
 })
 export class DeoVerification implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
- 
-  /** Pass the record fetched from your own service. If omitted, demo data is used. */
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
+  private service = inject(Propertybidderregn);
+  activeDecision: 'approve' | 'sendback' | null = null;
   @Input() registration: PropertyBidderRegistrationModel | null = null;
- 
-  /** Pass prior audit trail entries from your own service, if you have them. */
-  @Input() historyEntries: ClerkHistoryEntry[] = [];
- 
-  /** True while a parent-owned save/decision call is in flight — disables buttons + shows spinners. */
   @Input() isBusy = false;
- 
-  @Output() saved = new EventEmitter<PropertyBidderRegistrationModel>();
-  @Output() approved = new EventEmitter<{ remarks: string; data: PropertyBidderRegistrationModel }>();
-  @Output() rejected = new EventEmitter<{ remarks: string; data: PropertyBidderRegistrationModel }>();
- 
-  // ---- static option lists for the template ----
-  readonly plotTypeOptions = PLOT_TYPE_OPTIONS;
-  readonly plotStatusOptions = PLOT_STATUS_OPTIONS;
-  readonly propertyCategoryOptions = PROPERTY_CATEGORY_OPTIONS;
-  readonly bidderTypeOptions = BIDDER_TYPE_OPTIONS;
+
+  @Output() approved = new EventEmitter<{
+    remarks: string;
+    data: PropertyBidderRegistrationModel;
+  }>();
+  @Output() rejected = new EventEmitter<{
+    remarks: string;
+    data: PropertyBidderRegistrationModel;
+  }>();
+
+  // readonly plotTypeOptions = PLOT_TYPE_OPTIONS;
+  // readonly propertyCategoryOptions = PROPERTY_CATEGORY_OPTIONS;
+  // readonly bidderTypeOptions = BIDDER_TYPE_OPTIONS;
+  // readonly auctionPropertyTypeOptions = AUCTION_PROPERTY_TYPE_OPTIONS;
+  // readonly paidStatusOptions = PAID_STATUS_OPTIONS;
+
   readonly relationOptions = RELATION_OPTIONS;
-  readonly auctionPropertyTypeOptions = AUCTION_PROPERTY_TYPE_OPTIONS;
-  readonly paidStatusOptions = PAID_STATUS_OPTIONS;
- 
-  readonly assetStatusFlags: { key: keyof PropertyBidderRegistrationModel; label: string }[] = [
-    { key: 'isAssetResumed', label: 'Asset Resumed' },
-    { key: 'IsAssetSurrendered', label: 'Asset Surrendered' },
-    { key: 'IsLocked', label: 'Is Asset Locked' },
-    { key: 'IsDefaulter', label: 'Is Defaulter' },
-    { key: 'IsAnyComplaint', label: 'Any Complaint' },
-    { key: 'IsNDCGenerated', label: 'NDC Generated' },
-    { key: 'IsNDCIssued', label: 'NDC Issued' },
-    { key: 'IsAssetVerified', label: 'Asset Verified' },
-    { key: 'IsCourtCase', label: 'Court Case' },
+
+  readonly plotStatusOptions = PLOT_STATUS_OPTIONS;
+  readonly assetStatusFlags: { key: string; label: string }[] = [
+    { key: 'assetResumed', label: 'Asset Resumed' },
+    { key: 'assetSurrendered', label: 'Asset Surrendered' },
+    { key: 'isAssetLocked', label: 'Is Asset Locked' },
+    { key: 'isDefaulter', label: 'Is Defaulter' },
+    { key: 'anyComplaint', label: 'Any Complaint' },
+    { key: 'ndcGenerated', label: 'NDC Generated' },
+    { key: 'ndcIssued', label: 'NDC Issued' },
+    { key: 'assetVerified', label: 'Asset Verified' },
+    { key: 'isCourtCase', label: 'Court Case' },
   ];
- 
-  // ---- state ----
+
+  history: VerificationHistoryEntry[] = [
+    {
+      role: 'Clerk',
+      actorName: 'Test',
+      action: 'Submitted',
+      remarks: 'Forwarded after initial document check.',
+      date: '25 Jul 2026, 11:42 AM',
+    },
+  ];
+
+  installmentSchedules: InstallmentScheduleView[] = [];
+
   isEditMode = signal(false);
   showHistoryPanel = signal(false);
   showDecisionModal = signal(false);
   pendingDecision = signal<ClerkDecision | null>(null);
-  localHistory = signal<ClerkHistoryEntry[]>([]);
- 
+  currentStage = 'Superintendent Review';
+  showValidationHint = false;
+  submitting = false;
+  readonly isLoading = signal(false);
+  readonly loadError = signal('');
+  isAlreadyVerified = false;
   form!: FormGroup;
   remarksControl = this.fb.nonNullable.control('', [
-    Validators.required,
-    Validators.minLength(5),
     Validators.maxLength(500),
   ]);
- 
+
+  originalRegistrationDto: any;
+  localHistory = signal<ClerkHistoryEntry[]>([]);
+  @Input() historyEntries: ClerkHistoryEntry[] = [];
+  districts: any;
+  auctionPropertyTypes: any;
+  plotTypes: any;
+  plans: any;
+  bidderTypes: any;
+  propertyCategories: any;
+  mandis: any;
+  marketCommittees: any;
+
+  constructor(private commonService: Common) { }
+
   ngOnInit(): void {
     this.buildForm();
     this.localHistory.set(this.historyEntries?.length ? this.historyEntries : []);
-    this.patchForm(this.registration ?? this.getDemoData());
+
+    this.loadDistricts();
+    this.loadPlotTypes();
+    this.loadPropertyCategories();
+    this.loadPlans();
+    this.loadBidderTypes();
+    this.loadAuctionPropertyTypes();
+
+    this.route.queryParams.subscribe(params => {
+      const encryptedId = params['id'];
+      if (encryptedId) {
+        this.loadRegistrationDetails(encryptedId);
+      } else {
+        // this.patchForm(this.registration ?? this.getDemoData());
+      }
+    });
+
     this.form.disable({ emitEvent: false });
   }
- 
+
+  loadRegistrationDetails(encryptedId: string): void {
+    try {
+      const id = Number(atob(encryptedId));
+      if (!isNaN(id)) {
+        this.service.getRegistrationById(id).subscribe({
+          next: (res: any) => {
+            if (res && res.data) {
+              console.log('data', res);
+
+              this.originalRegistrationDto = res.data;
+              // this.registration = this.mapDtoToModel(res.data);
+              this.patchForm(res.data);
+
+              if (res.data.applicationStatusId === 2 || res.data.applicationStatusId === 7) {
+                this.isAlreadyVerified = true;
+                this.activeDecision = res.data.applicationStatusId === 2 ? 'approve' : 'sendback';
+                const existingRemarks = res.data.remarks || res.data.clerkRemarks || '';
+                this.remarksControl.setValue(existingRemarks);
+                this.remarksControl.disable({ emitEvent: false });
+              } else {
+                this.isAlreadyVerified = false;
+                this.activeDecision = null;
+                this.remarksControl.setValue('');
+                this.remarksControl.enable({ emitEvent: false });
+              }
+            }
+          },
+          error: (err: any) => {
+            console.error('Error fetching registration by id:', err);
+            // this.patchForm(this.getDemoData());
+          }
+        });
+      } else {
+        // this.patchForm(this.getDemoData());
+      }
+    } catch (e) {
+      console.error('Error decrypting id:', e);
+    }
+  }
+
+  loadDistricts(): void {
+    this.commonService.getAllDistrict().subscribe({
+      next: (res: any) => {
+        this.districts = res.data || res || [];
+        if (this.originalRegistrationDto || this.registration) {
+          this.patchForm(this.originalRegistrationDto || this.registration);
+        }
+      },
+      error: (err: any) => console.error('Error fetching districts:', err)
+    });
+  }
+
+  loadPlotTypes(): void {
+    debugger
+    this.commonService.getPlotTypes().subscribe({
+      next: (res: any) => {
+        this.plotTypes = res.data || res || [];
+        console.log('pt', this.plotTypes);
+        if (this.originalRegistrationDto || this.registration) {
+          this.patchForm(this.originalRegistrationDto || this.registration);
+        }
+      },
+      error: (err: any) => console.error('Error fetching plot types:', err)
+    });
+  }
+
+  loadPlans(): void {
+    this.commonService.getPlans().subscribe({
+      next: (res: any) => {
+        this.plans = res.data || res || [];
+        console.log('plns', this.plans);
+
+        if (this.originalRegistrationDto || this.registration) {
+          this.patchForm(this.originalRegistrationDto || this.registration);
+        }
+      },
+      error: (err: any) => console.error('Error fetching plans:', err)
+    });
+  }
+
+  loadBidderTypes(): void {
+    this.commonService.getBidderTypes().subscribe({
+      next: (res: any) => {
+        this.bidderTypes = res.data || res || [];
+        if (this.originalRegistrationDto || this.registration) {
+          this.patchForm(this.originalRegistrationDto || this.registration);
+        }
+      },
+      error: (err: any) => console.error('Error fetching bidder types:', err)
+    });
+  }
+
+  loadPropertyCategories(): void {
+    this.commonService.getPropertyCategories().subscribe({
+      next: (res: any) => {
+        this.propertyCategories = res.data || res || [];
+        if (this.originalRegistrationDto || this.registration) {
+          this.patchForm(this.originalRegistrationDto || this.registration);
+        }
+      },
+      error: (err: any) => console.error('Error fetching property categories:', err)
+    });
+  }
+
+  loadAuctionPropertyTypes(): void {
+    this.commonService.getPropertyTypes().subscribe({
+      next: (res: any) => {
+        this.auctionPropertyTypes = res.data || res || [];
+        if (this.originalRegistrationDto || this.registration) {
+          this.patchForm(this.originalRegistrationDto || this.registration);
+        }
+      },
+      error: (err: any) => console.error('Error fetching auction property types:', err)
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['registration'] && !changes['registration'].firstChange && this.form) {
-      this.patchForm(this.registration ?? this.getDemoData());
-      this.isEditMode.set(false);
+      if (this.registration) this.patchForm(this.registration);
       this.form.disable({ emitEvent: false });
     }
     if (changes['historyEntries'] && this.historyEntries) {
       this.localHistory.set(this.historyEntries);
     }
   }
- 
+
   // Form construction — control names match PropertyBidderRegistrationModel exactly
   private buildForm(): void {
     this.form = this.fb.group({
       // Property Information
-      propertycode: this.fb.nonNullable.control({ value: '', disabled: true }),
-      district: this.fb.nonNullable.control('', Validators.required),
-      branch: this.fb.nonNullable.control('', Validators.required),
-      mandi: this.fb.nonNullable.control('', Validators.required),
-      plotsize: this.fb.nonNullable.control('', Validators.required),
-      plottype: this.fb.nonNullable.control('', Validators.required),
-      plotno: this.fb.nonNullable.control('', Validators.required),
-      plan: this.fb.nonNullable.control('', Validators.required),
-      plotstatus: this.fb.nonNullable.control('', Validators.required),
-      propertycategory: this.fb.nonNullable.control('', Validators.required),
- 
+      propertyCode: this.fb.nonNullable.control({ value: '', disabled: true }),
+      districtId: this.fb.nonNullable.control('', Validators.required),
+      branchId: this.fb.nonNullable.control('', Validators.required),
+      mandiId: this.fb.nonNullable.control('', Validators.required),
+      plotSize: this.fb.nonNullable.control('', Validators.required),
+      plotTypeId: this.fb.nonNullable.control('', Validators.required),
+      plotNo: this.fb.nonNullable.control('', Validators.required),
+      planId: this.fb.nonNullable.control('', Validators.required),
+      plotStatus: this.fb.nonNullable.control('', Validators.required),
+      propertyCategoryId: this.fb.nonNullable.control('', Validators.required),
+
       // Asset Status
-      isAssetResumed: this.fb.nonNullable.control(false),
-      IsAssetSurrendered: this.fb.nonNullable.control(false),
-      IsLocked: this.fb.nonNullable.control(false),
-      IsDefaulter: this.fb.nonNullable.control(false),
-      IsAnyComplaint: this.fb.nonNullable.control(false),
-      IsNDCGenerated: this.fb.nonNullable.control(false),
-      IsNDCIssued: this.fb.nonNullable.control(false),
-      IsAssetVerified: this.fb.nonNullable.control(false),
- 
+      assetResumed: this.fb.nonNullable.control(false),
+      assetSurrendered: this.fb.nonNullable.control(false),
+      isAssetLocked: this.fb.nonNullable.control(false),
+      isDefaulter: this.fb.nonNullable.control(false),
+      anyComplaint: this.fb.nonNullable.control(false),
+      ndcGenerated: this.fb.nonNullable.control(false),
+      ndcIssued: this.fb.nonNullable.control(false),
+      assetVerified: this.fb.nonNullable.control(false),
+      isCourtCase: this.fb.nonNullable.control(false),
+
       // Auction Information
-      Isauctioned: this.fb.nonNullable.control(false),
-      auctionDateTime: this.fb.nonNullable.control(''),
-      bidderType: this.fb.nonNullable.control('Individual'),
+      isAuctioned: this.fb.nonNullable.control(true),
+      auctionDate: this.fb.nonNullable.control(''),
+      bidderTypeId: this.fb.nonNullable.control('Individual'),
       emailId: this.fb.nonNullable.control('', [Validators.email]),
-      h1BidderName: this.fb.nonNullable.control(''),
-      transfered: this.fb.nonNullable.control(false),
+      bidderName: this.fb.nonNullable.control(''),
+      isTransferred: this.fb.nonNullable.control(false),
       relation: this.fb.nonNullable.control(''),
-      guardianName: this.fb.nonNullable.control(''),
+      fatherOrHusbandName: this.fb.nonNullable.control(''),
       panNo: this.fb.nonNullable.control('', [Validators.pattern(/^[A-Z]{5}[0-9]{4}[A-Z]$/)]),
-      aadharNo: this.fb.nonNullable.control('', [Validators.pattern(/^\d{12}$/)]),
+      aadhaarNo: this.fb.nonNullable.control('', [Validators.pattern(/^\d{12}$/)]),
       mobileNo: this.fb.nonNullable.control('', [Validators.pattern(/^[6-9]\d{9}$/)]),
-      auctionPropertyType: this.fb.nonNullable.control(''),
-      communicationAddress: this.fb.nonNullable.control(''),
- 
+      propertyTypeId: this.fb.nonNullable.control(''),
+      address: this.fb.nonNullable.control(''),
+
       // Financial Details
       reservePrice: this.fb.nonNullable.control(0, [Validators.required, Validators.min(0)]),
-      h1BidderFinalPrice: this.fb.nonNullable.control(0, [Validators.required, Validators.min(0)]),
- 
+      finalBidPrice: this.fb.nonNullable.control(0, [Validators.required, Validators.min(0)]),
+
       // Form Fee
-      formFeeTransactionId: this.fb.nonNullable.control(''),
-      formFeeTransactionDate: this.fb.nonNullable.control(''),
-      formFeePaidAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
- 
+      formTransactionId: this.fb.nonNullable.control(''),
+      formTxnDate: this.fb.nonNullable.control(''),
+      formPaidAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
+
       // EMD Details
-      emdTransactionId: this.fb.nonNullable.control('', Validators.required),
-      emdTransactionDate: this.fb.nonNullable.control('', Validators.required),
-      emdPaidAmount: this.fb.nonNullable.control(0, [Validators.required, Validators.min(1)]),
- 
+      emdTxnId: this.fb.nonNullable.control('', Validators.required),
+      emdDate: this.fb.nonNullable.control('', Validators.required),
+      emdAmount: this.fb.nonNullable.control(0, [Validators.required, Validators.min(1)]),
+
       // 25% Allotment Details
-      allotmentTransactionId: this.fb.nonNullable.control('', Validators.required),
-      allotmentTransactionDate: this.fb.nonNullable.control('', Validators.required),
-      allotmentPaidAmount: this.fb.nonNullable.control(0, [Validators.required, Validators.min(1)]),
- 
+      allotmentTxnId: this.fb.nonNullable.control('', Validators.required),
+      allotmentDate: this.fb.nonNullable.control('', Validators.required),
+      allotmentAmount: this.fb.nonNullable.control(0, [Validators.required, Validators.min(1)]),
+
       // Outstanding Dues
       installmentNo: this.fb.nonNullable.control(''),
       dueDate: this.fb.nonNullable.control(''),
       paidStatus: this.fb.nonNullable.control(''),
       dueAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
       accumulatedInterest: this.fb.nonNullable.control(0, [Validators.min(0)]),
-      totalDueAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
+      totalDueWithInterest: this.fb.nonNullable.control(0, [Validators.min(0)]),
+      decision: this.fb.group({
+        remarks: [''],
+      }),
     });
- 
-    this.form.get('Isauctioned')!.valueChanges.subscribe((auctioned) => this.setAuctionValidators(!!auctioned));
+
+    this.form
+      .get('isAuctioned')!
+      .valueChanges.subscribe((auctioned) => this.setAuctionValidators(!!auctioned));
   }
- 
+
   private setAuctionValidators(auctioned: boolean): void {
-    const requiredWhenAuctioned = ['auctionDateTime', 'h1BidderName', 'guardianName', 'communicationAddress'];
+    const requiredWhenAuctioned = [
+      'auctionDate',
+      'bidderName',
+      'fatherOrHusbandName',
+      'address',
+    ];
     requiredWhenAuctioned.forEach((name) => {
       const control = this.form.get(name)!;
-      auctioned ? control.addValidators(Validators.required) : control.removeValidators(Validators.required);
+      auctioned
+        ? control.addValidators(Validators.required)
+        : control.removeValidators(Validators.required);
       control.updateValueAndValidity({ emitEvent: false });
     });
   }
- 
-  private patchForm(data: PropertyBidderRegistrationModel): void {
-    this.form.patchValue(data);
-    this.setAuctionValidators(data.Isauctioned);
+
+  private formatToInputDate(dateStr: any): string {
+    if (!dateStr) return '';
+    try {
+      if (typeof dateStr === 'string' && dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          if (parts[0].length === 4) {
+            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+          }
+          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+      }
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+    } catch (e) {
+      console.error('Error formatting date:', dateStr, e);
+    }
+    return '';
   }
- 
-  // Edit mode
-  toggleEditMode(): void {
-    const next = !this.isEditMode();
-    this.isEditMode.set(next);
-    next ? this.form.enable({ emitEvent: false }) : this.form.disable({ emitEvent: false });
-    this.form.get('propertycode')!.disable({ emitEvent: false }); // always read-only
+
+  private formatToLocalDateTime(dateStr: any): string {
+    if (!dateStr) return '';
+    try {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+      }
+    } catch (e) {
+      console.error('Error formatting datetime:', dateStr, e);
+    }
+    return '';
   }
- 
-  cancelEdit(): void {
-    this.isEditMode.set(false);
-    this.patchForm(this.registration ?? this.getDemoData());
-    this.form.disable({ emitEvent: false });
+
+  private normalizeToDto(data: any): any {
+    if (!data) return {};
+
+    // Helper to resolve string values to IDs from option lists
+    let plotTypeId = data.plotTypeId ?? '';
+    if (plotTypeId && isNaN(Number(plotTypeId)) && this.plotTypes) {
+      const match = this.plotTypes.find((p: any) => p.plotType === plotTypeId || p.plotTypeName === plotTypeId);
+      if (match) plotTypeId = match.plotTypeId || match.id;
+    } else if (!plotTypeId && data.plottype && this.plotTypes) {
+      const match = this.plotTypes.find((p: any) => p.plotType === data.plottype || p.plotTypeName === data.plottype);
+      if (match) plotTypeId = match.plotTypeId || match.id;
+    }
+
+    let propertyCategoryId = data.propertyCategoryId ?? '';
+    if (propertyCategoryId && isNaN(Number(propertyCategoryId)) && this.propertyCategories) {
+      const match = this.propertyCategories.find((c: any) => c.categoryName === propertyCategoryId || c.name === propertyCategoryId);
+      if (match) propertyCategoryId = match.propertyCategoryId || match.id;
+    } else if (!propertyCategoryId && data.propertycategory && this.propertyCategories) {
+      const match = this.propertyCategories.find((c: any) => c.categoryName === data.propertycategory || c.name === data.propertycategory);
+      if (match) propertyCategoryId = match.propertyCategoryId || match.id;
+    }
+
+    let bidderTypeId = data.bidderTypeId ?? '';
+    if (bidderTypeId && isNaN(Number(bidderTypeId)) && this.bidderTypes) {
+      const match = this.bidderTypes.find((b: any) => b.bidderTypeName === bidderTypeId || b.name === bidderTypeId);
+      if (match) bidderTypeId = match.bidderTypeId || match.id;
+    } else if (!bidderTypeId && data.bidderType && this.bidderTypes) {
+      const match = this.bidderTypes.find((b: any) => b.bidderTypeName === data.bidderType || b.name === data.bidderType);
+      if (match) bidderTypeId = match.bidderTypeId || match.id;
+    }
+
+    let propertyTypeId = data.propertyTypeId ?? '';
+    if (propertyTypeId && isNaN(Number(propertyTypeId)) && this.auctionPropertyTypes) {
+      const match = this.auctionPropertyTypes.find((t: any) => t.propertyTypeName === propertyTypeId || t.name === propertyTypeId);
+      if (match) propertyTypeId = match.propertyTypeId || match.id;
+    } else if (!propertyTypeId && data.auctionPropertyType && this.auctionPropertyTypes) {
+      const match = this.auctionPropertyTypes.find((t: any) => t.propertyTypeName === data.auctionPropertyType || t.name === data.auctionPropertyType);
+      if (match) propertyTypeId = match.propertyTypeId || match.id;
+    }
+
+    let plotStatus = data.plotStatus ?? data.plotstatus ?? '';
+    if (plotStatus && typeof plotStatus === 'string') {
+      plotStatus = plotStatus.trim();
+      const match = PLOT_STATUS_OPTIONS.find(o => o.toLowerCase() === plotStatus.toLowerCase());
+      if (match) {
+        plotStatus = match;
+      }
+    }
+    let planVal = data.planName ?? '';
+    if (!planVal) {
+      const rawPlan = data.planId ?? data.plan ?? '';
+      if (rawPlan && this.plans) {
+        const match = this.plans.find((p: any) => String(p.planId || p.id) === String(rawPlan));
+        if (match) {
+          planVal = match.planName || match.name || rawPlan;
+        } else {
+          planVal = rawPlan;
+        }
+      } else {
+        planVal = rawPlan;
+      }
+    }
+    return {
+      propertyCode: data.propertyCode ?? data.propertycode ?? '',
+      districtId: data.districtName ?? data.districtId ?? data.district ?? '',
+      branchId: data.branchName ?? data.branchId ?? data.branch ?? '',
+      mandiId: data.mandiName ?? data.mandiId ?? data.mandi ?? '',
+      plotSize: data.plotSize ?? data.plotsize ?? '',
+      plotTypeId: plotTypeId,
+      plotNo: data.plotNo ?? data.plotno ?? '',
+      planId: planVal,
+      plotStatus: plotStatus,
+      propertyCategoryId: propertyCategoryId,
+
+      assetResumed: data.assetResumed ?? data.isAssetResumed ?? false,
+      assetSurrendered: data.assetSurrendered ?? data.IsAssetSurrendered ?? false,
+      isAssetLocked: data.isAssetLocked ?? data.IsLocked ?? false,
+      isDefaulter: data.isDefaulter ?? data.IsDefaulter ?? false,
+      anyComplaint: data.anyComplaint ?? data.IsAnyComplaint ?? false,
+      ndcGenerated: data.ndcGenerated ?? data.IsNDCGenerated ?? false,
+      ndcIssued: data.ndcIssued ?? data.IsNDCIssued ?? false,
+      assetVerified: data.assetVerified ?? data.IsAssetVerified ?? false,
+      isCourtCase: data.isCourtCase ?? data.IsCourtCase ?? false,
+
+      isAuctioned: data.isAuctioned ?? data.Isauctioned ?? false,
+      auctionDate: this.formatToLocalDateTime(data.auctionDate ?? data.auctionDateTime ?? ''),
+      bidderTypeId: bidderTypeId,
+      emailId: data.emailId ?? data.email ?? '',
+      bidderName: data.bidderName ?? data.h1BidderName ?? '',
+      isTransferred: data.isTransferred ?? data.transfered ?? false,
+      relation: data.relation ?? '',
+      fatherOrHusbandName: data.fatherOrHusbandName ?? data.guardianName ?? '',
+      panNo: data.panNo ?? '',
+      aadhaarNo: data.aadhaarNo ?? data.aadharNo ?? '',
+      mobileNo: data.mobileNo ?? '',
+      propertyTypeId: propertyTypeId,
+      address: data.address ?? data.communicationAddress ?? '',
+
+      reservePrice: data.reservePrice ?? 0,
+      finalBidPrice: data.finalBidPrice ?? data.h1BidderFinalPrice ?? 0,
+
+      formTransactionId: data.formTransactionId ?? data.formFeeTransactionId ?? '',
+      formTxnDate: this.formatToInputDate(data.formTxnDate ?? data.formFeeTransactionDate ?? ''),
+      formPaidAmount: data.formPaidAmount ?? data.formFeePaidAmount ?? 0,
+
+      emdTxnId: data.emdTxnId ?? data.emdTransactionId ?? '',
+      emdDate: this.formatToInputDate(data.emdDate ?? data.emdTransactionDate ?? ''),
+      emdAmount: data.emdAmount ?? data.emdPaidAmount ?? 0,
+
+      allotmentTxnId: data.allotmentTxnId ?? data.allotmentTransactionId ?? '',
+      allotmentDate: this.formatToInputDate(data.allotmentDate ?? data.allotmentTransactionDate ?? ''),
+      allotmentAmount: data.allotmentAmount ?? data.allotmentPaidAmount ?? 0,
+
+      installmentNo: data.installmentNo ?? '',
+      dueDate: this.formatToInputDate(data.dueDate ?? ''),
+      paidStatus: data.paidStatus ?? '',
+      dueAmount: data.dueAmount ?? 0,
+      accumulatedInterest: data.accumulatedInterest ?? 0,
+      totalDueWithInterest: data.totalDueWithInterest ?? data.totalDueAmount ?? 0,
+    };
   }
- 
-  saveEdits(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  private patchForm(data: PropertyBidderRegistrationModel | Record<string, unknown>): void {
+    const dto = this.normalizeToDto(data);
+    const auctionValue = this.getBooleanValue(
+      dto,
+      'isAuctioned',
+      'Isauctioned',
+      'IsAuctioned',
+    );
+    this.form.patchValue({ ...dto, isAuctioned: auctionValue });
+    this.setAuctionValidators(auctionValue);
+    this.calculateUIInstallments();
+  }
+
+  private calculateUIInstallments(): void {
+    if (!this.form.get('isAuctioned')?.value) {
+      this.installmentSchedules = [];
       return;
     }
-    const value = this.form.getRawValue() as PropertyBidderRegistrationModel;
-    this.saved.emit(value);
-    this.localHistory.update((h) => [
-      ...h,
-      {
-        id: crypto.randomUUID(),
-        action: 'Edited & Resubmitted',
-        actionBy: 'Clerk User',
-        actionRole: 'Clerk',
-        actionDate: new Date().toISOString(),
-        remarks: 'Fields corrected by clerk prior to decision.',
-        status: 'EDITED',
-      },
-    ]);
-    this.isEditMode.set(false);
-    this.form.disable({ emitEvent: false });
+
+    // 1. Fetch form variables safely
+    const finalBidderPrice = Number(this.form.get('finalBidPrice')?.value) || 0;
+    const allotmentPaid_25_percentage = Number(this.form.get('allotmentAmount')?.value) || 0;
+    const milestoneDateStr = this.form.get('allotmentDate')?.value;
+    const selectedInstallmentString = this.form.get('installmentNo')?.value || 'Installment 1';
+
+    // 2. Calculate TOTAL Outstanding Principal Balance
+    const outstandingPrincipal = finalBidderPrice - allotmentPaid_25_percentage;
+
+    // Compute the base installment principal (1/6th of total outstanding principal)
+    let computedDueAmount = 0;
+    if (outstandingPrincipal > 0) {
+      computedDueAmount = outstandingPrincipal / 6;
+      computedDueAmount = Math.round((computedDueAmount + Number.EPSILON) * 100) / 100;
+    }
+
+    // 3. Validate milestone date presence BEFORE computing any interest
+    let baseYear = 0, baseMonth = 0, baseDay = 0;
+    let dateIsValid = false;
+
+    if (milestoneDateStr) {
+      const parts = milestoneDateStr.split('-');
+      if (parts.length === 3) {
+        baseYear = parseInt(parts[0], 10);
+        baseMonth = parseInt(parts[1], 10) - 1;
+        baseDay = parseInt(parts[2], 10);
+        dateIsValid = !isNaN(baseYear) && !isNaN(baseMonth) && !isNaN(baseDay);
+      }
+    }
+
+    // 4. Determine interest rate based on the allotment transaction year
+    //    < 1992 -> 6%, >= 1992 -> 12%
+    const rateOfInterest = dateIsValid ? (baseYear < 1992 ? 6 : 12) : 0;
+
+    // 5. Generate the 6-part amortization matrix table
+    const generatedMatrix: InstallmentScheduleView[] = [];
+    let totalInterestAcrossInstallments = 0;
+
+    for (let step = 1; step <= 6; step++) {
+      let calculatedDateStr = '';
+
+      if (dateIsValid) {
+        const targetTotalMonths = baseMonth + (step * 6);
+        const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
+        const targetMonth = targetTotalMonths % 12;
+
+        const targetDateObj = new Date(targetYear, targetMonth, baseDay);
+        if (targetDateObj.getDate() !== baseDay) {
+          targetDateObj.setDate(0);
+        }
+
+        const pad = (num: number) => num.toString().padStart(2, '0');
+        calculatedDateStr = `${targetDateObj.getFullYear()}-${pad(targetDateObj.getMonth() + 1)}-${pad(targetDateObj.getDate())}`;
+      }
+
+      const currentLabel = `Installment ${step}`;
+
+      // Declining-balance interest calculation
+      // remainingPrincipal(i) = outstandingPrincipal - (computedDueAmount * (i - 1))
+      let computedInterestForStep = 0;
+      if (dateIsValid && outstandingPrincipal > 0 && computedDueAmount > 0) {
+        const remainingPrincipal = outstandingPrincipal - (computedDueAmount * (step - 1));
+        const basisForInterest = remainingPrincipal > 0 ? remainingPrincipal : 0;
+
+        computedInterestForStep = (basisForInterest * rateOfInterest * 182.5) / (365 * 100);
+        computedInterestForStep = Math.round((computedInterestForStep + Number.EPSILON) * 100) / 100;
+      }
+
+      totalInterestAcrossInstallments += computedInterestForStep;
+
+      const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestForStep) : 0;
+
+      generatedMatrix.push({
+        installmentLabel: currentLabel,
+        dueDate: calculatedDateStr,
+        baseAmountDue: computedDueAmount,
+        interestAmount: computedInterestForStep,
+        totalWithInterest: Math.round((stepTotalWithInterest + Number.EPSILON) * 100) / 100
+      });
+    }
+
+    this.installmentSchedules = generatedMatrix;
+    totalInterestAcrossInstallments = Math.round((totalInterestAcrossInstallments + Number.EPSILON) * 100) / 100;
+
+    // 6. Calculate total overall due (Full Principal + Sum of computed interest)
+    const finalTotalDueIncludingInterest = outstandingPrincipal > 0
+      ? (outstandingPrincipal + totalInterestAcrossInstallments)
+      : 0;
+
+    const activeNode = generatedMatrix.find(item => item.installmentLabel === selectedInstallmentString);
+    const activeDueDate = activeNode ? activeNode.dueDate : '';
+
+    // 7. Patch corrected, high-level overview values to UI inputs
+    this.form.patchValue({
+      dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : 0,
+      dueDate: activeDueDate,
+      totalDueWithInterest: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : 0
+    }, { emitEvent: false });
   }
- 
+
+  get isAuctionSectionVisible(): boolean {
+    return !!this.form?.get('isAuctioned')?.value;
+  }
+
+  private getBooleanValue(
+    data: Record<string, unknown> | null | undefined,
+    ...keys: string[]
+  ): boolean {
+    if (!data) return false;
+
+    for (const key of keys) {
+      const value = data[key];
+      if (typeof value === 'boolean') {
+        return value;
+      }
+
+      if (typeof value === 'string') {
+        const normalized = value.trim().toLowerCase();
+        if (normalized === 'true' || normalized === '1') {
+          return true;
+        }
+
+        if (normalized === 'false' || normalized === '0') {
+          return false;
+        }
+      }
+
+      if (typeof value === 'number') {
+        return value === 1;
+      }
+    }
+
+    return false;
+  }
+
+  private normalizeInstallmentSchedules(
+    data: Record<string, unknown> | null | undefined,
+  ): InstallmentScheduleView[] {
+    if (!data) {
+      return [];
+    }
+
+    const rawSchedule =
+      data['installmentSchedules'] ??
+      data['installments'] ??
+      data['schedule'] ??
+      data['installmentSchedule'];
+    if (Array.isArray(rawSchedule) && rawSchedule.length > 0) {
+      return rawSchedule.map((item: any, index: number) => ({
+        installmentLabel: String(
+          item?.installmentLabel ?? item?.installmentNo ?? `Installment ${index + 1}`,
+        ),
+        dueDate: String(item?.dueDate ?? item?.due_date ?? item?.DueDate ?? ''),
+        baseAmountDue: Number(item?.baseAmountDue ?? item?.baseAmount ?? item?.dueAmount ?? 0),
+        interestAmount: Number(item?.interestAmount ?? item?.interest ?? 0),
+        totalWithInterest: Number(item?.totalWithInterest ?? item?.totalDue ?? 0),
+      }));
+    }
+
+    const fallbackLabel = String(data['installmentNo'] ?? 'Installment 1');
+    const fallbackDueDate = String(data['dueDate'] ?? '');
+    const fallbackBaseAmount = Number(data['dueAmount'] ?? 0);
+    const fallbackInterest = Number(data['accumulatedInterest'] ?? 0);
+    const fallbackTotal = Number(data['totalDueAmount'] ?? 0);
+
+    if (fallbackBaseAmount || fallbackInterest || fallbackTotal || fallbackDueDate) {
+      return [
+        {
+          installmentLabel: fallbackLabel,
+          dueDate: fallbackDueDate,
+          baseAmountDue: fallbackBaseAmount,
+          interestAmount: fallbackInterest,
+          totalWithInterest: fallbackTotal,
+        },
+      ];
+    }
+
+    return [];
+  }
+
   // Approve / Reject
   openDecisionModal(decision: ClerkDecision): void {
     this.pendingDecision.set(decision);
     this.remarksControl.reset('');
     this.showDecisionModal.set(true);
   }
- 
+
   closeDecisionModal(): void {
     this.showDecisionModal.set(false);
     this.pendingDecision.set(null);
   }
- 
+
   confirmDecision(): void {
     if (this.remarksControl.invalid) {
       this.remarksControl.markAsTouched();
@@ -241,124 +750,190 @@ export class DeoVerification implements OnInit, OnChanges {
     }
     const decision = this.pendingDecision();
     if (!decision) return;
- 
+
     const value = this.form.getRawValue() as PropertyBidderRegistrationModel;
     const remarks = this.remarksControl.value;
- 
+
     if (decision === 'APPROVED') {
       this.approved.emit({ remarks, data: value });
     } else {
       this.rejected.emit({ remarks, data: value });
     }
- 
-    this.localHistory.update((h) => [
-      ...h,
-      {
-        id: crypto.randomUUID(),
-        action: decision === 'APPROVED' ? 'Approved' : 'Rejected',
-        actionBy: 'Clerk User',
-        actionRole: 'Clerk',
-        actionDate: new Date().toISOString(),
-        remarks,
-        status: decision,
-      },
-    ]);
- 
+
     this.showDecisionModal.set(false);
     this.pendingDecision.set(null);
   }
- 
-  toggleHistoryPanel(): void {
-    this.showHistoryPanel.update((v) => !v);
-  }
- 
+
   // Template helpers
   isInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
     return !!control && control.invalid && (control.touched || control.dirty);
   }
- 
+
   errorFor(controlName: string): ValidationErrors | null {
     return this.form.get(controlName)?.errors ?? null;
   }
- 
-  currentStatus(): 'PENDING' | 'EDITED' | 'APPROVED' | 'REJECTED' {
-    const h = this.localHistory();
-    return h.length ? h[h.length - 1].status : 'PENDING';
-  }
- 
-  statusBadgeClass(status: string = this.currentStatus()): string {
-    switch (status) {
-      case 'APPROVED':
-        return 'badge text-bg-success';
-      case 'REJECTED':
-        return 'badge text-bg-danger';
-      case 'EDITED':
-        return 'badge text-bg-info';
-      default:
-        return 'badge text-bg-warning';
+
+  formatDisplayDate(value: string): string {
+    if (!value) {
+      return 'Waiting on base milestone date...';
     }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
   }
- 
-  /** Local placeholder data so this component is viewable before you wire a real @Input(). */
-  private getDemoData(): PropertyBidderRegistrationModel {
+
+  selectDecision(decision: 'approve' | 'sendback'): void {
+    this.activeDecision = decision;
+    this.showValidationHint = false;
+    if (decision === 'sendback') {
+      this.remarksControl?.setValidators([Validators.required, Validators.minLength(10)]);
+    } else {
+      this.remarksControl?.setValidators([]);
+    }
+    this.remarksControl?.updateValueAndValidity();
+  }
+
+  submitDecision(): void {
+    if (!this.activeDecision) {
+      return;
+    }
+    if (this.activeDecision === 'sendback' && this.remarksControl?.invalid) {
+      this.showValidationHint = true;
+      this.remarksControl.markAsTouched();
+      return;
+    }
+
+    this.submitting = true;
+
+    // Retrieve current user ID from JWT token in local storage
+    const token = localStorage.getItem('token');
+    let currentUserId = 0;
+    if (token) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        const rawId = tokenPayload.ApplicantId || tokenPayload.UserId || tokenPayload.id;
+        if (rawId) {
+          currentUserId = Number(rawId);
+        }
+      } catch (e) {
+        console.error('Error parsing token for currentUserId:', e);
+      }
+    }
+
+    const payload = {
+      id: this.originalRegistrationDto?.id || 0,
+      remarks: this.remarksControl?.value || '',
+      decision: this.activeDecision,
+      modifiedBy: currentUserId,
+      modifiedDate: new Date().toISOString()
+    };
+
+    this.service.VerifyByClerk(payload).subscribe({
+      next: (res: any) => {
+        this.submitting = false;
+
+        const actionText = this.activeDecision === 'approve' ? 'approved' : 'sent back for changes';
+        this.toastr.success(`Application has been successfully ${actionText}!`, 'Success');
+
+        this.isAlreadyVerified = true;
+        this.remarksControl.disable({ emitEvent: false });
+
+        const entry: VerificationHistoryEntry = {
+          role: this.currentStage,
+          actorName: 'You',
+          action: this.activeDecision === 'approve' ? 'Approved' : 'Sent Back',
+          remarks: payload.remarks,
+          date: new Date().toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          }),
+        };
+        this.history.unshift(entry);
+
+        this.activeDecision = null;
+        setTimeout(() => {
+          this.router.navigate(['/dashboard/property-verification']);
+        }, 1500);
+      },
+      error: (err: any) => {
+        this.submitting = false;
+        console.error('Error submitting clerk decision:', err);
+        const errorMsg = err?.error?.message || 'Something went wrong while submitting the decision.';
+        this.toastr.error(errorMsg, 'Error');
+      }
+    });
+  }
+
+  mapDtoToModel(d: any): PropertyBidderRegistrationModel {
     return {
-      propertycode: 'PROP-2026-00457',
-      district: 'Ludhiana',
-      branch: 'Ludhiana Market Committee',
-      mandi: 'New Grain Market',
-      plotsize: '200 Sq. Yards',
-      plottype: 'Commercial',
-      plotno: 'B-12',
-      plan: 'Standard Allocation',
-      plotstatus: 'Auctioned',
-      propertycategory: 'Prime Location',
- 
-      isAssetResumed: false,
-      IsAssetSurrendered: false,
-      IsLocked: false,
-      IsDefaulter: false,
-      IsAnyComplaint: false,
-      IsNDCGenerated: false,
-      IsNDCIssued: false,
-      IsAssetVerified: false,
-      IsCourtCase: false,
- 
-      Isauctioned: true,
-      auctionDateTime: '2026-07-09T11:00',
-      bidderType: 'Individual',
-      emailId: 'bidder@domain.com',
-      h1BidderName: 'Rajinder Kumar',
-      transfered: false,
-      relation: 'Son of (S/o)',
-      guardianName: 'Gurdev Singh',
-      panNo: 'ABCDE1234F',
-      aadharNo: '123456781234',
-      mobileNo: '9876543210',
-      auctionPropertyType: 'Commercial Plots',
-      communicationAddress: 'House No. 45, Model Town, Ludhiana, Punjab - 141002',
- 
-      reservePrice: 4500000,
-      h1BidderFinalPrice: 5500000,
- 
-      formFeeTransactionId: 'TXN998877',
-      formFeeTransactionDate: '2026-06-01',
-      formFeePaidAmount: 500,
- 
-      emdTransactionId: 'EMD556677',
-      emdTransactionDate: '2026-06-15',
-      emdPaidAmount: 450000,
- 
-      allotmentTransactionId: 'MS112233',
-      allotmentTransactionDate: '2026-07-08',
-      allotmentPaidAmount: 1375000,
- 
-      installmentNo: '1',
-      dueDate: '2026-08-08',
-      paidStatus: 'Paid',
-      dueAmount: 50000,
-      accumulatedInterest: 4500,
-      totalDueAmount: 54500,
+      propertycode: d.propertyCode || '',
+      district: d.districtName || '',
+      branch: d.branchName || '',
+      mandi: d.mandiName || '',
+      plotsize: d.plotSize ? d.plotSize.toString() : '',
+      plottype: d.plotType || 'Commercial',
+      plotno: d.plotNo ? d.plotNo.toString() : '',
+      plan: d.planName || 'Standard Allocation',
+      plotstatus: d.plotStatus || 'Vacant',
+      propertycategory: d.categoryName || 'General',
+
+      isAssetResumed: d.assetResumed || false,
+      IsAssetSurrendered: d.assetSurrendered || false,
+      IsLocked: d.isAssetLocked || false,
+      IsDefaulter: d.isDefaulter || false,
+      IsAnyComplaint: d.anyComplaint || false,
+      IsNDCGenerated: d.ndcGenerated || false,
+      IsNDCIssued: d.ndcIssued || false,
+      IsAssetVerified: d.assetVerified || false,
+      IsCourtCase: d.isCourtCase || false,
+
+      Isauctioned: d.isAuctioned || false,
+      auctionDateTime: d.auctionDate ? d.auctionDate.substring(0, 16) : '',
+      bidderType: d.bidderTypeId === 1 ? 'Individual' : 'Company',
+      emailId: d.email || '',
+      h1BidderName: d.bidderName || '',
+      transfered: d.isTransferred || false,
+      relation: d.relation || 'Son of (S/o)',
+      guardianName: d.fatherOrHusbandName || '',
+      panNo: d.panNo || '',
+      aadharNo: d.aadhaarNo || '',
+      mobileNo: d.mobileNo || '',
+      auctionPropertyType: d.propertyTypeId === 1 ? 'Commercial Plots' : 'Residential Plots',
+      communicationAddress: d.address || '',
+
+      reservePrice: d.reservePrice || 0,
+      h1BidderFinalPrice: d.finalBidPrice || 0,
+
+      formFeeTransactionId: d.formTransactionId || '',
+      formFeeTransactionDate: d.formTxnDate ? d.formTxnDate.substring(0, 10) : '',
+      formFeePaidAmount: d.formPaidAmount || 0,
+
+      emdTransactionId: d.emdTxnId || '',
+      emdTransactionDate: d.emdDate ? d.emdDate.substring(0, 10) : '',
+      emdPaidAmount: d.emdAmount || 0,
+
+      allotmentTransactionId: d.allotmentTxnId || '',
+      allotmentTransactionDate: d.allotmentDate ? d.allotmentDate.substring(0, 10) : '',
+      allotmentPaidAmount: d.allotmentAmount || 0,
+
+      installmentNo: d.installmentNo || '1',
+      dueDate: d.dueDate ? d.dueDate.substring(0, 10) : '',
+      paidStatus: d.paidStatus || 'Unpaid',
+      dueAmount: d.dueAmount || 0,
+      accumulatedInterest: d.accumulatedInterest || 0,
+      totalDueAmount: d.totalDueWithInterest || 0
     };
   }
 }

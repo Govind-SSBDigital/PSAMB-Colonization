@@ -1,0 +1,52 @@
+name: CI / Frontend Build and Test
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - staging
+      - main
+    paths:
+      - 'Frontend/**'
+      - '.github/workflows/ci-frontend.yml'
+  push:
+    branches:
+      - '**'
+      - '!main'
+      - '!staging'
+      - '!develop'
+    paths:
+      - 'Frontend/**'
+      - '.github/workflows/ci-frontend.yml'
+
+jobs:
+  frontend-ci:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: Frontend
+
+    - name: Lint Frontend
+      run: npm run lint --if-present
+      working-directory: Frontend
+
+    - name: Build Frontend
+      run: npm run build
+      working-directory: Frontend
+
+    - name: Run Frontend Tests
+      run: npx ng test --watch=false --no-progress --browsers=ChromeHeadless
+      working-directory: Frontend

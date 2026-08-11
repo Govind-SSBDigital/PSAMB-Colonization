@@ -932,6 +932,7 @@ export class SignupSignin implements OnInit {
       this.generateCaptcha();
       return;
     }
+    debugger
     this.loginRole= this.loginRole === true ? 1 : 0 ;
     this.authService.login(userId, password, this.loginRole).subscribe({
       next: (response) => {
