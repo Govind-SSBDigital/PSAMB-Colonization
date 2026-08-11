@@ -1,4 +1,9 @@
-﻿namespace Backend.Models.DTOs
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Backend.Models.DTOs
 {
     // ── REQUESTS ─────────────────────────────────────
     // Models/DTOs/AuthDtos.cs
@@ -58,6 +63,22 @@
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        [JsonConverter(typeof(BoolConverter))]
+        public bool IsHRMSOrUser { get; set; }
+    }
+    public class BoolConverter : JsonConverter<bool>
+    {
+        public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Number)
+                return reader.GetInt32() != 0;
+            return reader.GetBoolean();
+        }
+
+        public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
+        {
+            writer.WriteBooleanValue(value);
+        }
     }
     public class MobileOtpLoginRequest
     {
@@ -86,6 +107,8 @@
         public string? PhoneNumber { get; set; }
         public IList<string> Roles { get; set; } = new List<string>();
         public DateTime CreatedAt { get; set; }
+        public string UserName { get; internal set; }
+        public string MobileNo { get; internal set; }
     }
 
     public class LoginResponse

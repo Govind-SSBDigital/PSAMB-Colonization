@@ -1,0 +1,344 @@
+<!-- Custom Toast Container -->
+<div class="custom-toast-container" [class.show]="showToast" [class.success]="toastType === 'success'"
+    [class.error]="toastType === 'error'" [class.info]="toastType === 'info'">
+    <div class="toast-content">
+        <i class="fas" [class.fa-check-circle]="toastType === 'success'" [class.fa-times-circle]="toastType === 'error'"
+            [class.fa-info-circle]="toastType === 'info'"></i>
+        <span>{{ toastMessage }}</span>
+    </div>
+</div>
+
+<!-- <app-navbar></app-navbar> -->
+
+<div class="portal-wrapper" [class.signin-bg]="authMode === 'signin' && !isLoggedIn">
+    <!-- Portal Header banner -->
+    <!-- <div class="portal-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+      <div class="badge">Colonization Department</div>
+      <h1>Colonization Department Portal / ਉਪਨਿਵੇਸ਼ ਵਿਭਾਗ ਪੋਰਟਲ</h1>
+      <p>Government of Punjab — Easy access to e-Auctions, digital property records, and online citizen services.</p>
+    </div>
+  </div> -->
+
+    <div class="portal-container">
+
+        <!-- NOT LOGGED IN STATE -->
+        <div *ngIf="!isLoggedIn">
+
+
+
+            <!-- 2. LOGIN CARD -->
+            <div class="auth-card-wrapper-screenshot animated fade-in" *ngIf="authMode === 'signin'">
+
+                <!-- Back to landing button -->
+                <button type="button" class="btn-back-to-landing-top" (click)="goBackFromLogin()">
+                    <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
+                </button>
+
+                <div class="auth-card-header-screenshot mt-3">
+                    <h2>Login</h2>
+                </div>
+
+                <!-- Registration Successful Alert -->
+                <div class="registration-success-alert-material animated fade-in" *ngIf="showRegistrationSuccessAlert">
+                    <div class="alert-icon-wrapper-material-inner">
+                        <mat-icon>mark_email_read</mat-icon>
+                    </div>
+                    <div class="alert-content-wrapper">
+                        <h3>Registration Successful! / ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਸਫਲ ਰਹੀ!</h3>
+                        <p>Your user account has been registered. Your credentials have been sent to your email.</p>
+                    </div>
+                    <button mat-icon-button class="close-alert-btn" (click)="showRegistrationSuccessAlert = false"
+                        title="Dismiss">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+
+                <!-- ERROR BANNER -->
+                <div class="login-error-banner-material" *ngIf="errorMessage">
+                    <mat-icon>warning</mat-icon>
+                    <span>{{ errorMessage }}</span>
+                </div>
+
+                <!-- LOGIN FORM WITH CAPTCHA (MATCHING SCREENSHOT) -->
+                <form *ngIf="loginMethod === 'password'" (ngSubmit)="onSignInSubmit()"
+                    class="signin-form-screenshot animated fade-in">
+
+                    <!-- User ID Input -->
+                    <div class="form-input-box-screenshot">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="text" name="userId" [(ngModel)]="loginData.userId" required
+                            placeholder="Enter UserName">
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-input-box-screenshot">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="password" name="password" [(ngModel)]="loginData.password" required
+                            placeholder="Enter Password">
+                    </div>
+
+                    <!-- Captcha Section -->
+                    <div class="captcha-label-screenshot">Captcha</div>
+
+                    <div class="captcha-row-screenshot">
+                        <div class="captcha-image-wrapper">
+                            <span class="captcha-chars">{{ captchaText }}</span>
+                        </div>
+                        <button type="button" class="btn-refresh-captcha" (click)="refreshCaptcha()">Refresh</button>
+                    </div>
+
+                    <!-- Captcha Code Input -->
+                    <input type="text" name="captchaInput" [(ngModel)]="captchaInput" required
+                        placeholder="Enter Captcha Code" class="captcha-input-field-screenshot">
+
+                    <!-- Forgot Password & Submit Button -->
+                    <div class="forgot-pwd-row-screenshot">
+                        <a href="javascript:void(0)" class="forgot-link-screenshot">Forgot Password</a>
+                    </div>
+
+                    <div class="login-actions-row-parallel">
+                        <button type="submit" class="btn-login-screenshot flex-grow-1">
+                            LOG IN
+                        </button>
+                        <button type="button" class="btn-login-mobile-toggle" (click)="toggleLoginMethod('otp')">
+                            <i class="fas fa-mobile-alt"></i> Login with Mobile
+                        </button>
+                    </div>
+                </form>
+
+                <!-- LOGIN FORM FOR MOBILE OTP LOGIN -->
+                <form *ngIf="loginMethod === 'otp'" (ngSubmit)="onSignInOtpSubmit()"
+                    class="signin-form-screenshot animated fade-in">
+
+                    <!-- Mobile Number Input -->
+                    <div class="form-input-box-screenshot">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="tel" name="mobileNumber" maxlength="10" [(ngModel)]="loginOtpData.mobileNumber"
+                            required [disabled]="loginOtpData.otpSent" placeholder="Enter Mobile Number">
+                    </div>
+
+                    <!-- Verification OTP Code Input (Shown only when OTP sent) -->
+                    <div class="form-input-box-screenshot" *ngIf="loginOtpData.otpSent">
+                        <div class="input-prefix-icon-screenshot">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="vertical-divider-screenshot">|</div>
+                        <input type="text" name="otpInput" maxlength="6" [(ngModel)]="loginOtpData.otpInput" required
+                            placeholder="Enter 6-digit OTP (112233)">
+                    </div>
+
+                    <!-- OTP Sent Countdown/Resend helper -->
+                    <div class="otp-timer-row-helper" *ngIf="loginOtpData.otpSent">
+                        <span *ngIf="loginOtpData.timer > 0">Resend OTP in: <strong>{{ loginOtpData.timer
+                                }}s</strong></span>
+                        <button type="button" class="btn-resend-link" *ngIf="loginOtpData.timer === 0"
+                            (click)="sendLoginOtp()">Resend OTP</button>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="login-actions-row-parallel mt-2">
+                        <!-- Send OTP Button (when not sent) -->
+                        <button type="button" *ngIf="!loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1"
+                            (click)="sendLoginOtp()">
+                            Send OTP / ਵੈਰੀਫਾਈ ਕਰੋ
+                        </button>
+
+                        <!-- Verify & Log In Button (when sent) -->
+                        <button type="submit" *ngIf="loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1">
+                            Verify & Login
+                        </button>
+
+
+                        <!-- <button type="button" class="btn-login-mobile-toggle" (click)="toggleLoginMethod('password')">
+              <i class="fas fa-key"></i> Login with Password
+            </button> -->
+                    </div>
+                </form>
+
+                <div class="auth-card-footer text-center">
+                    <p>Don't have an account? / ਖਾਤਾ ਨਹੀਂ ਹੈ? <button type="button" class="btn-link-action"
+                            (click)="openSignUp()">Register as Applicant / ਬਿਨੈਕਾਰ ਵਜੋਂ ਰਜਿਸਟਰ ਕਰੋ</button></p>
+                </div>
+            </div>
+
+            <div class="auth-card-wrapper-screenshot signup-wide animated fade-in" [class.form-active]="proceedToForm"
+                *ngIf="authMode === 'signup'">
+
+                <!-- Back Button -->
+                <button type="button" class="btn-back-to-landing-top mb-3"
+                    (click)="proceedToForm ? onBackToInstructions() : goBackToLanding()">
+                    <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
+                </button>
+
+                <!-- INSTRUCTIONS SECTION (Shown when proceedToForm is false) -->
+                <div class="instructions-section animated fade-in" *ngIf="!proceedToForm">
+                    <!-- Page Header Title -->
+                    <div class="signup-page-header text-center mb-2">
+                        <h1 class="signup-main-title">ਸਾਈਨ ਅੱਪ ਕਰੋ / Sign Up</h1>
+                    </div>
+
+                    <div class="instructions-card-container">
+                        <div class="row g-4">
+                            <!-- English Column -->
+                            <div class="col-md-6 border-end-desktop">
+                                <h2 class="ins-title-en">General Instructions (English)</h2>
+                                <p class="ins-intro-en">Please select the appropriate category under which you wish to
+                                    sign up for <strong>E-Services</strong>:</p>
+                                <span class="ins-subtitle-en">(Registration for E-Auctions, Citizen Services, and
+                                    Property Bidders)</span>
+
+                                <ul class="ins-list-en mt-3">
+                                    <li>Individual</li>
+                                    <li>Sole Proprietorship</li>
+                                    <li>Partnership Firm</li>
+                                    <li>Hindu Undivided Family (HUF)</li>
+                                    <li>Public Limited Company</li>
+                                    <li>Private Limited Company</li>
+                                    <li>Limited Liability Partnership</li>
+                                    <li>Procurement Agency</li>
+                                </ul>
+
+                                <h3 class="ins-heading-en mt-4">Instructions to Fill the Form</h3>
+                                <ul class="ins-sublist-en">
+                                    <li>Please scan your photograph and required documents (Formats: JPG, PNG, JPEG. The
+                                        maximum size limit is 100 KB for the applicant's photo and 500 KB for all other
+                                        documents).</li>
+                                    <li>All fields marked with an asterisk (*) are mandatory to fill.</li>
+                                    <li>Enter a valid mobile number and email address. The username and password will be
+                                        sent to your registered mobile number/email.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Punjabi Column -->
+                            <div class="col-md-6">
+                                <h2 class="ins-title-pb">ਆਮ ਹਦਾਇਤਾਂ (ਪੰਜਾਬੀ)</h2>
+                                <p class="ins-intro-pb">ਕਿਰਪਾ ਕਰਕੇ ਉਹ ਸ਼੍ਰੇਣੀ ਚੁਣੋ ਜਿਸ ਅਧੀਨ ਤੁਸੀਂ
+                                    <strong>ਈ-ਸੇਵਾਵਾਂ</strong> ਲਈ ਰਜਿਸਟਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ:
+                                </p>
+                                <br>
+                                <span class="ins-subtitle-pb">(ਈ-ਨੀਲਾਮੀ, ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਅਤੇ ਜਾਇਦਾਦ ਬੋਲੀਕਾਰਾਂ ਲਈ
+                                    ਰਜਿਸਟ੍ਰੇਸ਼ਨ)</span>
+
+                                <ul class="ins-list-pb mt-3">
+                                    <li>ਵਿਅਕਤੀਗਤ</li>
+                                    <li>ਇਕਲੌਤੀ ਮਾਲਕੀ</li>
+                                    <li>ਭਾਈਵਾਲੀ ਫਰਮ</li>
+                                    <li>ਹਿੰਦੂ ਅਣਵੰਡਿਆ ਪਰਿਵਾਰ (HUF)</li>
+                                    <li>ਪਬਲਿਕ ਲਿਮਟਿਡ ਕੰਪਨੀ</li>
+                                    <li>ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ ਕੰਪਨੀ</li>
+                                    <li>ਸੀਮਿਤ ਜ਼ਿੰਮੇਵਾਰੀ ਭਾਈਵਾਲੀ</li>
+                                    <li>ਖਰੀਦ ਏਜੰਸੀ</li>
+                                </ul>
+
+                                <h3 class="ins-heading-pb mt-4">ਫਾਰਮ ਭਰਨ ਲਈ ਹਦਾਇਤਾਂ</h3>
+                                <ul class="ins-sublist-pb">
+                                    <li>ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਫੋਟੋ ਅਤੇ ਲੋੜੀਂਦੇ ਦਸਤਾਵੇਜ਼ ਸਕੈਨ ਕਰੋ (ਫਾਰਮੈਟ: JPG, PNG, JPEG।
+                                        ਬਿਨੈਕਾਰ ਦੀ ਫੋਟੋ ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਸਾਈਜ਼ 100 KB ਅਤੇ ਬਾਕੀ ਦਸਤਾਵੇਜ਼ਾਂ ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ
+                                        ਸਾਈਜ਼ 500 KB ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ)।</li>
+                                    <li>ਤਾਰਾ (*) ਚਿੰਨ੍ਹ ਵਾਲੇ ਸਾਰੇ ਖੇਤਰ ਭਰਨੇ ਲਾਜ਼ਮੀ ਹਨ।</li>
+                                    <li>ਸਹੀ ਮੋਬਾਈਲ ਨੰਬਰ ਅਤੇ ਈਮੇਲ ਆਈ.ਡੀ. ਦਰਜ ਕਰੋ। ਯੂਜ਼ਰ ਨਾਮ / ਪਾਸਵਰਡ ਤੁਹਾਡੇ ਰਜਿਸਟਰਡ
+                                        ਮੋਬਾਈਲ ਨੰਬਰ ਅਤੇ ਈਮੇਲ 'ਤੇ ਭੇਜਿਆ ਜਾਵੇਗਾ।</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Parallel Query Boxes Row -->
+                        <div class="query-boxes-row mt-4">
+                            <div class="query-box-en">
+                                <strong>In case of any queries kindly contact on 01725101674 (Landline), 98779 37725,
+                                    83608 99462 (Mobile) Email – imspmbsupport@ssbdigital.in</strong>
+                            </div>
+                            <div class="query-box-pb">
+                                <strong>ਜੇਕਰ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੀ ਦਿੱਕਤ ਪੇਸ਼ ਆਉਂਦੀ ਹੈ ਤਾਂ ਹੇਠ ਦਰਸਾਏ ਨੰਬਰਾਂ 'ਤੇ ਸੰਪਰਕ ਕਰੋ
+                                    ਜੀ- 01725101674 (ਲੈਂਡਲਾਈਨ), 98779 37725, 83608 99462 (ਮੋਬਾਈਲ) ਈਮੇਲ -
+                                    imspmbsupport@ssbdigital.in</strong>
+                            </div>
+                        </div>
+
+                        <!-- Red Warning Alert Box (aligned same, separate borders) -->
+                        <div class="note-box-row mt-4">
+                            <div class="note-box-en">
+                                <strong>Note:</strong> If you are already a registered user on this portal, then you
+                                need not to Sign Up as a fresh user to apply for other services or E-Auction.
+                            </div>
+                            <div class="note-box-pb">
+                                <strong>ਨੋਟ:</strong> ਜੇਕਰ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਰਜਿਸਟਰਡ ਯੂਜ਼ਰ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਇਸ ਪੋਰਟਲ 'ਤੇ
+                                ਹੋਰ ਸੇਵਾਵਾਂ ਜਾਂ ਈ-ਨੀਲਾਮੀ ਲਈ ਅਰਜ਼ੀ ਦੇਣ ਲਈ ਦੁਬਾਰਾ ਸਾਈਨ ਅੱਪ ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Selector Box at the bottom of instructions -->
+                    <div class="category-selection-card mt-4">
+                        <div class="category-inline-row">
+                            <div class="category-dropdown-wrap">
+                                <label for="entityDropdown" class="form-label-custom mb-2">Select Category - (ਸ਼੍ਰੇਣੀ
+                                    ਚੁਣੋ) <span class="required-star">*</span></label>
+                                <select id="entityDropdown" [(ngModel)]="selectedEntityType"
+                                    class="form-input-custom inline-select">
+                                    <option value="" disabled selected>-Select Category- (-ਸ਼੍ਰੇਣੀ ਚੁਣੋ-)</option>
+                                    <option *ngFor="let item of entityTypes" [value]="item.id">
+                                        {{ item.label }} / {{ getPunjabiLabel(item.id) }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="category-inline-buttons">
+                                <button type="button" class="btn-proceed-signup" [disabled]="!selectedEntityType"
+                                    (click)="onProceedToForm()">
+                                    Proceed (ਅੱਗੇ ਵਧੋ)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Continuous Sections Wrapper (Shown only if entity type selected and proceeded) -->
+                <div class="signup-step-container"
+                    *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
+                    <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData">
+                    </app-personal-details>
+
+                    <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
+                        [idDocTypes]="idDocTypes" [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
+                        [uploadingStates]="uploadingStates" (fileSelected)="onFileSelected($event.event, $event.docType)">
+                    </app-documents-and-address>
+
+                    <!-- SECTION 3: BUSINESS DETAILS -->
+                    <app-business-details *ngIf="shouldShowBusinessDetails()" [selectedEntityType]="selectedEntityType"
+                        [signUpData]="signUpData"
+                        (toastMessage)="triggerToast($event.message, $event.type)">
+                    </app-business-details>
+
+                    <!-- Footer Actions (Shown only if entity type selected and proceeded to form) -->
+                    <div class="wizard-footer-actions"
+                        *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
+                        <button type="button" class="btn-wizard-back" (click)="onBackToInstructions()">
+                            Back (ਵਾਪਸ ਜਾਓ)
+                        </button>
+                        <button type="button" class="btn-wizard-submit" (click)="onSubmitSignup()">
+                            Submit (ਜਮ੍ਹਾ ਕਰੋ)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="signup-step-container" *ngIf="selectedEntityType === 'Procurement Agency' && proceedToForm">
+                    <app-procurement [selectedEntityType]="selectedEntityType" (backClicked)="onBackToInstructions()"
+                        (toastMessage)="triggerToast($event.message, $event.type)">
+                    </app-procurement>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

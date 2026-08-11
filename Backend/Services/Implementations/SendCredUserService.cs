@@ -38,11 +38,11 @@ namespace Backend.Services.Implementations
                 var emailSent = false;
                 var smsSent = false;
 
-                var emailSubject = "PSAMB Colonization Portal - Login Credentials";
+                var emailSubject = "Director Colonization Portal - Login Credentials";
                 var emailBody = $@"
                     Dear User,
 
-                    Your registration on PSAMB Colonization Portal is successful.
+                    Your registration on Director Colonization Portal is successful.
 
                     Your Login Credentials:
                     Username : {model.EmailId}
@@ -53,10 +53,10 @@ namespace Backend.Services.Implementations
                     For security reasons, please change your password after first login.
 
                     Regards,
-                    PSAMB Colonization Team
+                    Director Colonization Team
                     Punjab Mandi Board";
 
-                var smsMessage = "Your OTP for login on IMS Portal is: " + model.Password + " -PSAMB";
+               // var smsMessage = "Your OTP for login on IMS Portal is: " + model.Password + " -PSAMB";
 
                 
                 if (!string.IsNullOrEmpty(model.EmailId))

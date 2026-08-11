@@ -1,0 +1,58 @@
+name: CD / Deploy Staging Backend
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/deploy-staging-backend.yml'
+
+jobs:
+  build-staging-backend:
+    name: Build & Package Backend (Staging)
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore & Build Backend
+      run: |
+        dotnet restore Backend/Backend.csproj
+        dotnet build Backend/Backend.csproj --no-restore --configuration Release
+
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+    - name: Publish Backend
+      run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    - name: Install EF Tool
+      run: dotnet tool install --global dotnet-ef
+
+    - name: Generate Migration SQL Script
+      run: dotnet ef migrations script --project Backend/Backend.csproj --idempotent --output ./migration-staging.sql
+      continue-on-error: true
+
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-staging-build
+        path: ./publish-backend
+        retention-days: 14
+
+    - name: Upload Migration Script
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: migration-script-staging
+        path: ./migration-staging.sql
+        retention-days: 14
+        if-no-files-found: ignore

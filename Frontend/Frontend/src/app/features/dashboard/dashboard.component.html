@@ -1,0 +1,26 @@
+<div class="dashboard-shell d-flex flex-column bg-light">
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+
+    <div class="dashboard-main container-fluid flex-grow-1 px-0 overflow-hidden">
+        <div class="row g-0 h-100">
+            <div class="col-auto d-none d-lg-block h-100" *ngIf="!isSidebarCollapsed">
+                <app-sidebar></app-sidebar>
+            </div>
+
+            <!-- Mobile overlay sidebar -->
+            <div class="mobile-sidebar d-lg-none" *ngIf="isMobileSidebarOpen" (click)="closeMobileSidebar()">
+                                <div class="mobile-sidebar-panel" (click)="$event.stopPropagation()">
+                                        <app-sidebar></app-sidebar>
+                                </div>
+            </div>
+
+            <div class="dashboard-content col d-flex flex-column">
+                <div class="dashboard-content-scroll flex-grow-1 p-3 p-md-4">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <app-footer></app-footer>
+</div>

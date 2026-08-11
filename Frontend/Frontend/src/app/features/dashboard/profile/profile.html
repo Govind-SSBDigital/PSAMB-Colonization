@@ -1,0 +1,276 @@
+<div class="profile-wrapper py-2 bg-light">
+  <div class="container">
+    <div class="profile-card shadow-sm rounded-4 overflow-hidden">
+      <div class="profile-card-header d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 p-2 p-md-3 border-bottom">
+        <div class="d-flex align-items-center gap-4">
+          <div class="avatar-wrapper">
+          <div class="avatar-container">
+            @if (!avatarUrl) {
+              <div class="profile-avatar profile-avatar-placeholder">
+                <i class="fa-solid fa-circle-user"></i>
+              </div>
+            }
+            @if (avatarUrl) {
+              <img [src]="avatarUrl" alt="Profile Image" class="profile-avatar">
+            }
+            <button type="button" class="avatar-edit-btn" (click)="fileInput.click()" matTooltip="Upload Image" matTooltipPosition="right">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <input #fileInput type="file" (change)="onAvatarChange($event)" class="d-none" accept="image/*">
+            </div>
+            @if (errorMessage) {
+              <div class="text-danger small mt-1">
+                {{ errorMessage }}
+              </div>
+            }
+          </div>
+          <div>
+            <h2 class="h4 mb-1 fw-semibold text-dark">{{ f['name'].value || 'User Profile' }}</h2>
+            <p class="mb-0 text-muted small">{{ f['email'].value }}</p>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-success btn-sm" (click)="changePassword()">
+            <i class="bi bi-key me-1"></i>Change Password
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetForm()">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-card-body p-3 p-md-4">
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control minimal-input"
+                     [class.is-invalid]="f['name'].invalid && f['name'].touched"
+                     formControlName="name">
+              @if (f['name'].invalid && f['name'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['name'].errors?.['required']) {
+                    Full name is required.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control minimal-input"
+                     [class.is-invalid]="f['email'].invalid && f['email'].touched"
+                     formControlName="email">
+              @if (f['email'].invalid && f['email'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['email'].errors?.['required']) {
+                    Email is required.
+                  } @else if (f['email'].errors?.['email']) {
+                    Enter a valid email address.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Mobile No.</label>
+              <input type="tel" class="form-control minimal-input"
+                     [class.is-invalid]="f['mobile'].invalid && f['mobile'].touched"
+                     formControlName="mobile" maxlength="10">
+              @if (f['mobile'].invalid && f['mobile'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['mobile'].errors?.['required']) {
+                    Mobile number is required.
+                  } @else if (f['mobile'].errors?.['pattern']) {
+                    Enter a valid 10 digit mobile number.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Alternate Contact No.</label>
+              <input type="tel" class="form-control minimal-input"
+                     [class.is-invalid]="f['altMobile'].invalid && f['altMobile'].touched"
+                     formControlName="altMobile" maxlength="10">
+              @if (f['altMobile'].invalid && f['altMobile'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['altMobile'].errors?.['pattern']) {
+                    Enter a valid 10 digit mobile number.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-12 mt-4">
+              <h3 class="h6 text-success text-uppercase mb-3 fw-semibold">Address Details</h3>
+            </div>  
+
+            <div class="col-12">
+              <label class="form-label">Street Address</label>
+              <input type="text" class="form-control minimal-input"
+                     [class.is-invalid]="f['address'].invalid && f['address'].touched"
+                     formControlName="address">
+              @if (f['address'].invalid && f['address'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['address'].errors?.['required']) {
+                    Street address is required.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">City</label>
+              <input type="text" class="form-control minimal-input"
+                     [class.is-invalid]="f['city'].invalid && f['city'].touched"
+                     formControlName="city">
+              @if (f['city'].invalid && f['city'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['city'].errors?.['required']) {
+                    City is required.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">District</label>
+              <input type="text" class="form-control minimal-input"
+                     [class.is-invalid]="f['district'].invalid && f['district'].touched"
+                     formControlName="district">
+              @if (f['district'].invalid && f['district'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['district'].errors?.['required']) {
+                    District is required.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">State</label>
+              <input type="text" class="form-control minimal-input"
+                     [class.is-invalid]="f['state'].invalid && f['state'].touched"
+                     formControlName="state">
+              @if (f['state'].invalid && f['state'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['state'].errors?.['required']) {
+                    State is required.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Pincode</label>
+              <input type="text" class="form-control minimal-input"
+                     [class.is-invalid]="f['pincode'].invalid && f['pincode'].touched"
+                     formControlName="pincode" maxlength="6">
+              @if (f['pincode'].invalid && f['pincode'].touched) {
+                <div class="text-danger small mt-1">
+                  @if (f['pincode'].errors?.['required']) {
+                    Pincode is required.
+                  } @else if (f['pincode'].errors?.['pattern']) {
+                    Enter a valid 6 digit pincode.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="col-12 mt-3 pt-3 border-top d-flex justify-content-end">
+              <button type="submit" class="btn btn-success px-3" [disabled]="profileForm.invalid">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  @if (passwordModalOpen) {
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rounded-4">
+          <div class="modal-header border-0">
+            <h5 class="modal-title">Change Password</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="closePasswordModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" novalidate>
+              <div class="mb-3">
+                <label class="form-label">Current Password</label>
+                <input type="password" class="form-control"
+                       [class.is-invalid]="pf['oldPassword'].invalid && pf['oldPassword'].touched"
+                       formControlName="oldPassword" maxlength="50">
+                @if (pf['oldPassword'].invalid && pf['oldPassword'].touched) {
+                  <div class="text-danger small mt-1">
+                    @if (pf['oldPassword'].errors?.['required']) {
+                      Current password is required.
+                    } @else if (pf['oldPassword'].errors?.['minlength']) {
+                      Password must be at least 8 characters.
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">New Password</label>
+                <input type="password" class="form-control"
+                       [class.is-invalid]="pf['newPassword'].invalid && pf['newPassword'].touched"
+                       formControlName="newPassword" maxlength="50">
+                @if (pf['newPassword'].invalid && pf['newPassword'].touched) {
+                  <div class="text-danger small mt-1">
+                    @if (pf['newPassword'].errors?.['required']) {
+                      New password is required.
+                    } @else if (pf['newPassword'].errors?.['minlength']) {
+                      Password must be at least 8 characters.
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control"
+                       [class.is-invalid]="pf['confirmPassword'].invalid && pf['confirmPassword'].touched"
+                       formControlName="confirmPassword" maxlength="50">
+                @if (pf['confirmPassword'].invalid && pf['confirmPassword'].touched) {
+                  <div class="text-danger small mt-1">
+                    @if (pf['confirmPassword'].errors?.['required']) {
+                      Please confirm your new password.
+                    } @else if (pf['confirmPassword'].errors?.['minlength']) {
+                      Password must be at least 8 characters.
+                    }
+                  </div>
+                }
+              </div>
+
+              @if (passwordForm.errors?.['passwordMismatch'] && pf['confirmPassword'].touched) {
+                <div class="text-danger small mt-1 mb-2">
+                  New password and confirmation do not match.
+                </div>
+              }
+
+              @if (passwordError) {
+                <div class="alert alert-danger py-2">
+                  {{ passwordError }}
+                </div>
+              }
+
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-outline-secondary" (click)="closePasswordModal()">Cancel</button>
+                <button type="submit" class="btn btn-success" [disabled]="passwordForm.invalid">
+                  Save Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+  }
+</div>

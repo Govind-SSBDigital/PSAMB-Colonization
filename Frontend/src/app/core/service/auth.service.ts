@@ -12,11 +12,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(userId: string, password: string, roleFlag: number = 0): Observable<any> {
+  login(userId: string, password: string, isHRMSOrUser: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, {
       email: userId,
       password,
-      roleFlag // 0 = user, 1 = officer
+      isHRMSOrUser // 0 = user, 1 = officer
     });
   }
 
@@ -65,7 +65,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/send-login-otp`, { mobileNumber });
   }
 
-  loginWithOtp(mobileNumber: string, otp: string, roleFlag: boolean): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login-with-otp`, { mobileNumber, otp, roleFlag });
+  loginWithOtp(mobileNumber: string, otp: string, isHRMSOrUser: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login-with-otp`, { mobileNumber, otp, isHRMSOrUser });
   }
 }
