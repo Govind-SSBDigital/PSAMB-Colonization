@@ -11,6 +11,6 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetAllRegistrationsAsync();
         Task<ApiResponse<PropertyBidderRegistrationDto>> UpdateRegisterPropertyAsync(PropertyBidderRegistrationDto dto);
         Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk();
-        Task<ApiResponse<bool>> VerifyByClerk(PropertyBidderRegistrationDto dto);
+        Task<ApiResponse<bool>> VerifyByClerk(ClerkVerificationDto dto);
     }
 }

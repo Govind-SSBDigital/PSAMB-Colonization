@@ -63,14 +63,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   installmentDateError: string | null = null;
   statusFields = [
     { control: 'isAssetResumed', label: 'Asset Resumed' },
-    { control: 'IsAssetSurrendered', label: 'Asset Surrendered' },
-    { control: 'IsLocked', label: 'Is Asset Locked' },
-    { control: 'IsDefaulter', label: 'Is Defaulter' },
-    { control: 'IsAnyComplaint', label: 'Any Complaint' },
-    { control: 'IsNDCGenerated', label: 'NDC Generated' },
-    { control: 'IsNDCIssued', label: 'NDC Issued' },
-    { control: 'IsAssetVerified', label: 'Asset Verified' },
-    { control: 'IsCourtCase', label: 'Court Case'}
+    { control: 'isAssetSurrendered', label: 'Asset Surrendered' },
+    { control: 'isAssetLocked', label: 'Is Asset Locked' },
+    { control: 'isDefaulter', label: 'Is Defaulter' },
+    { control: 'anyComplaint', label: 'Any Complaint' },
+    { control: 'ndcGenerated', label: 'NDC Generated' },
+    { control: 'ndcIssued', label: 'NDC Issued' },
+    { control: 'assetVerified', label: 'Asset Verified' },
+    { control: 'isCourtCase', label: 'Is Court Case' }
   ];
 
   private auctionRequiredControls = [
@@ -80,9 +80,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'bidderName',
     'relation',
     'fatherOrHusbandName',
+    'aadhaarNo',
+    'mobileNo',
     'auctionPropertyType',
     'address',
-    'reservePrice',
     'finalBidPrice',
     'formTransactionId',
     'formTxnDate',
@@ -123,28 +124,34 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       propertyCategoryId: ['', Validators.required],
 
       isAssetResumed: [false],
-      IsAssetSurrendered: [false],
-      IsLocked: [false],
-      IsDefaulter: [false],
-      IsAnyComplaint: [false],
-      IsNDCGenerated: [false],
-      IsNDCIssued: [false],
-      IsAssetVerified: [false],
-      Isauctioned: [false],
-      IsCourtCase: [false],
-      auctionDateTime: [''],
-      bidderType: ['Individual'],
-      emailId: [''],
-      h1BidderName: [''],
-      bidderNames: this.fb.array([]),
-      transfered: [false],
-      relation: ['Son of (S/o)'],
-      guardianName: [''],
-      panNo: [''],
-      aadharNo: ['', [ Validators.pattern(/^XXXXXXXX\d{4}$/)]],
-      mobileNo: [''],
-      auctionPropertyType: ['Commercial Plots'],
-      communicationAddress: [''],
+      isAssetSurrendered: [false],
+      isAssetLocked: [false],
+      isDefaulter: [false],
+      anyComplaint: [false],
+      ndcIssued: [false],
+      ndcGenerated: [false],
+      assetVerified: [false],
+      isCourtCase: [false],
+      isAuctioned: [false],
+      auctionDate: [''],
+      bidderTypeId: [''],
+      email: ['', [Validators.email]],
+      bidderName: [''],
+      transferredNames: this.fb.array([]),
+      isTransferred: [false],
+
+      relation: ['Self'],
+      fatherOrHusbandName: [''],
+
+      panNo: ['', [Validators.pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)]],
+
+      aadhaarNo: ['', [Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]],
+
+      mobileNo: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
+
+      auctionPropertyType: [''],
+      address: ['', Validators.required],
+
       reservePrice: [''],
       finalBidPrice: ['', Validators.required],
 
@@ -548,12 +555,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
             let displayBidderName = d.bidderName;
             if (d.isTransferred && d.bidderName) {
               const names = d.bidderName.split(',').map((n: string) => n.trim());
-              if (names.length > 0) {
-                displayBidderName = names[0];
-                names.slice(1).forEach((name: string) => {
-                  this.bidderNamesFormArray.push(this.fb.control(name, Validators.required));
-                });
-              }
+              displayBidderName = '';
+              names.forEach((name: string) => {
+                this.bidderNamesFormArray.push(this.fb.control(name, Validators.required));
+              });
             }
 
             this.registerationForm.patchValue({
@@ -568,6 +573,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
               propertyCategoryId: d.propertyCategoryId,
               propertycode: d.propertyCode,
               isAssetResumed: d.assetResumed,
+              isCourtCase: d.isCourtCase,
               isAssetSurrendered: d.assetSurrendered,
               isAssetLocked: d.isAssetLocked,
               isDefaulter: d.isDefaulter,
@@ -860,6 +866,21 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return isNaN(fallbackDate.getTime()) ? null : fallbackDate;
   }
 
+  // formatDateField(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   let digits = input.value.replace(/\D/g, '').slice(0, 8);
+  //   if (digits.length >= 5) {
+  //     digits = digits.replace(/^(\d{2})(\d{2})(\d{0,4}).*$/, '$1/$2/$3');
+  //   } else if (digits.length >= 3) {
+  //     digits = digits.replace(/^(\d{2})(\d{0,2}).*$/, '$1/$2');
+  //   }
+  //   input.value = digits;
+  //   const controlName = input.getAttribute('formControlName');
+  //   if (controlName && this.registerationForm.get(controlName)) {
+  //     this.registerationForm.get(controlName)?.setValue(digits, { emitEvent: false });
+  //   }
+  // }
+
   isInvalid(controlName: string): boolean {
     const control = this.registerationForm.get(controlName);
     return !!control && control.invalid && (control.dirty || control.touched);
@@ -934,16 +955,15 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       }
     }
 
-    const sessionRaw = localStorage.getItem('cp_session');
     let currentUserId: number | null = null;
-    if (sessionRaw) {
+    if (token) {
       try {
-        const session = JSON.parse(sessionRaw);
-        if (session.userId) {
-          currentUserId = Number(session.userId);
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        if (tokenPayload.ApplicantId) {
+          currentUserId = Number(tokenPayload.ApplicantId);
         }
       } catch (e) {
-        console.error('Error parsing cp_session:', e);
+        console.error('Error parsing token for currentUserId:', e);
       }
     }
 
@@ -955,26 +975,15 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (formRaw.isTransferred) {
       const allNames: string[] = [];
 
-      // 1. Get original name from propertyData (if any)
-      if (this.propertyData && this.propertyData.bidderName) {
-        const originalNames = this.propertyData.bidderName.split(',').map((n: string) => n.trim());
-        if (originalNames.length > 0) {
-          allNames.push(originalNames[0]);
-        }
-      }
-
-      // 2. Get names from the grid
       const gridNames = this.bidderNamesFormArray.controls
         .map(c => (c.value || '').trim())
         .filter(v => v !== '');
       allNames.push(...gridNames);
 
-      // 3. Get whatever is currently in the input field (if it's not already in the list)
       if (finalBidderName && !allNames.includes(finalBidderName)) {
         allNames.push(finalBidderName);
       }
 
-      // Remove duplicate names and join with comma
       finalBidderName = allNames
         .map(n => n.trim())
         .filter((value, index, self) => value !== '' && self.indexOf(value) === index)
@@ -1002,7 +1011,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       isAssetResumed: formRaw.isAssetResumed,
       IsAssetResumed: formRaw.isAssetResumed,
       assetResumed: formRaw.isAssetResumed,
-
+      isCourtCase: formRaw.isCourtCase,
       isAssetSurrendered: formRaw.isAssetSurrendered,
       IsAssetSurrendered: formRaw.isAssetSurrendered,
       assetSurrendered: formRaw.isAssetSurrendered,
@@ -1067,7 +1076,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       modifiedBy: currentUserId,
       ModifiedBy: currentUserId,
 
-      // Map both camelCase and PascalCase list property names
       installments: cleanReceipts,
       Installments: cleanReceipts
     };
@@ -1090,7 +1098,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       }
     });
 
-    console.log('Submission Payload:', cleanedPayload);
+    // console.log('Submission Payload:', cleanedPayload);
 
     const hasId = this.propertyData && (this.propertyData.id || this.propertyData.propertyId);
     const saveObservable = hasId
@@ -1115,6 +1123,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   resetForm(): void {
     this.registerationForm.reset({
       isAssetResumed: false,
+      isCourtCase: false,
       IsAssetSurrendered: false,
       IsLocked: false,
       IsDefaulter: false,
@@ -1144,9 +1153,15 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       if (!control) return;
 
       if (isAuctioned) {
-        controlName === 'email'
-          ? control.setValidators([Validators.required, Validators.email])
-          : control.setValidators(Validators.required);
+        if (controlName === 'email') {
+          control.setValidators([Validators.required, Validators.email]);
+        } else if (controlName === 'aadhaarNo') {
+          control.setValidators([Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]);
+        } else if (controlName === 'mobileNo') {
+          control.setValidators([Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]);
+        } else {
+          control.setValidators(Validators.required);
+        }
       } else {
         control.clearValidators();
       }
@@ -1186,7 +1201,94 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         this.calculateUIInstallments();
       });
   }
-    // CORE CALCULATION ALGORITHM
+  // CORE CALCULATION ALGORITHM
+
+  // Core calculation logic for dynamic installment schedule generation and UI binding
+  //  private calculateUIInstallments(): void {
+  //   // 1. Fetch form variables safely
+  //   const finalBidderPrice = Number(this.registerationForm.get('h1BidderFinalPrice')?.value) || 0;
+  //   const emdPaid = Number(this.registerationForm.get('emdPaidAmount')?.value) || 0;
+  //   const allotmentPaid_25_percentage= Number(this.registerationForm.get('allotmentPaidAmount')?.value) || 0;
+  //   const milestoneDateStr = this.registerationForm.get('allotmentTransactionDate')?.value;
+  //   const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
+  //   const currentInterest = Number(this.registerationForm.get('accumulatedInterest')?.value) || 0;
+
+  //   // 2. Calculate TOTAL Outstanding Principal Balance
+  //   // const downPaymentsTotal = emdPaid + allotmentPaid;
+  //   const outstandingPrincipal = finalBidderPrice - allotmentPaid_25_percentage;
+
+  //   // Compute the base installment rate (1/6th of total outstanding principal)
+  //   let computedDueAmount = 0;
+  //   if (outstandingPrincipal > 0) {
+  //     computedDueAmount = outstandingPrincipal / 6;
+  //     computedDueAmount = Math.round((computedDueAmount + Number.EPSILON) * 100) / 100;
+  //   }
+
+  //   // NEW: Divide the interest evenly across all 6 installments
+  //   let computedInterestPerInstallment = 0;
+  //   if (currentInterest > 0) {
+  //     computedInterestPerInstallment = currentInterest / 6;
+  //     computedInterestPerInstallment = Math.round((computedInterestPerInstallment + Number.EPSILON) * 100) / 100;
+  //   }
+
+  //   // 3. Generate the 6-part amortization matrix table
+  //   const generatedMatrix: InstallmentScheduleView[] = [];
+
+  //   //date calculation part below
+  //   for (let step = 1; step <= 6; step++) {
+  //     let calculatedDateStr = '';
+
+  //     if (milestoneDateStr) {
+  //       const parts = milestoneDateStr.split('-');
+  //       if (parts.length === 3) {
+  //         const baseYear = parseInt(parts[0], 10);
+  //         const baseMonth = parseInt(parts[1], 10) - 1;
+  //         const baseDay = parseInt(parts[2], 10);
+
+  //         const targetTotalMonths = baseMonth + (step * 6);
+  //         const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
+  //         const targetMonth = targetTotalMonths % 12;
+
+  //         const targetDateObj = new Date(targetYear, targetMonth, baseDay);
+
+  //         if (targetDateObj.getDate() !== baseDay) {
+  //           targetDateObj.setDate(0);
+  //         }
+
+  //         const pad = (num: number) => num.toString().padStart(2, '0');
+  //         calculatedDateStr = `${targetDateObj.getFullYear()}-${pad(targetDateObj.getMonth() + 1)}-${pad(targetDateObj.getDate())}`;
+  //       }
+  //     }
+
+  //     const currentLabel = `Installment ${step}`;
+
+  //     // Calculate total amount for this row (Base Principal + Evenly Split Interest)
+  //     const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestPerInstallment) : 0;
+
+  //     generatedMatrix.push({
+  //       index: step,
+  //       installmentLabel: currentLabel,
+  //       dueDate: calculatedDateStr,
+  //       baseAmountDue: computedDueAmount,
+  //       totalWithInterest: Math.round((stepTotalWithInterest + Number.EPSILON) * 100) / 100
+  //     });
+  //   }
+
+  //   this.calculatedSchedulesMatrix = generatedMatrix;
+
+  //   // 4. Calculate total overall due (Full Principal + Accumulated Interest)
+  //   const finalTotalDueIncludingInterest = outstandingPrincipal > 0 ? (outstandingPrincipal + currentInterest) : 0;
+  //   const activeNode = generatedMatrix.find(item => item.installmentLabel === selectedInstallmentString);
+  //   const activeDueDate = activeNode ? activeNode.dueDate : '';
+
+  //   // 5. Patch corrected, high-level overview values to UI inputs
+  //   this.registerationForm.patchValue({
+  //     dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : '', // Displays 27,500.00
+  //     dueDate: activeDueDate,
+  //     totalDueAmount: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : '' // Displays 32,000.00
+  //   }, { emitEvent: false });
+  // }
+
   private calculateUIInstallments(): void {
     if (!this.registerationForm.get('isAuctioned')?.value) {
       return;

@@ -100,7 +100,7 @@ namespace Backend.Controllers
             return Ok(response);
         }
         [HttpPost("VerifyByClerk")]
-        public async Task<IActionResult> VerifyByClerk([FromBody] PropertyBidderRegistrationDto dto)
+        public async Task<IActionResult> VerifyByClerk([FromBody] ClerkVerificationDto dto)
         {
             if (dto == null || dto.Id == 0)
             {
