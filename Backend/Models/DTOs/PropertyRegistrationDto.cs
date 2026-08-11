@@ -80,6 +80,7 @@ namespace Backend.Models.Dtos
         public bool? NdcGenerated { get; set; }
         public bool? NdcIssued { get; set; }
         public bool? AssetVerified { get; set; }
+        public bool? IsCourtCase { get; set; }
 
         // Auction Info
         public bool? IsAuctioned { get; set; }
@@ -130,6 +131,16 @@ namespace Backend.Models.Dtos
         public int? PropertyCategoryId { get; set; }
         public long? CreatedBy { get; set; }
         public long? ModifiedBy { get; set; }
+        public string? Label { get; set; }
+        public string? DistrictName { get; set; }
+        public string? BranchName { get; set; }
+        public string? MandiName { get; set; }
+        public string? CategoryName { get; set; }
+        public string? IdentityUserId { get; set; }
+        public string? UserId { get; set; }
+        public string? RoleName { get; set; }
+        public string? FirstName { get; set; }
+
     }
 
     public class PropertyCategoryDto
@@ -156,5 +167,15 @@ namespace Backend.Models.Dtos
         public int ApplicantId { get; set; }
         public int? PropertyId { get; set; }
         public bool? IsVerified { get; set; }
+    }
+
+    public class ClerkVerificationDto
+    {
+        public int Id { get; set; }
+        public string Remarks { get; set; }
+        public long? ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public string? Decision { get; set; }
+
     }
 }

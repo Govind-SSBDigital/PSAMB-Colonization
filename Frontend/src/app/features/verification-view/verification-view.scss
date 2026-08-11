@@ -275,20 +275,22 @@
 }
 
 .pv-decision-selected-approve {
-  border-color: var(--pv-green);
-  background: var(--pv-green-light);
+  border: 2px solid var(--pv-green) !important;
+  background: var(--pv-green-light) !important;
+  opacity: 1 !important;
 
   i {
-    color: var(--pv-green);
+    color: var(--pv-green) !important;
   }
 }
 
 .pv-decision-selected-sendback {
-  border-color: var(--pv-danger);
-  background: var(--pv-danger-light);
+  border: 2px solid var(--pv-danger) !important;
+  background: var(--pv-danger-light) !important;
+  opacity: 1 !important;
 
   i {
-    color: var(--pv-danger);
+    color: var(--pv-danger) !important;
   }
 }
 

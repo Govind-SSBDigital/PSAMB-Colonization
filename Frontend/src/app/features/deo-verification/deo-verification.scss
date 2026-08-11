@@ -110,3 +110,129 @@ table select.form-select-sm {
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
+.pv-decision-selected-approve {
+  border: 2px solid #0f4d3a !important;
+  background: #e8f2ee !important;
+  opacity: 1 !important;
+
+  i {
+    color: #0f4d3a !important;
+  }
+}
+
+.pv-decision-selected-sendback {
+  border: 2px solid #b3261e !important;
+  background: #fbeceb !important;
+  opacity: 1 !important;
+
+  i {
+    color: #b3261e !important;
+  }
+}
+
+.pv-error {
+  color: #b3261e;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+}
+
+.pv-btn-approve {
+  background: #0b3d2e;
+  border-color: #0b3d2e;
+  color: #fff;
+  font-weight: 600;
+
+  &:hover {
+    background: #0f4d3a;
+    color: #fff;
+  }
+}
+
+.pv-btn-sendback {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+  font-weight: 600;
+
+  &:hover {
+    background: #8f1e18;
+    color: #fff;
+  }
+}
+
+.pv-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #0b3d2e;
+  margin-bottom: 0.35rem;
+}
+
+.pv-history-remarks {
+  color: #6b7a74;
+  margin-top: 0.25rem;
+}
+
+.pv-decision-card {
+  background: #fff;
+  border: 1.5px solid #dbe4e0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  i {
+    font-size: 1.4rem;
+    color: #6b7a74;
+  }
+
+  span {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1f2d27;
+  }
+
+  small {
+    color: #6b7a74;
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    border-color: #0f4d3a;
+  }
+
+  &[disabled] {
+    opacity: 0.65;
+    cursor: not-allowed;
+    &:hover {
+      border-color: #dbe4e0;
+    }
+  }
+}
+
+.pv-section-header {
+  background: #0b3d2e;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.pv-card {
+  background: #fff;
+  border: 1px solid #dbe4e0;
+  ;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(11, 61, 46, 0.06);
+}

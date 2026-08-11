@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
+import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 
 interface PropertyVerificationModel {
   id: number;
@@ -9,10 +10,12 @@ interface PropertyVerificationModel {
   category: string;
   branch: string;
   district: string;
-  village: string;
+  mandiName: string;
   status: string;
   registrationDate: string;
   label: 'User' | 'DEO';
+  firstName?: string;
+  applicationStatusId?: number;
 }
 
 @Component({
@@ -23,18 +26,15 @@ interface PropertyVerificationModel {
 })
 export class PropertyVerification implements OnInit {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private service: Propertybidderregn, private cdr: ChangeDetectorRef) { }
 
-  // Search & Filter Bindings
   searchText = '';
   selectedStatus = 'All';
   selectedBranch = 'All';
 
-  // Dropdown Master Data
   statusList: string[] = ['All', 'Pending', 'Verified', 'Rejected'];
   branchList: string[] = ['All', 'Chandigarh', 'Mohali'];
 
-  // Data Arrays
   propertyList: PropertyVerificationModel[] = [];
   filteredPropertyList: PropertyVerificationModel[] = [];
   pagedPropertyList: PropertyVerificationModel[] = [];
@@ -42,54 +42,45 @@ export class PropertyVerification implements OnInit {
   pageIndex = 0;
   pageSize = 10;
 
-  
+
 
   ngOnInit(): void {
-    this.loadProperties();
+    this.GetPendingForClerk();
   }
 
-  loadProperties(): void {
-    this.propertyList = [
-      {
-        id: 1,
-        propertyNo: 'PROP-1001',
-        ownerName: 'Vikas Singh',
-        category: 'Residential',
-        branch: 'Chandigarh',
-        district: 'Chandigarh',
-        village: 'Sector 22',
-        status: 'Pending',
-        registrationDate: '15-Jul-2026',
-        label: 'User'
-      },
-      {
-        id: 2,
-        propertyNo: 'PROP-1002',
-        ownerName: 'Amit Kumar',
-        category: 'Commercial',
-        branch: 'Ludhiana',
-        district: 'Ludhiana',
-        village: 'Model Town',
-        status: 'Verified',
-        registrationDate: '16-Jul-2026',
-        label: 'User'
-      },
-      {
-        id: 3,
-        propertyNo: 'PROP-1003',
-        ownerName: 'Rahul Sharma',
-        category: 'Industrial',
-        branch: 'Mohali',
-        district: 'Mohali',
-        village: 'Phase 8',
-        status: 'Rejected',
-        registrationDate: '18-Jul-2026',
-        label: 'DEO'
-      }
-    ];
+  mapStatus(statusId: number | null | undefined): string {
+    if (statusId === 2) return 'Verified';
+    if (statusId === 3 || statusId === 7) return 'Rejected';
+    return 'Pending';
+  }
 
-    this.filteredPropertyList = [...this.propertyList];
-    this.updatePagedList();
+  GetPendingForClerk() {
+    this.service.GetPendingForClerk().subscribe({
+      next: (res: any) => {
+        console.log('API prop Types:', res);
+        const rawData = res.data || res || [];
+        this.propertyList = rawData.map((d: any) => ({
+          id: d.id,
+          propertyNo: d.propertyCode || `PROP-${d.id}`,
+          ownerName: d.bidderName || 'N/A',
+          category: d.categoryName || 'N/A',
+          branch: d.branchName || 'N/A',
+          district: d.districtName || 'N/A',
+          mandiName: d.mandiName || 'N/A',
+          status: this.mapStatus(d.applicationStatusId),
+          registrationDate: d.createdDate ? d.createdDate : new Date().toISOString(),
+          label: d.label || 'User',
+          firstName: d.firstName,
+          applicationStatusId: d.applicationStatusId
+        }));
+        this.filteredPropertyList = [...this.propertyList];
+        this.updatePagedList();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching property types:', err);
+      }
+    });
   }
 
   applyFilter(): void {
@@ -137,9 +128,9 @@ export class PropertyVerification implements OnInit {
   }
 
   viewDetails(property: PropertyVerificationModel): void {
-    // const targetRoute = property.label === 'DEO' ? '/deo-verification' : '/user-verification-view';
-    const targetRoute = property.label === 'DEO' ? '/user-verification-view' : '/user-verification-view';
-    this.router.navigateByUrl(targetRoute);
+    const targetRoute = property.label === 'DEO' ? '/dashboard/deo-verification' : '/dashboard/verification-view';
+    const encryptedId = btoa(property.id.toString());
+    this.router.navigate([targetRoute], { queryParams: { id: encryptedId } });
   }
 
   editProperty(property: PropertyVerificationModel): void {
@@ -154,35 +145,36 @@ export class PropertyVerification implements OnInit {
     this.searchText = '';
     this.selectedStatus = 'All';
     this.selectedBranch = 'All';
-    this.loadProperties();
+    this.GetPendingForClerk();
   }
 
- // Add these three getters to your existing component class
-// (e.g. VerificationQueueComponent). They power the stat pills
-// in the new hero header — no other logic changes required.
-OpenTotalRegistration(){
-// console.log("T");
-}
-OpenPendingRegistration(){
-// console.log("P");
-}
-OpenVerifiedRegistration(){
-// console.log("V");
-}
-OpenRejectedRegistration(){
-// console.log("R");
-}
+  OpenTotalRegistration() {
+    this.selectedStatus = 'All';
+    this.applyFilter();
+  }
+  OpenPendingRegistration() {
+    this.selectedStatus = 'Pending';
+    this.applyFilter();
+  }
+  OpenVerifiedRegistration() {
+    this.selectedStatus = 'Verified';
+    this.applyFilter();
+  }
+  OpenRejectedRegistration() {
+    this.selectedStatus = 'Rejected';
+    this.applyFilter();
+  }
 
 
-get pendingCount(): number {
-    return this.filteredPropertyList.filter(p => p.status === 'Pending').length;
-}
+  get pendingCount(): number {
+    return this.propertyList.filter(p => p.status === 'Pending').length;
+  }
 
-get verifiedCount(): number {
-    return this.filteredPropertyList.filter(p => p.status === 'Verified').length;
-}
+  get verifiedCount(): number {
+    return this.propertyList.filter(p => p.status === 'Verified').length;
+  }
 
-get rejectedCount(): number {
-    return this.filteredPropertyList.filter(p => p.status === 'Rejected').length;
-}
+  get rejectedCount(): number {
+    return this.propertyList.filter(p => p.status === 'Rejected').length;
+  }
 }

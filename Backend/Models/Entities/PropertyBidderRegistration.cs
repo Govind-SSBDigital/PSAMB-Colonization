@@ -43,6 +43,7 @@ namespace Backend.Models.Entities
         public bool NdcGenerated { get; set; }
         public bool NdcIssued { get; set; }
         public bool AssetVerified { get; set; }
+        public bool IsCourtCase { get; set; }
 
         // Auction Info
         public bool IsAuctioned { get; set; }
@@ -102,8 +103,6 @@ namespace Backend.Models.Entities
         public long? ModifiedBy { get; set; }
 
         public int? ApplicationStatusId { get; set; }
-        [ForeignKey("ApplicationStatusId")]
-        public virtual ApplicationStatusMaster? ApplicationStatus { get; set; }
         public string ?PlotStatus { get; set; }
         public int PropertyCategoryId { get; set; }
         public string ?PropertyCode { get; set; }
