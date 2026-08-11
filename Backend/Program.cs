@@ -228,21 +228,62 @@ try
     //{
     //    app.UseHsts();
     //}
-    app.UseMiddleware<SwaggerAuthMiddleware>();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseMiddleware<SwaggerAuthMiddleware>();
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
+
+    //if (!app.Environment.IsDevelopment())
+    //{
+    //    app.UseHsts();
+    //}
+
+    //app.UseHttpsRedirection();
+    //app.UseCors("CorsPolicy");
+    //app.UseRateLimiter();
+    //app.UseAuthentication();
+    //app.UseAuthorization();
+    //app.MapControllers();
+    //var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger");
+
+    //if (enableSwagger)
+    //{
+    //    app.UseMiddleware<SwaggerAuthMiddleware>();
+    //    app.UseSwagger();
+    //    app.UseSwaggerUI();
+    //}
+
+    //if (!app.Environment.IsDevelopment())
+    //{
+    //    app.UseHsts();
+    //}
+
+
+
+    var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger");
+
+    if (enableSwagger)
+    {
+        // Sirf non-local (Development nahi) environment mein password lagao
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseMiddleware<SwaggerAuthMiddleware>();
+        }
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
     if (!app.Environment.IsDevelopment())
     {
         app.UseHsts();
     }
-
     app.UseHttpsRedirection();
     app.UseCors("CorsPolicy");
     app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
 
     Log.Information("Host configured successfully. Running application...");
     app.Run();
