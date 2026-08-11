@@ -73,6 +73,7 @@ export class VerificationView implements OnInit {
  
   ngOnInit(): void {
     this.buildForm();
+    this.setFormDisabled(true);
   }
  
   private buildForm(): void {
@@ -103,7 +104,7 @@ export class VerificationView implements OnInit {
     });
  
     // Read-only until Edit All Fields is switched on
-    this.setFormDisabled(true);
+    // this.setFormDisabled(true);
   }
  
   private setFormDisabled(disabled: boolean): void {
@@ -116,16 +117,6 @@ export class VerificationView implements OnInit {
       propertyGroup?.enable({ emitEvent: false });
       ownerGroup?.enable({ emitEvent: false });
     }
-  }
- 
-  toggleEditMode(): void {
-    this.editMode = !this.editMode;
-    this.setFormDisabled(!this.editMode);
-  }
- 
-  cancelEdits(): void {
-    this.editMode = false;
-    this.setFormDisabled(true);
   }
  
   onDocumentFileChange(doc: DocumentItem, event: Event): void {

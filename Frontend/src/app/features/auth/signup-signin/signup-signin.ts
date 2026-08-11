@@ -11,6 +11,8 @@ import { PersonalDetails } from './personal-details/personal-details';
 import { BusinessDetails } from './business-details/business-details';
 import { Procurement } from './procurement/procurement';
 import { AuthService } from '../../../core/service/auth.service';
+import { Common } from '../../../core/service/CommonService/common';
+import { MenuService } from '../../../core/service/MenuService/menu.service';
 
 interface EntityType {
   id: string;
@@ -231,7 +233,9 @@ export class SignupSignin implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private common: Common,
+    private menuService: MenuService
   ) { }
 
   ngOnInit() {
@@ -944,6 +948,7 @@ export class SignupSignin implements OnInit {
         };
         localStorage.setItem('cp_session', JSON.stringify(sessionData));
 
+        this.menuService.clearMenusCache();
         this.triggerToast(`Welcome back!`, 'success');
         this.router.navigate(['/dashboard']);
       },
@@ -1009,6 +1014,7 @@ export class SignupSignin implements OnInit {
           entityType: 'Individual'
         };
         localStorage.setItem('cp_session', JSON.stringify(sessionData));
+        this.menuService.clearMenusCache();
         this.triggerToast('Welcome back!', 'success');
         this.router.navigate(['/dashboard']);
       },
@@ -1049,6 +1055,7 @@ export class SignupSignin implements OnInit {
     };
     localStorage.setItem('cp_session', JSON.stringify(this.loggedInUser));
     this.isLoggedIn = true;
+    this.menuService.clearMenusCache();
     this.triggerToast(`Welcome back, ${user.fullName}!`, 'success');
 
     if (user.userId.toLowerCase() === 'dataentryoprt') {

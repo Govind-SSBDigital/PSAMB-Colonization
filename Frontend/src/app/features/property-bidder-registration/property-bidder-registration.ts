@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -101,12 +102,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'accumulatedInterest',
   ];
 
+  mode: 'view' | 'edit' | 'create' = 'create';
+  readonlyMode = false;
   private destroy$ = new Subject<void>();
   propertyData: any;
   propTypes: any;
 
   constructor(
-    private fb: FormBuilder, private service: Propertybidderregn, private commonService: Common, private toastr: ToastrService
+    private fb: FormBuilder,
+    private service: Propertybidderregn,
+    private commonService: Common,
+    private toastr: ToastrService,
+    private route: ActivatedRoute
   ) {
     this.registerationForm = this.fb.group({
 
@@ -375,7 +382,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    debugger
+    // debugger
     this.loadDistricts();
     this.loadPropertyCategories();
     this.loadBidderTypes();
@@ -409,6 +416,16 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     });
     this.registerationForm.get('isTransferred')?.valueChanges.subscribe(() => {
       this.updateBidderNameValidators();
+    });
+
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const mode = params['mode'] as string;
+      const propertyCode = params['propertyCode'] as string;
+      this.setMode(mode);
+      if (propertyCode) {
+        this.registerationForm.patchValue({ propertycode: propertyCode }, { emitEvent: false });
+        this.onSearch();
+      }
     });
   }
 
@@ -831,6 +848,36 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   private readonly ddmmyyyyPattern = /^\d{2}\/\d{2}\/\d{4}$/;
 
+  private setMode(mode: string | undefined): void {
+    if (mode === 'edit') {
+      this.mode = 'edit';
+      this.readonlyMode = false;
+      this.registerationForm.enable({ emitEvent: false });
+      this.registerationForm.get('totalDueWithInterest')?.disable({ emitEvent: false });
+      this.enableReceiptRows();
+    } else if (mode === 'view') {
+      this.mode = 'view';
+      this.readonlyMode = true;
+      this.registerationForm.disable({ emitEvent: false });
+      this.registerationForm.get('totalDueWithInterest')?.disable({ emitEvent: false });
+      this.disableReceiptRows();
+    } else {
+      this.mode = 'create';
+      this.readonlyMode = false;
+      this.registerationForm.enable({ emitEvent: false });
+      this.registerationForm.get('totalDueWithInterest')?.disable({ emitEvent: false });
+      this.enableReceiptRows();
+    }
+  }
+
+  private disableReceiptRows(): void {
+    this.receiptsFormArray.controls.forEach(row => row.disable({ emitEvent: false }));
+  }
+
+  private enableReceiptRows(): void {
+    this.receiptsFormArray.controls.forEach(row => row.enable({ emitEvent: false }));
+  }
+
   formatDisplayDate(value: string | Date | null | undefined): string {
     if (!value) {
       return '';
@@ -896,7 +943,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
 
   onSubmit(): void {
-    debugger
+    // debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];
@@ -1131,7 +1178,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       IsNDCGenerated: false,
       IsNDCIssued: false,
       IsAssetVerified: false,
-      Isauctioned: false,
+      isAuctioned: false,
       transfered: false,
       bidderType: 'Individual',
       relation: 'Son of (S/o)',
@@ -1194,7 +1241,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   private setupCalculationListeners(): void {
-    debugger
+    // debugger
     this.registerationForm.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -1293,7 +1340,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (!this.registerationForm.get('isAuctioned')?.value) {
       return;
     }
-    debugger
+    // debugger
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('finalBidPrice')?.value) || 0;
     const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentAmount')?.value) || 0;

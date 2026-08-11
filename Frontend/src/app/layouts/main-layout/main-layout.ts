@@ -22,11 +22,16 @@ export class MainLayout {
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      filter(
+        (event): event is NavigationEnd =>
+          event instanceof NavigationEnd
+      ),
       map((event) => event.urlAfterRedirects),
       startWith(this.getInitialUrl()),
     ),
-    { initialValue: this.getInitialUrl() },
+    {
+      initialValue: this.getInitialUrl()
+    },
   );
 
   protected get showPublicNavbar(): boolean {
@@ -37,9 +42,12 @@ export class MainLayout {
   protected get showPublicFooter(): boolean {
     const url = this.currentUrl() ?? '/';
     const isDashboardRoute = this.isDashboardRoute(url);
-    const isHiddenAuthRoute = Array.from(this.hiddenLayoutPaths).some((path) =>
-      url === path || url.startsWith(`${path}/`),
-    );
+    const isHiddenAuthRoute =
+      Array.from(this.hiddenLayoutPaths).some(
+        (path) =>
+          url === path ||
+          url.startsWith(`${path}/`)
+      );
 
     return !isDashboardRoute && !isHiddenAuthRoute;
   }
@@ -53,7 +61,23 @@ export class MainLayout {
   }
 
   private isDashboardRoute(url: string): boolean {
-    const path = url.split(/[?#]/, 1)[0].toLowerCase();
-    return /(?:^|\/)dashboard(?:\/|$)/.test(path);
+    const path = url
+      .split(/[?#]/, 1)[0]
+      .toLowerCase();
+    const dashboardRoutes = [
+      '/dashboard',
+      '/register-property',
+      '/property-bidder-registration',
+      '/property-verification',
+      '/profile',
+      '/user-verification-view',
+      '/deo-verification',
+      '/deo-registration-status'
+    ];
+    return dashboardRoutes.some(
+      (route) =>
+        path === route ||
+        path.startsWith(`${route}/`)
+    );
   }
 }

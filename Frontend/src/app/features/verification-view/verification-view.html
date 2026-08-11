@@ -11,29 +11,7 @@
           <span><strong>Application ID:</strong> {{ applicationId }}</span>
           <span><strong>Submitted On:</strong> {{ submittedOn }}</span>
         </div>
-      </div>
-
-      <div class="d-flex flex-column align-items-md-end gap-2">
-        <!-- <span class="badge pv-badge-stage">{{ currentStage }}</span> -->
-
-        <button
-          *ngIf="!editMode"
-          type="button"
-          class="btn pv-btn-edit"
-          (click)="toggleEditMode()">
-          <i class="fa-solid fa-pen-to-square"></i>
-          Edit All Fields
-        </button>
-
-        <button
-          *ngIf="editMode"
-          type="button"
-          class="btn pv-btn-edit active"
-          (click)="cancelEdits()">
-          <!-- <i class="fa-solid fa-xmark"></i> -->
-          Cancel Edits
-        </button>
-      </div>
+      </div> 
     </div>
   </div>
 

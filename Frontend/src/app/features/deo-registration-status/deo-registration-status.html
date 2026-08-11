@@ -9,8 +9,9 @@
 
         <div class="deo-status-summary d-flex align-items-center gap-2 flex-wrap">
           <span class="summary-chip summary-chip-total rounded-3">{{ filteredList.length }} Records</span>
-          <span class="summary-chip summary-chip-approved rounded-3">Approved</span>
-          <span class="summary-chip summary-chip-pending rounded-3">Pending</span>
+          <span class="summary-chip summary-chip-approved rounded-3">{{ getApprovedCount() }} Approved</span>
+          <span class="summary-chip summary-chip-pending rounded-3">{{ getPendingCount() }} Pending</span>
+          <span class="summary-chip summary-chip-objection rounded-3">{{ getObjectionCount() }} Objection</span>
         </div>
       </div>
     </div>
@@ -39,7 +40,8 @@
                 <span class="badge badge-status" [ngClass]="{
                   'status-approved': item.approvalStatus === 'Approved',
                   'status-rejected': item.approvalStatus === 'Rejected',
-                  'status-pending': item.approvalStatus === 'Pending'
+                  'status-pending': item.approvalStatus === 'Pending',
+                  'status-objection': item.approvalStatus === 'Objection'
                 }">
                   {{ item.approvalStatus }}
                 </span>
@@ -51,12 +53,12 @@
 
               <td class="text-center">
                 <div class="action-stack">
-                  <button type="button" class="btn btn-action-icon btn-action-add" (click)="onExpand(item)" title="Expand Details">
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
 
                   <button type="button" class="btn btn-action-icon" (click)="onView(item)" title="View Form Details">
                     <i class="fa-solid fa-eye"></i>
+                  </button>
+                  <button type="button" class="btn btn-action-icon btn-action-edit" [disabled]="item.approvalStatus !== 'Rejected' && item.approvalStatus !== 'Objection'" (click)="onEdit(item)" [attr.title]="item.approvalStatus === 'Rejected' || item.approvalStatus === 'Objection' ? 'Edit Form Details' : 'Edit disabled for this status'">
+                    <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                 </div>
               </td>
