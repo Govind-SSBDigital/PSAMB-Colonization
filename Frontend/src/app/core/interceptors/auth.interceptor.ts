@@ -20,7 +20,7 @@ export class AuthInterceptor implements HttpInterceptor {
     ) {}
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (token) {
             request = this.addToken(request, token);
         }
@@ -49,7 +49,7 @@ export class AuthInterceptor implements HttpInterceptor {
             this.isRefreshing = true;
             this.refreshTokenSubject.next(null);
 
-            const refreshToken = localStorage.getItem('refresh_token');
+            const refreshToken = sessionStorage.getItem('refresh_token');
             if (!refreshToken) {
                 this.authService.logout();
                 this.router.navigate(['/auth/login']);
@@ -62,8 +62,8 @@ export class AuthInterceptor implements HttpInterceptor {
                     const newToken = response.data.token;
                     const newRefreshToken = response.data.refreshToken;
 
-                    localStorage.setItem('token', newToken);
-                    localStorage.setItem('refresh_token', newRefreshToken);
+                    sessionStorage.setItem('token', newToken);
+                    sessionStorage.setItem('refresh_token', newRefreshToken);
 
                     this.refreshTokenSubject.next(newToken);
                     return next.handle(this.addToken(request, newToken));

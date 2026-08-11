@@ -24,11 +24,11 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, request);
   }
   refreshToken(): Observable<any> {
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = sessionStorage.getItem('refresh_token');
     return this.http.post(`${this.apiUrl}/refresh-token`, { refreshToken });
   }
   logout(): void {
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = sessionStorage.getItem('refresh_token');
 
     if (refreshToken) {
       this.http.post(`${this.apiUrl}/logout`, { refreshToken })
@@ -37,14 +37,14 @@ export class AuthService {
           error: (err) => console.error('Logout error:', err)
         });
     }
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('cp_session');
-    localStorage.removeItem('cp_menus');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('cp_session');
+    sessionStorage.removeItem('cp_menus');
   }
 
   isLoggedIn(): boolean {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return false;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -59,7 +59,7 @@ export class AuthService {
     }
   }
   getSession(): any {
-    const session = localStorage.getItem('cp_session');
+    const session = sessionStorage.getItem('cp_session');
     return session ? JSON.parse(session) : null;
   }
   sendLoginOtp(mobileNumber: string): Observable<any> {

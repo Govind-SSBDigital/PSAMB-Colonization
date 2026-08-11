@@ -116,7 +116,7 @@ export class RegisterProperty {
       return;
     }
 
-    console.log(this.propertyForm.value);
+    // console.log(this.propertyForm.value);
   }
 
   resetForm(): void {

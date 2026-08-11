@@ -239,13 +239,13 @@ export class SignupSignin implements OnInit {
   ) { }
 
   ngOnInit() {
-    // Seed test accounts in localStorage if not already present
-    const existingUsersRaw = localStorage.getItem('cp_users');
+    // Seed test accounts in sessionStorage if not already present
+    const existingUsersRaw = sessionStorage.getItem('cp_users');
     const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
 
-    localStorage.setItem('cp_users', JSON.stringify(existingUsers));
+    sessionStorage.setItem('cp_users', JSON.stringify(existingUsers));
 
-    const session = localStorage.getItem('cp_session');
+    const session = sessionStorage.getItem('cp_session');
     if (session) {
       this.loggedInUser = JSON.parse(session);
       this.isLoggedIn = true;
@@ -266,7 +266,7 @@ export class SignupSignin implements OnInit {
         return;
       }
 
-      localStorage.removeItem('cp_session');
+      sessionStorage.removeItem('cp_session');
       this.isLoggedIn = false;
       this.loggedInUser = { userId: '', fullName: '', entityType: '', mobile: '' };
 
@@ -768,7 +768,7 @@ export class SignupSignin implements OnInit {
     this.authService.register(request).subscribe({
       next: (response) => {
         // Token save karo
-        localStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', response.data.token);
 
         const sessionData = {
           userId: response.data.userId,
@@ -776,7 +776,7 @@ export class SignupSignin implements OnInit {
           email: response.data.email,
           entityType: this.selectedEntityType
         };
-        localStorage.setItem('cp_session', JSON.stringify(sessionData));
+        sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
 
         sessionStorage.setItem('registration_success', 'true');
         sessionStorage.setItem('registered_user_id', response.data.userId);
@@ -808,7 +808,7 @@ export class SignupSignin implements OnInit {
   //   this.generatedUserId = `CP${randomNum}`;
   //   this.generatedPassword = this.signUpData.password;
 
-  //   const existingUsersRaw = localStorage.getItem('cp_users');
+  //   const existingUsersRaw = sessionStorage.getItem('cp_users');
   //   const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
 
   //   const fullName = `${this.signUpData.firstName} ${this.signUpData.lastName}`.trim();
@@ -822,7 +822,7 @@ export class SignupSignin implements OnInit {
   //   };
 
   //   existingUsers.push(newUser);
-  //   localStorage.setItem('cp_users', JSON.stringify(existingUsers));
+  //   sessionStorage.setItem('cp_users', JSON.stringify(existingUsers));
 
   //   // Prefill login form
   //   this.loginData.userId = this.generatedUserId;
@@ -932,12 +932,12 @@ export class SignupSignin implements OnInit {
       this.generateCaptcha();
       return;
     }
-    debugger
+    // debugger
     this.loginRole= this.loginRole === true ? 1 : 0 ;
     this.authService.login(userId, password, this.loginRole).subscribe({
       next: (response) => {
         // Token save karo
-        localStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', response.data.token);
 
         // Session save karo
         const sessionData = {
@@ -946,7 +946,7 @@ export class SignupSignin implements OnInit {
           email: response.data.user?.email || '',
           entityType: response.data.entityType || 'Individual'
         };
-        localStorage.setItem('cp_session', JSON.stringify(sessionData));
+        sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
 
         this.menuService.clearMenusCache();
         this.triggerToast(`Welcome back!`, 'success');
@@ -975,7 +975,7 @@ export class SignupSignin implements OnInit {
   //       return;
   //     }
 
-  //     const existingUsersRaw = localStorage.getItem('cp_users');
+  //     const existingUsersRaw = sessionStorage.getItem('cp_users');
   //     const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
 
   //     const user = existingUsers.find((u: any) => u.userId.toLowerCase() === userId.trim().toLowerCase() && u.password === password);
@@ -1006,14 +1006,14 @@ export class SignupSignin implements OnInit {
     this.loginRole= this.loginRole === true ;
     this.authService.loginWithOtp(mobileNumber, otpInput, this.loginRole).subscribe({
       next: (response) => {
-        localStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', response.data.token);
         const sessionData = {
           userId: response.data.user?.id || '',
           fullName: response.data.user?.fullName || '',
           email: response.data.user?.email || '',
           entityType: 'Individual'
         };
-        localStorage.setItem('cp_session', JSON.stringify(sessionData));
+        sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
         this.menuService.clearMenusCache();
         this.triggerToast('Welcome back!', 'success');
         this.router.navigate(['/dashboard']);
@@ -1053,7 +1053,7 @@ export class SignupSignin implements OnInit {
       entityType: user.entityType || 'Individual',
       mobile: user.mobile
     };
-    localStorage.setItem('cp_session', JSON.stringify(this.loggedInUser));
+    sessionStorage.setItem('cp_session', JSON.stringify(this.loggedInUser));
     this.isLoggedIn = true;
     this.menuService.clearMenusCache();
     this.triggerToast(`Welcome back, ${user.fullName}!`, 'success');

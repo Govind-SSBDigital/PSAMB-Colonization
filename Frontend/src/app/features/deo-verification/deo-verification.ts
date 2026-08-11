@@ -155,7 +155,7 @@ export class DeoVerification implements OnInit, OnChanges {
         this.service.getRegistrationById(id).subscribe({
           next: (res: any) => {
             if (res && res.data) {
-              console.log('data', res);
+              // console.log('data', res);
 
               this.originalRegistrationDto = res.data;
               // this.registration = this.mapDtoToModel(res.data);
@@ -201,11 +201,11 @@ export class DeoVerification implements OnInit, OnChanges {
   }
 
   loadPlotTypes(): void {
-    debugger
+    // debugger
     this.commonService.getPlotTypes().subscribe({
       next: (res: any) => {
         this.plotTypes = res.data || res || [];
-        console.log('pt', this.plotTypes);
+        // console.log('pt', this.plotTypes);
         if (this.originalRegistrationDto || this.registration) {
           this.patchForm(this.originalRegistrationDto || this.registration);
         }
@@ -218,7 +218,7 @@ export class DeoVerification implements OnInit, OnChanges {
     this.commonService.getPlans().subscribe({
       next: (res: any) => {
         this.plans = res.data || res || [];
-        console.log('plns', this.plans);
+        // console.log('plns', this.plans);
 
         if (this.originalRegistrationDto || this.registration) {
           this.patchForm(this.originalRegistrationDto || this.registration);
@@ -815,7 +815,7 @@ export class DeoVerification implements OnInit, OnChanges {
     this.submitting = true;
 
     // Retrieve current user ID from JWT token in local storage
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     let currentUserId = 0;
     if (token) {
       try {

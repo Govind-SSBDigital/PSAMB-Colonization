@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router) {}
 
   canActivate(): boolean | UrlTree {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     if (!token) {
       return this.router.createUrlTree(['/auth/login']);
@@ -22,15 +22,15 @@ export class AuthGuard implements CanActivate {
 
       if (Date.now() > expiry) {
 
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('cp_session');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('cp_session');
         return this.router.createUrlTree(['/auth/login']);
       }
 
       return true;
     } catch {
-      localStorage.clear();
+      sessionStorage.clear();
       return this.router.createUrlTree(['/auth/login']);
     }
   }

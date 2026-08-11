@@ -175,7 +175,7 @@ export class Profile implements OnInit {
     }
 
     const payload = { ...this.profileForm.getRawValue(), avatarUrl: this.avatarUrl };
-    console.log('Payload Submitted:', payload);
+    // console.log('Payload Submitted:', payload);
     this.initialFormState = this.profileForm.getRawValue();
     this.showSuccess();
   }
