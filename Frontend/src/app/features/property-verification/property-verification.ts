@@ -57,7 +57,7 @@ export class PropertyVerification implements OnInit {
   GetPendingForClerk() {
     this.service.GetPendingForClerk().subscribe({
       next: (res: any) => {
-        console.log('API prop Types:', res);
+        // console.log('API prop Types:', res);
         const rawData = res.data || res || [];
         this.propertyList = rawData.map((d: any) => ({
           id: d.id,
@@ -128,17 +128,17 @@ export class PropertyVerification implements OnInit {
   }
 
   viewDetails(property: PropertyVerificationModel): void {
-    const targetRoute = property.label === 'DEO' ? '/dashboard/deo-verification' : '/dashboard/verification-view';
+    const targetRoute = property.label === 'DEO' ? '/deo-verification' : '/verification-view';
     const encryptedId = btoa(property.id.toString());
     this.router.navigate([targetRoute], { queryParams: { id: encryptedId } });
   }
 
   editProperty(property: PropertyVerificationModel): void {
-    console.log('Editing Property:', property);
+    // console.log('Editing Property:', property);
   }
 
   viewHistory(property: PropertyVerificationModel): void {
-    console.log('Viewing Audit Trails:', property);
+    // console.log('Viewing Audit Trails:', property);
   }
 
   refreshData(): void {

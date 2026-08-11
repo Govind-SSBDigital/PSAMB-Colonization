@@ -434,7 +434,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('branchId')?.disable({ emitEvent: false });
     this.commonService.getMarketCommittees(districtId).subscribe({
       next: (res: any) => {
-        console.log('API Market Committees:', res);
+        // console.log('API Market Committees:', res);
         this.marketCommittees = res.data || [];
         this.isLoadingCommittees = false;
         this.registerationForm.get('branchId')?.enable({ emitEvent: false });
@@ -453,7 +453,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('mandiId')?.disable({ emitEvent: false });
     this.commonService.GetMandisByMarketCommiteeByDistrictAsync(branchId).subscribe({
       next: (res: any) => {
-        console.log('API Mandis:', res);
+        // console.log('API Mandis:', res);
         this.mandis = res.data || [];
         this.isLoadingMandis = false;
         this.registerationForm.get('mandiId')?.enable({ emitEvent: false });
@@ -470,7 +470,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadPropertyCategories() {
     this.commonService.getPropertyCategories().subscribe({
       next: (res: any) => {
-        console.log('API Property Categories:', res);
+        // console.log('API Property Categories:', res);
         this.propertyCategories = res.data || res || [];
       },
       error: (err: any) => {
@@ -492,7 +492,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadPlans() {
     this.commonService.getPlans().subscribe({
       next: (res: any) => {
-        console.log('API Plans:', res);
+        // console.log('API Plans:', res);
         this.plans = res.data || res || [];
       },
       error: (err: any) => {
@@ -503,7 +503,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadPlotTypes() {
     this.commonService.getPlotTypes().subscribe({
       next: (res: any) => {
-        console.log('API Plot Types:', res);
+        // console.log('API Plot Types:', res);
         this.plotTypes = res.data || res || [];
       },
       error: (err: any) => {
@@ -514,7 +514,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   getPropertyTypes() {
     this.commonService.getPropertyTypes().subscribe({
       next: (res: any) => {
-        console.log('API prop Types:', res);
+        // console.log('API prop Types:', res);
         this.auctionPropertyTypes = res.data || res || [];
       },
       error: (err: any) => {
@@ -540,7 +540,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadDistricts() {
     this.commonService.getAllDistrict().subscribe({
       next: (res: any) => {
-        console.log('API:', res);
+        // console.log('API:', res);
 
         this.districts = res.data;
       },
@@ -565,7 +565,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         if (res.success && res.data) {
           const d = res.data;
           this.propertyData = d;
-          console.log('data', d);
+          // console.log('data', d);
 
           const patchFormValues = () => {
             this.bidderNamesFormArray.clear();
@@ -989,7 +989,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       return cleanedReceipt;
     });
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     let applicantId: number | null = null;
     if (token) {
       try {

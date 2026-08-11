@@ -12,7 +12,7 @@ export class Propertybidderregn {
   constructor(private http: HttpClient) { }
 
   registerProperty(payload: any): Observable<any> {
-    debugger
+    // debugger
     return this.http.post<any>(`${this.baseUrl}/PropertyBidderRegn/registerProperty`, payload);
   }
 

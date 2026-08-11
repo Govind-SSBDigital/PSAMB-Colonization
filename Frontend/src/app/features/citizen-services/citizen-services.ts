@@ -94,7 +94,7 @@ export class CitizenServices implements OnInit {
       return;
     }
     // this.router.navigate([service.applyLink]);
-    console.log('Apply Now clicked for:', service.serviceName);
+    // console.log('Apply Now clicked for:', service.serviceName);
   }
  
 }

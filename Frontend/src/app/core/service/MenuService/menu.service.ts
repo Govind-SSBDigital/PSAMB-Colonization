@@ -38,7 +38,7 @@ export class MenuService {
   }
 
   clearMenusCache(): void {
-    localStorage.removeItem(this.storageKey);
+    sessionStorage.removeItem(this.storageKey);
     this.menusSubject.next([]);
   }
 
@@ -49,7 +49,7 @@ export class MenuService {
   }
 
   private loadFromStorage(): void {
-    const cached = localStorage.getItem(this.storageKey);
+    const cached = sessionStorage.getItem(this.storageKey);
     if (!cached) {
       return;
     }
@@ -58,14 +58,14 @@ export class MenuService {
       const menus = this.extractMenus(JSON.parse(cached));
       this.menusSubject.next(menus);
     } catch {
-      localStorage.removeItem(this.storageKey);
+      sessionStorage.removeItem(this.storageKey);
       this.menusSubject.next([]);
     }
   }
 
   fetchMenus(forceRefresh = false): Observable<MenuItem[]> {
     if (!forceRefresh) {
-      const cached = localStorage.getItem(this.storageKey);
+      const cached = sessionStorage.getItem(this.storageKey);
       if (cached) {
         try {
           const data = JSON.parse(cached);
@@ -75,7 +75,7 @@ export class MenuService {
             return of(menus);
           }
         } catch {
-          localStorage.removeItem(this.storageKey);
+          sessionStorage.removeItem(this.storageKey);
         }
       }
     }
@@ -83,7 +83,7 @@ export class MenuService {
     return this.common.getMenuItemsByRole().pipe(
       tap((response: any) => {
         const menus = this.extractMenus(response);
-        localStorage.setItem(this.storageKey, JSON.stringify({ menus }));
+        sessionStorage.setItem(this.storageKey, JSON.stringify({ menus }));
         this.menusSubject.next(menus);
       }),
       map((response: any) => this.extractMenus(response)),

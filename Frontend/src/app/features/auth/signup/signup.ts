@@ -342,18 +342,18 @@ export class Signup {
 
   onSignIn(): void {
     // wire up navigation / auth flow here
-    console.log('Sign In clicked');
+    // console.log('Sign In clicked');
   }
 
   onSignUp(): void {
-    console.log('Sign Up clicked');
+    // console.log('Sign Up clicked');
   }
 
   onProceed(): void {
     if (!this.selectedCategory) {
       return;
     }
-    console.log('Proceeding with category:', this.selectedCategory);
+    // console.log('Proceeding with category:', this.selectedCategory);
   }
   backToHome(): void {
     this.router.navigate(['/']);
