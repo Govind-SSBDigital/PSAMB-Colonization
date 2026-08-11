@@ -3,6 +3,9 @@ using Backend.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Data;
 
@@ -40,6 +43,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<IdentityUserRole<string>> UserRoles { get; set; }
 
+    public DbSet<HRMSData> HRMSDatas => Set<HRMSData>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -113,6 +117,15 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
             b.Property(x => x.OTPId).UseIdentityColumn(1, 1);
             b.Property(x => x.MobileNumber).HasMaxLength(15).IsRequired();
             b.Property(x => x.OTP).HasMaxLength(10).IsRequired();
+        });
+        builder.Entity<HRMSData>(b =>
+        {
+            b.ToTable("HRMSData");
+            b.HasKey(x => x.HRMSCODE);    
+            b.Property(x => x.HRMSCODE).HasMaxLength(50).IsRequired();
+            b.Property(x => x.EmployeeName).HasMaxLength(200);
+            b.Property(x => x.MobileNo).HasMaxLength(15);
+            b.Property(x => x.Email).HasMaxLength(255);
         });
     }
 

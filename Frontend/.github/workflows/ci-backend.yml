@@ -1,0 +1,43 @@
+name: CI / Backend Build and Test
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - staging
+      - main
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/ci-backend.yml'
+  push:
+    branches:
+      - '**'
+      - '!main'
+      - '!staging'
+      - '!develop'
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/ci-backend.yml'
+
+jobs:
+  backend-ci:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Backend Packages
+      run: dotnet restore Backend/Backend.csproj
+
+    - name: Build Backend
+      run: dotnet build Backend/Backend.csproj --no-restore --configuration Release
+
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release

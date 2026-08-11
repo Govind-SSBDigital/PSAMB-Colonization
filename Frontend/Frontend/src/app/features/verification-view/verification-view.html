@@ -1,0 +1,276 @@
+<div class="pv-page">
+
+  <!-- Page header -->
+  <div class="pv-card mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 p-3 p-md-4">
+      <div>
+        <!-- <h1 class="pv-title mb-1">Property Registration Verification</h1> -->
+        <p class="pv-subtitle mb-2">Review the submitted details below, then approve the request or send it back for changes.</p>
+        <div class="d-flex flex-wrap gap-3 pv-meta">
+          <span><strong>Allottee Code:</strong> {{ allotteeCode }}</span>
+          <span><strong>Application ID:</strong> {{ applicationId }}</span>
+          <span><strong>Submitted On:</strong> {{ submittedOn }}</span>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column align-items-md-end gap-2">
+        <!-- <span class="badge pv-badge-stage">{{ currentStage }}</span> -->
+
+        <button
+          *ngIf="!editMode"
+          type="button"
+          class="btn pv-btn-edit"
+          (click)="toggleEditMode()">
+          <i class="fa-solid fa-pen-to-square"></i>
+          Edit All Fields
+        </button>
+
+        <button
+          *ngIf="editMode"
+          type="button"
+          class="btn pv-btn-edit active"
+          (click)="cancelEdits()">
+          <!-- <i class="fa-solid fa-xmark"></i> -->
+          Cancel Edits
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="verificationForm">
+
+    <div class="pv-card mb-4" formGroupName="propertyDetails">
+      <div class="pv-section-header">
+        Property Details
+        <!-- <span class="pv-section-sub">Location, committee and plot information</span> -->
+      </div>
+
+      <div class="row g-3 p-3 p-md-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">District</label>
+          <select class="form-select" formControlName="district">
+            <option *ngFor="let d of districts" [value]="d">{{ d }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Market Committee</label>
+          <select class="form-select" formControlName="marketCommittee">
+            <option *ngFor="let c of committees" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Mandi</label>
+          <select class="form-select" formControlName="mandi">
+            <option *ngFor="let m of mandis" [value]="m">{{ m }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Plot Number / Property No.</label>
+          <input type="text" class="form-control" formControlName="plotNumber">
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Plot Type</label>
+          <select class="form-select" formControlName="plotType">
+            <option *ngFor="let t of plotTypes" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Plot Size (sq. yd)</label>
+          <input type="text" class="form-control" formControlName="plotSize">
+        </div>
+      </div>
+    </div>
+
+    <div class="pv-card mb-4" formGroupName="ownerInfo">
+      <div class="pv-section-header">
+        Owner Information
+        <!-- <span class="pv-section-sub">Applicant identity and communication details</span> -->
+      </div>
+
+      <div class="row g-3 p-3 p-md-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Current Owner Name <span class="pv-hint">(As Per Document)</span></label>
+          <input type="text" class="form-control" formControlName="currentOwnerName">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Father's / Husband Name</label>
+          <input type="text" class="form-control" formControlName="fatherHusbandName">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Mobile Number</label>
+          <input type="text" class="form-control" formControlName="mobileNumber">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Email</label>
+          <input type="email" class="form-control" formControlName="email">
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">State</label>
+          <select class="form-select" formControlName="state">
+            <option *ngFor="let s of states" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">District</label>
+          <select class="form-select" formControlName="district">
+            <option *ngFor="let d of districts" [value]="d">{{ d }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">City</label>
+          <input type="text" class="form-control" formControlName="city">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Address</label>
+          <input type="text" class="form-control" formControlName="address">
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Aadhaar Number</label>
+          <input type="text" class="form-control" formControlName="aadhaarNumber">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Aadhaar Card Proof</label>
+          <a href="#" class="pv-file-link form-control d-flex align-items-center justify-content-between">
+            View File <i class="bi bi-box-arrow-up-right"></i>
+          </a>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Passport Number</label>
+          <input type="text" class="form-control" formControlName="passportNumber" placeholder="Not provided">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="pv-label">Passport Proof</label>
+          <span class="form-control pv-file-empty">Not uploaded</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pv-card mb-4">
+      <div class="pv-section-header">
+        Uploaded Documents
+        <!-- <span class="pv-section-sub">At least one supporting document is required</span> -->
+      </div>
+
+      <div class="row g-3 p-3 p-md-4">
+        <div class="col-12 col-md-6" *ngFor="let doc of documents">
+          <div class="pv-doc-row" [class.pv-doc-missing]="!doc.submitted">
+            <div class="form-check pv-doc-check">
+              <input class="form-check-input" type="checkbox" [checked]="doc.submitted" disabled>
+              <label class="form-check-label">
+                {{ doc.label }}
+                <div class="pv-hint" *ngIf="doc.hint">{{ doc.hint }}</div>
+              </label>
+            </div>
+
+            <div class="pv-doc-action">
+              <ng-container *ngIf="!editMode">
+                <a *ngIf="doc.submitted" [href]="doc.fileUrl" target="_blank" class="btn btn-sm pv-btn-view">
+                  <i class="fa-solid fa-eye"></i> View
+                </a>
+                <span *ngIf="!doc.submitted" class="pv-not-submitted">Not submitted</span>
+              </ng-container>
+
+              <ng-container *ngIf="editMode">
+                <label class="btn btn-sm pv-btn-replace mb-0">
+                  <i class="bi bi-upload"></i> {{ doc.submitted ? 'Replace' : 'Upload' }}
+                  <input type="file" hidden (change)="onDocumentFileChange(doc, $event)">
+                </label>
+                <span class="pv-file-name" *ngIf="doc.fileName">{{ doc.fileName }}</span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pv-card mb-4" *ngIf="history.length">
+      <div class="pv-section-header">
+        Verification History
+      </div>
+      <ul class="list-unstyled p-3 p-md-4 mb-0">
+        <li class="pv-history-item" *ngFor="let h of history">
+          <div class="d-flex flex-wrap justify-content-between gap-2">
+            <span>
+              <span class="pv-history-action" [ngClass]="{
+                'text-success': h.action === 'Approved',
+                'text-danger': h.action === 'Sent Back',
+                'text-secondary': h.action === 'Submitted'
+              }">{{ h.action }}</span>
+              by <strong>{{ h.actorName }}</strong> &middot; {{ h.role }}
+            </span>
+            <span class="pv-hint">{{ h.date }}</span>
+          </div>
+          <p class="mb-0 pv-history-remarks">{{ h.remarks }}</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="pv-card mb-4" formGroupName="decision">
+      <div class="pv-section-header">
+        Verification Decision
+      </div>
+
+      <div class="p-3 p-md-4">
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <button
+              type="button"
+              class="pv-decision-card w-100"
+              [class.pv-decision-selected-approve]="activeDecision === 'approve'"
+              (click)="selectDecision('approve')">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Approve</span>
+              <small>Confirms the details are correct and moves the request forward.</small>
+            </button>
+          </div>
+          <div class="col-12 col-md-6">
+            <button
+              type="button"
+              class="pv-decision-card w-100"
+              [class.pv-decision-selected-sendback]="activeDecision === 'sendback'"
+              (click)="selectDecision('sendback')">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              <span>Send Back for Changes</span>
+              <small>Returns the request to the applicant with your remarks.</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4" *ngIf="activeDecision">
+          <label class="pv-label">
+            Remarks
+            <span *ngIf="activeDecision === 'sendback'" class="text-danger">*</span>
+          </label>
+          <textarea
+            class="form-control"
+            rows="3"
+            formControlName="remarks"
+            placeholder="{{ activeDecision === 'approve' ? 'Optional note for the record...' : 'Explain what needs to be corrected...' }}">
+          </textarea>
+          <div class="pv-error" *ngIf="showValidationHint && remarksControl?.invalid">
+            Please add at least 10 characters explaining the required changes.
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button type="button" class="btn btn-outline-secondary" (click)="activeDecision = null">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn"
+              [ngClass]="activeDecision === 'approve' ? 'pv-btn-approve' : 'pv-btn-sendback'"
+              [disabled]="submitting"
+              (click)="submitDecision()">
+              <span class="spinner-border spinner-border-sm me-2" *ngIf="submitting"></span>
+              {{ activeDecision === 'approve' ? 'Confirm Approval' : 'Confirm Send Back' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>

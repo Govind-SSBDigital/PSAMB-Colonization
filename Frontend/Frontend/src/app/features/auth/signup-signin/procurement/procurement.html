@@ -1,0 +1,128 @@
+<div class="procurement-panel">
+	<div class="procurement-panel-header">
+		Personal Details of Authorized Signatory (अधिकृत हस्ताक्षरकर्ता ਦੇ ਨਿੱਜੀ ਵੇਰਵੇ)
+	</div>
+
+	<form [formGroup]="procurementForm" (ngSubmit)="onSubmit()">
+		<div class="row g-3 procurement-grid">
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">Name of Agency (ਏਜੰਸੀ ਦਾ ਨਾਮ)<span class="required-star">*</span></label>
+				<select
+					class="form-control procurement-control"
+					formControlName="agencyName"
+					[class.is-invalid]="f['agencyName'].invalid && f['agencyName'].touched">
+					<option value="" disabled>--Select Agency--</option>
+					<option *ngFor="let option of agencyOptions" [value]="option">{{ option }}</option>
+				</select>
+				<div class="error-text" *ngIf="f['agencyName'].invalid && f['agencyName'].touched">
+					Please select Name of Agency
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">Designation (ਅਹੁਦਾ)<span class="required-star">*</span></label>
+				<select
+					class="form-control procurement-control"
+					formControlName="designation"
+					[class.is-invalid]="f['designation'].invalid && f['designation'].touched">
+					<option value="" disabled>--Select Designation--</option>
+					<option *ngFor="let option of designationOptions" [value]="option">{{ option }}</option>
+				</select>
+				<div class="error-text" *ngIf="f['designation'].invalid && f['designation'].touched">
+					Please select Designation
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">Gender (ਲਿੰਗ)<span class="required-star">*</span></label>
+				<select
+					class="form-control procurement-control"
+					formControlName="gender"
+					[class.is-invalid]="f['gender'].invalid && f['gender'].touched">
+					<option *ngFor="let option of genderOptions" [value]="option">{{ option }}</option>
+				</select>
+				<div class="error-text" *ngIf="f['gender'].invalid && f['gender'].touched">
+					Please select Gender
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">Date of Birth (ਜਨਮ ਤਾਰੀਖ)<span class="required-star">*</span></label>
+				<input
+					type="date"
+					class="form-control procurement-control uppercase"
+					formControlName="dob"
+					[class.is-invalid]="f['dob'].invalid && f['dob'].touched">
+				<div class="error-text" *ngIf="f['dob'].invalid && f['dob'].touched">
+					<span *ngIf="f['dob'].errors?.['required']">Please select Date of Birth</span>
+					<span *ngIf="f['dob'].errors?.['invalidDate']">Please enter a valid date</span>
+					<span *ngIf="f['dob'].errors?.['futureDate']">Date of Birth cannot be in the future</span>
+					<span *ngIf="f['dob'].errors?.['underage']">Age must be at least 18 years</span>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">First Name (ਪਹਿਲਾ ਨਾਂ)<span class="required-star">*</span></label>
+				<input
+					type="text"
+					class="form-control procurement-control"
+					placeholder="Enter Name"
+					formControlName="firstName"
+					[class.is-invalid]="f['firstName'].invalid && f['firstName'].touched">
+				<div class="error-text" *ngIf="f['firstName'].invalid && f['firstName'].touched">
+					<span *ngIf="f['firstName'].errors?.['required']">Please enter First Name</span>
+					<span *ngIf="f['firstName'].errors?.['pattern']">Only alphabets are allowed</span>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">Last Name (ਆਖਰੀ ਨਾਂ)<span class="required-star">*</span></label>
+				<input
+					type="text"
+					class="form-control procurement-control"
+					placeholder="Enter Last Name"
+					formControlName="lastName"
+					[class.is-invalid]="f['lastName'].invalid && f['lastName'].touched">
+				<div class="error-text" *ngIf="f['lastName'].invalid && f['lastName'].touched">
+					<span *ngIf="f['lastName'].errors?.['required']">Please enter Last Name</span>
+					<span *ngIf="f['lastName'].errors?.['pattern']">Only alphabets are allowed</span>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">Mobile No. (ਮੋਬਾਈਲ ਨੰ)<span class="required-star">*</span></label>
+				<input
+					type="tel"
+					maxlength="10"
+					class="form-control procurement-control"
+					placeholder="Enter Mobile Number"
+					formControlName="mobileNumber"
+					[class.is-invalid]="f['mobileNumber'].invalid && f['mobileNumber'].touched">
+				<div class="error-text" *ngIf="f['mobileNumber'].invalid && f['mobileNumber'].touched">
+					<span *ngIf="f['mobileNumber'].errors?.['required']">Please enter Mobile Number</span>
+					<span *ngIf="f['mobileNumber'].errors?.['pattern']">Please enter a valid 10-digit Mobile Number</span>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-3">
+				<label class="form-label">GST Number (GST ਨੰਬਰ)<span class="required-star">*</span></label>
+				<input
+					type="text"
+					class="form-control procurement-control"
+					placeholder="Enter GST Number"
+					formControlName="gstNumber"
+					style="text-transform: uppercase;"
+					[class.is-invalid]="f['gstNumber'].invalid && f['gstNumber'].touched">
+				<div class="error-text" *ngIf="f['gstNumber'].invalid && f['gstNumber'].touched">
+					<span *ngIf="f['gstNumber'].errors?.['required']">Please enter GST Number</span>
+					<span *ngIf="f['gstNumber'].errors?.['pattern']">Please enter a valid GST Number</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="procurement-actions">
+			<button type="button" class="btn border" (click)="onBack()">Back (ਵਾਪਸ)</button>
+			<button type="submit" class="btn btn-success">Submit (ਜਮ੍ਹਾ ਕਰੋ)</button>
+		</div>
+	</form>
+</div>

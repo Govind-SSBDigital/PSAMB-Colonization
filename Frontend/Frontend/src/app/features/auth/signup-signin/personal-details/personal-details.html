@@ -1,0 +1,232 @@
+<div class="step-form-block">
+    <div class="step-green-header collapsible-header" (click)="toggleSection('profile')">
+        <span><i class="fas fa-user-circle"></i> &nbsp; {{ getDynamicTitle() }}</span>
+        <i class="fas section-toggle-icon" [class.fa-angle-up]="sectionsExpanded.profile"
+            [class.fa-angle-down]="!sectionsExpanded.profile"></i>
+    </div>
+
+    <form #personalForm="ngForm" novalidate class="wizard-form-grid mt-3" [class.collapsed]="!sectionsExpanded.profile">
+
+        <div class="form-group-custom">
+            <label class="form-label-custom">Gender (ਲਿੰਗ) <span class="required-star">*</span></label>
+            <select name="gender" [(ngModel)]="signUpData.gender" #gender="ngModel" required class="form-input-custom">
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male / ਪੁਰਸ਼</option>
+                <option value="Female">Female / ਇਸਤਰੀ</option>
+            </select>
+            <div class="error-message" *ngIf="gender.invalid && (gender.dirty || gender.touched)">
+                <span *ngIf="gender.errors?.['required']">Gender is required.</span>
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            <label class="form-label-custom">Date Of Birth (ਜਨਮ ਤਾਰੀਖ) <span class="required-star">*</span></label>
+            <div class="input-with-icon-right">
+                <input type="date" name="dob" [(ngModel)]="signUpData.dob" #dob="ngModel"
+                    [max]="maxDob" required class="form-input-custom uppercase"
+                    (ngModelChange)="onDobChange()">
+                <i class="fas fa-calendar-alt input-icon-right"></i>
+            </div>
+            <div class="error-message" *ngIf="(dob.invalid && (dob.dirty || dob.touched)) || futureDobError || ageError">
+                <span *ngIf="dob.errors?.['required']">Date of birth is required.</span>
+                <span *ngIf="futureDobError">Date of birth cannot be in the future.</span>
+                <span *ngIf="ageError">Applicant must be at least 18 years old.</span>
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            <label class="form-label-custom">First Name (ਪਹਿਲਾ ਨਾਂ) <span class="required-star">*</span></label>
+            <input type="text" name="firstName" [(ngModel)]="signUpData.firstName" #firstName="ngModel"
+                class="form-input-custom" placeholder="Enter Name" required
+                    pattern="^[A-Za-z' -]+$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                (ngModelChange)="onTextInput('firstName', $event)">
+            <div class="error-message" *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)">
+                <span *ngIf="firstName.errors?.['required']">First name is required.</span>
+                <span *ngIf="firstName.errors?.['pattern']">First name cannot contain numbers or special characters.</span>
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            <label class="form-label-custom">Last Name (ਆਖਰੀ ਨਾਂ)</label>
+            <input type="text" name="lastName" [(ngModel)]="signUpData.lastName" #lastName="ngModel"
+                class="form-input-custom" placeholder="Enter Last Name"
+                    pattern="^[A-Za-z' -]*$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                (ngModelChange)="onTextInput('lastName', $event)">
+            <div class="error-message" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
+                <span *ngIf="lastName.errors?.['pattern']">Last name cannot contain numbers or special characters.</span>
+            </div>
+        </div>
+
+        <!-- Father / Spouse -->
+        <div class="form-group-custom relation-toggle-group">
+            <label class="form-label-custom">Select Relation Type <span class="required-star">*</span></label>
+            <div class="btn-group w-50 gap-3" role="group" aria-label="Relation Type">
+                <input type="radio" name="relationType" id="relationFather"
+                    [value]="'father'" [(ngModel)]="signUpData.relationType"
+                    (ngModelChange)="onRelationTypeChange()" autocomplete="off">
+                <label for="relationFather">Father</label>
+
+                <input type="radio"  name="relationType" id="relationSpouse"
+                    [value]="'spouse'" [(ngModel)]="signUpData.relationType"
+                    (ngModelChange)="onRelationTypeChange()" autocomplete="off">
+                <label for="relationSpouse">Spouse</label>
+            </div>
+        </div>
+
+        <div class="toggle-section" *ngIf="signUpData.relationType === 'father'">
+            <div class="form-group-custom">
+                <label class="form-label-custom">Father's First Name <span class="required-star">*</span></label>
+                <input type="text" name="fatherFirstName" [(ngModel)]="signUpData.fatherFirstName" #fatherFirstName="ngModel"
+                    class="form-input-custom" placeholder="Enter Father's First Name" required
+                        pattern="^[A-Za-z' -]+$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                    (ngModelChange)="onTextInput('fatherFirstName', $event)">
+                <div class="error-message" *ngIf="fatherFirstName.invalid && (fatherFirstName.dirty || fatherFirstName.touched)">
+                    <span *ngIf="fatherFirstName.errors?.['required']">Father's first name is required.</span>
+                    <span *ngIf="fatherFirstName.errors?.['pattern']">This field cannot contain numbers or special characters.</span>
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Father's Last Name</label>
+                <input type="text" name="fatherLastName" [(ngModel)]="signUpData.fatherLastName" #fatherLastName="ngModel"
+                    class="form-input-custom" placeholder="Enter Father's Last Name"
+                        pattern="^[A-Za-z' -]*$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                    (ngModelChange)="onTextInput('fatherLastName', $event)">
+                <div class="error-message" *ngIf="fatherLastName.invalid && (fatherLastName.dirty || fatherLastName.touched)">
+                    <span *ngIf="fatherLastName.errors?.['pattern']">This field cannot contain numbers or special characters.</span>
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Mother's First Name <span class="required-star">*</span></label>
+                <input type="text" name="motherFirstName" [(ngModel)]="signUpData.motherFirstName" #motherFirstName="ngModel"
+                    class="form-input-custom" placeholder="Enter Mother's First Name" required
+                        pattern="^[A-Za-z' -]+$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                    (ngModelChange)="onTextInput('motherFirstName', $event)">
+                <div class="error-message" *ngIf="motherFirstName.invalid && (motherFirstName.dirty || motherFirstName.touched)">
+                    <span *ngIf="motherFirstName.errors?.['required']">Mother's first name is required.</span>
+                    <span *ngIf="motherFirstName.errors?.['pattern']">This field cannot contain numbers or special characters.</span>
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Mother's Last Name</label>
+                <input type="text" name="motherLastName" [(ngModel)]="signUpData.motherLastName" #motherLastName="ngModel"
+                    class="form-input-custom" placeholder="Enter Mother's Last Name"
+                        pattern="^[A-Za-z' -]*$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                    (ngModelChange)="onTextInput('motherLastName', $event)">
+                <div class="error-message" *ngIf="motherLastName.invalid && (motherLastName.dirty || motherLastName.touched)">
+                    <span *ngIf="motherLastName.errors?.['pattern']">This field cannot contain numbers or special characters.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="toggle-section" *ngIf="signUpData.relationType === 'spouse'">
+            <div class="form-group-custom">
+                <label class="form-label-custom">Spouse First Name <span class="required-star">*</span></label>
+                <input type="text" name="spouseFirstName" [(ngModel)]="signUpData.spouseFirstName" #spouseFirstName="ngModel"
+                    class="form-input-custom" placeholder="Enter Spouse First Name" required
+                        pattern="^[A-Za-z' -]+$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                    (ngModelChange)="onTextInput('spouseFirstName', $event)">
+                <div class="error-message" *ngIf="spouseFirstName.invalid && (spouseFirstName.dirty || spouseFirstName.touched)">
+                    <span *ngIf="spouseFirstName.errors?.['required']">Spouse first name is required.</span>
+                    <span *ngIf="spouseFirstName.errors?.['pattern']">This field cannot contain numbers or special characters.</span>
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Spouse Last Name</label>
+                <input type="text" name="spouseLastName" [(ngModel)]="signUpData.spouseLastName" #spouseLastName="ngModel"
+                    class="form-input-custom" placeholder="Enter Spouse Last Name"
+                        pattern="^[A-Za-z' -]*$" title="Only letters, spaces, hyphens and apostrophes allowed"
+                    (ngModelChange)="onTextInput('spouseLastName', $event)">
+                <div class="error-message" *ngIf="spouseLastName.invalid && (spouseLastName.dirty || spouseLastName.touched)">
+                    <span *ngIf="spouseLastName.errors?.['pattern']">This field cannot contain numbers or special characters.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            <label class="form-label-custom">
+                Email Id (ਈ-ਮੇਲ ਆਈ.ਡੀ) <span class="required-star">*</span>
+                <span class="verified-badge-inline" *ngIf="verification.emailVerified">
+                    <i class="fas fa-check-circle"></i> Verified
+                </span>
+            </label>
+            <div class="input-with-action">
+                <input type="email" name="emailAddress" [(ngModel)]="signUpData.emailAddress" #emailAddress="ngModel"
+                    class="form-input-custom" placeholder="Enter Email Id" required email
+                    [disabled]="verification.emailVerified || verification.emailSent">
+
+                <ng-container *ngIf="!verification.emailVerified">
+                    <button type="button" class="btn-verify-inline" *ngIf="!verification.emailSent"
+                        [disabled]="verification.emailSending" (click)="sendEmailOtp()">Verify</button>
+
+                    <ng-container *ngIf="verification.emailSent">
+                        <input type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                            [(ngModel)]="verification.emailOtpInput" (input)="onEmailOtpInput()"
+                            class="form-input-custom otp-input-inline" placeholder="OTP" name="emailOtp">
+                        <button type="button" class="btn-resend-icon" matTooltip="Resend Otp" matTooltipPosition="above"
+                            [disabled]="verification.emailSending" (click)="sendEmailOtp()">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div class="error-message" *ngIf="emailAddress.invalid && (emailAddress.dirty || emailAddress.touched)">
+                <span *ngIf="emailAddress.errors?.['required']">Email is required.</span>
+                <span *ngIf="emailAddress.errors?.['email']">Enter a valid email address.</span>
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            <label class="form-label-custom">
+                Mobile No. (ਮੋਬਾਈਲ ਨੰ) <span class="required-star">*</span>
+                <span class="verified-badge-inline" *ngIf="verification.mobileVerified">
+                    <i class="fas fa-check-circle"></i> Verified
+                </span>
+            </label>
+            <div class="input-with-action">
+                <input type="tel" maxlength="10" name="mobileNumber" [(ngModel)]="signUpData.mobileNumber" #mobileNumber="ngModel"
+                    class="form-input-custom" placeholder="Enter Mobile Number" required pattern="^[0-9]{10}$"
+                    [disabled]="verification.mobileVerified || verification.mobileSent">
+
+                <ng-container *ngIf="!verification.mobileVerified">
+                    <button type="button" class="btn-verify-inline" *ngIf="!verification.mobileSent"
+                        [disabled]="verification.mobileSending" (click)="sendMobileOtp()">Verify</button>
+
+                    <ng-container *ngIf="verification.mobileSent">
+                        <input type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                            [(ngModel)]="verification.mobileOtpInput" (input)="onMobileOtpInput()"
+                            class="form-input-custom otp-input-inline" placeholder="OTP" name="mobileOtp">
+                        <button type="button" class="btn-resend-icon" matTooltip="Resend Otp" matTooltipPosition="above"
+                            [disabled]="verification.mobileSending" (click)="sendMobileOtp()">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div class="error-message" *ngIf="mobileNumber.invalid && (mobileNumber.dirty || mobileNumber.touched)">
+                <span *ngIf="mobileNumber.errors?.['required']">Mobile number is required.</span>
+                <span *ngIf="mobileNumber.errors?.['pattern']">Enter a valid 10 digit mobile number.</span>
+            </div>
+        </div>
+
+         <!-- Managing Partner toggle -->
+           <div class="form-group-custom" *ngIf="isManagingPartnerVisible">
+    <label class="form-label-custom">Are You Managing Partner <span class="required-star">*</span></label>
+    <select name="isManagingPartner" #isManagingPartner="ngModel"
+        [ngModel]="signUpData.isManagingPartner"
+        (ngModelChange)="setManagingPartner($event)"
+        required class="form-input-custom">
+        <option [ngValue]="null" disabled selected>Select</option>
+        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">No</option>
+    </select>
+    <div class="error-message" *ngIf="isManagingPartner.invalid && (isManagingPartner.dirty || isManagingPartner.touched)">
+        <span *ngIf="isManagingPartner.errors?.['required']">This field is required.</span>
+    </div>
+</div>
+
+    </form>
+</div>

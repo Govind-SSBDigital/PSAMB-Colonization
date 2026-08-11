@@ -1,0 +1,68 @@
+name: CD / Deploy Production Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/deploy-production-backend.yml'
+
+jobs:
+  build-production-backend:
+    name: Build & Package Backend (Production)
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore & Build Backend
+      run: |
+        dotnet restore Backend/Backend.csproj
+        dotnet build Backend/Backend.csproj --no-restore --configuration Release
+
+    - name: Run Backend Tests
+      run: dotnet test Backend/Backend.csproj --no-build --configuration Release
+
+    - name: Publish Backend
+      run: dotnet publish Backend/Backend.csproj -c Release -o ./publish-backend
+
+    - name: Install EF Tool
+      run: dotnet tool install --global dotnet-ef
+
+    - name: Generate Migration SQL Script
+      run: dotnet ef migrations script --project Backend/Backend.csproj --idempotent --output ./migration-production.sql
+      continue-on-error: true
+
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-production-build
+        path: ./publish-backend
+        retention-days: 30
+
+    - name: Upload Migration Script
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: migration-script-production
+        path: ./migration-production.sql
+        retention-days: 30
+        if-no-files-found: ignore
+
+    - name: Deployment Summary
+      run: |
+        echo "## 🚀 Production Backend Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Backend build artifacts are ready for manual deployment." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts:" >> $GITHUB_STEP_SUMMARY
+        echo "- **backend-production-build** — Published .NET API" >> $GITHUB_STEP_SUMMARY
+        echo "- **migration-script-production** — Idempotent SQL migration script" >> $GITHUB_STEP_SUMMARY

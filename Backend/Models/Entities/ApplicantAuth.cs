@@ -21,4 +21,7 @@
         public DateTime? UpdatedDate { get; set; }
         public long? UpdatedBy { get; set; }
     }
+
+
+
 }
