@@ -109,7 +109,7 @@ export class HomePage {
       ],
       punjabiFullMessage: [
         "ਪੰਜਾਬ, ਜੋ ਆਪਣੀ ਮਹਾਨ ਵਿਰਾਸਤ, ਹਿੰਮਤ ਅਤੇ ਸਹਿਨਸ਼ੀਲਤਾ ਲਈ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ, ਹਮੇਸ਼ਾਂ ਤਰੱਕੀ ਅਤੇ ਏਕਤਾ ਦਾ ਪ੍ਰਤੀਕ ਰਿਹਾ ਹੈ। ਸਾਡੀ ਸਰਕਾਰ ਹਰ ਇਕ ਵਿਅਕਤੀ ਦੀ ਭਲਾਈ ਲਈ ਪਾਰਦਰਸ਼ੀ, ਪ੍ਰਭਾਵਸ਼ਾਲੀ ਅਤੇ ਲੋਕ-ਕੇਂਦਰਿਤ ਪ੍ਰਸ਼ਾਸਨ ਬਣਾਉਣ ਲਈ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵਚਨਬੱਧ ਹੈ।",
-        "ਅਸੀਂ ਲਗਾਤਾਰ ਬੁਨਿਆਦੀ ਢਾਂਚੇ ਨੂੰ ਮਜ਼ਬੂਤ ਕਰਨ, ਸਰਕਾਰੀ ਸੇਵਾਵਾਂ ਵਿੱਚ ਸੁਧਾਰ ਕਰਨ @ਤੇ ਇਹ ਯਕੀਨੀ ਬਣਾਉਣ ਲਈ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹਾਂ ਕਿ ਸਮਾਜ ਦੇ ਹਰ ਵਰਗ ਨੂੰ ਵਿਕਾਸ ਦਾ ਲਾਭ ਮਿਲੇ। ਡਿਜ਼ਿਟਲ ਬਦਲਾਅ, ਸਰਕਾਰੀ ਸੇਵਾਵਾਂ ਤੱਕ ਆਸਾਨ ਪਹੁੰਚ ਅਤੇ ਪੰਜਾਬ ਦੇ ਨੌਜਵਾਨਾਂ ਲਈ ਮੌਕੇ ਪੈਦਾ ਕਰਨ ‘ਤੇ ਖਾਸ ਧਿਆਨ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ।",
+        "ਅਸੀਂ ਲਗਾਤਾਰ ਬੁਨਿਆਦੀ ਢਾਂਚੇ ਨੂੰ ਮਜ਼ਬੂਤ ਕਰਨ, ਸਰਕਾਰੀ ਸੇਵਾਵਾਂ ਵਿੱਚ ਸੁਧਾਰ ਕਰਨ ਅਤੇ ਇਹ ਯਕੀਨੀ ਬਣਾਉਣ ਲਈ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹਾਂ ਕਿ ਸਮਾਜ ਦੇ ਹਰ ਵਰਗ ਨੂੰ ਵਿਕਾਸ ਦਾ ਲਾਭ ਮਿਲੇ। ਡਿਜ਼ਿਟਲ ਬਦਲਾਅ, ਸਰਕਾਰੀ ਸੇਵਾਵਾਂ ਤੱਕ ਆਸਾਨ ਪਹੁੰਚ ਅਤੇ ਪੰਜਾਬ ਦੇ ਨੌਜਵਾਨਾਂ ਲਈ ਮੌਕੇ ਪੈਦਾ ਕਰਨ ‘ਤੇ ਖਾਸ ਧਿਆਨ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ।",
         "ਸਾਡਾ ਵਿਜ਼ਨ ਪੰਜਾਬ ਨੂੰ ਨਵੀਨਤਾ, ਖੇਤੀਬਾੜੀ, ਸਿੱਖਿਆ ਅਤੇ ਉਦਯੋਗ ਦੇ ਖੇਤਰਾਂ ਵਿੱਚ ਅੱਗੇ ਲੈ ਜਾਣਾ ਹੈ। ਸਾਂਝੇ ਯਤਨਾਂ, ਸਮਰਪਣ ਅਤੇ ਲੋਕ ਭਾਗੀਦਾਰੀ ਨਾਲ ਅਸੀਂ ਸਕਾਰਾਤਮਕ ਬਦਲਾਅ ਲਿਆਉਣ ਅਤੇ ਆਉਣ ਵਾਲੀਆਂ ਪੀੜ੍ਹੀਆਂ ਲਈ ਚੰਗਾ ਭਵਿੱਖ ਯਕੀਨੀ ਬਣਾਉਣ ਦਾ ਲਕਸ਼ ਰੱਖਦੇ ਹਾਂ।",
         "ਮੈਂ ਪੰਜਾਬ ਦੇ ਲੋਕਾਂ ਦਾ ਉਨ੍ਹਾਂ ਦੇ ਭਰੋਸੇ ਅਤੇ ਸਹਿਯੋਗ ਲਈ ਦਿਲੋਂ ਧੰਨਵਾਦ ਕਰਦਾ ਹਾਂ। ਅਸੀਂ ਇਕੱਠੇ ਮਿਲ ਕੇ ਖੁਸ਼ਹਾਲੀ, ਸਮਾਵੇਸ਼ਤਾ ਅਤੇ ਟਿਕਾਊ ਵਿਕਾਸ ਵੱਲ ਅੱਗੇ ਵਧਦੇ ਰਹਾਂਗੇ।  "
       ]
@@ -145,12 +145,12 @@ export class HomePage {
       punjabiQuote: "ਡਿਜੀਟਲ ਪ੍ਰਾਪਰਟੀ ਅਤੇ ਈ-ਨਿਲਾਮੀ ਪੋਰਟਲ 'ਤੇ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਅਸੀਂ ਨਿਰਵਿਘਨ ਅਤੇ ਕਾਗਜ਼ ਰਹਿਤ ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਪ੍ਰਦਾਨ ਕਰਨ ਲਈ ਵਚਨਬੱਧ ਹਾਂ।",
       fullMessage: [
         "As Director of Colonization, my primary mission is the modernization of our land administration systems. We have completely overhauled our allotment files, mutation registries, and auction workflows into secure digital models.",
-        "Citizens can now check their property ledger cards, pay lease installments, verify mutation records, and participate in active e-Auctions directly from their homes or offices without visiting government desks. Our target is a fully transparent administration, faster delivery of NOCs, and automated land allotment procedures.",
+        "Citizens can now check their property ledger cards, pay lease installments, Transfer of Properties, and participate in active e-Auctions directly from their homes or offices without visiting government desks. Our target is a fully transparent administration, faster delivery of NOCs, and automated land allotment procedures.",
         "We are continuously upgrading our portals to bring more convenience and ease of access. I encourage all citizen bid applicants to review online instructional videos and bid with confidence on our secure portal."
       ],
       punjabiFullMessage: [
-        "ਡਾਇਰੈਕਟਰ ਆਬਾਦਕਾਰੀ ਵਜੋਂ, ਮੇਰਾ ਮੁੱਖ ਉਦੇਸ਼ ਜ਼ਮੀਨੀ ਪ੍ਰਸ਼ਾਸਨ ਪ੍ਰਣਾਲੀਆਂ ਦਾ ਆਧੁਨਿਕੀਕਰਨ ਕਰਨਾ ਹੈ। ਅਸੀਂ ਅਲਾਟਮੈਂਟ ਫਾਈਲਾਂ, ਮਿਊਟੇਸ਼ਨ ਰਜਿਸਟਰੀਆਂ ਅਤੇ ਨਿਲਾਮੀ ਪ੍ਰਕਿਰਿਆਵਾਂ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਡਿਜੀਟਲ ਮਾਡਲਾਂ ਵਿੱਚ ਤਬਦੀਲ ਕਰ ਦਿੱਤਾ ਹੈ।",
-        "ਨਾਗਰਿਕ ਹੁਣ ਆਪਣੇ ਘਰਾਂ ਜਾਂ ਦਫ਼ਤਰਾਂ ਤੋਂ ਸਿੱਧੇ ਆਪਣੇ ਪ੍ਰਾਪਰਟੀ ਲੈਜਰ ਕਾਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹਨ, ਲੀਜ਼ ਦੀਆਂ ਕਿਸ਼ਤਾਂ ਦਾ ਭੁਗਤਾਨ ਕਰ ਸਕਦੇ ਹਨ @ਤੇ ਈ-ਨਿਲਾਮੀ ਵਿੱਚ ਹਿੱਸਾ ਲੈ ਸਕਦੇ ਹਨ। ਸਾਡਾ ਟੀਚਾ ਪੂਰੀ ਤਰ੍ਹਾਂ ਪਾਰਦਰਸ਼ੀ ਪ੍ਰਸ਼ਾਸਨ ਅਤੇ ਸਰਲ ਪ੍ਰਕਿਰਿਆਵਾਂ ਹਨ।",
+        "ਡਾਇਰੈਕਟਰ ਆਬਾਦਕਾਰੀ ਵਜੋਂ, ਮੇਰਾ ਮੁੱਖ ਉਦੇਸ਼ ਜ਼ਮੀਨੀ ਪ੍ਰਸ਼ਾਸਨ ਪ੍ਰਣਾਲੀਆਂ ਦਾ ਆਧੁਨਿਕੀਕਰਨ ਕਰਨਾ ਹੈ। ਅਸੀਂ ਅਲਾਟਮੈਂਟ ਫਾਈਲਾਂ, ਤਬਦੀਲੀ ਰਜਿਸਟਰੀਆਂ ਅਤੇ ਬੋਲੀ ਪ੍ਰਕਿਰਿਆਵਾਂ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਡਿਜੀਟਲ ਮਾਡਲਾਂ ਵਿੱਚ ਤਬਦੀਲ ਕਰ ਦਿੱਤਾ ਹੈ।",
+        "ਨਾਗਰਿਕ ਹੁਣ ਆਪਣੇ ਘਰਾਂ ਜਾਂ ਦਫ਼ਤਰਾਂ ਤੋਂ ਸਿੱਧੇ ਆਪਣੇ ਪ੍ਰਾਪਰਟੀ ਲੈਜਰ ਕਾਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹਨ, ਲੀਜ਼ ਦੀਆਂ ਕਿਸ਼ਤਾਂ ਦਾ ਭੁਗਤਾਨ ਕਰ ਸਕਦੇ ਹਨ ਅਤੇ ਈ-ਨਿਲਾਮੀ ਵਿੱਚ ਹਿੱਸਾ ਲੈ ਸਕਦੇ ਹਨ। ਸਾਡਾ ਟੀਚਾ ਪੂਰੀ ਤਰ੍ਹਾਂ ਪਾਰਦਰਸ਼ੀ ਪ੍ਰਸ਼ਾਸਨ ਅਤੇ ਸਰਲ ਪ੍ਰਕਿਰਿਆਵਾਂ ਹਨ।",
         "ਅਸੀਂ ਨਾਗਰਿਕਾਂ ਦੀ ਸਹੂਲਤ ਲਈ ਪੋਰਟਲ ਨੂੰ ਲਗਾਤਾਰ ਅਪਗ੍ਰੇਡ ਕਰ ਰਹੇ ਹਾਂ। ਮੈਂ ਸਾਰੇ ਬਿਨੈਕਾਰਾਂ ਨੂੰ ਭਰੋਸੇ ਨਾਲ ਸਾਡੇ ਸੁਰੱਖਿਅਤ ਪੋਰਟਲ 'ਤੇ ਬੋਲੀ ਲਗਾਉਣ ਲਈ ਸੱਦਾ ਦਿੰਦੀ ਹਾਂ।"
       ]
     }

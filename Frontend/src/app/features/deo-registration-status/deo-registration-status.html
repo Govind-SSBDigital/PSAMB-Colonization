@@ -57,7 +57,7 @@
                   <button type="button" class="btn btn-action-icon" (click)="onView(item)" title="View Form Details">
                     <i class="fa-solid fa-eye"></i>
                   </button>
-                  <button type="button" class="btn btn-action-icon btn-action-edit" [disabled]="item.approvalStatus !== 'Rejected' && item.approvalStatus !== 'Objection'" (click)="onEdit(item)" [attr.title]="item.approvalStatus === 'Rejected' || item.approvalStatus === 'Objection' ? 'Edit Form Details' : 'Edit disabled for this status'">
+                  <button type="button" class="btn btn-action-icon btn-action-edit" [disabled]="item.approvalStatus !== 'Objection'" (click)="onEdit(item)" [attr.title]="item.approvalStatus === 'Objection' ? 'Edit Form Details' : 'Edit disabled for this status'">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                 </div>

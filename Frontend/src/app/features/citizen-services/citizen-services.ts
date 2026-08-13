@@ -18,13 +18,11 @@ export interface CitizenService {
 })
 export class CitizenServices implements OnInit {
  
-  title = 'Citizen Services and Fees';
- 
   services: CitizenService[] = [
     {
       srNo: 1,
       serviceName: 'Payment of Instalments',
-      onlineCharges: ['Rs 100'],
+      onlineCharges: ['100'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Deactive'
@@ -32,7 +30,7 @@ export class CitizenServices implements OnInit {
     {
       srNo: 2,
       serviceName: 'Permission to Sell',
-      onlineCharges: ['Rs 600'],
+      onlineCharges: ['600'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Active',
@@ -41,7 +39,7 @@ export class CitizenServices implements OnInit {
     {
       srNo: 3,
       serviceName: 'Issuance of No Due Certificate',
-      onlineCharges: ['Rs 150'],
+      onlineCharges: ['150'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Active',
@@ -50,7 +48,7 @@ export class CitizenServices implements OnInit {
     {
       srNo: 4,
       serviceName: 'Loan/Mortgage to Permission',
-      onlineCharges: ['Booth - Rs 950', 'Shop - Rs 1800'],
+      onlineCharges: ['Booth - 950', 'Shop - 1800'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Active',
@@ -59,7 +57,7 @@ export class CitizenServices implements OnInit {
     {
       srNo: 5,
       serviceName: 'Lien Removal fee/Release from Mortgage',
-      onlineCharges: ['Booth - Rs 600', 'Shop - Rs 950'],
+      onlineCharges: ['Booth - 600', 'Shop - 950'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Active',
@@ -68,7 +66,7 @@ export class CitizenServices implements OnInit {
     {
       srNo: 6,
       serviceName: 'Change of Ownership (Sale Deed)',
-      onlineCharges: ['Booth - Rs 1800', 'Shop - Rs 3600'],
+      onlineCharges: ['Booth - 1800', 'Shop - 3600'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Active',
@@ -77,7 +75,7 @@ export class CitizenServices implements OnInit {
     {
       srNo: 7,
       serviceName: 'Change of Ownership (Gift Deed)',
-      onlineCharges: ['Booth - Rs 1800', 'Shop - Rs 3600'],
+      onlineCharges: ['Booth - 1800', 'Shop - 3600'],
       psambFees: 'No',
       cdFees: 'No',
       status: 'Deactive'

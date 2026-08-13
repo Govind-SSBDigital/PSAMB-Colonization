@@ -132,13 +132,7 @@ export class PropertyVerification implements OnInit {
     const encryptedId = btoa(property.id.toString());
     this.router.navigate([targetRoute], { queryParams: { id: encryptedId } });
   }
-
-  editProperty(property: PropertyVerificationModel): void {
-    // console.log('Editing Property:', property);
-  }
-
   viewHistory(property: PropertyVerificationModel): void {
-    // console.log('Viewing Audit Trails:', property);
   }
 
   refreshData(): void {
