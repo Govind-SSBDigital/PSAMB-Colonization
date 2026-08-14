@@ -23,9 +23,9 @@
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Number (ਨੰਬਰ) <span class="required-star">*</span></label>
-                <input type="text" name="idDocumentNumber" [(ngModel)]="signUpData.idDocumentNumber"
+                <input type="text" name="idDocumentNumber" [ngModel]="getDisplayDocumentNumber()" (ngModelChange)="onDocumentNumberChange($event)"
                     class="form-input-custom" placeholder="Enter Document Number" #idDocNumber="ngModel" required
-                    [pattern]="getCurrentPattern()" [maxlength]="getMaxLength()" (input)="onInputFormatting($event)">
+                    [pattern]="getCurrentPattern()" [maxlength]="getMaxLength()">
                 <div class="error-message" *ngIf="idDocNumber.invalid && (idDocNumber.dirty || idDocNumber.touched)">
                     <span *ngIf="idDocNumber.errors?.['required']">Document number is required.</span>
                     <span *ngIf="idDocNumber.errors?.['pattern']">Invalid document number format.</span>
@@ -134,12 +134,13 @@
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Pin Code (ਪਿੰਨ ਕੋਡ) <span class="required-star">*</span></label>
-                <input type="text" name="addressPincode" maxlength="6" [(ngModel)]="signUpData.addressPincode"
+                <input type="text" name="addressPincode" maxlength="6" [(ngModel)]="signUpData.addressPincode" 
+                (keydown)="restrictToNumbers($event)"
                     #addressPincode="ngModel" required pattern="^[0-9]{6}$" class="form-input-custom"
                     placeholder="Enter Pin Code">
                 <div class="error-message"
                     *ngIf="addressPincode.invalid && (addressPincode.dirty || addressPincode.touched)">
-                    <span *ngIf="addressPincode.errors?.['required']">Postal Pin code is required.</span>
+                    <span *ngIf="addressPincode.errors?.['required']">Pin code is required.</span>
                     <span *ngIf="addressPincode.errors?.['pattern']">Pin code must be a 6-digit number.</span>
                 </div>
             </div>
@@ -162,7 +163,7 @@
                 <select name="addressDocType" [(ngModel)]="signUpData.addressDocType" #addressDocType="ngModel" required
                     class="form-input-custom">
                     <option value="" disabled selected>Select Document</option>
-                    <option *ngFor="let doc of addressDocTypes" [value]="doc">{{ doc }}</option>
+                    <option *ngFor="let doc of filteredAddressDocTypes" [value]="doc">{{ doc }}</option>
                 </select>
                 <div class="error-message"
                     *ngIf="addressDocType.invalid && (addressDocType.dirty || addressDocType.touched)">
@@ -172,12 +173,14 @@
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Number (ਨੰਬਰ) <span class="required-star">*</span></label>
-                <input type="text" name="addressDocNumber" [(ngModel)]="signUpData.addressDocNumber"
-                    #addressDocNumber="ngModel" required class="form-input-custom"
-                    placeholder="Enter Address Proof Number">
+                <input type="text" name="addressDocNumber" [ngModel]="getDisplayAddressDocNumber()"
+                    (ngModelChange)="onAddressDocNumberChange($event)" #addressDocNumber="ngModel" required
+                    class="form-input-custom" placeholder="Enter Address Proof Number"
+                    [pattern]="getAddressDocPattern()" [maxlength]="getAddressDocMaxLength()">
                 <div class="error-message"
                     *ngIf="addressDocNumber.invalid && (addressDocNumber.dirty || addressDocNumber.touched)">
                     <span *ngIf="addressDocNumber.errors?.['required']">Document number is required.</span>
+                    <span *ngIf="addressDocNumber.errors?.['pattern']">Invalid document number format.</span>
                 </div>
             </div>
 

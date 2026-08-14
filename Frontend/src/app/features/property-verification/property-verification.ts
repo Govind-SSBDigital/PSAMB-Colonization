@@ -29,11 +29,8 @@ export class PropertyVerification implements OnInit {
   constructor(private router: Router, private service: Propertybidderregn, private cdr: ChangeDetectorRef) { }
 
   searchText = '';
-  selectedStatus = 'All';
+  selectedStatus = 'Pending';
   selectedBranch = 'All';
-
-  statusList: string[] = ['All', 'Pending', 'Verified', 'Rejected'];
-  branchList: string[] = ['All', 'Chandigarh', 'Mohali'];
 
   propertyList: PropertyVerificationModel[] = [];
   filteredPropertyList: PropertyVerificationModel[] = [];
@@ -73,8 +70,7 @@ export class PropertyVerification implements OnInit {
           firstName: d.firstName,
           applicationStatusId: d.applicationStatusId
         }));
-        this.filteredPropertyList = [...this.propertyList];
-        this.updatePagedList();
+        this.applyFilter();
         this.cdr.detectChanges();
       },
       error: (err: any) => {
@@ -128,7 +124,7 @@ export class PropertyVerification implements OnInit {
   }
 
   viewDetails(property: PropertyVerificationModel): void {
-    const targetRoute = property.label === 'DEO' ? '/deo-verification' : '/verification-view';
+    const targetRoute = property.label === 'DEO' ? '/verification' : '/verification-view';
     const encryptedId = btoa(property.id.toString());
     this.router.navigate([targetRoute], { queryParams: { id: encryptedId } });
   }
