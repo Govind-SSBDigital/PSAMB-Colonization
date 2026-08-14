@@ -54,7 +54,12 @@ export class MenuService {
 
   private extractProfile(payload: any): any {
     const data = payload?.data ?? payload;
-    return data?.profile ?? payload?.profile ?? null;
+    const profile = data?.profile ?? payload?.profile ?? null;
+    if (!profile) {
+      return null;
+    }
+    const roles = data?.roles ?? payload?.roles ?? [];
+    return Array.isArray(roles) ? { ...profile, roles } : profile;
   }
 
   private loadFromStorage(): void {

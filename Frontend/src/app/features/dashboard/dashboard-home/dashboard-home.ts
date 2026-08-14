@@ -43,7 +43,7 @@ export class DashboardHome implements OnInit {
           userId: profile.id ?? profile.userId ?? '',
           fullName: profile.fullName ?? profile.name ?? profile.userName ?? '',
           userName: profile.userName ?? '',
-          entityType: profile.entityType ?? (Array.isArray(profile.roles) && profile.roles.length ? profile.roles.join(', ') : 'User')
+          entityType: profile.entityType ?? (Array.isArray(profile.roles) && profile.roles.length ? profile.roles.join(', ') : (typeof profile.roles === 'string' ? profile.roles : '')),
         };
       }
     });

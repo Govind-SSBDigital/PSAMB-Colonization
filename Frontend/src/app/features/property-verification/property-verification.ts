@@ -31,6 +31,11 @@ export class PropertyVerification implements OnInit {
   searchText = '';
   selectedStatus = 'Pending';
   selectedBranch = 'All';
+  selectedDistrict = 'All';
+  selectedMandi = 'All';
+
+  districtList: string[] = [];
+  mandiList: string[] = [];
 
   propertyList: PropertyVerificationModel[] = [];
   filteredPropertyList: PropertyVerificationModel[] = [];
@@ -70,6 +75,7 @@ export class PropertyVerification implements OnInit {
           firstName: d.firstName,
           applicationStatusId: d.applicationStatusId
         }));
+        this.buildFilterOptions();
         this.applyFilter();
         this.cdr.detectChanges();
       },
@@ -78,13 +84,39 @@ export class PropertyVerification implements OnInit {
       }
     });
   }
+  buildFilterOptions(): void {
+    this.districtList = Array.from(
+      new Set(this.propertyList.map(p => p.district).filter(d => !!d && d !== 'N/A'))
+    ).sort();
+
+    this.refreshMandiOptions();
+  }
+
+  refreshMandiOptions(): void {
+    const source = this.selectedDistrict === 'All'
+      ? this.propertyList
+      : this.propertyList.filter(p => p.district === this.selectedDistrict);
+
+    this.mandiList = Array.from(
+      new Set(source.map(p => p.mandiName).filter(m => !!m && m !== 'N/A'))
+    ).sort();
+
+    // If the previously selected mandi no longer belongs to this district, reset it
+    if (this.selectedMandi !== 'All' && !this.mandiList.includes(this.selectedMandi)) {
+      this.selectedMandi = 'All';
+    }
+  }
+
+  onDistrictChange(): void {
+    this.refreshMandiOptions();
+    this.applyFilter();
+  }
 
   applyFilter(): void {
     this.pageIndex = 0;
     this.filteredPropertyList = this.propertyList.filter(property => {
       const matchesSearch =
-        property.propertyNo.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        property.ownerName.toLowerCase().includes(this.searchText.toLowerCase());
+        property.propertyNo.toLowerCase().includes(this.searchText.toLowerCase());
 
       const matchesStatus =
         this.selectedStatus === 'All' ||
@@ -94,10 +126,26 @@ export class PropertyVerification implements OnInit {
         this.selectedBranch === 'All' ||
         property.branch === this.selectedBranch;
 
-      return matchesSearch && matchesStatus && matchesBranch;
+      const matchesDistrict =
+        this.selectedDistrict === 'All' ||
+        property.district === this.selectedDistrict;
+
+      const matchesMandi =
+        this.selectedMandi === 'All' ||
+        property.mandiName === this.selectedMandi;
+
+      return matchesSearch && matchesStatus && matchesBranch && matchesDistrict && matchesMandi;
     });
 
     this.updatePagedList();
+  }
+
+  resetFilters(): void {
+    this.searchText = '';
+    this.selectedDistrict = 'All';
+    this.selectedMandi = 'All';
+    this.refreshMandiOptions();
+    this.applyFilter();
   }
 
   updatePagedList(): void {
@@ -135,6 +183,8 @@ export class PropertyVerification implements OnInit {
     this.searchText = '';
     this.selectedStatus = 'All';
     this.selectedBranch = 'All';
+    this.selectedDistrict = 'All';
+    this.selectedMandi = 'All';
     this.GetPendingForClerk();
   }
 

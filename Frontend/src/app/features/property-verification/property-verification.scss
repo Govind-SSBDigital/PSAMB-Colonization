@@ -118,7 +118,7 @@
     border-radius: 8px;
     border: 1px solid var(--gov-slate-200, #e2e8f0);
     background: #fff;
-    color: var(--theme-primary);
+        color: var(--theme-primary);
     transition: background-color .15s ease, border-color .15s ease;
 
     mat-icon {
@@ -128,7 +128,7 @@
     }
     &:hover {
         background: var(--gov-slate-50, #F8FAFC);
-        border-color: var(--theme-primary);
+             border-color: var(--theme-primary);
     }
 }
 
@@ -137,6 +137,56 @@
     height: 32px;
     width: 32px;
     color: var(--gov-slate-400, #94a3b8);
+}
+.filter-bar {
+    border-color: var(--gov-slate-100, #F1F5F9) !important;
+
+    .search-group {
+        .input-group-text {
+            border-color: var(--gov-slate-200, #e2e8f0);
+        }
+
+        .form-control {
+            border-color: var(--gov-slate-200, #e2e8f0);
+            font-size: .8rem;
+
+            &:focus {
+                box-shadow: none;
+                border-color: var(--theme-primary);
+            }
+        }
+    }
+
+    .search-icon {
+        font-size: 17px;
+        height: 16px;
+        width: 16px;
+        color: var(--theme-primary);
+    }
+
+    .form-select {
+        border-color: var(--gov-slate-200, #e2e8f0);
+        font-size: .8rem;
+
+        &:focus {
+            box-shadow: none;
+            border-color: var(--theme-primary);
+        }
+    }
+
+    .reset-filter-btn {
+        font-size: .78rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .reset-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+    }
 }
 
 ::ng-deep mat-paginator {

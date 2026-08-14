@@ -6,9 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 
 interface Announcement {
   id: number;
-  date: string;
+  // date: string;
   title: string;
   isNew: boolean;
+  url?: string; // Optional URL for the announcement
 }
 
 interface QuickLink {
@@ -37,11 +38,11 @@ interface PhotoItem {
 })
 export class HomePage {
   announcements: Announcement[] = [
-    { id: 1, date: '25-06-2026', title: 'Upcoming e-Auction Notice No. 2026/04 for commercial and residential booths in Jalandhar Mandi.', isNew: true },
-    { id: 2, date: '20-06-2026', title: 'Notification regarding revision of building regularization guidelines and lease extension rates.', isNew: true },
-    { id: 3, date: '15-06-2026', title: 'Launch of Online Land Mutation and Digital NOC Tracking System for citizen convenience.', isNew: false },
-    { id: 4, date: '10-06-2026', title: 'Office Order: Allotment list of residential plots under the Command Area Development Scheme (Phase II).', isNew: false },
-    { id: 5, date: '05-06-2026', title: 'Instructions for submitting online bids and depositing EMD via the integrated payment gateway.', isNew: false }
+    { id: 1, title: 'Tender Document for Hiring Vehicles', isNew: true, url: 'https://emandikaran-pb.in/files/HiringVehicles.pdf' },
+    { id: 2, title: 'Notification Regarding Fruit Items', isNew: true, url: 'https://emandikaran-pb.in/files/Notification-Regarding-Fruit-Items.pdf' },
+    { id: 3, title: 'Self Declaration/Manual Form for Aayushmaan Scheme', isNew: false, url: 'https://emandikaran-pb.in/files/Ayushman_bharat_self_declaration.pdf' },
+    { id: 4, title: 'Instruction Regarding Manpower Contractor.', isNew: false ,url: 'https://emandikaran-pb.in/files/Draft%20Man_power_enlistment_26-27.pdf'},
+    { id: 5, title: 'Instruction Regarding Enlistment of Contractor', isNew: false, url: 'https://emandikaran-pb.in/files/Draft%20enlmt_Marketing_2026-27_.pdf' },
   ];
 
   quickLinks: QuickLink[] = [

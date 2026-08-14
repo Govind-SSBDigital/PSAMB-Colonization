@@ -5,12 +5,13 @@
                 <div class="d-flex align-items-center justify-content-between p-3">
                     <div class="d-flex align-items-center gap-3">
                         <div class="avatar-circle-material">
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Individual'">person</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Company'">business</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'HUF'">groups</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Partnership Firm'">handshake</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Sole Proprietorship'">work</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Other' || !loggedInUser.entityType">more_horiz</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'DEO'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Clerk'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'User'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Senior Assistant'">assignment_ind</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Supritendent'">assignment_ind</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Deputy Director' || !loggedInUser.entityType">assignment_ind</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Director' || !loggedInUser.entityType">assignment_ind</mat-icon>
                         </div>
                         <div>
                             <h2 class="h4 fw-bold text-dark mb-1">Welcome, {{ loggedInUser.fullName }}</h2>

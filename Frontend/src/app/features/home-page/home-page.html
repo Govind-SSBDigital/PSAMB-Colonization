@@ -35,20 +35,24 @@
                 <div class="ticker-scroll-content">
                     <div class="announcement-item" *ngFor="let item of announcements"
                         [class.new-highlight]="item.isNew">
+                        <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
                         <div class="announcement-meta">
-                            <span class="ann-date">{{ item.date }}</span>
+                            <!-- <span class="ann-date">{{ item.date }}</span> -->
+                            <p class="ann-title">{{ item.title }}</p>
                             <span class="new-tag-badge" *ngIf="item.isNew">NEW</span>
                         </div>
-                        <p class="ann-title">{{ item.title }}</p>
+                        </a>
                     </div>
                     <!-- Duplicate items for seamless continuous scrolling loop -->
                     <div class="announcement-item" *ngFor="let item of announcements"
                         [class.new-highlight]="item.isNew">
+                        <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
                         <div class="announcement-meta">
-                            <span class="ann-date">{{ item.date }}</span>
+                            <!-- <span class="ann-date">{{ item.date }}</span> -->
+                            <p class="ann-title">{{ item.title }}</p>
                             <span class="new-tag-badge" *ngIf="item.isNew">NEW</span>
                         </div>
-                        <p class="ann-title">{{ item.title }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
