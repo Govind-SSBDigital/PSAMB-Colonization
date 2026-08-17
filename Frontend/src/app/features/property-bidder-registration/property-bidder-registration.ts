@@ -104,6 +104,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   mode: 'view' | 'edit' | 'create' = 'create';
   readonlyMode = false;
+  showPreview = false;
+  previewConfirmed = false;
   private destroy$ = new Subject<void>();
   propertyData: any;
   propTypes: any;
@@ -372,6 +374,28 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return String(id) === String(value);
   }
 
+  getSelectedMarketCommitteeName(): string {
+    const value = this.registerationForm?.get('branchId')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.marketCommittees?.find(m => {
+      const id = m?.marketCommitteeId ?? m?.id ?? m?.branchId;
+      return String(id) === String(value);
+    });
+    if (!selected) return '';
+    return selected.marketCommitteeName ?? selected.name ?? selected.branchName ?? '';
+  }
+
+  getSelectedPropertyCategoryName(): string {
+    const value = this.registerationForm?.get('propertyCategoryId')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.propertyCategories?.find(c => {
+      const id = c?.propertyCategoryId ?? c?.id ?? c;
+      return String(id) === String(value);
+    });
+    if (!selected) return '';
+    return selected.categoryName ?? selected.name ?? selected.propertyCategoryName ?? selected;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
     this.isPlanDropdownOpen = false;
@@ -379,6 +403,13 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.isPlotTypeDropdownOpen = false;
     this.isPropTypeDropdownOpen = false;
     this.isMandiDropdownOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showPreview) {
+      this.closePreviewModal();
+    }
   }
 
   ngOnInit(): void {
@@ -1190,6 +1221,20 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.bidderNamesFormArray.clear();
     this.calculatedSchedulesMatrix = [];
     this.propertyData = null;
+  }
+
+  letshowPreview(): void {
+    this.showPreview = true;
+    this.previewConfirmed = false;
+  }
+
+  closePreviewModal(): void {
+    this.showPreview = false;
+    this.previewConfirmed = false;
+  }
+
+  onPreviewConfirmChange(event: Event): void {
+    this.previewConfirmed = (event.target as HTMLInputElement).checked;
   }
 
   private updateAuctionValidators(isAuctioned: boolean): void {
