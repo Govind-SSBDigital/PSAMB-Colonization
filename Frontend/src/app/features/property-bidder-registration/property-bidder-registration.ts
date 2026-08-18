@@ -411,13 +411,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.isCityDropdownOpen = false;
   }
 
-  @HostListener('document:keydown.escape')
-  onEscapeKey(): void {
-    if (this.showPreview) {
-      this.closePreviewModal();
-    }
-  }
-
   ngOnInit(): void {
     // debugger
     this.loadStates();
