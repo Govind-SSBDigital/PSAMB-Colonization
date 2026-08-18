@@ -6,8 +6,9 @@ export interface CitizenService {
   onlineCharges: string[];       
   psambFees: string;
   cdFees: string;
-  status: 'Active' | 'Deactive';
+  status: 'Active' | 'Not Active' ;
   applyLink?: string;
+  payNowLink?: string;
 }
 @Component({
   selector: 'app-citizen-services',
@@ -25,7 +26,8 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['100'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Deactive'
+      status: 'Not Active',
+      payNowLink: '/services/payment-of-instalments'
     },
     {
       srNo: 2,
@@ -33,7 +35,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['600'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Active',
+      status: 'Not Active',
       applyLink: '/services/permission-to-sell'
     },
     {
@@ -42,7 +44,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['150'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Active',
+      status: 'Not Active',
       applyLink: '/services/no-due-certificate'
     },
     {
@@ -51,7 +53,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 950', 'Shop - 1800'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Active',
+      status: 'Not Active',
       applyLink: '/services/loan-mortgage-permission'
     },
     {
@@ -60,7 +62,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 600', 'Shop - 950'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Active',
+      status: 'Not Active',
       applyLink: '/services/lien-removal'
     },
     {
@@ -69,7 +71,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 1800', 'Shop - 3600'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Active',
+      status: 'Not Active',
       applyLink: '/services/change-ownership-sale-deed'
     },
     {
@@ -78,7 +80,8 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 1800', 'Shop - 3600'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Deactive'
+      status: 'Not Active',
+      applyLink: '/services/change-ownership-gift-deed'
     }
   ];
  
@@ -94,5 +97,11 @@ export class CitizenServices implements OnInit {
     // this.router.navigate([service.applyLink]);
     // console.log('Apply Now clicked for:', service.serviceName);
   }
- 
+
+  onPayNow(service: CitizenService): void {
+    if (!service.payNowLink) {
+      return;
+    }
+  }
+
 }

@@ -24,7 +24,14 @@ body, p, span, div, td, th {
 }
 
 .text-dark-green {
+  font-size: 18px;
   color: var(--gov-dark-green) !important;
+}
+.custom-text{
+  font-size: 13px;
+  color: black;
+  opacity: 0.8;
+  font-family: "Noto Sans Gurmukhi", sans-serif;
 }
 
 .btn-dark-green {

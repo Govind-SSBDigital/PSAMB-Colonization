@@ -20,8 +20,49 @@
       <a class="nav-link-item" routerLinkActive="active"  href="https://pmb.enivida.com/"
         target="_blank" rel="noopener noreferrer" (click)="closeMobileMenu()">e-Auctions</a>
       <a class="nav-link-item" routerLinkActive="active" routerLink="/citizen-services" (click)="closeMobileMenu()">Citizen Services</a>
+      <!-- about us dropdown -->
+      <div class="nav-item dropdown" [class.open]="isAboutUsOpen">
+        <button type="button" class="nav-link-item dropdown-toggle"
+        (click)="toggleAboutUs($event)" [attr.aria-expanded]="isAboutUsOpen">
+        About Us
+        <i class="fas fa-chevron-down dropdown-arrow" [class.rotated]="isAboutUsOpen"></i>
+        </button>
+        <ul class="dropdown-menu custom-bg" [class.show]="isAboutUsOpen">
+          <li>
+            <a class="dropdown-item" routerLink="/about-us" (click)="closeMobileMenu()">
+              <i class="fas fa-info-circle icon-dropdown"></i> About Us
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/about-us/mandate" (click)="closeMobileMenu()">
+              <i class="fas fa-bullseye icon-dropdown"></i> Organizational Chart
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/about-us/organization-structure" (click)="closeMobileMenu()">
+              <i class="fas fa-sitemap icon-dropdown"></i> Holiday List
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/about-us/organization-structure" (click)="closeMobileMenu()">
+              <i class="fas fa-address-book icon-dropdown"></i> Directory
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/about-us/organization-structure" (click)="closeMobileMenu()">
+              <i class="fas fa-bullhorn icon-dropdown"></i> Public Information Officer
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/about-us/organization-structure" (click)="closeMobileMenu()">
+              <i class="fas fa-shuffle icon-dropdown"></i> Act, Plot Sale &amp; Transfer Rules
+            </a>
+          </li>
+        </ul>
+      </div>
+
       <a class="nav-link-item" (click)="clickMessages($event)">Messages</a>
-      <a class="nav-link-item" routerLink="/about-us" (click)="closeMobileMenu()">About Us</a>
+
       <!-- Downloads Dropdown Menu -->
       <div class="nav-item dropdown" [class.open]="isDownloadsOpen">
         <button type="button" class="nav-link-item dropdown-toggle"

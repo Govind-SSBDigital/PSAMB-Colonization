@@ -36,12 +36,22 @@
             </span>
           </td>
           <td class="col-action">
-            <button *ngIf="service.status === 'Active'"
-                    type="button"
-                    class="btn cs-apply-btn"
-                    (click)="onApply(service)">
-              Apply Now
-            </button>
+            <ng-container *ngIf="service.payNowLink; else applyNowTpl">
+              <button
+                      type="button"
+                      class="btn cs-pay-now-btn"
+                      (click)="onPayNow(service)">
+                Pay Now
+              </button>
+            </ng-container>
+            <ng-template #applyNowTpl>
+              <button
+                      type="button"
+                      class="btn cs-apply-btn"
+                      (click)="onApply(service)">
+                Apply Now
+              </button>
+            </ng-template>
           </td>
         </tr>
       </tbody>
