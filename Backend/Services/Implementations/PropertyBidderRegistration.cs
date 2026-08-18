@@ -1,11 +1,13 @@
-﻿using Backend.Data;
+using Backend.Data;
 using Backend.Helpers;
 using Backend.Models.Dtos;
 using Backend.Models.Entities;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Backend.Services.Implementations
 {
@@ -49,14 +51,22 @@ namespace Backend.Services.Implementations
         {
             try
             {
-                var propertyCode = await GeneratePropertyCode(dto.DistrictId, dto.BranchId, dto.MandiId, dto.PlotNo);
+                if (string.IsNullOrEmpty(dto.PropertyCode))
+                {
+                    dto.PropertyCode = await GeneratePropertyCode(dto.DistrictId, dto.BranchId, dto.MandiId, dto.PlotNo);
+                }
+                var data = _context.PropertyBidderRegistration.Where(x => x.PropertyCode == dto.PropertyCode).FirstOrDefault();
+                if (data != null)
+                {
+                    return ApiResponse<PropertyBidderRegistrationDto>.Fail("Data already exists for this allottee code.");
+                }
 
                 var entity = new Models.Entities.PropertyBidderRegistration
                 {
                     MandiId = dto.MandiId,
                     BranchId = dto.BranchId,
                     DistrictId = dto.DistrictId,
-                    PropertyCode = propertyCode,
+                    PropertyCode = dto.PropertyCode,
                     PlotTypeId = dto.PlotTypeId,
                     ApplicantId = dto.ApplicantId??0,
                     PlanId = dto.PlanId,
@@ -103,7 +113,10 @@ namespace Backend.Services.Implementations
                     IsActive = true,
                     IsDeleted = false,
                     CreatedDate = DateTime.UtcNow,
-                    CreatedBy = dto.CreatedBy ?? dto.ApplicantId ?? 0
+                    CreatedBy = dto.CreatedBy ?? dto.ApplicantId ?? 0,
+                    OwnerStateID= dto.OwnerStateID,
+                    OwnerDistrtictID=dto.OwnerDistrtictID,
+                    OwnerCityID=dto.OwnerCityID
                 };
 
                 _context.PropertyBidderRegistration.Add(entity);
@@ -142,7 +155,16 @@ namespace Backend.Services.Implementations
             }
             catch (Exception ex)
             {
-                return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
+                var message = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    message += " | Inner: " + ex.InnerException.Message;
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        message += " | Detail: " + ex.InnerException.InnerException.Message;
+                    }
+                }
+                return ApiResponse<PropertyBidderRegistrationDto>.Fail(message);
             }
         }
 
@@ -206,7 +228,10 @@ namespace Backend.Services.Implementations
                         DistrictName = x.District != null ? x.District.DistrictName : "",
                         BranchName = x.Branch != null ? x.Branch.BranchName : "",
                         MandiName = x.Mandi != null ? x.Mandi.MandiName : "",
-                        Remarks=x.Remarks
+                        Remarks=x.Remarks,
+                        OwnerStateID=x.OwnerStateID,
+                        OwnerDistrtictID=x.OwnerDistrtictID,
+                        OwnerCityID=x.OwnerCityID
 
                     })
                     .FirstOrDefaultAsync();
@@ -307,6 +332,9 @@ namespace Backend.Services.Implementations
                         ApplicationStatusId = x.ApplicationStatusId,
                         PlotStatus = x.PlotStatus,
                         PropertyCategoryId = x.PropertyCategoryId,
+                        OwnerStateID=x.OwnerStateID,
+                        OwnerDistrtictID=x.OwnerDistrtictID,
+                        OwnerCityID=x.OwnerCityID
                     })
                     .FirstOrDefaultAsync();
 
@@ -348,6 +376,394 @@ namespace Backend.Services.Implementations
             }
         }
 
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyEAuctionDetailsByPropertyCodeAsync(
+    string propertyCode)
+        {
+            try
+            {
+                var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("SP_GetPropertyEauctionDetailsByPropertyCode", connection);
+
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(
+                    "@PropertyCode",
+                    propertyCode);
+
+                using var adapter = new SqlDataAdapter(command);
+
+                var dataSet = new DataSet();
+
+                adapter.Fill(dataSet);
+                // Create response for checking
+                var response = new PropertyBidderRegistrationDto();
+
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                {
+                    var table = dataSet.Tables[0];
+                    var row = table.Rows[0];
+
+                    response.Id = row["PropertyId"] != DBNull.Value
+                        ? Convert.ToInt32(row["PropertyId"])
+                        : 0;
+
+                    response.PropertyCode = row["PropertyCode"]?.ToString();
+
+                    response.MandiId = row["MandiId"] != DBNull.Value
+                        ? Convert.ToInt32(row["MandiId"])
+                        : 0;
+
+                    response.BranchId = row["BranchId"] != DBNull.Value
+                        ? Convert.ToInt32(row["BranchId"])
+                        : 0;
+
+                    response.DistrictId = row["DistrictId"] != DBNull.Value
+                        ? Convert.ToInt32(row["DistrictId"])
+                        : 0;
+
+                    response.PlotTypeId = row["PlotTypeId"] != DBNull.Value
+                        ? Convert.ToInt32(row["PlotTypeId"])
+                        : null;
+
+                    response.PlanId = row["PlanId"] != DBNull.Value
+                        ? Convert.ToInt32(row["PlanId"])
+                        : null;
+
+                    response.PlotSize = row["PlotSize"] != DBNull.Value
+                        ? Convert.ToString(row["PlotSize"])
+                        : null;
+
+                    response.PlotNo = row["PlotNo"] != DBNull.Value
+                        ? Convert.ToInt32(row["PlotNo"])
+                        : null;
+
+                    response.PlotStatus = row["PropertyStatus"] != DBNull.Value
+                      ? Convert.ToString(row["PropertyStatus"])
+                      : null;
+                    response.AssetVerified =
+                            row["IsAssetVerified"] != DBNull.Value
+                                ? Convert.ToBoolean(row["IsAssetVerified"])
+                                : null;
+
+                    response.NdcGenerated =
+                        row["IsNDCGenerated"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsNDCGenerated"])
+                            : null;
+
+                    response.NdcIssued =
+                        row["IsNDCIssued"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsNDCIssued"])
+                            : null;
+
+                    response.AnyComplaint =
+                        row["IsAnyComplaint"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsAnyComplaint"])
+                            : null;
+
+                    response.IsDefaulter =
+                        row["IsDefaulter"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsDefaulter"])
+                            : null;
+
+                    response.AssetSurrendered =
+                        row["IsAssetSurrendered"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsAssetSurrendered"])
+                            : null;
+
+                    response.IsAssetLocked =
+                        row["IsLocked"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsLocked"])
+                            : null;
+
+                    response.AssetResumed =
+                        row["IsAssetResumed"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsAssetResumed"])
+                            : null;
+                    response.IsAuctioned =row["IsAssetAuctioned"] != DBNull.Value? Convert.ToBoolean(row["IsAssetAuctioned"]) : null;
+
+                    response.PropertyCategoryId =
+                      row["PropertyCategoryId"] != DBNull.Value
+                          ? Convert.ToInt32(row["PropertyCategoryId"])
+                          : null;
+                    response.PropertyTypeId =
+                      row["PropertyTypeId"] != DBNull.Value
+                          ? Convert.ToInt32(row["PropertyTypeId"])
+                          : null;
+
+                   
+
+                    response.BidderTypeId =
+                      row["BiddingType"] != DBNull.Value
+                          ? Convert.ToInt32(row["BiddingType"])
+                          : null;
+                    response.BidderName =  row["Name"] != DBNull.Value
+                            ? row["Name"]?.ToString()
+                           : null;
+
+                    response.Email =
+                        row["EmailId"] != DBNull.Value
+                            ? row["EmailId"]?.ToString()
+                            : null;
+
+                   
+
+                    // =====================================
+                    // Personal Details
+                    // =====================================
+
+                    response.Relation =
+                        row["Relation"] != DBNull.Value
+                            ? row["Relation"]?.ToString()
+                            : null;
+
+                    response.FatherOrHusbandName =
+                        row["FatherName"] != DBNull.Value
+                            ? row["FatherName"]?.ToString()
+                            : null;
+
+                    response.PANNo =
+                        row["PanNumber"] != DBNull.Value
+                            ? row["PanNumber"]?.ToString()
+                            : null;
+
+                    response.AadhaarNo =
+                        row["DocumentNumber"] != DBNull.Value
+                            ? row["DocumentNumber"]?.ToString()
+                            : null;
+
+                    response.MobileNo =
+                        row["MobileNo"] != DBNull.Value
+                            ? row["MobileNo"]?.ToString()
+                            : null;
+
+                    // Owner Details
+                    response.OwnerStateID =
+                        row["StateId"] != DBNull.Value
+                            ? Convert.ToInt32(row["StateId"])
+                            : null;
+
+                    response.OwnerDistrtictID =
+                        row["DistrictId"] != DBNull.Value
+                            ? Convert.ToInt32(row["DistrictId"])
+                            : null;
+
+                    response.OwnerCityID =
+                        row["CityId"] != DBNull.Value
+                            ? Convert.ToInt32(row["CityId"])
+                            : null;
+
+                    response.Address =
+                        row["Address"] != DBNull.Value
+                            ? row["Address"]?.ToString()
+                            : null;
+
+
+                }
+
+                // =====================================
+                // TABLE 2 - PropertyAuctionDetail
+                // =====================================
+
+                if (dataSet.Tables.Count > 2 &&
+                    dataSet.Tables[2].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[2].Rows[0];
+                    response.AuctionDate =
+                      row["AuctionDate"] != DBNull.Value
+                          ? Convert.ToDateTime(row["AuctionDate"])
+                          : null;
+                    // Financial Details
+                    response.ReservePrice =
+                        row["ReservePrice"] != DBNull.Value
+                            ? Convert.ToDecimal(row["ReservePrice"])
+                            : null;
+
+                    response.FinalBidPrice =
+                        row["SalesAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["SalesAmount"])
+                            : null;
+
+
+                    // EMD
+                    //response.EmdTxnId =
+                    //    row["EmdTxnId"] != DBNull.Value
+                    //        ? row["EmdTxnId"]?.ToString()
+                    //        : null;
+
+                    //response.EmdDate =
+                    //    row["EmdDate"] != DBNull.Value
+                    //        ? Convert.ToDateTime(row["EmdDate"])
+                    //        : null;
+
+                    //response.EmdAmount =
+                    //    row["EmdAmount"] != DBNull.Value
+                    //        ? Convert.ToDecimal(row["EmdAmount"])
+                    //        : null;
+
+
+                    // 25% Allotment
+                    //response.AllotmentTxnId =
+                    //    row["AllotmentTxnId"] != DBNull.Value
+                    //        ? row["AllotmentTxnId"]?.ToString()
+                    //        : null;
+
+                    response.AllotmentDate =
+                        row["DateOfAllotment"] != DBNull.Value
+                            ? Convert.ToDateTime(row["DateOfAllotment"])
+                            : null;
+
+                    //response.AllotmentAmount =
+                    //    row["AllotmentAmount"] != DBNull.Value
+                    //        ? Convert.ToDecimal(row["AllotmentAmount"])
+                    //        : null;
+
+
+                    // Outstanding
+                    response.DueAmount =
+                        row["BalanceAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["BalanceAmount"])
+                            : null;
+
+                    //response.TotalDueWithInterest =
+                    //    row["TotalDueWithInterest"] != DBNull.Value
+                    //        ? Convert.ToDecimal(row["TotalDueWithInterest"])
+                    //        : null;
+
+
+                    // Remarks
+                    //response.Remarks =
+                    //    row["Remarks"] != DBNull.Value
+                    //        ? row["Remarks"]?.ToString()
+                    //        : null;
+                }
+
+                // =====================================
+                // TABLE 5 - PropertyInstallmentDetails
+                // =====================================
+
+                response.Installments = new List<InstallmentDetailsDto>();
+
+                if (dataSet.Tables.Count > 5 &&
+                    dataSet.Tables[5].Rows.Count > 0)
+                {
+                    var table = dataSet.Tables[5];
+
+                    foreach (DataRow row in table.Rows)
+                    {
+                        var installment = new InstallmentDetailsDto
+                        {
+                            Id = row["DraftId"] != DBNull.Value
+                                ? Convert.ToInt32(row["DraftId"])
+                                : 0,
+
+                            ReceiptNo = row["ReceiptNo"] != DBNull.Value
+                                ? row["ReceiptNo"]?.ToString()
+                                : null,
+
+                            ReceiptDate = row["ReceiptDate"] != DBNull.Value
+                                ? Convert.ToDateTime(row["ReceiptDate"])
+                                : null,
+
+                            DraftNo = row["DraftNo"] != DBNull.Value
+                                ? row["DraftNo"]?.ToString()
+                                : null,
+
+                            DraftAmount = row["DraftAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["DraftAmount"])
+                                : null,
+
+                            DraftDate = row["DraftDate"] != DBNull.Value
+                                ? Convert.ToDateTime(row["DraftDate"])
+                                : null,
+
+                            DraftBank = row["ChallanBank"] != DBNull.Value
+                                ? row["DraftBankId"]?.ToString()
+                                : null,
+
+                            PrincipalAmount = row["PrincipalAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["PrincipalAmount"])
+                                : null,
+
+                            InterestAmount = row["InterestAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["InterestAmount"])
+                                : null,
+
+                            OtherAmount = row["OtherAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["OtherAmount"])
+                                : null,
+
+                            PenaltyAmount = row["PenalityAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["PenalityAmount"])
+                                : null,
+
+                            PenaltyType = row["PenalityTypeId"] != DBNull.Value
+                                ? row["PenalityTypeId"]?.ToString()
+                                : null,
+
+                            Remarks = row["Remarks"] != DBNull.Value
+                                ? row["Remarks"]?.ToString()
+                                : null,
+
+
+                            //IsVerified = row["IsVerified"] != DBNull.Value
+                            //    ? Convert.ToBoolean(row["IsVerified"])
+                            //    : null
+                        };
+
+                        response.Installments.Add(installment);
+                    }
+                }
+
+                if (dataSet.Tables.Count > 6 && dataSet.Tables[6].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[6].Rows[0];
+                    // Form Fee
+                    response.FormTransactionId =
+                        row["TransactionId"] != DBNull.Value
+                            ? row["TransactionId"]?.ToString()
+                            : null;
+
+                    response.FormTxnDate =
+                        row["ReceiptDate"] != DBNull.Value
+                            ? Convert.ToDateTime(row["ReceiptDate"])
+                            : null;
+
+                    response.FormPaidAmount =
+                        row["DraftAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["DraftAmount"])
+                            : null;
+                }
+                if (dataSet.Tables.Count > 7 && dataSet.Tables[7].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[7].Rows[0];
+                    // Form Fee
+                    response.AllotmentTxnId =
+                        row["TransactionId"] != DBNull.Value
+                            ? row["TransactionId"]?.ToString()
+                            : null;
+
+                    response.AllotmentDate =
+                        row["ReceiptDate"] != DBNull.Value
+                            ? Convert.ToDateTime(row["ReceiptDate"])
+                            : null;
+
+                    response.AllotmentAmount =
+                        row["DraftAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["DraftAmount"])
+                            : null;
+                }
+                return ApiResponse<PropertyBidderRegistrationDto>.Ok(response, "Registration fetched successfully");
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
+
+            }
+        }
         public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetAllRegistrationsAsync()
         {
             try
@@ -405,6 +821,9 @@ namespace Backend.Services.Implementations
                         ApplicationStatusId = x.ApplicationStatusId,
                         PlotStatus = x.PlotStatus,
                         PropertyCategoryId = x.PropertyCategoryId,
+                        OwnerStateID = x.OwnerStateID,
+                        OwnerDistrtictID = x.OwnerDistrtictID,
+                        OwnerCityID = x.OwnerCityID
                     })
                     .ToListAsync();
 
@@ -512,7 +931,9 @@ namespace Backend.Services.Implementations
                 entity.ApplicationStatusId = 1;
                 entity.PlotStatus = dto.PlotStatus;
                 entity.PropertyCategoryId = dto.PropertyCategoryId ?? 0;
-
+                entity.OwnerStateID = dto.OwnerStateID;
+                entity.OwnerDistrtictID = dto.OwnerDistrtictID;
+                entity.OwnerCityID = dto.OwnerCityID;
                 entity.ModifiedDate = DateTime.UtcNow;
                 entity.ModifiedBy = dto.ModifiedBy;
 
@@ -552,11 +973,12 @@ namespace Backend.Services.Implementations
             }
             catch (Exception ex)
             {
+              
                 return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
             }
         }
 
-        public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk()
+        public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk(string? searchCode)
         {
             try
             {
@@ -575,7 +997,7 @@ namespace Backend.Services.Implementations
                         on ur.RoleId equals r.Id into roleJoin
                     from r in roleJoin.DefaultIfEmpty()
 
-                    where x.IsActive && !x.IsDeleted 
+                    where x.IsActive && !x.IsDeleted && (string.IsNullOrEmpty(searchCode) || x.PropertyCode.Contains(searchCode))
 
                     select new PropertyBidderRegistrationDto
                     {
@@ -638,7 +1060,10 @@ namespace Backend.Services.Implementations
                         RoleName = r != null ? r.Name : null,
                         FirstName= u.FirstName,
 
-                        Label = r != null && r.Name.ToUpper() == "DEO" ? "DEO" : "User"
+                        Label = r != null && r.Name.ToUpper() == "DEO" ? "DEO" : "User",
+                        OwnerStateID = x.OwnerStateID,
+                        OwnerDistrtictID = x.OwnerDistrtictID,
+                        OwnerCityID = x.OwnerCityID
                     }
                 ).OrderByDescending(x=>x.Id).ToListAsync();
 
@@ -687,24 +1112,52 @@ namespace Backend.Services.Implementations
                 if (record == null)
                     return ApiResponse<bool>.Fail("Record not found");
 
-                if (record.ApplicationStatusId == 2)
-                    return ApiResponse<bool>.Fail("Already verified by clerk");
-
                 if (dto.Decision == "sendback" && string.IsNullOrWhiteSpace(dto.Remarks))
                     return ApiResponse<bool>.Fail("Remarks required for send back");
 
-                if (dto.Decision == "approve")
+                string role = string.IsNullOrWhiteSpace(dto.Role) ? "Clerk" : dto.Role;
+
+                if (role.Equals("Clerk", StringComparison.OrdinalIgnoreCase))
                 {
-                    record.ApplicationStatusId = 2;
+                    if (record.ApplicationStatusId == 2)
+                        return ApiResponse<bool>.Fail("Already verified by clerk");
+
+                    if (dto.Decision == "approve")
+                    {
+                        record.ApplicationStatusId = 2;
+                    }
+                    else if (dto.Decision == "sendback")
+                    {
+                        record.ApplicationStatusId = 7;
+                        record.Remarks = dto.Remarks;
+                    }
+                    else
+                    {
+                        return ApiResponse<bool>.Fail("Invalid decision");
+                    }
                 }
-                else if (dto.Decision == "sendback")
+                else if (role.Equals("Senior Assistant", StringComparison.OrdinalIgnoreCase))
                 {
-                    record.ApplicationStatusId = 7;
-                    record.Remarks = dto.Remarks;
-                }
+                    if (record.ApplicationStatusId == 3)
+                        return ApiResponse<bool>.Fail("Already verified by assistant");
+
+                    if (dto.Decision == "approve")
+                    {
+                        record.ApplicationStatusId = 3;
+                    }
+                    else if (dto.Decision == "sendback")
+                    {
+                        record.ApplicationStatusId = 7;
+                        record.Remarks = dto.Remarks;
+                    }
+                    else
+                    {
+                        return ApiResponse<bool>.Fail("Invalid decision");
+                    }
+                }               
                 else
                 {
-                    return ApiResponse<bool>.Fail("Invalid decision");
+                    return ApiResponse<bool>.Fail("Invalid role for verification");
                 }
 
                 record.ModifiedBy = dto.ModifiedBy;
@@ -716,7 +1169,16 @@ namespace Backend.Services.Implementations
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.Fail(ex.Message);
+                var message = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    message += " | Inner: " + ex.InnerException.Message;
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        message += " | Detail: " + ex.InnerException.InnerException.Message;
+                    }
+                }
+                return ApiResponse<bool>.Fail(message);
             }
         }
     }

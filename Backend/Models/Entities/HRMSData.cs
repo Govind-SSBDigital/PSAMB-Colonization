@@ -1,5 +1,8 @@
-﻿namespace Backend.Models.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Backend.Models.Entities
 {
+    [Table("HRMSData")]
     public class HRMSData
     {
         public string HRMSCODE { get; set; } = null!;

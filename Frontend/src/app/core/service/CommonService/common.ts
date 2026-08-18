@@ -11,8 +11,16 @@ export class Common {
 
   constructor(private http: HttpClient) { }
 
-  getAllDistrict(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/Common/getAllDistrict`);
+  getAllStates(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/getAllStates`);
+  }
+
+  getAllDistrict(stateid: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/getAllDistrict`, { params: { stateid } });
+  }
+
+  GetAllCityByDistrictID(districtid: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/GetAllCityByDistrictID`, { params: { districtid } });
   }
 
   getMarketCommittees(districtId: any): Observable<any> {
@@ -50,7 +58,7 @@ export class Common {
   GetMandisByMarketCommiteeByDistrictAsync(branchID: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Common/GetMandisByMarketCommiteeByDistrictAsync`, { params: { branchID } });
   }
-  
+
   getMenuItemsByRole(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Auth/profile`);
   }

@@ -56,8 +56,8 @@ export class PropertyVerification implements OnInit {
     return 'Pending';
   }
 
-  GetPendingForClerk() {
-    this.service.GetPendingForClerk().subscribe({
+  GetPendingForClerk(searchCode?: string) {
+    this.service.GetPendingForClerk(searchCode).subscribe({
       next: (res: any) => {
         // console.log('API prop Types:', res);
         const rawData = res.data || res || [];

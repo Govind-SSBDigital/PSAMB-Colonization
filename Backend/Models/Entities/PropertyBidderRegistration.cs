@@ -31,7 +31,7 @@ namespace Backend.Models.Entities
         [ForeignKey("PlanId")]
         public virtual PlanMaster? Plan { get; set; }
         public int ApplicantId { get; set; }
-        public decimal? PlotSize { get; set; }
+        public string? PlotSize { get; set; }
         public int? PlotNo { get; set; }
 
         // Compliance & Flags
@@ -105,7 +105,11 @@ namespace Backend.Models.Entities
         public int? ApplicationStatusId { get; set; }
         public string ?PlotStatus { get; set; }
         public int PropertyCategoryId { get; set; }
-        public string ?PropertyCode { get; set; }
+        public string? PropertyCode { get; set; }
+        public int? OwnerStateID { get; set; }
+        public int? OwnerDistrtictID { get; set; }
+
+        public int? OwnerCityID { get; set; }
 
     }
     public class PlotSizeMaster

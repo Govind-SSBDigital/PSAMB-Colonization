@@ -67,7 +67,7 @@ namespace Backend.Models.Dtos
         public int DistrictId { get; set; }
         public int? PlotTypeId { get; set; }
         public int? PlanId { get; set; }
-        public decimal? PlotSize { get; set; }
+        public string? PlotSize { get; set; }
         public int? PlotNo { get; set; }
         public int? ApplicantId { get; set; }
 
@@ -141,6 +141,10 @@ namespace Backend.Models.Dtos
         public string? RoleName { get; set; }
         public string? FirstName { get; set; }
 
+        public int? OwnerStateID { get; set; }
+        public int? OwnerDistrtictID { get; set; }
+
+        public int? OwnerCityID { get; set; }
     }
 
     public class PropertyCategoryDto
@@ -176,6 +180,8 @@ namespace Backend.Models.Dtos
         public long? ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? Decision { get; set; }
+        public string? Role { get; set; }
 
     }
+
 }

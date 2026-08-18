@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,6 +46,7 @@ const RELATION_OPTIONS = ['Son of (S/o)', 'Daughter of (D/o)', 'Wife of (W/o)'];
 })
 export class DeoVerification implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
@@ -100,7 +101,8 @@ export class DeoVerification implements OnInit, OnChanges {
   showHistoryPanel = signal(false);
   showDecisionModal = signal(false);
   pendingDecision = signal<ClerkDecision | null>(null);
-  currentStage = 'Superintendent Review';
+  currentStage = 'Clerk';
+  userRole = '';
   showValidationHint = false;
   submitting = false;
   readonly isLoading = signal(false);
@@ -122,6 +124,9 @@ export class DeoVerification implements OnInit, OnChanges {
   propertyCategories: any;
   mandis: any;
   marketCommittees: any;
+  states: any[] = [];
+  bidderDistricts: any[] = [];
+  cities: any[] = [];
 
   constructor(private commonService: Common) { }
 
@@ -135,9 +140,36 @@ export class DeoVerification implements OnInit, OnChanges {
     this.loadPlans();
     this.loadBidderTypes();
     this.loadAuctionPropertyTypes();
+    this.loadStates();
+
+    this.form.get('ownerStateID')?.valueChanges.subscribe((stateId) => {
+      this.form.get('ownerDistrtictID')?.setValue('', { emitEvent: false });
+      this.form.get('ownerCityID')?.setValue('', { emitEvent: false });
+      this.cities = [];
+      this.bidderDistricts = [];
+      if (stateId) {
+        this.loadDistrictsForState(stateId);
+      }
+    });
+
+    this.form.get('ownerDistrtictID')?.valueChanges.subscribe((districtId) => {
+      this.cities = [];
+      this.form.get('ownerCityID')?.setValue('', { emitEvent: false });
+      if (districtId) {
+        this.loadCitiesForDistrict(districtId);
+      }
+    });
 
     this.route.queryParams.subscribe(params => {
       const encryptedId = params['id'];
+      const queryRole = params['role'];
+      if (queryRole) {
+        this.userRole = queryRole;
+      } else {
+        this.userRole = this.getCurrentUserRole() || 'Clerk';
+      }
+      this.currentStage = this.userRole;
+
       if (encryptedId) {
         this.loadRegistrationDetails(encryptedId);
       } else {
@@ -161,18 +193,7 @@ export class DeoVerification implements OnInit, OnChanges {
               // this.registration = this.mapDtoToModel(res.data);
               this.patchForm(res.data);
 
-              if (res.data.applicationStatusId === 2 || res.data.applicationStatusId === 7) {
-                this.isAlreadyVerified = true;
-                this.activeDecision = res.data.applicationStatusId === 2 ? 'approve' : 'sendback';
-                const existingRemarks = res.data.remarks || res.data.clerkRemarks || '';
-                this.remarksControl.setValue(existingRemarks);
-                this.remarksControl.disable({ emitEvent: false });
-              } else {
-                this.isAlreadyVerified = false;
-                this.activeDecision = null;
-                this.remarksControl.setValue('');
-                this.remarksControl.enable({ emitEvent: false });
-              }
+              this.checkVerificationStatus(res.data.applicationStatusId);
             }
           },
           error: (err: any) => {
@@ -188,13 +209,15 @@ export class DeoVerification implements OnInit, OnChanges {
     }
   }
 
-  loadDistricts(): void {
-    this.commonService.getAllDistrict().subscribe({
+  loadDistricts(stateid: any = 1): void {
+    this.commonService.getAllDistrict(stateid).subscribe({
       next: (res: any) => {
-        this.districts = res.data || res || [];
-        if (this.originalRegistrationDto || this.registration) {
-          this.patchForm(this.originalRegistrationDto || this.registration);
-        }
+        setTimeout(() => {
+          this.districts = res.data || res || [];
+          if (this.originalRegistrationDto || this.registration) {
+            this.patchForm(this.originalRegistrationDto || this.registration);
+          }
+        });
       },
       error: (err: any) => console.error('Error fetching districts:', err)
     });
@@ -204,11 +227,13 @@ export class DeoVerification implements OnInit, OnChanges {
     // debugger
     this.commonService.getPlotTypes().subscribe({
       next: (res: any) => {
-        this.plotTypes = res.data || res || [];
-        // console.log('pt', this.plotTypes);
-        if (this.originalRegistrationDto || this.registration) {
-          this.patchForm(this.originalRegistrationDto || this.registration);
-        }
+        setTimeout(() => {
+          this.plotTypes = res.data || res || [];
+          // console.log('pt', this.plotTypes);
+          if (this.originalRegistrationDto || this.registration) {
+            this.patchForm(this.originalRegistrationDto || this.registration);
+          }
+        });
       },
       error: (err: any) => console.error('Error fetching plot types:', err)
     });
@@ -217,12 +242,14 @@ export class DeoVerification implements OnInit, OnChanges {
   loadPlans(): void {
     this.commonService.getPlans().subscribe({
       next: (res: any) => {
-        this.plans = res.data || res || [];
-        // console.log('plns', this.plans);
+        setTimeout(() => {
+          this.plans = res.data || res || [];
+          // console.log('plns', this.plans);
 
-        if (this.originalRegistrationDto || this.registration) {
-          this.patchForm(this.originalRegistrationDto || this.registration);
-        }
+          if (this.originalRegistrationDto || this.registration) {
+            this.patchForm(this.originalRegistrationDto || this.registration);
+          }
+        });
       },
       error: (err: any) => console.error('Error fetching plans:', err)
     });
@@ -231,10 +258,12 @@ export class DeoVerification implements OnInit, OnChanges {
   loadBidderTypes(): void {
     this.commonService.getBidderTypes().subscribe({
       next: (res: any) => {
-        this.bidderTypes = res.data || res || [];
-        if (this.originalRegistrationDto || this.registration) {
-          this.patchForm(this.originalRegistrationDto || this.registration);
-        }
+        setTimeout(() => {
+          this.bidderTypes = res.data || res || [];
+          if (this.originalRegistrationDto || this.registration) {
+            this.patchForm(this.originalRegistrationDto || this.registration);
+          }
+        });
       },
       error: (err: any) => console.error('Error fetching bidder types:', err)
     });
@@ -243,10 +272,12 @@ export class DeoVerification implements OnInit, OnChanges {
   loadPropertyCategories(): void {
     this.commonService.getPropertyCategories().subscribe({
       next: (res: any) => {
-        this.propertyCategories = res.data || res || [];
-        if (this.originalRegistrationDto || this.registration) {
-          this.patchForm(this.originalRegistrationDto || this.registration);
-        }
+        setTimeout(() => {
+          this.propertyCategories = res.data || res || [];
+          if (this.originalRegistrationDto || this.registration) {
+            this.patchForm(this.originalRegistrationDto || this.registration);
+          }
+        });
       },
       error: (err: any) => console.error('Error fetching property categories:', err)
     });
@@ -255,12 +286,57 @@ export class DeoVerification implements OnInit, OnChanges {
   loadAuctionPropertyTypes(): void {
     this.commonService.getPropertyTypes().subscribe({
       next: (res: any) => {
-        this.auctionPropertyTypes = res.data || res || [];
-        if (this.originalRegistrationDto || this.registration) {
-          this.patchForm(this.originalRegistrationDto || this.registration);
-        }
+        setTimeout(() => {
+          this.auctionPropertyTypes = res.data || res || [];
+          if (this.originalRegistrationDto || this.registration) {
+            this.patchForm(this.originalRegistrationDto || this.registration);
+          }
+        });
       },
       error: (err: any) => console.error('Error fetching auction property types:', err)
+    });
+  }
+
+  loadStates(): void {
+    this.commonService.getAllStates().subscribe({
+      next: (res: any) => {
+        setTimeout(() => {
+          this.states = res.data || [];
+        });
+      },
+      error: (err: any) => console.error('Error fetching states:', err)
+    });
+  }
+
+  loadDistrictsForState(stateId: any, callback?: () => void): void {
+    if (!stateId) {
+      if (callback) callback();
+      return;
+    }
+    this.commonService.getAllDistrict(stateId).subscribe({
+      next: (res: any) => {
+        setTimeout(() => {
+          this.bidderDistricts = res.data || [];
+          if (callback) callback();
+        });
+      },
+      error: (err: any) => console.error('Error fetching districts:', err)
+    });
+  }
+
+  loadCitiesForDistrict(districtId: any, callback?: () => void): void {
+    if (!districtId) {
+      if (callback) callback();
+      return;
+    }
+    this.commonService.GetAllCityByDistrictID(districtId).subscribe({
+      next: (res: any) => {
+        setTimeout(() => {
+          this.cities = res.data || [];
+          if (callback) callback();
+        });
+      },
+      error: (err: any) => console.error('Error fetching cities:', err)
     });
   }
 
@@ -314,6 +390,9 @@ export class DeoVerification implements OnInit, OnChanges {
       mobileNo: this.fb.nonNullable.control('', [Validators.pattern(/^[6-9]\d{9}$/)]),
       propertyTypeId: this.fb.nonNullable.control(''),
       address: this.fb.nonNullable.control(''),
+      ownerStateID: this.fb.nonNullable.control(''),
+      ownerDistrtictID: this.fb.nonNullable.control(''),
+      ownerCityID: this.fb.nonNullable.control(''),
 
       // Financial Details
       reservePrice: this.fb.nonNullable.control(0, [Validators.required, Validators.min(0)]),
@@ -507,6 +586,9 @@ export class DeoVerification implements OnInit, OnChanges {
       mobileNo: data.mobileNo ?? '',
       propertyTypeId: propertyTypeId,
       address: data.address ?? data.communicationAddress ?? '',
+      ownerStateID: data.ownerStateID ?? data.OwnerStateID ?? '',
+      ownerDistrtictID: data.ownerDistrtictID ?? data.OwnerDistrtictID ?? '',
+      ownerCityID: data.ownerCityID ?? data.OwnerCityID ?? '',
 
       reservePrice: data.reservePrice ?? 0,
       finalBidPrice: data.finalBidPrice ?? data.h1BidderFinalPrice ?? 0,
@@ -533,16 +615,36 @@ export class DeoVerification implements OnInit, OnChanges {
   }
 
   private patchForm(data: PropertyBidderRegistrationModel | Record<string, unknown>): void {
-    const dto = this.normalizeToDto(data);
-    const auctionValue = this.getBooleanValue(
-      dto,
-      'isAuctioned',
-      'Isauctioned',
-      'IsAuctioned',
-    );
-    this.form.patchValue({ ...dto, isAuctioned: auctionValue });
-    this.setAuctionValidators(auctionValue);
-    this.calculateUIInstallments();
+    setTimeout(() => {
+      const dto = this.normalizeToDto(data);
+      const auctionValue = this.getBooleanValue(
+        dto,
+        'isAuctioned',
+        'Isauctioned',
+        'IsAuctioned',
+      );
+
+      const proceedToPatch = () => {
+        this.form.patchValue({ ...dto, isAuctioned: auctionValue }, { emitEvent: false });
+        this.setAuctionValidators(auctionValue);
+        this.calculateUIInstallments();
+        this.cdr.detectChanges();
+      };
+
+      if (dto.ownerStateID) {
+        this.loadDistrictsForState(dto.ownerStateID, () => {
+          if (dto.ownerDistrtictID) {
+            this.loadCitiesForDistrict(dto.ownerDistrtictID, () => {
+              proceedToPatch();
+            });
+          } else {
+            proceedToPatch();
+          }
+        });
+      } else {
+        proceedToPatch();
+      }
+    });
   }
 
   private calculateUIInstallments(): void {
@@ -814,7 +916,6 @@ export class DeoVerification implements OnInit, OnChanges {
 
     this.submitting = true;
 
-    // Retrieve current user ID from JWT token in local storage
     const token = sessionStorage.getItem('token');
     let currentUserId = 0;
     if (token) {
@@ -834,7 +935,8 @@ export class DeoVerification implements OnInit, OnChanges {
       remarks: this.remarksControl?.value || '',
       decision: this.activeDecision,
       modifiedBy: currentUserId,
-      modifiedDate: new Date().toISOString()
+      modifiedDate: new Date().toISOString(),
+      role: this.userRole
     };
 
     this.service.VerifyByClerk(payload).subscribe({
@@ -864,7 +966,7 @@ export class DeoVerification implements OnInit, OnChanges {
 
         this.activeDecision = null;
         setTimeout(() => {
-          this.router.navigate(['/dashboard/property-verification']);
+          this.router.navigate(['/property-verification']);
         }, 1500);
       },
       error: (err: any) => {
@@ -874,6 +976,61 @@ export class DeoVerification implements OnInit, OnChanges {
         this.toastr.error(errorMsg, 'Error');
       }
     });
+  }
+
+  getCurrentUserRole(): string {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        // console.log('Verification Page Token Payload:', tokenPayload);
+        const rawRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+          || tokenPayload.role
+          || tokenPayload.Role
+          || tokenPayload.roles
+          || tokenPayload.Roles;
+        return rawRole ? String(rawRole).trim() : '';
+      } catch (e) {
+        console.error('Error parsing token for role:', e);
+      }
+    }
+    return '';
+  }
+
+  checkVerificationStatus(statusId: number | null | undefined): void {
+    const role = this.userRole?.toLowerCase() || 'clerk';
+    let canAction = false;
+
+    // console.log('Checking verification status:', { role, statusId });
+
+    if (role.includes('clerk')) {
+      canAction = (statusId === 1 || !statusId);
+    } else if (role.includes('assistant')) {
+      canAction = (statusId === 2 || statusId === 1 || !statusId);
+    } else if (role.includes('superintendent')) {
+      canAction = (statusId === 3 || statusId === 2 || statusId === 1 || !statusId);
+    } else if (role.includes('director')) {
+      canAction = (statusId === 4 || statusId === 3 || statusId === 2 || statusId === 1 || !statusId);
+    }
+
+    if (canAction) {
+      this.isAlreadyVerified = false;
+      this.activeDecision = null;
+      this.remarksControl.setValue('');
+      this.remarksControl.enable({ emitEvent: false });
+    } else {
+      this.isAlreadyVerified = true;
+      if (statusId === 2 || statusId === 3 || statusId === 4) {
+        this.activeDecision = 'approve';
+      } else if (statusId === 7) {
+        this.activeDecision = 'sendback';
+      } else {
+        this.activeDecision = null;
+      }
+      const existingRemarks = this.originalRegistrationDto?.remarks || this.originalRegistrationDto?.clerkRemarks || '';
+      this.remarksControl.setValue(existingRemarks);
+      this.remarksControl.disable({ emitEvent: false });
+    }
   }
 
   mapDtoToModel(d: any): PropertyBidderRegistrationModel {
