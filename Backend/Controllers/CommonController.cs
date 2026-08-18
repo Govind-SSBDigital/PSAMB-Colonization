@@ -15,12 +15,25 @@ namespace Backend.Controllers
             _common = common;
         }
 
+        [HttpGet("getAllStates")]
+        public async Task<IActionResult> GetAllStates()
+        {
+            var response = await _common.GetAllStates();
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
         [HttpGet("getAllDistrict")]
-        public async Task<IActionResult> GetAllDistrict()
+        public async Task<IActionResult> GetAllDistrict(int stateid)
         {
             try
             {
-                var result = await _common.GetAllDistrictsAsync();
+                var result = await _common.GetAllDistrictsAsync(stateid);
 
                 return Ok(new
                 {
@@ -38,17 +51,27 @@ namespace Backend.Controllers
             }
         }
 
-        [HttpGet("getAllStates")]
-        public async Task<IActionResult> GetAllStates()
+        [HttpGet("GetAllCityByDistrictID")]
+        public async Task<IActionResult> GetAllCityByDistrictID(int districtid)
         {
-            var response = await _common.GetAllStates();
-
-            if (!response.Success)
+            try
             {
-                return BadRequest(response);
-            }
+                var result = await _common.GetAllCityByDistrictID(districtid);
 
-            return Ok(response);
+                return Ok(new
+                {
+                    success = true,
+                    data = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpGet("getMarketCommittees")]

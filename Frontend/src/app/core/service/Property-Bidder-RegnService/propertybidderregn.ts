@@ -27,14 +27,20 @@ export class Propertybidderregn {
   getPropertyByCode(propertyCode: string): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/search/${propertyCode}`);
   }
-
+  GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyEAuctionDetailsByPropertyCodeAsync/${propertyCode}`);
+  }
   UpdateRegisterPropertyAsync(payload: any): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/PropertyBidderRegn/UpdateRegisterPropertyAsync`, payload);
   }
 
 
-  GetPendingForClerk(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPendingForClerk`);
+  GetPendingForClerk(searchCode?: string): Observable<any> {
+    let url = `${this.baseUrl}/PropertyBidderRegn/GetPendingForClerk`;
+    if (searchCode) {
+      url += `?searchCode=${encodeURIComponent(searchCode)}`;
+    }
+    return this.http.get<any>(url);
   }
 
   VerifyByClerk(payload: any): Observable<any> {

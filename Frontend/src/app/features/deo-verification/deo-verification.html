@@ -245,6 +245,42 @@
             </select>
           </div>
 
+          <div class="col-md-4">
+            <label class="form-label">State</label>
+            <select class="form-select custom-input-color" formControlName="ownerStateID">
+              <option value="">Select State</option>
+              @for (item of states; track item.stateId) {
+              <option [value]="item.stateId">
+                {{ item.stateName }}
+              </option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">District</label>
+            <select class="form-select custom-input-color" formControlName="ownerDistrtictID">
+              <option value="">Select District</option>
+              @for (item of bidderDistricts; track item.districtId) {
+              <option [value]="item.districtId">
+                {{ item.districtName }}
+              </option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">City</label>
+            <select class="form-select custom-input-color" formControlName="ownerCityID">
+              <option value="">Select City</option>
+              @for (item of cities; track item.cityId) {
+              <option [value]="item.cityId">
+                {{ item.cityName }}
+              </option>
+              }
+            </select>
+          </div>
+
           <div class="col-12">
             <label class="form-label">Communication Address <span class="text-danger">*</span></label>
             <textarea class="form-control custom-input-color" rows="3" formControlName="address"
