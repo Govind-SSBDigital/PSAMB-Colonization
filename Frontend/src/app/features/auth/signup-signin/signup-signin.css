@@ -368,6 +368,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 4px solid var(--punjab-green);
     border-radius: var(--border-radius-md);
     box-shadow: 0 20px 50px rgba(2, 44, 34, 0.3);
     max-width: 530px;
@@ -381,7 +382,7 @@
     width: 95%;
 }
 
-.auth-card-wrapper-screenshot::after {
+/* .auth-card-wrapper-screenshot::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -391,7 +392,7 @@
     background: var(--primary-color);
     border-bottom-left-radius: var(--border-radius-md);
     border-bottom-right-radius: var(--border-radius-md);
-}
+} */
 
 .auth-card-header-screenshot {
     margin-bottom: 16px;

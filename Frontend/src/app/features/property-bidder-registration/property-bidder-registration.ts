@@ -1190,10 +1190,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         } else {
           this.toastr.error(res.message || 'Failed to save property registration.', 'Error');
         }
+        this.closePreviewModal();
       },
       error: (err: any) => {
         console.error('Submit error:', err);
         this.toastr.error(err.error?.message || 'Error occurred while saving.', 'Error');
+        this.closePreviewModal();
       }
     });
   }
