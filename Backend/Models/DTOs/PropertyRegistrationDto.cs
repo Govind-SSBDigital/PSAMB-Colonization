@@ -178,4 +178,14 @@ namespace Backend.Models.Dtos
         public string? Decision { get; set; }
 
     }
+    public class PropertyApprovalRequestDto
+    {
+        public int UserId { get; set; }
+        public string? RoleId { get; set; }
+        public int DistrictId { get; set; }
+        public int BranchId { get; set; }
+        public int MandiId { get; set; }
+    }
+
+
 }

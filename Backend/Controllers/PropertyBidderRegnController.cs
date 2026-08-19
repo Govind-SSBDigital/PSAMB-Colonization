@@ -96,9 +96,9 @@ namespace Backend.Controllers
             {
                 return BadRequest(response);
             }
-
             return Ok(response);
         }
+
         [HttpPost("VerifyByClerk")]
         public async Task<IActionResult> VerifyByClerk([FromBody] ClerkVerificationDto dto)
         {

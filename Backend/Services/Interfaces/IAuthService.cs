@@ -12,5 +12,7 @@ namespace Backend.Services.Interfaces
         Task<UserResponse> UpdateProfileAsync(string userId, UpdateProfileRequest request);
         Task ChangePasswordAsync(string userId, ChangePasswordRequest request);
         Task<LoginResponse> GenerateTokenForUser(ApplicationUser user);
+        Task<LoginResponse> firtLogin(LoginRequest request);
+        Task ChangeFirstLoginPasswordAsync(string userId, FirstLoginChangePasswordRequest request);
     }
 }

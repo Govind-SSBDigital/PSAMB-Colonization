@@ -89,6 +89,7 @@ export class DocumentsAndAddress implements OnInit {
   }
 
   onCityChange(): void {
+    debugger
     const selected = this.cities.find((c: any) => c.cityName === this.signUpData.addressCity);
     if (selected) {
       this.signUpData.addressCityId = selected.cityId;

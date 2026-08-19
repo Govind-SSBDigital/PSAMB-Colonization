@@ -9,7 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-personal-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule,MatTooltipModule],
+  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule],
   templateUrl: './personal-details.html',
   styleUrl: './personal-details.scss',
 })
@@ -46,7 +46,7 @@ export class PersonalDetails implements OnInit {
   private emailTimerInterval: any;
   private mobileTimerInterval: any;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
     this.maxDob = this.formatDate(new Date());
@@ -57,6 +57,44 @@ export class PersonalDetails implements OnInit {
   }
 
   // Email OTP
+  // sendEmailOtp() {
+  //   if (this.verification.emailVerified) {
+  //     return;
+  //   }
+
+  //   if (!this.signUpData?.emailAddress) {
+  //     this.triggerToast('Please enter Email ID first', 'error');
+  //     return;
+  //   }
+
+  //   if (this.verification.emailSending) {
+  //     return;
+  //   }
+
+  //   this.verification.emailSending = true;
+  //   this.verification.emailSent = true;
+  //   this.verification.emailOtpInput = '';
+
+  //   this.http.post(`${environment.apiUrl}/EmailVerification/send-otp`, {
+  //     email: this.signUpData.emailAddress
+  //   }).subscribe({
+  //     next: (res: any) => {
+  //       this.verification.emailSending = false;
+  //       if (res.success) {
+  //         this.startEmailTimer();
+  //         this.triggerToast('OTP sent to your email', 'success');
+  //       } else {
+  //         this.verification.emailSent = false;
+  //         this.triggerToast(res.message || 'Failed to send OTP', 'error');
+  //       }
+  //     },
+  //     error: () => {
+  //       this.verification.emailSending = false;
+  //       this.verification.emailSent = false;
+  //       this.triggerToast('Failed to send OTP. Try again.', 'error');
+  //     }
+  //   });
+  // }
   sendEmailOtp() {
     if (this.verification.emailVerified) {
       return;
@@ -71,27 +109,66 @@ export class PersonalDetails implements OnInit {
       return;
     }
 
-    this.verification.emailSending = true;
-    this.verification.emailSent = true;
-    this.verification.emailOtpInput = '';
+    const email = this.signUpData.emailAddress.trim();
 
-    this.http.post(`${environment.apiUrl}/EmailVerification/send-otp`, {
-      email: this.signUpData.emailAddress
-    }).subscribe({
-      next: (res: any) => {
-        this.verification.emailSending = false;
-        if (res.success) {
-          this.startEmailTimer();
-          this.triggerToast('OTP sent to your email', 'success');
-        } else {
-          this.verification.emailSent = false;
-          this.triggerToast(res.message || 'Failed to send OTP', 'error');
+    this.http.post<any>(
+      `${environment.apiUrl}/EmailVerification/verifyfirst`,
+      {
+        emailId: email
+      }
+    ).subscribe({
+      next: (verifyRes) => {
+        if (verifyRes.success) {
+          this.triggerToast(
+            verifyRes.message || 'Email ID already exists',
+            'error'
+          );
+          return;
         }
+        this.verification.emailSending = true;
+        this.verification.emailSent = true;
+        this.verification.emailOtpInput = '';
+
+        this.http.post<any>(
+          `${environment.apiUrl}/EmailVerification/send-otp`,
+          {
+            email: email
+          }
+        ).subscribe({
+          next: (res) => {
+            this.verification.emailSending = false;
+
+            if (res.success) {
+              this.startEmailTimer();
+              this.triggerToast(
+                'OTP sent to your email',
+                'success'
+              );
+            } else {
+              this.verification.emailSent = false;
+              this.triggerToast(
+                res.message || 'Failed to send OTP',
+                'error'
+              );
+            }
+          },
+          error: () => {
+            this.verification.emailSending = false;
+            this.verification.emailSent = false;
+
+            this.triggerToast(
+              'Failed to send OTP. Try again.',
+              'error'
+            );
+          }
+        });
       },
+
       error: () => {
-        this.verification.emailSending = false;
-        this.verification.emailSent = false;
-        this.triggerToast('Failed to send OTP. Try again.', 'error');
+        this.triggerToast(
+          'Unable to verify Email ID. Please try again.',
+          'error'
+        );
       }
     });
   }
@@ -247,6 +324,7 @@ export class PersonalDetails implements OnInit {
   }
 
   onRelationTypeChange() {
+    debugger
     if (!this.signUpData) return;
 
     if (this.signUpData.relationType === 'father') {
@@ -310,45 +388,6 @@ export class PersonalDetails implements OnInit {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-
-  // OTP Methods
-  // sendEmailOtp() {
-  //   this.verification.emailSent = true;
-  //   this.verification.emailOtpInput = '';
-  //   // Simulated behavior
-  // }
-
-  // sendMobileOtp() {
-  //   this.verification.mobileSent = true;
-  //   this.verification.mobileOtpInput = '';
-  //   // Simulated behavior
-  // }
-
-  // onEmailOtpInput() {
-  //   if (this.verification.emailOtpInput.length === 6) {
-  //     this.verifyEmailOtp();
-  //   }
-  // }
-
-  // onMobileOtpInput() {
-  //   if (this.verification.mobileOtpInput.length === 6) {
-  //     this.verifyMobileOtp();
-  //   }
-  // }
-
-  // verifyEmailOtp() {
-  //   if (this.verification.emailOtpInput === '123456') {
-  //     this.verification.emailVerified = true;
-  //     this.verification.emailSent = false;
-  //   }
-  // }
-
-  // verifyMobileOtp() {
-  //   if (this.verification.mobileOtpInput === '654321') {
-  //     this.verification.mobileVerified = true;
-  //     this.verification.mobileSent = false;
-  //   }
-  // }
 
   getPunjabiLabel(typeId: string): string {
     switch (typeId) {

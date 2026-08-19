@@ -40,101 +40,265 @@ namespace Backend.Services.Implementations
             _context = context;
             _sendCredUserService = sendCredUserService;
         }
-
         public async Task<LoginResponse> RegisterAsync(RegisterRequest request)
         {
-            var generatedPassword = GenerateUniquePassword();
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            var existing = await _userManager.FindByEmailAsync(request.Email);
-            if (existing != null)
-                throw new ArgumentException("Email already registered");
+            LoginResponse? response = null;
+            string generatedPassword = string.Empty;
 
-            var existingMobile = await _context.ApplicationUsers
-                .FirstOrDefaultAsync(x => x.MobileNo == request.MobileNo && x.IsDeleted == false);
-            if (existingMobile != null)
-                throw new ArgumentException("Mobile number already registered");
-
-            var identityUser = new IdentityApplicationUser
+            await strategy.ExecuteAsync(async () =>
             {
-                UserName = request.Email.ToLower().Trim(),
-                Email = request.Email.ToLower().Trim(),
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
-            var result = await _userManager.CreateAsync(identityUser, generatedPassword);
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new ArgumentException(errors);
-            }
+                await using var transaction =
+                    await _context.Database.BeginTransactionAsync();
 
-            await _userManager.AddToRoleAsync(identityUser, "User");
+                try
+                {
+                    generatedPassword = GenerateUniquePassword();
 
-            var applicant = new ApplicationUser
-            {
-                IdentityUserId = identityUser.Id,
-                CategoryId = request.CategoryId,
-                Gender = request.Gender,
-                DateOfBirth = request.DateOfBirth,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                FatherHusbandFirstName = request.FatherHusbandFirstName,
-                FatherHusbandLastName = request.FatherHusbandLastName,
-                MotherFirstName = request.MotherFirstName,
-                MotherLastName = request.MotherLastName,
-                Email = request.Email.ToLower().Trim(),
-                MobileNo = string.IsNullOrEmpty(request.MobileNo) ? null : request.MobileNo,
-                IdentDocTypeId = request.IdentDocTypeId,
-                IdentDocNumber = request.IdentDocNumber,
-                PANNumber = request.PANNumber,
-                IndividualStateId = request.IndividualStateId,
-                IndividualDistrictId = request.IndividualDistrictId,
-                IndividualCityId = request.IndividualCityId,
-                IndividualPinCode = request.IndividualPinCode,
-                IndividualPlotStreetLandmark = request.IndividualPlotStreetLandmark,
-                AddrDocTypeId = request.AddrDocTypeId,
-                AddrDocNumber = request.AddrDocNumber,
-                FirmName = request.FirmName,
-                GSTNumber = request.GSTNumber,
-                MandiPropertyCode = request.MandiPropertyCode,
-                IsSameAsIndividualAddress = request.IsSameAsIndividualAddress,
-                BusinessStateId = request.BusinessStateId,
-                BusinessDistrictId = request.BusinessDistrictId,
-                BusinessCityId = request.BusinessCityId,
-                BusinessPinCode = request.BusinessPinCode,
-                BusinessPlotStreetLandmark = request.BusinessPlotStreetLandmark,
-                IsActive = true,
-                CreatedDate = DateTime.UtcNow
-            };
+                    var existing = await _userManager.FindByEmailAsync(
+                        request.Email.ToLower().Trim());
 
-            _context.ApplicationUsers.Add(applicant);
-            await _context.SaveChangesAsync();
+                    if (existing != null)
+                        throw new ArgumentException("Email already registered");
 
-            var salt = Guid.NewGuid().ToString("N");
-            var auth = new ApplicantAuth
-            {
-                ApplicantId = applicant.ApplicantId,
-                Username = request.Email.ToLower().Trim(),
-                PasswordHash = identityUser.PasswordHash ?? string.Empty,
-                SaltKey = salt,
-                FailedLoginAttempts = 0,
-                IsLocked = false,
-                CreatedDate = DateTime.UtcNow
-            };
+                    var existingMobile = await _context.ApplicationUsers
+                        .FirstOrDefaultAsync(x =>
+                            x.MobileNo == request.MobileNo &&
+                            x.IsDeleted == false);
 
-            _context.ApplicantAuths.Add(auth);
-            await _context.SaveChangesAsync();
-            await _sendCredUserService.SendCredentialsAsync(new SendCredModel
-            {
-                MobileNumber = request.MobileNo,
-                EmailId = request.Email,
-                Password = generatedPassword 
+                    if (existingMobile != null)
+                        throw new ArgumentException(
+                            "Mobile number already registered");
+
+                    var identityUser = new IdentityApplicationUser
+                    {
+                        UserName = request.Email.ToLower().Trim(),
+                        Email = request.Email.ToLower().Trim(),
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    var result = await _userManager.CreateAsync(
+                        identityUser,
+                        generatedPassword);
+
+                    if (!result.Succeeded)
+                    {
+                        var errors = string.Join(
+                            ", ",
+                            result.Errors.Select(e => e.Description));
+
+                        throw new ArgumentException(errors);
+                    }
+
+                    var roleResult = await _userManager.AddToRoleAsync(
+                        identityUser,
+                        "User");
+
+                    if (!roleResult.Succeeded)
+                    {
+                        var errors = string.Join(
+                            ", ",
+                            roleResult.Errors.Select(e => e.Description));
+
+                        throw new ArgumentException(errors);
+                    }
+
+                    var applicant = new ApplicationUser
+                    {
+                        IdentityUserId = identityUser.Id,
+                        CategoryId = request.CategoryId,
+                        Gender = request.Gender,
+                        DateOfBirth = request.DateOfBirth,
+                        FirstName = request.FirstName,
+                        LastName = request.LastName,
+                        FatherHusbandFirstName = request.FatherHusbandFirstName,
+                        FatherHusbandLastName = request.FatherHusbandLastName,
+                        MotherFirstName = request.MotherFirstName,
+                        MotherLastName = request.MotherLastName,
+                        Email = request.Email.ToLower().Trim(),
+                        MobileNo = string.IsNullOrEmpty(request.MobileNo)
+                            ? null
+                            : request.MobileNo,
+                        IdentDocTypeId = request.IdentDocTypeId,
+                        IdentDocNumber = request.IdentDocNumber,
+                        PANNumber = request.PANNumber,
+                        IndividualStateId = request.IndividualStateId,
+                        IndividualDistrictId = request.IndividualDistrictId,
+                        IndividualCityId = request.IndividualCityId,
+                        IndividualPinCode = request.IndividualPinCode,
+                        IndividualPlotStreetLandmark =
+                            request.IndividualPlotStreetLandmark,
+                        AddrDocTypeId = request.AddrDocTypeId,
+                        AddrDocNumber = request.AddrDocNumber,
+                        FirmName = request.FirmName,
+                        GSTNumber = request.GSTNumber,
+                        MandiPropertyCode = request.MandiPropertyCode,
+                        IsSameAsIndividualAddress =
+                            request.IsSameAsIndividualAddress,
+                        BusinessStateId = request.BusinessStateId,
+                        BusinessDistrictId = request.BusinessDistrictId,
+                        BusinessCityId = request.BusinessCityId,
+                        BusinessPinCode = request.BusinessPinCode,
+                        BusinessPlotStreetLandmark =
+                            request.BusinessPlotStreetLandmark,
+                        IsActive = true,
+                        CreatedDate = DateTime.UtcNow
+                    };
+
+                    _context.ApplicationUsers.Add(applicant);
+
+                    await _context.SaveChangesAsync();
+
+                    var salt = Guid.NewGuid().ToString("N");
+
+                    var auth = new ApplicantAuth
+                    {
+                        ApplicantId = applicant.ApplicantId,
+                        Username = request.Email.ToLower().Trim(),
+                        PasswordHash = identityUser.PasswordHash ?? string.Empty,
+                        SaltKey = salt,
+                        FailedLoginAttempts = 0,
+                        IsLocked = false,
+                        CreatedDate = DateTime.UtcNow
+                    };
+
+                    _context.ApplicantAuths.Add(auth);
+
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    response = BuildLoginResponse(
+                        identityUser,
+                        applicant);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             });
 
-            _logger.LogInformation("Applicant registered: {Email}", request.Email);
+            await _sendCredUserService.SendCredentialsAsync(
+                new SendCredModel
+                {
+                    MobileNumber = request.MobileNo,
+                    EmailId = request.Email,
+                    Password = generatedPassword
+                });
 
-            return BuildLoginResponse(identityUser, applicant);
+            _logger.LogInformation(
+                "Applicant registered: {Email}",
+                request.Email);
+
+            return response!;
         }
+        //public async Task<LoginResponse> RegisterAsync(RegisterRequest request)
+        //{
+        //    try
+        //    {
+        //        var generatedPassword = GenerateUniquePassword();
+
+        //        var existing = await _userManager.FindByEmailAsync(request.Email);
+        //        if (existing != null)
+        //            throw new ArgumentException("Email already registered");
+
+        //        var existingMobile = await _context.ApplicationUsers
+        //            .FirstOrDefaultAsync(x => x.MobileNo == request.MobileNo && x.IsDeleted == false);
+        //        if (existingMobile != null)
+        //            throw new ArgumentException("Mobile number already registered");
+
+        //        var identityUser = new IdentityApplicationUser
+        //        {
+        //            UserName = request.Email.ToLower().Trim(),
+        //            Email = request.Email.ToLower().Trim(),
+        //            IsActive = true,
+        //            CreatedAt = DateTime.UtcNow
+        //        };
+        //        var result = await _userManager.CreateAsync(identityUser, generatedPassword);
+        //        if (!result.Succeeded)
+        //        {
+        //            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        //            throw new ArgumentException(errors);
+        //        }
+
+        //        await _userManager.AddToRoleAsync(identityUser, "User");
+
+        //        var applicant = new ApplicationUser
+        //        {
+        //            IdentityUserId = identityUser.Id,
+        //            CategoryId = request.CategoryId,
+        //            Gender = request.Gender,
+        //            DateOfBirth = request.DateOfBirth,
+        //            FirstName = request.FirstName,
+        //            LastName = request.LastName,
+        //            FatherHusbandFirstName = request.FatherHusbandFirstName,
+        //            FatherHusbandLastName = request.FatherHusbandLastName,
+        //            MotherFirstName = request.MotherFirstName,
+        //            MotherLastName = request.MotherLastName,
+        //            Email = request.Email.ToLower().Trim(),
+        //            MobileNo = string.IsNullOrEmpty(request.MobileNo) ? null : request.MobileNo,
+        //            IdentDocTypeId = request.IdentDocTypeId,
+        //            IdentDocNumber = request.IdentDocNumber,
+        //            PANNumber = request.PANNumber,
+        //            IndividualStateId = request.IndividualStateId,
+        //            IndividualDistrictId = request.IndividualDistrictId,
+        //            IndividualCityId = request.IndividualCityId,
+        //            IndividualPinCode = request.IndividualPinCode,
+        //            IndividualPlotStreetLandmark = request.IndividualPlotStreetLandmark,
+        //            AddrDocTypeId = request.AddrDocTypeId,
+        //            AddrDocNumber = request.AddrDocNumber,
+        //            FirmName = request.FirmName,
+        //            GSTNumber = request.GSTNumber,
+        //            MandiPropertyCode = request.MandiPropertyCode,
+        //            IsSameAsIndividualAddress = request.IsSameAsIndividualAddress,
+        //            BusinessStateId = request.BusinessStateId,
+        //            BusinessDistrictId = request.BusinessDistrictId,
+        //            BusinessCityId = request.BusinessCityId,
+        //            BusinessPinCode = request.BusinessPinCode,
+        //            BusinessPlotStreetLandmark = request.BusinessPlotStreetLandmark,
+        //            IsActive = true,
+        //            CreatedDate = DateTime.UtcNow
+        //        };
+
+        //        _context.ApplicationUsers.Add(applicant);
+        //        await _context.SaveChangesAsync();
+
+        //        var salt = Guid.NewGuid().ToString("N");
+        //        var auth = new ApplicantAuth
+        //        {
+        //            ApplicantId = applicant.ApplicantId,
+        //            Username = request.Email.ToLower().Trim(),
+        //            PasswordHash = identityUser.PasswordHash ?? string.Empty,
+        //            SaltKey = salt,
+        //            FailedLoginAttempts = 0,
+        //            IsLocked = false,
+        //            CreatedDate = DateTime.UtcNow
+        //        };
+
+        //        _context.ApplicantAuths.Add(auth);
+        //        await _context.SaveChangesAsync();
+        //        await _sendCredUserService.SendCredentialsAsync(new SendCredModel
+        //        {
+        //            MobileNumber = request.MobileNo,
+        //            EmailId = request.Email,
+        //            Password = generatedPassword
+        //        });
+
+        //        _logger.LogInformation("Applicant registered: {Email}", request.Email);
+
+        //        return BuildLoginResponse(identityUser, applicant);
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+
+        //    }
+
+        //}
 
         private string GenerateUniquePassword()
         {
@@ -446,6 +610,105 @@ namespace Backend.Services.Implementations
                     Email = identityUser.Email ?? string.Empty
                 }
             };
+        }
+
+        // Services/Implementations/AuthService.cs
+
+        public async Task<LoginResponse> firtLogin(LoginRequest request)
+        {
+            try
+            {
+                IdentityApplicationUser? identityUser = null;
+                string? resolvedEmail = null;
+
+                if (!request.IsHRMSOrUser)
+                {
+                    resolvedEmail = request.Email;
+                    identityUser = await _userManager.FindByEmailAsync(resolvedEmail);
+                }
+                else
+                {
+                    var hrmsRecord = await _context.HRMSDatas
+                        .FirstOrDefaultAsync(x => x.HRMSCODE == request.Email);
+                    if (hrmsRecord == null)
+                        throw new UnauthorizedAccessException("Invalid email or password");
+
+                    resolvedEmail = hrmsRecord.Email;
+                    var applicantUser = await _context.ApplicationUsers
+                        .FirstOrDefaultAsync(x => x.Email == resolvedEmail);
+
+                    if (applicantUser != null && !string.IsNullOrEmpty(applicantUser.IdentityUserId))
+                        identityUser = await _userManager.FindByIdAsync(applicantUser.IdentityUserId);
+                }
+
+                if (identityUser == null)
+                    throw new UnauthorizedAccessException("Invalid email or password");
+
+                if (!identityUser.IsActive)
+                    throw new UnauthorizedAccessException("Your account has been deactivated");
+
+                var valid = await _userManager.CheckPasswordAsync(identityUser, request.Password);
+                if (!valid)
+                    throw new UnauthorizedAccessException("Invalid email or password");
+                var applicant = await _context.ApplicationUsers
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(x => x.IdentityUserId == identityUser.Id)
+                    ?? await _context.ApplicationUsers
+                        .IgnoreQueryFilters()
+                        .FirstOrDefaultAsync(x => x.Email == identityUser.Email)
+                    ?? throw new KeyNotFoundException("Applicant not found");
+                var response = BuildLoginResponse(identityUser, applicant);
+                response.IsFirstLogin = identityUser.IsFirstLogin;
+
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task ChangeFirstLoginPasswordAsync(
+            string userId,
+            FirstLoginChangePasswordRequest request)
+        {
+            if (request.NewPassword != request.ConfirmNewPassword)
+                throw new ArgumentException("Passwords do not match");
+
+            var identityUser = await _userManager.FindByIdAsync(userId)
+                ?? throw new KeyNotFoundException("User not found");
+
+            var isValid = await _userManager.CheckPasswordAsync(
+                identityUser, request.CurrentPassword);
+            if (!isValid)
+                throw new ArgumentException("Current password is incorrect");
+
+            var result = await _userManager.ChangePasswordAsync(
+                identityUser,
+                request.CurrentPassword,
+                request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new ArgumentException(errors);
+            }
+
+            identityUser.IsFirstLogin = false;
+            await _userManager.UpdateAsync(identityUser);
+
+            var auth = await _context.ApplicantAuths
+                .FirstOrDefaultAsync(x => x.Username == identityUser.Email);
+
+            if (auth != null)
+            {
+                auth.PasswordHash = identityUser.PasswordHash ?? string.Empty;
+                auth.UpdatedDate = DateTime.UtcNow;
+                _context.ApplicantAuths.Update(auth);
+                await _context.SaveChangesAsync();
+            }
+
+            _logger.LogInformation(
+                "First login password changed for user: {UserId}", userId);
         }
     }
 }

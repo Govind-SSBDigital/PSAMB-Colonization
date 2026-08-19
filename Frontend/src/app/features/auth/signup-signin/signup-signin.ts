@@ -60,56 +60,7 @@ export class SignupSignin implements OnInit {
   otpModalOpen = false;
   proceedToForm = false;
 
-  // signUpData = {
-  //   // Step 1: Profile Details
-  //   gender: '',
-  //   dob: '',
-  //   firstName: '',
-  //   lastName: '',
-  //   fatherFirstName: '',
-  //   fatherLastName: '',
-  //   motherFirstName: '',
-  //   motherLastName: '',
-  //   emailAddress: '',
-  //   mobileNumber: '',
-  //   password: '',
-  //   confirmPassword: '',
 
-  //   // Step 2: Document Details
-  //   idDocumentType: '',
-  //   idDocumentNumber: '',
-  //   idDocumentFileName: '',
-  //   shareAadhaarDetails: false,
-  //   panNumber: '',
-  //   panFileName: '',
-  //   photoFileName: '',
-
-  //   // Step 2: Address Details
-  //   addressState: '',
-  //   addressDistrict: '',
-  //   addressCity: '',
-  //   addressPincode: '',
-  //   addressLandmark: '',
-  //   addressDocType: '',
-  //   addressDocNumber: '',
-  //   addressDocFileName: '',
-
-  //   // Step 3: Business Details
-  //   firmName: '',
-  //   gstNumber: '',
-
-  //   // Step 3: Business Address
-  //   isSameAddress: false,
-  //   businessState: '',
-  //   businessDistrict: '',
-  //   businessCity: '',
-  //   businessPincode: '',
-  //   businessLandmark: '',
-  //   officePhotoFileName: '',
-  //   mandiPropertyCode: ''
-  // };
-
-  // Mock Upload states
   uploadProgress: { [key: string]: number } = {};
   uploadingStates: { [key: string]: boolean } = {};
   signUpData = {
@@ -429,31 +380,6 @@ export class SignupSignin implements OnInit {
     return isStaff || isBusiness;
   }
 
-  // openLoginOtpModal() {
-  //   this.loginOtpModalOpen = true;
-  //   this.loginOtpInput = '';
-  //   this.loginOtpTimer = 30;
-  //   this.triggerToast('Login OTP sent (Use: 778899)', 'info');
-
-  //   const interval = setInterval(() => {
-  //     if (this.loginOtpTimer > 0) {
-  //       this.loginOtpTimer--;
-  //     } else {
-  //       clearInterval(interval);
-  //     }
-  //   }, 1000);
-  // }
-
-  // closeLoginOtpModal() {
-  //   this.loginOtpModalOpen = false;
-  //   this.pendingLoginUser = null;
-  // }
-
-  // resendLoginOtp() {
-  //   this.loginOtpTimer = 30;
-  //   this.triggerToast('Login OTP resent (Use: 778899)', 'info');
-  // }
-
   // Step 1 Validation
   validateStep1(): boolean {
     if (!this.selectedEntityType) {
@@ -500,14 +426,6 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter a valid 10-digit Mobile Number / 10-ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ', 'error');
       return false;
     }
-    // if (!this.signUpData.password || this.signUpData.password.length < 6) {
-    //   this.triggerToast('Password must be at least 6 characters / ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 6 ਅੱਖਰਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ', 'error');
-    //   return false;
-    // }
-    // if (this.signUpData.password !== this.signUpData.confirmPassword) {
-    //   this.triggerToast('Passwords do not match / ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ', 'error');
-    //   return false;
-    // }
     return true;
   }
 
@@ -598,10 +516,6 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter Business Office Plot/Street/Landmark / ਪਲਾਟ/ਗਲੀ/ਲੈਂਡਮਾਰਕ ਦਰਜ ਕਰੋ', 'error');
       return false;
     }
-    // if (!this.signUpData.officePhotoFileName) {
-    //   this.triggerToast('Please upload Front Photograph of Office Property / ਦਫ਼ਤਰ ਦੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ', 'error');
-    //   return false;
-    // }
     return true;
   }
 
@@ -664,34 +578,6 @@ export class SignupSignin implements OnInit {
     this.otpModalOpen = false;
   }
 
-  // sendMobileOtp() {
-  //   this.otpData.mobileSent = true;
-  //   this.otpData.mobileTimer = 30;
-  //   this.triggerToast(`Mobile OTP sent (Use: 123456)`, 'info');
-
-  //   const interval = setInterval(() => {
-  //     if (this.otpData.mobileTimer > 0) {
-  //       this.otpData.mobileTimer--;
-  //     } else {
-  //       clearInterval(interval);
-  //     }
-  //   }, 1000);
-  // }
-
-  // sendEmailOtp() {
-  //   this.otpData.emailSent = true;
-  //   this.otpData.emailTimer = 30;
-  //   this.triggerToast(`Email OTP sent (Use: 654321)`, 'info');
-
-  //   const interval = setInterval(() => {
-  //     if (this.otpData.emailTimer > 0) {
-  //       this.otpData.emailTimer--;
-  //     } else {
-  //       clearInterval(interval);
-  //     }
-  //   }, 1000);
-  // }
-
   verifyMobileOtp() {
     if (this.otpData.mobileOtpInput === this.otpData.sentMobileOtp) {
       this.otpData.mobileVerified = true;
@@ -720,6 +606,7 @@ export class SignupSignin implements OnInit {
     }
   }
   completeRegistration() {
+    debugger;
     this.closeOtpModal();
 
     // Backend ke hisaab se request banao
@@ -729,15 +616,17 @@ export class SignupSignin implements OnInit {
       dateOfBirth: this.signUpData.dob,
       firstName: this.signUpData.firstName,
       lastName: this.signUpData.lastName,
-      relationType:this.signUpData.relationType === 'father' ? 1 : 2, // 1 for Father, 2 for Husband
+      relationType:this.signUpData.relationType === 'father' ? 1 : 2, 
       fatherHusbandFirstName: this.signUpData.fatherFirstName,
       fatherHusbandLastName: this.signUpData.fatherLastName,
       motherFirstName: this.signUpData.motherFirstName,
       motherLastName: this.signUpData.motherLastName,
+      spouseFirstName:this.signUpData.spouseFirstName,
+      spouseLastName:this.signUpData.spouseLastName,
       email: this.signUpData.emailAddress,
       mobileNo: this.signUpData.mobileNumber,
-      password: this.signUpData.password,
-      confirmPassword: this.signUpData.confirmPassword,
+      // password: this.signUpData.password,
+      // confirmPassword: this.signUpData.confirmPassword,
 
       // Documents
       identDocTypeId: this.signUpData.idDocumentTypeId,
@@ -801,40 +690,8 @@ export class SignupSignin implements OnInit {
     };
     return map[entityType] || 1;
   }
-  // completeRegistration() {
-  //   this.closeOtpModal();
+ 
 
-  //   const randomNum = Math.floor(100000 + Math.random() * 900000);
-  //   this.generatedUserId = `CP${randomNum}`;
-  //   this.generatedPassword = this.signUpData.password;
-
-  //   const existingUsersRaw = sessionStorage.getItem('cp_users');
-  //   const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-
-  //   const fullName = `${this.signUpData.firstName} ${this.signUpData.lastName}`.trim();
-  //   const newUser = {
-  //     userId: this.generatedUserId,
-  //     password: this.generatedPassword,
-  //     fullName: fullName,
-  //     entityType: this.selectedEntityType,
-  //     mobile: this.signUpData.mobileNumber,
-  //     email: this.signUpData.emailAddress
-  //   };
-
-  //   existingUsers.push(newUser);
-  //   sessionStorage.setItem('cp_users', JSON.stringify(existingUsers));
-
-  //   // Prefill login form
-  //   this.loginData.userId = this.generatedUserId;
-  //   sessionStorage.setItem('registration_success', 'true');
-  //   sessionStorage.setItem('registered_user_id', this.generatedUserId);
-  //   this.router.navigate(['/auth/login']);
-  //   this.generateCaptcha(); // Refresh captcha
-
-  //   this.triggerToast('Account registered successfully!', 'success');
-  // }
-
-  // Reset Forms
   resetSignUpForm() {
     this.signUpData = {
       // Personal
@@ -959,40 +816,7 @@ export class SignupSignin implements OnInit {
       }
     }); // <-- subscribe properly close
   }
-  //  onSignInSubmit() {
-  //     debugger
-  //     this.errorMessage = '';
-  //     const { userId, password } = this.loginData;
 
-  //     if (!userId || !password) {
-  //       this.triggerToast('Please enter User ID and Password', 'error');
-  //       return;
-  //     }
-
-  //     if (!this.captchaInput || this.captchaInput.trim() !== this.captchaText) {
-  //       this.triggerToast('Invalid Captcha / ਅਵੈਧ ਕੈਪਚਾ', 'error');
-  //       this.generateCaptcha();
-  //       return;
-  //     }
-
-  //     const existingUsersRaw = sessionStorage.getItem('cp_users');
-  //     const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-
-  //     const user = existingUsers.find((u: any) => u.userId.toLowerCase() === userId.trim().toLowerCase() && u.password === password);
-
-  //     if (user) {
-  //       if (this.requiresLoginOtp(user)) {
-  //         this.pendingLoginUser = user;
-  //         this.openLoginOtpModal();
-  //       } else {
-  //         this.loginSuccess(user);
-  //       }
-  //     } else {
-  //       this.errorMessage = 'Invalid User ID or Password. Please check and try again.';
-  //       this.triggerToast(this.errorMessage, 'error');
-  //       this.generateCaptcha();
-  //     }
-  //   }
 
 
   onSignInOtpSubmit() {

@@ -121,7 +121,7 @@
             <!-- City -->
             <div class="form-group-custom">
                 <label class="form-label-custom">City (ਸ਼ਹਿਰ) <span class="required-star">*</span></label>
-                <select name="addressCity" [(ngModel)]="signUpData.addressCity"
+                <select name="addressCity" [(ngModel)]="signUpData.addressCity" (ngModelChange)="onCityChange()"
                     [disabled]="isLoadingCities || !signUpData.addressDistrict" class="form-input-custom">
                     <option value="" disabled selected>
                         {{ isLoadingCities ? 'Loading...' : '---Select City---' }}

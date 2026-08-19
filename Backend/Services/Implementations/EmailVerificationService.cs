@@ -1,6 +1,9 @@
-﻿using Backend.Data;
+﻿using Backend.Controllers;
+using Backend.Data;
+using Backend.Models.DTOs;
 using Backend.Models.Entities;
 using Backend.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.Net.Mail;
@@ -29,7 +32,7 @@ namespace Backend.Services.Implementations
 
             _cache.Set($"otp_{email}", otp, TimeSpan.FromMinutes(5));
             var emailOtp = new EmailOtp
-            {
+            { 
                 Email = email,
                 OTP = otp,
                 IsUsed = false,
@@ -61,6 +64,132 @@ namespace Backend.Services.Implementations
             return true;
         }
 
+        public async Task<VerifyFirstResponse> verifyfirt(verifydatamodel model)
+        {
+            if (model == null)
+            {
+                return new VerifyFirstResponse
+                {
+                    IsValid = false,
+                    Message = "Invalid request."
+                };
+            }
+            if (!string.IsNullOrWhiteSpace(model.EmailId))
+            {
+                var exists = await _context.Users
+                    .AnyAsync(x =>
+                        x.Email == model.EmailId &&
+                        x.IsActive == true );
+
+                return new VerifyFirstResponse
+                {
+                    IsValid = exists,
+                    VerificationType = "Email",
+                    Message = exists
+                        ? "Email already exists."
+                        : "Email not found."
+                };
+            }
+            if (!string.IsNullOrWhiteSpace(model.MobileNumber))
+            {
+                var exists = await _context.ApplicationUsers
+                    .AnyAsync(x =>
+                        x.MobileNo == model.MobileNumber &&
+                        x.IsActive == true &&
+                        x.IsDeleted == false);
+
+                return new VerifyFirstResponse
+                {
+                    IsValid = exists,
+                    VerificationType = "Mobile",
+                    Message = exists
+                        ? "Mobile number already exists."
+                        : "Mobile number not found."
+                };
+            }
+            if (!string.IsNullOrWhiteSpace(model.AdhaarNumber))
+            {
+                var exists = await _context.ApplicationUsers
+                    .AnyAsync(x =>
+                        x.IdentDocNumber == model.AdhaarNumber &&
+                        x.IsActive == true &&
+                        x.IsDeleted == false);
+
+                return new VerifyFirstResponse
+                {
+                    IsValid = exists,
+                    VerificationType = "Aadhaar",
+                    Message = exists
+                        ? "Aadhaar number already exists."
+                        : "Aadhaar number not found."
+                };
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.VoterCard))
+            {
+                var exists = await _context.ApplicationUsers
+                    .AnyAsync(x =>
+                        x.IdentDocNumber == model.VoterCard &&
+                        x.IsActive == true &&
+                        x.IsDeleted == false);
+
+                return new VerifyFirstResponse
+                {
+                    IsValid = exists,
+                    VerificationType = "VoterCard",
+                    Message = exists
+                        ? "Voter card already exists."
+                        : "Voter card not found."
+                };
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Passport))
+            {
+                var exists = await _context.ApplicationUsers
+                    .AnyAsync(x =>
+                        x.IdentDocNumber == model.Passport &&
+                        x.IsActive == true &&
+                        x.IsDeleted == false);
+
+                return new VerifyFirstResponse
+                {
+                    IsValid = exists,
+                    VerificationType = "Passport",
+                    Message = exists
+                        ? "Passport already exists."
+                        : "Passport not found."
+                };
+            }
+            if (!string.IsNullOrWhiteSpace(model.DrivingLicenec))
+            {
+                var exists = await _context.ApplicationUsers
+                    .AnyAsync(x =>
+                        x.IdentDocNumber == model.DrivingLicenec &&
+                        x.IsActive == true &&
+                        x.IsDeleted == false);
+
+                return new VerifyFirstResponse
+                {
+                    IsValid = exists,
+                    VerificationType = "DrivingLicence",
+                    Message = exists
+                        ? "Driving licence already exists."
+                        : "Driving licence not found."
+                };
+            }
+
+            return new VerifyFirstResponse
+            {
+                IsValid = false,
+                Message = "Please provide Email, Mobile, Aadhaar, Voter Card, Passport or Driving Licence."
+            };
+        }
+        public class VerifyFirstResponse
+        {
+            public bool IsValid { get; set; }
+            public string? VerificationType { get; set; }
+            public string? Message { get; set; }
+        }
         public async Task<bool> VerifyOtpAsync(string email, string otp)
         {
             if (_cache.TryGetValue($"otp_{email}", out string? storedOtp) && storedOtp == otp)

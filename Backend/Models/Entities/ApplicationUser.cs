@@ -53,4 +53,9 @@ public class ApplicationUser
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public long? CreatedBy { get; set; }
+
+    //public string? AdhaarNumber { get; set; } = "";
+    //public string? VoterCard { get; set; } = "";
+    //public string? Passport { get; set; } = "";
+    //public string DrivingLicenec { get; set; } = "";
 }

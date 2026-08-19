@@ -50,6 +50,23 @@ namespace Backend.Controllers
             return Ok(ApiResponse<LoginResponse>.Ok(result, "Registration successful"));
         }
 
+        [HttpPost("first-login")]
+        [EnableRateLimiting("AuthPolicy")]
+        public async Task<ActionResult<ApiResponse<LoginResponse>>> FirstLogin([FromBody] LoginRequest request)
+        {
+            var result = await _authService.firtLogin(request);
+            return Ok(ApiResponse<LoginResponse>.Ok(result, "Login successful"));
+        }
+        [HttpPost("change-first-login-password")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse>> ChangeFirstLoginPassword([FromBody] FirstLoginChangePasswordRequest request)
+        {
+            var userId = GetUserId();
+            await _authService.ChangeFirstLoginPasswordAsync(userId, request);
+            return Ok(ApiResponse.Ok("Password changed successfully"));
+        }
+
+
         [HttpPost("login")]
         [EnableRateLimiting("AuthPolicy")]
         public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
@@ -58,6 +75,7 @@ namespace Backend.Controllers
             var result = await _authService.LoginAsync(request);
             return Ok(ApiResponse<LoginResponse>.Ok(result, "Login successful"));
         }
+
 
         [HttpGet("profile")]
         [Authorize]

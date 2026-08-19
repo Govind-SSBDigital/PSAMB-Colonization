@@ -219,56 +219,10 @@ try
         }
     }
 
-    //if (app.Environment.IsDevelopment())
-    //{
-    //    app.UseSwagger();
-    //    app.UseSwaggerUI();
-    //}
-    //else
-    //{
-    //    app.UseHsts();
-    //}
-    //app.UseMiddleware<SwaggerAuthMiddleware>();
-    //app.UseSwagger();
-    //app.UseSwaggerUI();
-
-    //if (!app.Environment.IsDevelopment())
-    //{
-    //    app.UseHsts();
-    //}
-
-    //app.UseHttpsRedirection();
-    //app.UseCors("CorsPolicy");
-    //app.UseRateLimiter();
-    //app.UseAuthentication();
-    //app.UseAuthorization();
-    //app.MapControllers();
-    //var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger");
-
-    //if (enableSwagger)
-    //{
-    //    app.UseMiddleware<SwaggerAuthMiddleware>();
-    //    app.UseSwagger();
-    //    app.UseSwaggerUI();
-    //}
-
-    //if (!app.Environment.IsDevelopment())
-    //{
-    //    app.UseHsts();
-    //}
-
-
-
     var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger");
 
     if (enableSwagger)
     {
-        // Sirf non-local (Development nahi) environment mein password lagao
-        if (!app.Environment.IsDevelopment())
-        {
-            app.UseMiddleware<SwaggerAuthMiddleware>();
-        }
-
         app.UseSwagger();
         app.UseSwaggerUI();
     }
@@ -277,11 +231,18 @@ try
     {
         app.UseHsts();
     }
+
     app.UseHttpsRedirection();
+
+    app.UseRouting();
+
     app.UseCors("CorsPolicy");
-    app.UseRateLimiter();
+
+    // app.UseRateLimiter();
+
     app.UseAuthentication();
     app.UseAuthorization();
+
     app.MapControllers();
 
 
@@ -298,7 +259,7 @@ finally
 }
 async Task SeedRolesAsync(WebApplication app)
 {
-    try  
+    try
     {
         using var scope = app.Services.CreateScope();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -310,7 +271,7 @@ async Task SeedRolesAsync(WebApplication app)
                 await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
-    catch (Exception ex) 
+    catch (Exception ex)
     {
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Error seeding roles");
