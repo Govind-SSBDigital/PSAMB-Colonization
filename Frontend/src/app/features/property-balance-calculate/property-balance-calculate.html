@@ -1,0 +1,454 @@
+<section class="card register-section-card border-0 rounded-4 shadow-sm mb-4">
+  <div class="card-header bg-success text-white rounded-top-3 py-3 px-3 px-lg-4">
+    <h2 class="h5 fw-semibold mb-0">Property Balance Details</h2>
+  </div>
+
+  <div class="card-body p-3 p-lg-4">
+    <form [formGroup]="balanceForm" (ngSubmit)="onCalculateBalance()" novalidate>
+
+      <!-- Search Allottee Code -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-8 col-xl-6">
+          <label for="allotteeCode" class="form-label small text-dark fw-semibold text-uppercase">
+            Search Allottee Code
+          </label>
+          <div class="input-group">
+            <input
+              id="allotteeCode"
+              type="text"
+              class="form-control bg-light rounded-start-3 custom-input-color"
+              placeholder="Enter allottee code"
+              formControlName="allotteeCode" />
+            <button type="button" class="btn bg-success text-white rounded-end-3" [disabled]="isSearching"
+              (click)="onSearch()">
+              <i class="fa-solid fa-magnifying-glass me-1"></i>
+              <span *ngIf="!isSearching">Search</span>
+              <span *ngIf="isSearching">Searching...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="row g-3">
+        <div class="col-md-6 col-xl-3">
+          <label for="district" class="form-label small text-dark fw-semibold text-uppercase">
+            District <span class="text-danger">*</span>
+          </label>
+          <select id="district" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="district" [class.is-invalid]="isInvalid('district')">
+            <option value="" disabled>Select district</option>
+            @for (district of districts; track district) {
+            <option [value]="district">{{ district }}</option>
+            }
+          </select>
+          @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="marketCommittee" class="form-label small text-dark fw-semibold text-uppercase">
+            Market Committee <span class="text-danger">*</span>
+          </label>
+          <select id="marketCommittee" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="marketCommittee" [class.is-invalid]="isInvalid('marketCommittee')">
+            <option value="" disabled>Select committee</option>
+            @for (committee of marketCommittees; track committee) {
+            <option [value]="committee">{{ committee }}</option>
+            }
+          </select>
+          @if (isInvalid('marketCommittee')) { <div class="invalid-feedback">Market committee is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="propertyType" class="form-label small text-dark fw-semibold text-uppercase">
+            Property Type <span class="text-danger">*</span>
+          </label>
+          <select id="propertyType" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="propertyType" [class.is-invalid]="isInvalid('propertyType')">
+            <option value="" disabled>Select property type</option>
+            @for (type of propertyTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+            }
+          </select>
+          @if (isInvalid('propertyType')) { <div class="invalid-feedback">Property type is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="mandiCategory" class="form-label small text-dark fw-semibold text-uppercase">
+            Mandi Category <span class="text-danger">*</span>
+          </label>
+          <select id="mandiCategory" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="mandiCategory" [class.is-invalid]="isInvalid('mandiCategory')">
+            <option value="" disabled>Select category</option>
+            @for (category of mandiCategories; track category) {
+            <option [value]="category">{{ category }}</option>
+            }
+          </select>
+          @if (isInvalid('mandiCategory')) { <div class="invalid-feedback">Mandi category is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">
+            Mandi <span class="text-danger">*</span>
+          </label>
+          <select id="mandi" class="form-select bg-light rounded-3 custom-input-color" formControlName="mandi"
+            [class.is-invalid]="isInvalid('mandi')">
+            <option value="" disabled>Select mandi</option>
+            @for (mandi of mandis; track mandi) {
+            <option [value]="mandi">{{ mandi }}</option>
+            }
+          </select>
+          @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="plotNumber" class="form-label small text-dark fw-semibold text-uppercase">
+            Plot Number <span class="text-danger">*</span>
+          </label>
+          <select id="plotNumber" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="plotNumber" [class.is-invalid]="isInvalid('plotNumber')"
+            [disabled]="!plotNumbers.length">
+            <option value="" disabled>Select plot</option>
+            @for (plot of plotNumbers; track plot) {
+            <option [value]="plot">{{ plot }}</option>
+            }
+          </select>
+          @if (isInvalid('plotNumber')) { <div class="invalid-feedback">Plot number is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="dispatched" class="form-label small text-dark fw-semibold text-uppercase">
+            Dispatched <span class="text-danger">*</span>
+          </label>
+          <div
+            class="form-control bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between">
+            <label class="form-check-label fw-normal text-dark mb-0" for="dispatched">Is Dispatched</label>
+            <div class="form-check mb-0 p-1">
+              <input class="form-check-input custom-switch-color border border-secondary m-0" type="checkbox" role="switch" id="dispatched"
+                formControlName="dispatched" [class.is-invalid]="isInvalid('dispatched')" />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="installmentPenalty" class="form-label small text-dark fw-semibold text-uppercase">
+            Installment Penalty(%) <span class="text-danger">*</span>
+          </label>
+          <select id="installmentPenalty" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="installmentPenalty" [class.is-invalid]="isInvalid('installmentPenalty')">
+            @for (penalty of installmentPenaltyOptions; track penalty) {
+            <option [value]="penalty">{{ penalty }}</option>
+            }
+          </select>
+          @if (isInvalid('installmentPenalty')) { <div class="invalid-feedback">Installment penalty is
+            required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="balanceDate" class="form-label small text-dark fw-semibold text-uppercase">
+            Balance Date <span class="text-danger">*</span>
+          </label>
+          <input id="balanceDate" type="date" class="form-control bg-light rounded-3 custom-input-color"
+            formControlName="balanceDate" [class.is-invalid]="isInvalid('balanceDate')" />
+          @if (isInvalid('balanceDate')) { <div class="invalid-feedback d-block">Balance date is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3 d-flex align-items-end">
+          <button type="submit" class="btn bg-success text-white rounded-3 w-100" [disabled]="isCalculating">
+            <!-- <i class="fa-solid fa-calculator me-1"></i> -->
+            <span *ngIf="!isCalculating">Calculate Balance</span>
+            <span *ngIf="isCalculating">Calculating...</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="card border-0 rounded-4 shadow-sm mb-4" *ngIf="showResults && balanceData">
+    <div class="card-header bg-success d-flex justify-content-between align-items-center rounded-top-3">
+        <h2 class="h6 fw-semibold mb-0 text-white">Property Balance Details</h2>
+        <button type="button" class="btn text-white btn-sm rounded-3 border-white" (click)="printReport()">
+            <i class="fa-solid fa-print me-1"></i> Print Report
+        </button>
+    </div>
+
+    <div class="card-body p-3 p-lg-4">
+        <!-- Property Info -->
+        <div class="row g-2 bg-light rounded-3 p-3 mb-4">
+            <div class="col-md-6">
+                <p class="mb-2">
+                    <span class="fw-semibold">Allottee Code :</span>
+                    {{ balanceData.propertyInfo.allotteeCode }}
+                </p>
+                <p class="mb-2">
+                    <span class="fw-semibold">Mandi Name :</span> {{ balanceData.propertyInfo.mandiName }}
+                </p>
+                <p class="mb-2">
+                    <span class="fw-semibold">Size of Plot :</span> {{ balanceData.propertyInfo.sizeOfPlot }}
+                </p>
+                <p class="mb-0">
+                    <span class="fw-semibold">Allotment Date :</span>
+                    {{ balanceData.propertyInfo.allotmentDate }}
+                </p>
+                <p class="mb-0 mt-2">
+                    <span class="fw-semibold">Auction Date :</span> {{ balanceData.propertyInfo.auctionDate }}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-2">
+                    <span class="fw-semibold">Agency Name :</span> {{ balanceData.propertyInfo.agencyName }}
+                </p>
+                <p class="mb-2">
+                    <span class="fw-semibold">Name of Allottee :</span>
+                    {{ balanceData.propertyInfo.nameOfAllottee }}
+                </p>
+                <p class="mb-2">
+                    <span class="fw-semibold">Address :</span> {{ balanceData.propertyInfo.address }}
+                </p>
+                <p class="mb-0">
+                    <span class="fw-semibold">Plot Type :</span> {{ balanceData.propertyInfo.plotType }}
+                </p>
+                <p class="mb-0 mt-2">
+                    <span class="fw-semibold">Allotment Amount(Rs.) :</span>
+                    ₹{{ balanceData.propertyInfo.allotmentAmount | number }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Initial 25% Deposited -->
+        <div class="table-section mb-4">
+            <div class="table-section-header bg-success text-white rounded-top-2">Detail of Initial 25% deposited :</div>
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Receipt No.</th>
+                            <th>Receipt Date</th>
+                            <th>Draft/Cheque/RTGS No</th>
+                            <th>Draft/Cheque/RTGS Date</th>
+                            <th>Payment Mode</th>
+                            <th>Bank</th>
+                            <th class="text-end">Amount(Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let deposit of balanceData.initialDeposits">
+                            <td>{{ deposit.receiptNo }}</td>
+                            <td>{{ deposit.receiptDate }}</td>
+                            <td>{{ deposit.draftChequeRtgsNo || '-' }}</td>
+                            <td>{{ deposit.draftChequeRtgsDate }}</td>
+                            <td>{{ deposit.paymentMode }}</td>
+                            <td>{{ deposit.bank }}</td>
+                            <td class="text-end">₹{{ deposit.amount | number }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" class="text-end fw-semibold">Total(Rs.):</td>
+                            <!-- <td class="text-end fw-semibold">
+                ₹{{ getTotal(balanceData.initialDeposits, 'amount') | number:'1.2-2' }}
+              </td> -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Due Installments -->
+        <div class="table-section mb-4">
+            <div class="table-section-header bg-success text-white rounded-top-2">
+                Details of Due Installments : (Rate of Interest(12%))
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Installment No.</th>
+                            <th>Due Date</th>
+                            <th class="text-end">Due Amount(Rs.)</th>
+                            <th class="text-end">Interest(Rs.)</th>
+                            <th class="text-end">Total Due Amount(Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let installment of balanceData.dueInstallments">
+                            <td>{{ installment.installmentNo }}</td>
+                            <td>{{ installment.dueDate }}</td>
+                            <td class="text-end">₹{{ installment.dueAmount | number }}</td>
+                            <td class="text-end">₹{{ installment.interest | number }}</td>
+                            <td class="text-end">₹{{ installment.totalDueAmount | number }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="text-end fw-semibold">Total(Rs.) :</td>
+                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'dueAmount') | number:'1.2-2' }}</td> -->
+                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'interest') | number:'1.2-2' }}</td> -->
+                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'totalDueAmount') | number:'1.2-2' }}</td> -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Installments Amount Received -->
+        <div class="table-section mb-4">
+            <div class="table-section-header bg-success text-white rounded-top-2">
+                Details of Installments Amount Received :
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Receipt No.</th>
+                            <th>Receipt Date</th>
+                            <th>Draft No</th>
+                            <th>Draft/RTGS Date</th>
+                            <th>Payment Mode</th>
+                            <th>Draft/RTGS Bank</th>
+                            <th class="text-end">Draft Amount(Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="!balanceData.installmentReceipts.length">
+                            <td colspan="7" class="text-center text-muted">No records found</td>
+                        </tr>
+                        <tr *ngFor="let receipt of balanceData.installmentReceipts">
+                            <td>{{ receipt.receiptNo }}</td>
+                            <td>{{ receipt.receiptDate }}</td>
+                            <td>{{ receipt.draftNo || '-' }}</td>
+                            <td>{{ receipt.draftRtgsDate }}</td>
+                            <td>{{ receipt.paymentMode }}</td>
+                            <td>{{ receipt.draftRtgsBank }}</td>
+                            <td class="text-end">₹{{ receipt.draftAmount | number }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" class="text-end fw-semibold">Total(Rs.):</td>
+                            <!-- <td class="text-end fw-semibold">
+                ₹{{ getTotal(balanceData.installmentReceipts, 'draftAmount') | number }}
+              </td> -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Future Installments -->
+        <div class="table-section mb-4">
+            <div class="table-section-header bg-success text-white rounded-top-2">Details of Future Installments:</div>
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Installment No.</th>
+                            <th>Due Date</th>
+                            <th class="text-end">Due Amount(Rs.)</th>
+                            <th class="text-end">Interest(Rs.)</th>
+                            <th class="text-end">Total Due Amount(Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="!balanceData.futureInstallments.length">
+                            <td colspan="5" class="text-center text-muted">No records found</td>
+                        </tr>
+                        <tr *ngFor="let installment of balanceData.futureInstallments">
+                            <td>{{ installment.installmentNo }}</td>
+                            <td>{{ installment.dueDate }}</td>
+                            <td class="text-end">₹{{ installment.dueAmount | number }}</td>
+                            <td class="text-end">₹{{ installment.interest | number }}</td>
+                            <td class="text-end">₹{{ installment.totalDueAmount | number }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="text-end fw-semibold">Total(Rs.) :</td>
+                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'dueAmount') | number }}</td>
+              <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'interest') | number }}</td>
+              <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'totalDueAmount') | number }}</td> -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Other Amount Received -->
+        <div class="table-section mb-4">
+            <div class="table-section-header rounded-top-2 bg-success text-white">
+                Details of Other Amount Received (If Any):
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Payment Type</th>
+                            <th>Receipt No.</th>
+                            <th>Receipt Date</th>
+                            <th>Draft No</th>
+                            <th>Draft/RTGS Date</th>
+                            <th>Payment Mode</th>
+                            <th>Draft/RTGS Bank</th>
+                            <th class="text-end">Draft Amount(Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="!balanceData.otherAmounts.length">
+                            <td colspan="8" class="text-center text-muted">No records found</td>
+                        </tr>
+                        <tr *ngFor="let other of balanceData.otherAmounts">
+                            <td>{{ other.paymentType }}</td>
+                            <td>{{ other.receiptNo }}</td>
+                            <td>{{ other.receiptDate }}</td>
+                            <td>{{ other.draftNo || '-' }}</td>
+                            <td>{{ other.draftRtgsDate }}</td>
+                            <td>{{ other.paymentMode }}</td>
+                            <td>{{ other.draftRtgsBank }}</td>
+                            <td class="text-end">₹{{ other.draftAmount | number }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7" class="text-end fw-semibold">Total(Rs.):</td>
+                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.otherAmounts, 'draftAmount') | number:'1.2-2' }}</td> -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-block">
+            <p class="mb-2">
+                Rebate(If Any) (In ₹):
+                <span class="fw-semibold">₹{{ balanceData.summary.rebate | number }}</span>
+            </p>
+            <p class="mb-2">
+                Total Payment received till date (Including 25% of Initial Deposit)-
+                {{ balanceForm.get('balanceDate')?.value | date: 'dd-MM-yyyy' }} (In ₹):
+                <span class="fw-semibold">₹{{ balanceData.summary.totalPaymentReceivedTillDate | number: '1.2-2'
+                    }}</span>
+            </p>
+            <p class="mb-2">
+                Total Balance from Sale of plot (In ₹):
+                <span class="fw-semibold">₹{{ balanceData.summary.totalBalanceFromSaleOfPlot | number }}</span>
+            </p>
+            <p class="mb-2">
+                Amount of interest({{ balanceForm.get('installmentPenalty')?.value }}%) on late installments
+                (In ₹):
+                <span class="fw-semibold">₹{{ balanceData.summary.interestOnLateInstallments | number }}</span>
+            </p>
+            <p class="mb-2">
+                Amount of penalty({{ balanceForm.get('installmentPenalty')?.value }}%) on late installments:
+                <span class="fw-semibold">₹{{ balanceData.summary.penaltyOnLateInstallments | number }}</span>
+            </p>
+            <p class="mb-0">
+                Total amount of recoverable installments &amp; interests on installments till
+                {{ balanceForm.get('balanceDate')?.value | date: 'dd-MM-yyyy' }} (Including future
+                installments) (In ₹):
+                <span class="fw-semibold">₹{{ balanceData.summary.totalRecoverableAmount | number }}</span>
+            </p>
+        </div>
+    </div>
+</section>

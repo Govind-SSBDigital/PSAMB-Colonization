@@ -1,6 +1,7 @@
 ﻿using Backend.Data;
 using Backend.Helpers;
 using Backend.Models.Dtos;
+using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Windows.Input;
@@ -45,11 +46,11 @@ namespace Backend.Services.Implementations
             }
         }
 
-        public async Task<List<DistrictDto>> GetAllDistrictsAsync()
+        public async Task<List<DistrictDto>> GetAllDistrictsAsync(int stateid)
         {
             try
             {
-                var districts = await _context.DistrictMasters.Where(x => x.IsActive == true && x.StateId == 1).ToListAsync();
+                var districts = await _context.DistrictMasters.Where(x => x.IsActive == true && x.StateId==stateid ).ToListAsync();
 
                 return districts.Select(x => new DistrictDto
                 {
@@ -57,6 +58,25 @@ namespace Backend.Services.Implementations
                     DistrictName = x.DistrictName,
                     DistrictCode = x.DistrictCode,
                     DistrictPunjabiName = x.DistrictPunjabiName
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching districts", ex);
+            }
+        }
+
+        public async Task<List<CityMasterDto>> GetAllCityByDistrictID(int districtid)
+        {
+            try
+            {
+                var districts = await _context.CityMasters.Where(x => x.IsActive == true && x.DistrictId == districtid).ToListAsync();
+
+                return districts.Select(x => new CityMasterDto
+                {
+                    DistrictId = x.DistrictId,
+                    CityId = x.CityId,
+                    CityName = x.CityName,
                 }).ToList();
             }
             catch (Exception ex)

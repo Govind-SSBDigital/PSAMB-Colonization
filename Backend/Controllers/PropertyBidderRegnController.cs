@@ -1,6 +1,7 @@
-﻿using Backend.Helpers;
+using Backend.Helpers;
 using Backend.Models.Dtos;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class PropertyBidderRegnController : ControllerBase
     {
         private readonly IPropertyBidderRegistration _service;
@@ -74,6 +76,21 @@ namespace Backend.Controllers
             return Ok(response);
         }
 
+        [HttpGet("GetPropertyEAuctionDetailsByPropertyCodeAsync/{propertyCode}")]
+        public async Task <IActionResult> GetPropertyEAuctionDetailsByPropertyCodeAsync( string propertyCode)
+        {
+            var response = await _service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode);
+            //if (!response.Success)
+            //{
+            //    if (response.Message == "no record found")
+            //    {
+            //        return NotFound(response);
+            //    }
+            //    return BadRequest(response);
+            //}
+
+            return Ok(response);
+        }
         [HttpPut("UpdateRegisterPropertyAsync")]
         public async Task<IActionResult> UpdateRegisterPropertyAsync([FromBody] PropertyBidderRegistrationDto dto)
         {
@@ -89,9 +106,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet("GetPendingForClerk")]
-        public async Task<IActionResult> GetPendingForClerk()
+        public async Task<IActionResult> GetPendingForClerk([FromQuery] string? searchCode = null)
         {
-            var response = await _service.GetPendingForClerk();
+            var response = await _service.GetPendingForClerk(searchCode);
             if (!response.Success)
             {
                 return BadRequest(response);

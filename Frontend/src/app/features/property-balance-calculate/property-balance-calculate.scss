@@ -1,0 +1,65 @@
+.register-section-card {
+  .section-header h2 {
+    color: var(--theme-primary);
+  }
+}
+.bg-success{
+    background-color: var(--theme-primary) !important;
+    color: #fff !important;
+}
+.custom-input-color {
+  border: 1px solid #dee2e6;
+
+  &:focus {
+    box-shadow: none;
+    border-color: var(--theme-primary);
+  }
+}
+
+.table-section {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  overflow: hidden;
+
+  .table-section-header {
+    background-color: #eaf3fb;
+    color: var(--theme-primary);
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  table {
+    margin-bottom: 0;
+
+    th {
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    td {
+      font-size: 0.9rem;
+    }
+
+    tfoot td {
+      background-color: #f8f9fa;
+    }
+  }
+}
+
+.summary-block {
+  font-size: 0.95rem;
+
+  p {
+    color: #212529;
+  }
+}
+
+@media print {
+  .card-header button,
+  form button,
+  .btn {
+    display: none !important;
+  }
+}

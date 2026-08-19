@@ -27,22 +27,24 @@ export class DocumentsAndAddress implements OnInit {
   isLoadingCities = false;
 
   constructor(private locationService: LocationService, private cdr: ChangeDetectorRef ) { }
+  maskedIdDocumentNumber: string = '';
 
    ngOnInit(): void {
-    this.isLoadingStates = true;
-    this.locationService.getStates().subscribe({
-      next: (res) => {
-        this.states = res.data;
-        this.isLoadingStates = false;
-        this.cdr.detectChanges(); 
-      },
-      error: (err) => {
-        console.error('States error:', err);
-        this.isLoadingStates = false;
-        this.cdr.detectChanges(); 
-      }
-    });
-  }
+     this.isLoadingStates = true;
+     this.locationService.getStates().subscribe({
+       next: (res) => {
+         this.states = res.data;
+         this.isLoadingStates = false;
+         this.cdr.detectChanges(); 
+       },
+       error: (err) => {
+         console.error('States error:', err);
+         this.isLoadingStates = false;
+         this.cdr.detectChanges(); 
+       }
+     });
+     this.maskedIdDocumentNumber = this.getDisplayDocumentNumber();
+   }
   onStateChange(): void {
     this.signUpData.addressDistrict = '';
     this.signUpData.addressDistrictId = 0;
@@ -99,12 +101,35 @@ export class DocumentsAndAddress implements OnInit {
   // Document Type
   onDocumentTypeChange(): void {
     this.signUpData.idDocumentNumber = '';
+    this.maskedIdDocumentNumber = '';
+    if (this.signUpData.addressDocType === this.signUpData.idDocumentType) {
+      this.signUpData.addressDocType = '';
+      this.signUpData.addressDocNumber = '';
+    }
+  }
+
+  get filteredAddressDocTypes(): string[] {
+    const selectedDoc = this.signUpData?.idDocumentType;
+    if (!selectedDoc) {
+      return this.addressDocTypes;
+    }
+    return this.addressDocTypes.filter((doc) => doc !== selectedDoc);
+  }
+
+  getDisplayDocumentNumber(): string {
+    const raw = this.signUpData?.idDocumentNumber ?? '';
+    if (this.signUpData?.idDocumentType === 'Aadhaar Card' && raw.length === 12) {
+      return this.maskAadhaarNumber(raw);
+    }
+    return raw;
   }
 
   getCurrentPattern(): string {
-    const docType = this.signUpData.idDocumentType;
+    const docType = this.signUpData?.idDocumentType;
+    if (!docType || docType === 'Aadhaar Card') return '';
+
     switch (docType) {
-      case 'Aadhaar Card': return '[0-9]{12}';
+      case 'PAN Card': return '[A-Z0-9]{10}';
       case 'Voter Card': return '[A-Za-z0-9]{10}';
       case 'Passport': return '[A-Za-z0-9]{8}';
       case 'Driving License': return '[A-Za-z0-9]{15}';
@@ -113,9 +138,10 @@ export class DocumentsAndAddress implements OnInit {
   }
 
   getMaxLength(): number {
-    const docType = this.signUpData.idDocumentType;
+    const docType = this.signUpData?.idDocumentType;
     switch (docType) {
       case 'Aadhaar Card': return 12;
+      case 'PAN Card': return 10;
       case 'Voter Card': return 10;
       case 'Passport': return 8;
       case 'Driving License': return 15;
@@ -123,17 +149,29 @@ export class DocumentsAndAddress implements OnInit {
     }
   }
 
-  onInputFormatting(event: Event): void {
-    const input = event.target as HTMLInputElement;
+  onDocumentNumberChange(value: string): void {
     const docType = this.signUpData.idDocumentType;
     if (docType === 'Aadhaar Card') {
-      input.value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
+      const cleaned = value.replace(/[^0-9]/g, '').slice(0, 12);
+      this.signUpData.idDocumentNumber = cleaned;
+      this.maskedIdDocumentNumber = cleaned.length === 12 ? this.maskAadhaarNumber(cleaned) : cleaned;
     } else if (docType === 'PAN Card') {
-      input.value = input.value.toUpperCase().slice(0, 10);
+      const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+      this.signUpData.idDocumentNumber = cleaned;
+      this.maskedIdDocumentNumber = cleaned;
     } else {
-      input.value = input.value.slice(0, this.getMaxLength());
+      const cleaned = value.slice(0, this.getMaxLength());
+      this.signUpData.idDocumentNumber = cleaned;
+      this.maskedIdDocumentNumber = cleaned;
     }
-    this.signUpData.idDocumentNumber = input.value;
+  }
+
+  maskAadhaarNumber(number: string): string {
+    if (!number) return '';
+    if (number.length <= 8) {
+      return 'X'.repeat(number.length);
+    }
+    return 'X'.repeat(8) + number.substring(8);
   }
 
   onPanInput(event: Event): void {
@@ -152,21 +190,44 @@ export class DocumentsAndAddress implements OnInit {
     this.signUpData.addressDocNumber = '';
   }
 
+  getDisplayAddressDocNumber(): string {
+    const raw = this.signUpData?.addressDocNumber ?? '';
+    if (this.signUpData?.addressDocType === 'Aadhaar Card' && raw.length === 12) {
+      return this.maskAadhaarNumber(raw);
+    }
+    return raw;
+  }
+
   getAddressDocPattern(): string {
-    const docType = this.signUpData.addressDocType;
+    const docType = this.signUpData?.addressDocType;
+    if (!docType || docType === 'Aadhaar Card') return '';
+
     switch (docType) {
-      case 'Aadhaar Card': return '[0-9]{12}';
       case 'Passport': return '[A-Za-z0-9]{8}';
       default: return '[A-Za-z0-9]+';
     }
   }
 
   getAddressDocMaxLength(): number {
-    const docType = this.signUpData.addressDocType;
+    const docType = this.signUpData?.addressDocType;
     switch (docType) {
       case 'Aadhaar Card': return 12;
       case 'Passport': return 8;
       default: return 20;
+    }
+  }
+
+  onAddressDocNumberChange(value: string): void {
+    const docType = this.signUpData.addressDocType;
+    if (docType === 'Aadhaar Card') {
+      const cleaned = value.replace(/[^0-9]/g, '').slice(0, 12);
+      this.signUpData.addressDocNumber = cleaned;
+    } else if (docType === 'Passport') {
+      const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      this.signUpData.addressDocNumber = cleaned;
+    } else {
+      const cleaned = value.slice(0, this.getAddressDocMaxLength());
+      this.signUpData.addressDocNumber = cleaned;
     }
   }
 
@@ -216,5 +277,28 @@ export class DocumentsAndAddress implements OnInit {
     const type = this.selectedEntityType;
     if (type === 'Sole Proprietorship') return 'Address of Sole Proprietor (ਇਕੱਲੇ ਮਾਲਕ ਦਾ ਪਤਾ)';
     return `Address of ${type} (${this.getPunjabiLabel(type)} ਦਾ ਪਤਾ)`;
+  }
+
+  restrictToNumbers(event: KeyboardEvent): void {
+    const allowedKeys = [
+      'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+      'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+      'Home', 'End'
+    ];
+
+    // Allow system shortcuts (Ctrl+A, Ctrl+C, Ctrl+V, etc.)
+    if (event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    // Allow navigation and functional keys
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+
+    // Block non-numeric keystrokes
+    if (event.key < '0' || event.key > '9') {
+      event.preventDefault();
+    }
   }
 }

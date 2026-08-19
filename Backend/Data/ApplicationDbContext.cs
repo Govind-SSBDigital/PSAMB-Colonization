@@ -120,12 +120,22 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         });
         builder.Entity<HRMSData>(b =>
         {
-            b.ToTable("HRMSData");
-            b.HasKey(x => x.HRMSCODE);    
-            b.Property(x => x.HRMSCODE).HasMaxLength(50).IsRequired();
-            b.Property(x => x.EmployeeName).HasMaxLength(200);
-            b.Property(x => x.MobileNo).HasMaxLength(15);
-            b.Property(x => x.Email).HasMaxLength(255);
+            b.ToTable("HRMSData", t => t.ExcludeFromMigrations());
+
+            b.HasKey(x => x.HRMSCODE);
+
+            b.Property(x => x.HRMSCODE)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            b.Property(x => x.EmployeeName)
+                .HasMaxLength(200);
+
+            b.Property(x => x.MobileNo)
+                .HasMaxLength(15);
+
+            b.Property(x => x.Email)
+                .HasMaxLength(255);
         });
     }
 
