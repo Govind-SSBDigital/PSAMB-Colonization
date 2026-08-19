@@ -33,6 +33,8 @@ export class PropertyVerification implements OnInit {
   selectedBranch = 'All';
   selectedDistrict = 'All';
   selectedMandi = 'All';
+  marketCommitteeList: string[] = [];
+  selectedMarketCommittee = 'All';
 
   districtList: string[] = [];
   mandiList: string[] = [];
@@ -51,8 +53,8 @@ export class PropertyVerification implements OnInit {
   }
 
   mapStatus(statusId: number | null | undefined): string {
-    if (statusId === 2) return 'Verified';
-    if (statusId === 3 || statusId === 7) return 'Rejected';
+    if (statusId === 2 || statusId === 3 || statusId === 4) return 'Verified';
+    if (statusId === 7) return 'Objection';
     return 'Pending';
   }
 
@@ -85,6 +87,10 @@ export class PropertyVerification implements OnInit {
     });
   }
   buildFilterOptions(): void {
+    this.marketCommitteeList = Array.from(
+      new Set(this.propertyList.map(p => p.branch).filter(branch => !!branch && branch !== 'N/A'))
+    ).sort();
+
     this.districtList = Array.from(
       new Set(this.propertyList.map(p => p.district).filter(d => !!d && d !== 'N/A'))
     ).sort();
@@ -111,6 +117,32 @@ export class PropertyVerification implements OnInit {
     this.refreshMandiOptions();
     this.applyFilter();
   }
+  onMarketCommitteeChange(): void {
+    this.applyFilter();
+  }
+
+  // clearSearch(): void {
+  //   this.searchText = '';
+  //   this.applyFilter();
+  // }
+
+  clearDistrict(event: Event): void {
+    event.stopPropagation();
+    this.selectedDistrict = 'All';
+    this.onDistrictChange();
+  }
+
+  clearMandi(event: Event): void {
+    event.stopPropagation();
+    this.selectedMandi = 'All';
+    this.applyFilter();
+  }
+
+  clearMarketCommittee(event: Event): void {
+    event.stopPropagation();
+    this.selectedMarketCommittee = 'All';
+    this.onMarketCommitteeChange();
+  }
 
   applyFilter(): void {
     this.pageIndex = 0;
@@ -134,7 +166,11 @@ export class PropertyVerification implements OnInit {
         this.selectedMandi === 'All' ||
         property.mandiName === this.selectedMandi;
 
-      return matchesSearch && matchesStatus && matchesBranch && matchesDistrict && matchesMandi;
+      const matchesMarketCommittee =
+        this.selectedMarketCommittee === 'All' ||
+        property.branch === this.selectedMarketCommittee;
+
+      return matchesSearch && matchesStatus && matchesBranch && matchesDistrict && matchesMandi && matchesMarketCommittee;
     });
 
     this.updatePagedList();
@@ -185,6 +221,7 @@ export class PropertyVerification implements OnInit {
     this.selectedBranch = 'All';
     this.selectedDistrict = 'All';
     this.selectedMandi = 'All';
+    this.selectedMarketCommittee = 'All';
     this.GetPendingForClerk();
   }
 
@@ -201,7 +238,7 @@ export class PropertyVerification implements OnInit {
     this.applyFilter();
   }
   OpenRejectedRegistration() {
-    this.selectedStatus = 'Rejected';
+    this.selectedStatus = 'Objection';
     this.applyFilter();
   }
 
@@ -214,7 +251,7 @@ export class PropertyVerification implements OnInit {
     return this.propertyList.filter(p => p.status === 'Verified').length;
   }
 
-  get rejectedCount(): number {
-    return this.propertyList.filter(p => p.status === 'Rejected').length;
+  get objectionCount(): number {
+    return this.propertyList.filter(p => p.status === 'Objection').length;
   }
 }

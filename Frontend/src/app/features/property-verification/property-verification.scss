@@ -142,6 +142,7 @@
     border-color: var(--gov-slate-100, #F1F5F9) !important;
 
     .search-group {
+        position: relative;
         .input-group-text {
             border-color: var(--gov-slate-200, #e2e8f0);
         }
@@ -171,6 +172,41 @@
         &:focus {
             box-shadow: none;
             border-color: var(--theme-primary);
+        }
+    }
+
+    .filter-select-wrapper {
+        position: relative;
+
+        .form-select {
+            padding-right: 2.25rem !important;
+        }
+    }
+
+    .clear-filter-btn {
+        position: absolute;
+        top: 50%;
+        right: 1.9rem;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--gov-slate-400, #94a3b8);
+        z-index: 2;
+
+        mat-icon {
+            width: 16px;
+            height: 16px;
+            font-size: 16px;
+        }
+
+        &:hover {
+            color: var(--theme-primary);
         }
     }
 

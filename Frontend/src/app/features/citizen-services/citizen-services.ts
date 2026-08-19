@@ -6,7 +6,7 @@ export interface CitizenService {
   onlineCharges: string[];       
   psambFees: string;
   cdFees: string;
-  status: 'Active' | 'Not Active' ;
+  status: 'Active' | 'In Active' ;
   applyLink?: string;
   payNowLink?: string;
 }
@@ -26,7 +26,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['100'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       payNowLink: '/services/payment-of-instalments'
     },
     {
@@ -35,7 +35,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['600'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       applyLink: '/services/permission-to-sell'
     },
     {
@@ -44,7 +44,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['150'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       applyLink: '/services/no-due-certificate'
     },
     {
@@ -53,7 +53,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 950', 'Shop - 1800'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       applyLink: '/services/loan-mortgage-permission'
     },
     {
@@ -62,7 +62,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 600', 'Shop - 950'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       applyLink: '/services/lien-removal'
     },
     {
@@ -71,7 +71,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 1800', 'Shop - 3600'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       applyLink: '/services/change-ownership-sale-deed'
     },
     {
@@ -80,7 +80,7 @@ export class CitizenServices implements OnInit {
       onlineCharges: ['Booth - 1800', 'Shop - 3600'],
       psambFees: 'No',
       cdFees: 'No',
-      status: 'Not Active',
+      status: 'In Active',
       applyLink: '/services/change-ownership-gift-deed'
     }
   ];
