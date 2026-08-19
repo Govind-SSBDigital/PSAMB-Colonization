@@ -70,6 +70,12 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../property-balance-calculate/property-balance-calculate')
                 .then((m) => m.PropertyBalanceCalculate),
+          },
+          {
+            path: 'dashboard-citizen-services',
+            loadComponent: () =>
+              import('../citizen-services/citizen-services')
+                .then((m) => m.CitizenServices),
           }
         ]
       }

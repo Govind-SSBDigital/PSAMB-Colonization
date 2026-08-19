@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { CitizenServicesRedirectGuard } from './core/guards/citizen-services-redirect.guard';
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
   },
   {
     path: 'citizen-services',
+    canActivate: [CitizenServicesRedirectGuard],
     loadComponent: () =>
       import('./features/citizen-services/citizen-services')
         .then(m => m.CitizenServices),
