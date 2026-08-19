@@ -1010,10 +1010,6 @@ namespace Backend.Services.Implementations
 
                 using var reader = await command.ExecuteReaderAsync();
 
-                // =========================================================
-                // FIRST RESULT SET - PROPERTY
-                // =========================================================
-
                 var list = new List<PropertyBidderRegistrationDto>();
 
                 while (await reader.ReadAsync())
@@ -1192,9 +1188,6 @@ namespace Backend.Services.Implementations
                     list.Add(item);
                 }
 
-                // =========================================================
-                // SECOND RESULT SET - INSTALLMENTS
-                // =========================================================
 
                 var installments = new List<InstallmentDetailsDto>();
 
@@ -1256,9 +1249,6 @@ namespace Backend.Services.Implementations
                     }
                 }
 
-                // =========================================================
-                // MAP INSTALLMENTS TO PROPERTY
-                // =========================================================
 
                 foreach (var property in list)
                 {
@@ -1267,9 +1257,6 @@ namespace Backend.Services.Implementations
                         .ToList();
                 }
 
-                // =========================================================
-                // RETURN
-                // =========================================================
 
                 return ApiResponse<List<PropertyBidderRegistrationDto>>
                     .Ok(
