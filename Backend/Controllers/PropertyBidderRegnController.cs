@@ -4,6 +4,7 @@ using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -104,11 +105,21 @@ namespace Backend.Controllers
 
             return Ok(result);
         }
+        [HttpGet("GetDistrictByHRMSUser")]
+        public async Task<IActionResult> GetDistrictByHRMSUser()
+        {
+            var res = await _service.GetDistrictByHRMSUser(GetUserId());
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
 
         [HttpGet("GetPendingForClerk")]
-        public async Task<IActionResult> GetPendingForClerk([FromQuery] string? searchCode = null)
+        public async Task<IActionResult> GetPendingForClerk([FromQuery] string? searchCode = null,int districtId =0, int branchId =0, int mandiid=0)
         {
-            var response = await _service.GetPendingForClerk(searchCode);
+            var response = await _service.GetPendingForClerk(GetUserId(),searchCode,districtId,branchId,mandiid);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -137,5 +148,8 @@ namespace Backend.Controllers
 
             return Ok(result);
         }
+        private string GetUserId() =>
+           User.FindFirstValue(ClaimTypes.NameIdentifier)
+           ?? throw new UnauthorizedAccessException("Invalid token");
     }
 }

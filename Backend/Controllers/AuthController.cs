@@ -103,8 +103,7 @@ namespace Backend.Controllers
 
         [HttpPost("send-login-otp")]
         [EnableRateLimiting("AuthPolicy")]
-        public async Task<ActionResult<ApiResponse>> SendLoginOtp(
-     [FromBody] SendMobileOtpRequest request)
+        public async Task<ActionResult<ApiResponse>> SendLoginOtp([FromBody] SendMobileOtpRequest request)
         {
             try
             {

@@ -168,7 +168,7 @@ namespace Backend.Models.Dtos
         public decimal? PenaltyAmount { get; set; }
         public string? PenaltyType { get; set; }
         public string? Remarks { get; set; }
-        public int ApplicantId { get; set; }
+        public int? ApplicantId { get; set; }
         public int? PropertyId { get; set; }
         public bool? IsVerified { get; set; }
     }
