@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,11 @@ interface EntityType {
   label: string;
   icon: string;
   desc: string;
+}
+interface ResetPasswordModel {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
 }
 
 @Component({
@@ -146,6 +151,17 @@ export class SignupSignin implements OnInit {
     userId: '',
     password: ''
   };
+
+  // Reset Password Model 
+  resetPasswordData: ResetPasswordModel = {
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  };
+  showResetPassword = false;
+  pendingFirstLoginToken: string | null = null;
+  @ViewChild('resetPasswordModal') resetPasswordModal!: ElementRef;
+  private bootstrapModal: any = null;
 
   // Captcha & Role OTP states
   captchaText = '';
@@ -796,6 +812,25 @@ export class SignupSignin implements OnInit {
         // Token save karo
         sessionStorage.setItem('token', response.data.token);
 
+        if (response.data.isFirstLogin === true) {
+          this.pendingFirstLoginToken = response.data.token;
+          this.resetPasswordData = { currentPassword: '', newPassword: '', confirmNewPassword: '' };
+          this.showResetPassword = true;
+          this.isLoggedIn = false;
+          sessionStorage.removeItem('cp_session');
+          window.sessionStorage.setItem('token', response.data.token);
+          this.cdr.detectChanges();
+
+          setTimeout(() => {
+            const modalEl = document.getElementById('resetPasswordModal');
+            if (modalEl) {
+              this.bootstrapModal = new (window as any).bootstrap.Modal(modalEl);
+              this.bootstrapModal.show();
+            }
+          }, 0);
+          return;
+        }
+
         // Session save karo
         const sessionData = {
           userId: response.data.user?.id || '',
@@ -885,6 +920,77 @@ export class SignupSignin implements OnInit {
     if (user.userId.toLowerCase() === 'dataentryoprt') {
       this.router.navigate(['/register']);
     }
+  }
+
+  // Reset Password Methods
+  validateResetPassword(): boolean {
+    const { currentPassword, newPassword, confirmNewPassword } = this.resetPasswordData;
+
+    if (!currentPassword || currentPassword.trim() === '') {
+      this.triggerToast('Please enter your current password / ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ', 'error');
+      return false;
+    }
+    if (!newPassword || newPassword.length < 6) {
+      this.triggerToast('New password must be at least 6 characters / ਨਵਾਂ ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 6 ਅੱਖਰਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ', 'error');
+      return false;
+    }
+    if (newPassword !== confirmNewPassword) {
+      this.triggerToast('Passwords do not match / ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ', 'error');
+      return false;
+    }
+    if (currentPassword === newPassword) {
+      this.triggerToast('New password must be different from current password / ਨਵਾਂ ਪਾਸਵਰਡ ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਤੋਂ ਵੱਖਰਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ', 'error');
+      return false;
+    }
+    return true;
+  }
+
+  onResetPasswordSubmit() {
+    if (!this.validateResetPassword()) {
+      return;
+    }
+
+    const payload = {
+      currentPassword: this.resetPasswordData.currentPassword,
+      newPassword: this.resetPasswordData.newPassword,
+      confirmNewPassword: this.resetPasswordData.confirmNewPassword
+    };
+
+    this.authService.resetPassword(payload).subscribe({
+      next: (response) => {
+        this.closeResetPasswordModal();
+        this.pendingFirstLoginToken = null;
+        this.triggerToast('Password updated successfully! Please login with your new password / ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਹੋ ਗਿਆ!', 'success');
+        this.resetSignInForm();
+        this.generateCaptcha();
+      },
+      error: (err) => {
+        console.error('First-login password reset failed:', {
+          status: err.status,
+          response: err.original?.error ?? err.error
+        });
+        const responseBody = err.original?.error ?? err.error;
+        const message = typeof responseBody === 'string'
+          ? responseBody
+          : responseBody?.message || err.message || 'Password reset failed. Please try again.';
+        this.triggerToast(message, 'error');
+      }
+    });
+  }
+
+  closeResetPasswordModal() {
+    if (this.bootstrapModal) {
+      this.bootstrapModal.hide();
+      this.bootstrapModal.dispose();
+      this.bootstrapModal = null;
+    }
+    this.showResetPassword = false;
+    this.pendingFirstLoginToken = null;
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refresh_token');
+    this.resetPasswordData = { currentPassword: '', newPassword: '', confirmNewPassword: '' };
+    this.resetSignInForm();
+    this.generateCaptcha();
   }
 
   copyToClipboard(text: string) {

@@ -22,8 +22,8 @@
                 </div>
 
                 <div class="stat-pill stat-pill-rejected" (click)="OpenRejectedRegistration()">
-                    <span class="stat-pill-value">{{ rejectedCount }}</span>
-                    <span class="stat-pill-label">Rejected</span>
+                    <span class="stat-pill-value">{{ objectionCount }}</span>
+                    <span class="stat-pill-label">Objection</span>
                 </div>
 
                 <div class="stat-pill" (click)="OpenTotalRegistration()">
@@ -39,38 +39,61 @@
     <div class="filter-bar px-3 py-3 px-md-4 bg-white border-bottom">
         <div class="row g-2 align-items-center">
 
-            <div class="col-12 col-md-5 col-lg-4">
+            <div class="col-12 col-md-5 col-lg-3">
                 <div class="input-group input-group-sm search-group border rounded-3">
-                        <input type="text" class="form-control p-2" placeholder="Search by Property Code"
+                    <input type="text" class="form-control p-2" placeholder="Search by Property Code"
                         [(ngModel)]="searchText" (ngModelChange)="applyFilter()" />
-                         <span class="input-group-text bg-white">
-                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                         </span>
+                    <!-- <button *ngIf="searchText" type="button" class="clear-filter-btn" (click)="clearSearch()"
+                        aria-label="Clear search" matTooltip="Clear search">
+                        <mat-icon>close</mat-icon>
+                    </button> -->
+                    <span class="input-group-text bg-white">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    </span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-3">
-                <select class="form-select form-select-sm border-1 rounded-3 p-2" [(ngModel)]="selectedDistrict"
-                    (ngModelChange)="onDistrictChange()">
-                    <option value="All">All Districts</option>
-                    <option *ngFor="let d of districtList" [value]="d">{{ d }}</option>
-                </select>
+                <div class="filter-select-wrapper">
+                    <select class="form-select form-select-sm border-1 rounded-3 p-2" [(ngModel)]="selectedDistrict"
+                        (ngModelChange)="onDistrictChange()">
+                        <option value="All">All Districts</option>
+                        <option *ngFor="let d of districtList" [value]="d">{{ d }}</option>
+                    </select>
+                    <button *ngIf="selectedDistrict !== 'All'" type="button" class="clear-filter-btn"
+                        (click)="clearDistrict($event)" aria-label="Clear district" matTooltip="Clear district">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-3">
-                <select class="form-select form-select-sm border-1 rounded-3 p-2" [(ngModel)]="selectedMandi"
-                    (ngModelChange)="applyFilter()">
-                    <option value="All">All Mandis</option>
-                    <option *ngFor="let m of mandiList" [value]="m">{{ m }}</option>
-                </select>
+                <div class="filter-select-wrapper">
+                    <select class="form-select form-select-sm border-1 rounded-3 p-2" [(ngModel)]="selectedMandi"
+                        (ngModelChange)="applyFilter()">
+                        <option value="All">All Mandis</option>
+                        <option *ngFor="let m of mandiList" [value]="m">{{ m }}</option>
+                    </select>
+                    <button *ngIf="selectedMandi !== 'All'" type="button" class="clear-filter-btn"
+                        (click)="clearMandi($event)" aria-label="Clear mandi" matTooltip="Clear mandi">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
             </div>
 
-            <div class="col-12 col-md-1 col-lg-2 d-grid">
-                <button type="button" class="btn btn-sm btn-outline-secondary reset-filter-btn p-2"
-                    (click)="resetFilters()" matTooltip="Reset filters">
-                    <mat-icon class="reset-icon">restart_alt</mat-icon>
-                    <span class="d-inline d-md-none d-lg-inline ms-1">Reset</span>
-                </button>
+            <div class="col-12 col-md-1 col-lg-3 d-grid">
+                <div class="filter-select-wrapper">
+                    <select class="form-select form-select-sm border-1 rounded-3 p-2"
+                        [(ngModel)]="selectedMarketCommittee" (ngModelChange)="onMarketCommitteeChange()">
+                        <option value="All">All Market Committees</option>
+                        <option *ngFor="let m of marketCommitteeList" [value]="m">{{ m }}</option>
+                    </select>
+                    <button *ngIf="selectedMarketCommittee !== 'All'" type="button" class="clear-filter-btn"
+                        (click)="clearMarketCommittee($event)" aria-label="Clear market committee"
+                        matTooltip="Clear market committee">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -124,7 +147,7 @@
                             <span class="badge badge-status" [ngClass]="{
                                 'status-verified': property.status === 'Verified',
                                 'status-pending': property.status === 'Pending',
-                                'status-rejected': property.status === 'Rejected'
+                                'status-rejected': property.status === 'Objection'
                             }">
                                 {{ property.status }}
                             </span>

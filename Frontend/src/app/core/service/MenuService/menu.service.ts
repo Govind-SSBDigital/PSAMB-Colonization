@@ -46,10 +46,36 @@ export class MenuService {
     this.profileSubject.next(null);
   }
 
+  private normalizeRoute(route: string | undefined | null): string {
+    const value = (route ?? '').trim();
+    if (!value) {
+      return value;
+    }
+
+    const normalized = value.startsWith('/') ? value : `/${value}`;
+    if (normalized.toLowerCase() === '/citizen-services') {
+      return '/dashboard-citizen-services';
+    }
+
+    return normalized;
+  }
+
+  private normalizeMenus(menus: MenuItem[]): MenuItem[] {
+    return menus.map((menu) => ({
+      ...menu,
+      subMenus: (menu.subMenus ?? []).map((subMenu) => ({
+        ...subMenu,
+        route: this.normalizeRoute(subMenu.route),
+      })),
+    }));
+  }
+
   private extractMenus(payload: any): MenuItem[] {
     const data = payload?.data ?? payload;
     const menus = data?.menus ?? payload?.menus ?? [];
-    return Array.isArray(menus) ? menus : [];
+    return Array.isArray(menus)
+      ? this.normalizeMenus(menus)
+      : [];
   }
 
   private extractProfile(payload: any): any {

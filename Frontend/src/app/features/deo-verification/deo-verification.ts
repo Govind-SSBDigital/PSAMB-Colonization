@@ -103,6 +103,8 @@ export class DeoVerification implements OnInit, OnChanges {
   pendingDecision = signal<ClerkDecision | null>(null);
   currentStage = 'Clerk';
   userRole = '';
+  verificationStatus = 'Pending';
+  verificationStatusClass = 'status-pending';
   showValidationHint = false;
   submitting = false;
   readonly isLoading = signal(false);
@@ -947,6 +949,7 @@ export class DeoVerification implements OnInit, OnChanges {
         this.toastr.success(`Application has been successfully ${actionText}!`, 'Success');
 
         this.isAlreadyVerified = true;
+        this.setVerificationStatus(this.activeDecision === 'approve' ? 2 : 7);
         this.remarksControl.disable({ emitEvent: false });
 
         const entry: VerificationHistoryEntry = {
@@ -998,6 +1001,7 @@ export class DeoVerification implements OnInit, OnChanges {
   }
 
   checkVerificationStatus(statusId: number | null | undefined): void {
+    this.setVerificationStatus(statusId);
     const role = this.userRole?.toLowerCase() || 'clerk';
     let canAction = false;
 
@@ -1030,6 +1034,19 @@ export class DeoVerification implements OnInit, OnChanges {
       const existingRemarks = this.originalRegistrationDto?.remarks || this.originalRegistrationDto?.clerkRemarks || '';
       this.remarksControl.setValue(existingRemarks);
       this.remarksControl.disable({ emitEvent: false });
+    }
+  }
+
+  private setVerificationStatus(statusId: number | null | undefined): void {
+    if (statusId === 2 || statusId === 3 || statusId === 4) {
+      this.verificationStatus = 'Verified';
+      this.verificationStatusClass = 'status-verified';
+    } else if (statusId === 7) {
+      this.verificationStatus = 'Objection';
+      this.verificationStatusClass = 'status-objection';
+    } else {
+      this.verificationStatus = 'Pending';
+      this.verificationStatusClass = 'status-pending';
     }
   }
 
@@ -1093,4 +1110,15 @@ export class DeoVerification implements OnInit, OnChanges {
       totalDueAmount: d.totalDueWithInterest || 0
     };
   }
+  handleApprove(): void {
+  this.activeDecision = 'approve';
+  this.submitDecision();
+}
+handleSendBack(): void {
+  if (this.activeDecision !== 'sendback') {
+    this.activeDecision = 'sendback';
+  } else {
+    this.submitDecision();
+  }
+}
 }

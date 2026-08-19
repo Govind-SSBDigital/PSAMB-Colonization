@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,15 +25,17 @@ export class DashboardHome implements OnInit {
 
   availableServices: SubMenuItem[] = [];
 
-  constructor(private menuService: MenuService) {}
+  constructor(private menuService: MenuService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.menuService.fetchMenus(true).subscribe({
       next: (menus) => {
         this.availableServices = this.flattenServices(menus);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.availableServices = [];
+        this.cdr.detectChanges();
       }
     });
 
@@ -45,6 +47,7 @@ export class DashboardHome implements OnInit {
           userName: profile.userName ?? '',
           entityType: profile.entityType ?? (Array.isArray(profile.roles) && profile.roles.length ? profile.roles.join(', ') : (typeof profile.roles === 'string' ? profile.roles : '')),
         };
+        this.cdr.detectChanges();
       }
     });
   }

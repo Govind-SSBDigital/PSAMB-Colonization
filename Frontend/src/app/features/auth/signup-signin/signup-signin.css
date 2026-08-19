@@ -95,7 +95,12 @@
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
     animation-fill-mode: both;
 }
-
+.bg-success,.btn-success {
+    background-color: var(--theme-primary) !important;
+}
+.text-success{
+color: var(--theme-primary) !important;
+}
 .fade-in {
     animation-name: fadeIn;
 }

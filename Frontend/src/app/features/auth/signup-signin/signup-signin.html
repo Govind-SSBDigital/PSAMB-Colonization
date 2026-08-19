@@ -8,7 +8,51 @@
     </div>
 </div>
 
-<!-- <app-navbar></app-navbar> -->
+<!-- RESET PASSWORD MODAL -->
+<div #resetPasswordModal class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true" *ngIf="showResetPassword">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-key"></i>
+                    <h5 class="modal-title">Reset Your Password</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" (click)="closeResetPasswordModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">You are using a system-generated password. Please create a new password to continue.</p>
+                <form (ngSubmit)="onResetPasswordSubmit()">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label text-success">Current Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control custom-input-color" id="currentPassword" [(ngModel)]="resetPasswordData.currentPassword" name="currentPassword" required placeholder="System Generated Password">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label text-success">New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control custom-input-color" id="newPassword" [(ngModel)]="resetPasswordData.newPassword" name="newPassword" required placeholder="Min. 8 characters" minlength="8">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label text-success">Confirm New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control custom-input-color" id="confirmPassword" [(ngModel)]="resetPasswordData.confirmNewPassword" name="confirmNewPassword" required placeholder="Re-enter New Password" minlength="8">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" (click)="closeResetPasswordModal()">Cancel</button>
+                        <button type="submit" class="btn btn-success">Update Password / ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕਰੋ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="portal-wrapper" [class.signin-bg]="authMode === 'signin' && !isLoggedIn">
     <!-- Portal Header banner -->
