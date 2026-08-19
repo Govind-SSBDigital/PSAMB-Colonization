@@ -69,4 +69,7 @@ export class AuthService {
   loginWithOtp(mobileNumber: string, otp: string, isHRMSOrUser: boolean): Observable<any> {
     return this.http.post(`${this.apiUrl}/login-with-otp`, { mobileNumber, otp, isHRMSOrUser });
   }
+  resetPassword(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-first-login-password`, payload);
+  }
 }
