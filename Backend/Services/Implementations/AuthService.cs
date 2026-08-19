@@ -1,4 +1,5 @@
-﻿using Backend.Data;
+﻿using Azure;
+using Backend.Data;
 using Backend.Models.DTOs;
 using Backend.Models.Entities;
 using Backend.Services.Interfaces;
@@ -306,7 +307,6 @@ namespace Backend.Services.Implementations
             var lower = Guid.NewGuid().ToString("N").Substring(0, 4).ToLower();
             var number = new Random().Next(10, 99).ToString();
             return $"Pss@{upper}{lower}{number}";
-            // Example: Ps@A1B2c3d456
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
@@ -369,6 +369,7 @@ namespace Backend.Services.Implementations
 
             _logger.LogInformation("User logged in: {Email}", request.Email);
             return BuildLoginResponse(identityUser, applicant);
+ 
         }
 
         public async Task<UserProfileWithMenuResponse> GetProfileAsync(string userId)
@@ -503,13 +504,15 @@ namespace Backend.Services.Implementations
             return MapToResponse(identityUser, applicant);
         }
 
-        public async Task ChangePasswordAsync(string userId, ChangePasswordRequest request)
+        public async Task ChangePasswordAsync(ChangePasswordRequest request)
         {
             if (request.NewPassword != request.ConfirmNewPassword)
                 throw new ArgumentException("New passwords do not match");
+            var user = await _userManager.FindByEmailAsync(request.Email)
+                ?? throw new KeyNotFoundException("User not found with this email");
 
-            var user = await _userManager.FindByIdAsync(userId)
-                ?? throw new KeyNotFoundException("User not found");
+            if (!user.IsActive)
+                throw new UnauthorizedAccessException("Your account has been deactivated");
 
             var result = await _userManager.ChangePasswordAsync(
                 user, request.CurrentPassword, request.NewPassword);
@@ -519,8 +522,21 @@ namespace Backend.Services.Implementations
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new ArgumentException(errors);
             }
+            user.IsFirstLogin = false;
+            await _userManager.UpdateAsync(user);
 
-            _logger.LogInformation("Password changed: {UserId}", userId);
+            var auth = await _context.ApplicantAuths
+                .FirstOrDefaultAsync(x => x.Username == user.Email);
+
+            if (auth != null)
+            {
+                auth.PasswordHash = user.PasswordHash ?? string.Empty;
+                auth.UpdatedDate = DateTime.UtcNow;
+                _context.ApplicantAuths.Update(auth);
+                await _context.SaveChangesAsync();
+            }
+
+            _logger.LogInformation("Password changed for: {Email}", request.Email);
         }
 
         private LoginResponse BuildLoginResponse(
