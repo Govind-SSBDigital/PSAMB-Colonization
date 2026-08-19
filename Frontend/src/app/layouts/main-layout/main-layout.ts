@@ -73,7 +73,8 @@ export class MainLayout {
       '/user-verification-view',
       '/verification',
       '/registration-status',
-      '/property-balance-calculation'
+      '/property-balance-calculation',
+      '/dashboard-citizen-services',
     ];
     return dashboardRoutes.some(
       (route) =>
