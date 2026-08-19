@@ -12,11 +12,11 @@
         <tr>
           <th class="col-sr">Sr.No.</th>
           <th class="col-service">Services</th>
-          <th class="col-charges">PSAMB Online Charges (in Rs +GST)</th>
-          <th class="col-fees">PSAMB Fees</th>
+          <th class="col-charges">Online Charges (in Rs +GST)</th>
+          <th class="col-fees">Fees</th>
           <th class="col-cd">CD Fees</th>
           <th class="col-status">Status</th>
-          <th class="col-action"></th>
+          <th class="col-action">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -36,12 +36,22 @@
             </span>
           </td>
           <td class="col-action">
-            <button *ngIf="service.status === 'Active'"
-                    type="button"
-                    class="btn cs-apply-btn"
-                    (click)="onApply(service)">
-              Apply Now
-            </button>
+            <ng-container *ngIf="service.payNowLink; else applyNowTpl">
+              <button
+                      type="button"
+                      class="btn cs-pay-now-btn"
+                      (click)="onPayNow(service)">
+                Pay Now
+              </button>
+            </ng-container>
+            <ng-template #applyNowTpl>
+              <button
+                      type="button"
+                      class="btn cs-apply-btn"
+                      (click)="onApply(service)">
+                Apply Now
+              </button>
+            </ng-template>
           </td>
         </tr>
       </tbody>

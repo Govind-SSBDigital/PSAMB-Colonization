@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 export class Navbar {
   isMobileMenuOpen = false;
  isDownloadsOpen = false;
+  isAboutUsOpen = false;
 private readonly desktopBreakpoint = 1024;
   @Output() messageSelected = new EventEmitter<string>();
 
@@ -27,9 +28,16 @@ toggleDownloads(event: Event): void {
   event.stopPropagation(); // prevent the outside-click listener firing on this same click
   this.isDownloadsOpen = !this.isDownloadsOpen;
 }
+toggleAboutUs(event: Event): void {
+  event.preventDefault();
+  event.stopPropagation(); // prevent the outside-click listener firing on this same click
+  this.isAboutUsOpen = !this.isAboutUsOpen;
+}
+
 closeMobileMenu(): void {
   this.isMobileMenuOpen = false;
   this.isDownloadsOpen = false;
+  this.isAboutUsOpen = false;
   this.setBodyScroll();
 }
 private setBodyScroll(): void {
@@ -41,16 +49,22 @@ onDocumentClick(event: MouseEvent): void {
     return;
   }
 
-  if (!this.isDownloadsOpen) {
+  if (!this.isDownloadsOpen && !this.isAboutUsOpen) {
     return;
   }
 
-  const clickedInsideDropdown = this.elRef.nativeElement
-    .querySelector('.nav-item.dropdown')
-    ?.contains(event.target as Node);
+  const dropdowns = this.elRef.nativeElement.querySelectorAll('.nav-item.dropdown');
+  let clickedInsideAnyDropdown = false;
 
-  if (!clickedInsideDropdown) {
+  dropdowns.forEach((dropdown: HTMLElement) => {
+    if (dropdown.contains(event.target as Node)) {
+      clickedInsideAnyDropdown = true;
+    }
+  });
+
+  if (!clickedInsideAnyDropdown) {
     this.isDownloadsOpen = false;
+    this.isAboutUsOpen = false;
   }
 }
 @HostListener('window:resize')

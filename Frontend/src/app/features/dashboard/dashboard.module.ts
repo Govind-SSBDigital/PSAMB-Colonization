@@ -54,16 +54,22 @@ import { Footer } from './footer/footer';
                 .then((m) => m.VerificationViewModule),
           },
           {
-            path: 'deo-verification',
+            path: 'verification',
             loadComponent: () =>
               import('../deo-verification/deo-verification')
                 .then((m) => m.DeoVerification),
           },
           {
-            path: 'deo-registration-status',
+            path: 'registration-status',
             loadComponent: () =>
               import('../deo-registration-status/deo-registration-status')
                 .then((m) => m.DeoRegistrationStatus),
+          },
+          {
+            path: 'property-balance-calculation',
+            loadComponent: () =>
+              import('../property-balance-calculate/property-balance-calculate')
+                .then((m) => m.PropertyBalanceCalculate),
           }
         ]
       }

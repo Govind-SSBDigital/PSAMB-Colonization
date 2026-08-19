@@ -368,6 +368,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 4px solid var(--punjab-green);
     border-radius: var(--border-radius-md);
     box-shadow: 0 20px 50px rgba(2, 44, 34, 0.3);
     max-width: 530px;
@@ -377,9 +378,11 @@
     padding: 24px 32px;
     /* Reduced vertical & horizontal padding */
     position: relative;
+    box-sizing: border-box;
+    width: 95%;
 }
 
-.auth-card-wrapper-screenshot::after {
+/* .auth-card-wrapper-screenshot::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -389,7 +392,7 @@
     background: var(--primary-color);
     border-bottom-left-radius: var(--border-radius-md);
     border-bottom-right-radius: var(--border-radius-md);
-}
+} */
 
 .auth-card-header-screenshot {
     margin-bottom: 16px;
@@ -1960,6 +1963,52 @@
 
     .wizard-footer-actions button {
         width: 100%;
+    }
+
+    .portal-wrapper {
+        padding: 10px 10px;
+    }
+
+    .auth-card-wrapper-screenshot {
+        padding: 16px 12px;
+    }
+
+    .login-actions-row-parallel {
+        flex-direction: column;
+    }
+
+    .login-actions-row-parallel .btn-login-screenshot,
+    .login-actions-row-parallel .btn-login-mobile-toggle,
+    .login-actions-row-parallel .login-role-btn {
+        width: 100%;
+        flex: none;
+    }
+
+    .captcha-row-screenshot {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .captcha-image-wrapper {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+
+    .btn-refresh-captcha {
+        width: auto;
+    }
+
+    .form-input-box-screenshot {
+        height: 48px;
+    }
+
+    .input-prefix-icon-screenshot {
+        width: 38px;
+        font-size: 1rem;
+    }
+
+    .auth-card-header-screenshot h2 {
+        font-size: 1.5rem;
     }
 }
 

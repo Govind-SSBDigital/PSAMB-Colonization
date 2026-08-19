@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
 interface RegistrationRecord {
   allotteeCode: string;
   allotteeName: string;
@@ -11,7 +13,7 @@ interface RegistrationRecord {
 @Component({
   selector: 'app-deo-registration-status',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatPaginatorModule],
   templateUrl: './deo-registration-status.html',
   styleUrl: './deo-registration-status.scss',
 })
@@ -19,7 +21,9 @@ export class DeoRegistrationStatus implements OnInit {
 
   searchText: string = '';
   selectedFilter: string = '';
-
+  pageIndex = 0;
+  pageSize = 10;
+  pagedPropertyList: RegistrationRecord[] = [];
   registrationList: RegistrationRecord[] = [
     {
       allotteeCode: 'ALL-2026-001',
@@ -103,5 +107,14 @@ export class DeoRegistrationStatus implements OnInit {
         propertyCode: item.allotteeCode
       }
     });
+  }
+   onPageChange(event: PageEvent): void {
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+    this.updatePagedList();
+  }
+   updatePagedList(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    this.pagedPropertyList = this.filteredList.slice(startIndex, startIndex + this.pageSize);
   }
 }

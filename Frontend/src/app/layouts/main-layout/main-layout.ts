@@ -71,8 +71,9 @@ export class MainLayout {
       '/property-verification',
       '/profile',
       '/user-verification-view',
-      '/deo-verification',
-      '/deo-registration-status'
+      '/verification',
+      '/registration-status',
+      '/property-balance-calculation'
     ];
     return dashboardRoutes.some(
       (route) =>

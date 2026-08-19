@@ -35,20 +35,24 @@
                 <div class="ticker-scroll-content">
                     <div class="announcement-item" *ngFor="let item of announcements"
                         [class.new-highlight]="item.isNew">
+                        <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
                         <div class="announcement-meta">
-                            <span class="ann-date">{{ item.date }}</span>
+                            <!-- <span class="ann-date">{{ item.date }}</span> -->
+                            <p class="ann-title">{{ item.title }}</p>
                             <span class="new-tag-badge" *ngIf="item.isNew">NEW</span>
                         </div>
-                        <p class="ann-title">{{ item.title }}</p>
+                        </a>
                     </div>
                     <!-- Duplicate items for seamless continuous scrolling loop -->
                     <div class="announcement-item" *ngFor="let item of announcements"
                         [class.new-highlight]="item.isNew">
+                        <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
                         <div class="announcement-meta">
-                            <span class="ann-date">{{ item.date }}</span>
+                            <!-- <span class="ann-date">{{ item.date }}</span> -->
+                            <p class="ann-title">{{ item.title }}</p>
                             <span class="new-tag-badge" *ngIf="item.isNew">NEW</span>
                         </div>
-                        <p class="ann-title">{{ item.title }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -60,14 +64,14 @@
         <div class="metric-card-flat">
             <div class="icon-wrap bg-blue-glow"><mat-icon>business</mat-icon></div>
             <div class="metric-data">
-                <h4>94+</h4>
+                <h4>91+</h4>
                 <p>No. of Mandis</p>
             </div>
         </div>
         <div class="metric-card-flat">
             <div class="icon-wrap bg-teal-glow"><mat-icon>gavel</mat-icon></div>
             <div class="metric-data">
-                <h4>26621+</h4>
+                <h4>21,557+</h4>
                 <p>No. of Sold Properties</p>
             </div>
         </div>
@@ -126,25 +130,24 @@
                 </div>
             </div>
 
-            <div class="intro-text-content">
-                <span class="section-subtitle-badge">Introduction / ਭੂਮਿਕਾ</span>
-                <h2>Director Colonization Punjab</h2>
-                <p class="lead-text">
-                    Establishing, colonizing, and transforming rural & semi-urban commercial markets into advanced trade
-                    hubs.
-                </p>
-                <p class="lead-text">
-                    The Colonization Department functions as the core property management and development organ of the
-                    (Director Colonization Punjab). Initiated under the Colonization of
-                    Government Lands Act, the department is responsible for the systematic acquisition, planning,
-                    allotment, and administration of commercial mandi booths, residential plots, and shop sites.
-                </p>
-                <p class="lead-text">
-                    Through transparency and digital-first services like online property ledger cards, digital mutation
-                    tracking, and e-Auctions, we are enabling direct, hassle-free interfaces for all citizens, traders,
-                    and commission agents in the state of Punjab.
-                </p>
-            </div>
+        <div class="intro-text-content">
+        <span class="section-subtitle-badge">Introduction / ਭੂਮਿਕਾ</span>
+        <h2>Director Colonization Punjab</h2>
+        <p class="lead-text">
+        The Colonization Department has played a vital role in establishing New Grain Markets and Townships
+        across Punjab, providing planned commercial spaces and modern market facilities for farmers, traders,
+        shopkeepers, and the general public.
+        </p>
+        <p class="lead-text">
+        The Department has acquired land at 156 locations and has sold 21,557 plots in 91 mandis up to
+        31.12.2025, generating revenue of ₹650.30 crore. A total of 4,847 plots are yet to be auctioned.
+        </p>
+        <p class="lead-text">
+        The Department derives its revenue through the open auction of plots and recovery of installments
+        against plots already sold in various New Mandi Townships. An income target of ₹3.00 crore has been
+        fixed for the year 2025-26.
+        </p>
+        </div>
         </div>
     </section>
 

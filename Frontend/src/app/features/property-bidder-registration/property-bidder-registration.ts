@@ -100,6 +100,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   mode: 'view' | 'edit' | 'create' = 'create';
   readonlyMode = false;
+  showPreview = false;
+  previewConfirmed = false;
   private destroy$ = new Subject<void>();
   propertyData: any;
   propTypes: any;
@@ -373,6 +375,28 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (value === undefined || value === null || value === '') return false;
     const id = item?.mandiId ?? item?.id ?? item;
     return String(id) === String(value);
+  }
+
+  getSelectedMarketCommitteeName(): string {
+    const value = this.registerationForm?.get('branchId')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.marketCommittees?.find(m => {
+      const id = m?.marketCommitteeId ?? m?.id ?? m?.branchId;
+      return String(id) === String(value);
+    });
+    if (!selected) return '';
+    return selected.marketCommitteeName ?? selected.name ?? selected.branchName ?? '';
+  }
+
+  getSelectedPropertyCategoryName(): string {
+    const value = this.registerationForm?.get('propertyCategoryId')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.propertyCategories?.find(c => {
+      const id = c?.propertyCategoryId ?? c?.id ?? c;
+      return String(id) === String(value);
+    });
+    if (!selected) return '';
+    return selected.categoryName ?? selected.name ?? selected.propertyCategoryName ?? selected;
   }
 
   @HostListener('document:click', ['$event'])
@@ -1463,6 +1487,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         } else {
           this.toastr.error(msg || 'Failed to save property registration.', 'Error');
         }
+        this.closePreviewModal();
       },
       error: (err: any) => {
         // console.error('Submit error:', err);
@@ -1504,6 +1529,20 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.bidderNamesFormArray.clear();
     this.calculatedSchedulesMatrix = [];
     this.propertyData = null;
+  }
+
+  letshowPreview(): void {
+    this.showPreview = true;
+    this.previewConfirmed = false;
+  }
+
+  closePreviewModal(): void {
+    this.showPreview = false;
+    this.previewConfirmed = false;
+  }
+
+  onPreviewConfirmChange(event: Event): void {
+    this.previewConfirmed = (event.target as HTMLInputElement).checked;
   }
 
   private updateAuctionValidators(isAuctioned: boolean): void {

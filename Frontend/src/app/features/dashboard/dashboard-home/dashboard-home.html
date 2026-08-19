@@ -1,138 +1,108 @@
- <div class="dashboard-wrapper-material animated fade-in" *ngIf="isLoggedIn">
+<div class="container-fluid p-3" *ngIf="isLoggedIn">
 
             <!-- Dashboard Header -->
-            <mat-card class="dashboard-header-card">
-                <div class="dashboard-user-header-material">
-                    <div class="user-profile-meta">
+            <mat-card class="rounded-4 shadow-sm border mb-3">
+                <div class="d-flex align-items-center justify-content-between p-3">
+                    <div class="d-flex align-items-center gap-3">
                         <div class="avatar-circle-material">
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Individual'">person</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Company'">business</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'HUF'">groups</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Partnership Firm'">handshake</mat-icon>
-                            <mat-icon *ngIf="loggedInUser.entityType === 'Sole Proprietorship'">work</mat-icon>
-                            <mat-icon
-                                *ngIf="loggedInUser.entityType === 'Other' || !loggedInUser.entityType">more_horiz</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'DEO'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Clerk'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'User'">person</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Senior Assistant'">assignment_ind</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Supritendent'">assignment_ind</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Deputy Director' || !loggedInUser.entityType">assignment_ind</mat-icon>
+                            <mat-icon *ngIf="loggedInUser.entityType === 'Director' || !loggedInUser.entityType">assignment_ind</mat-icon>
                         </div>
-                        <div class="user-text-info">
-                            <h2>Welcome, {{ loggedInUser.fullName }}</h2>
-                            <p>Registered as: <strong>{{ loggedInUser.entityType }}</strong> | User ID: <strong>{{
-                                    loggedInUser.userId
-                                    }}</strong></p>
+                        <div>
+                            <h2 class="h4 fw-bold text-dark mb-1">Welcome, {{ loggedInUser.fullName }}</h2>
+                            <p class="text-muted small mb-0">Registered as: <strong>{{ loggedInUser.entityType }}</strong> | User Name: <strong>{{ loggedInUser.userName }}</strong></p>
                         </div>
                     </div>
                 </div>
             </mat-card>
 
             <!-- Stats Quick Overview Cards -->
-            <div class="stats-overview-grid-material">
-
-                <mat-card class="stat-card bg-light-blue-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-blue"><mat-icon>gavel</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>2</h3>
-                            <p>Active e-Auctions</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-                <mat-card class="stat-card bg-light-teal-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-teal"><mat-icon>assignment</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>0</h3>
-                            <p>Digital Properties</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-                <mat-card class="stat-card bg-light-orange-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-orange"><mat-icon>pending_actions</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>0</h3>
-                            <p>Pending Applications</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
-                <mat-card class="stat-card bg-light-green-card">
-                    <mat-card-content class="stat-card-content">
-                        <div class="stat-icon-wrapper bg-green"><mat-icon>notifications_active</mat-icon></div>
-                        <div class="stat-details">
-                            <h3>5</h3>
-                            <p>System Notifications</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-
+            <div class="row g-3 mb-3 mt-2">
+                <div class="col-12 col-md-6 col-xl-3">
+                    <mat-card class="rounded-4 border shadow-sm h-100 stat-card">
+                        <mat-card-content class="d-flex align-items-center gap-3 p-3">
+                            <div class="stat-icon-wrapper text-green"><mat-icon>gavel</mat-icon></div>
+                            <div class="stat-details">
+                                <h3 class="h5 fw-bold text-dark mb-0">2</h3>
+                                <p class="text-muted small fw-semibold mb-0 text-uppercase text-green">Active e-Auctions</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <mat-card class="rounded-4 border shadow-sm h-100 stat-card">
+                        <mat-card-content class="d-flex align-items-center gap-3 p-3">
+                            <div class="stat-icon-wrapper text-green"><mat-icon>assignment</mat-icon></div>
+                            <div class="stat-details">
+                                <h3 class="h5 fw-bold text-dark mb-0">0</h3>
+                                <p class="text-muted small fw-semibold mb-0 text-uppercase text-green">Digital Properties</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <mat-card class="rounded-4 border shadow-sm h-100 stat-card">
+                        <mat-card-content class="d-flex align-items-center gap-3 p-3">
+                            <div class="stat-icon-wrapper text-green"><mat-icon>pending_actions</mat-icon></div>
+                            <div class="stat-details">
+                                <h3 class="h5 fw-bold text-dark mb-0">0</h3>
+                                <p class="text-muted small fw-semibold mb-0 text-uppercase text-green">Pending Applications</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <mat-card class="rounded-4 border shadow-sm h-100 stat-card">
+                        <mat-card-content class="d-flex align-items-center gap-3 p-3">
+                            <div class="stat-icon-wrapper text-green"><mat-icon>notifications_active</mat-icon></div>
+                            <div class="stat-details">
+                                <h3 class="h5 fw-bold text-dark mb-0">5</h3>
+                                <p class="text-muted small fw-semibold mb-0 text-uppercase text-green">System Notifications</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
             </div>
 
             <!-- Dashboard Services Grid -->
-            <div class="dashboard-actions-title">
-                <h2>Available Colonization Services</h2>
-            </div>
+            <h2 class="h5 fw-bold text-dark mb-3 mt-2">Available Colonization Services</h2>
 
-            <div class="actions-grid-container-material">
-
-                <!-- Card 1: Access Dashboard -->
-                <mat-card class="action-card-material">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-blue"><mat-icon>trending_up</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Access Dashboard</h3>
-                            <!-- <p>Review comprehensive stats of your properties, bid results, lease status, and pending payments.</p> -->
-                        </div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
+            <div class="row g-3 mt-2">
+                <ng-container *ngIf="availableServices.length; else noServices">
+                    <div *ngFor="let service of availableServices" class="col-12 col-md-8 col-xl-6">
+                        <mat-card class="rounded-4 shadow-sm h-100 action-card-material border border-left-2">
+                            <a [routerLink]="service.route" class="d-flex align-items-stretch text-decoration-none h-100">
+                                <div class="d-flex align-items-center gap-3 p-4 flex-grow-1">
+                                    <div class="card-icon text-green flex-shrink-0"><mat-icon>{{ service.icon || 'chevron_right' }}</mat-icon></div>
+                                    <div class="card-desc flex-grow-1 pe-3">
+                                        <h3 class="h6 fw-semibold text-dark mb-0 text-green">{{ service.subMenuName }}</h3>
+                                    </div>
+                                    <div class="card-action-indicator ms-auto d-flex align-items-center text-muted">
+                                        <mat-icon>chevron_right</mat-icon>
+                                    </div>
+                                </div>
+                            </a>
+                        </mat-card>
                     </div>
-                </mat-card>
+                </ng-container>
 
-                <!-- Card 2: Participate in e-Auctions -->
-                <mat-card class="action-card-material highlighted">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-purple"><mat-icon>gavel</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Participate in e-Auctions</h3>
-                            <!-- <p>Browse auction calendars, purchase terms, bid security deposits, and place bids in ongoing e-auctions. -->
-                            <!-- </p> -->
-                        </div>
-                        <div class="card-badge">LIVE</div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
+                <ng-template #noServices>
+                    <div class="col-12">
+                        <mat-card class="rounded-4 border shadow-sm">
+                            <div class="d-flex align-items-center gap-3 p-4">
+                                <div class="card-icon text-green flex-shrink-0"><mat-icon>info</mat-icon></div>
+                                <div class="card-desc">
+                                    <h3 class="h6 fw-semibold text-dark mb-1">No available services yet</h3>
+                                    <p class="text-muted small mb-0">Your permissions are still loading or there are no menu items assigned.</p>
+                                </div>
+                            </div>
+                        </mat-card>
                     </div>
-                </mat-card>
-
-                <!-- Card 3: Register Existing Properties -->
-                <mat-card class="action-card-material">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-teal"><mat-icon>border_color</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Register Existing Properties</h3>
-                            <p>Digitize your records by submitting existing colonization property deeds for verification and access.
-                        </div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card>
-
-                <!-- Card 4: Apply for Online Services -->
-                <mat-card class="action-card-material">
-                    <div class="action-card-flex">
-                        <div class="card-icon bg-light-orange"><mat-icon>devices</mat-icon></div>
-                        <div class="card-desc">
-                            <h3>Apply for Online Services</h3>
-                            <!-- <p>Submit applications for Mutation, Lease Extension, Title Transfer, No Objection Certificate (NOC), and
-                more.</p> -->
-                        </div>
-                        <div class="card-action-indicator">
-                            <mat-icon>chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card>
-
+                </ng-template>
             </div>
         </div>
