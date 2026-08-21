@@ -495,12 +495,19 @@ namespace Backend.Services.Implementations
 
                    
 
-                    response.BidderTypeId =
-                      row["BiddingType"] != DBNull.Value
-                          ? Convert.ToInt32(row["BiddingType"])
-                          : null;
-                    response.BidderName =  row["Name"] != DBNull.Value
-                            ? row["Name"]?.ToString()
+                    //response.BidderTypeId =
+                    //  row["BiddingType"] != DBNull.Value
+                    //      ? Convert.ToInt32(row["BiddingType"])
+                    //      : null;
+                    
+                }
+                // Allottee Details 
+                if (dataSet.Tables.Count > 1 &&
+                    dataSet.Tables[1].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[1].Rows[0];
+                    response.BidderName = row["AllotteeName"] != DBNull.Value
+                            ? row["AllotteeName"]?.ToString()
                            : null;
 
                     response.Email =
@@ -508,20 +515,20 @@ namespace Backend.Services.Implementations
                             ? row["EmailId"]?.ToString()
                             : null;
 
-                   
+
 
                     // =====================================
                     // Personal Details
                     // =====================================
 
-                    response.Relation =
-                        row["Relation"] != DBNull.Value
-                            ? row["Relation"]?.ToString()
-                            : null;
+                    //response.Relation =
+                    //    row["Relation"] != DBNull.Value
+                    //        ? row["Relation"]?.ToString()
+                    //        : null;
 
                     response.FatherOrHusbandName =
-                        row["FatherName"] != DBNull.Value
-                            ? row["FatherName"]?.ToString()
+                        row["AllotteeFatherName"] != DBNull.Value
+                            ? row["AllotteeFatherName"]?.ToString()
                             : null;
 
                     response.PANNo =
@@ -529,10 +536,10 @@ namespace Backend.Services.Implementations
                             ? row["PanNumber"]?.ToString()
                             : null;
 
-                    response.AadhaarNo =
-                        row["DocumentNumber"] != DBNull.Value
-                            ? row["DocumentNumber"]?.ToString()
-                            : null;
+                    //response.AadhaarNo =
+                    //    row["DocumentNumber"] != DBNull.Value
+                    //        ? row["DocumentNumber"]?.ToString()
+                    //        : null;
 
                     response.MobileNo =
                         row["MobileNo"] != DBNull.Value
@@ -556,13 +563,10 @@ namespace Backend.Services.Implementations
                             : null;
 
                     response.Address =
-                        row["Address"] != DBNull.Value
-                            ? row["Address"]?.ToString()
+                        row["AllotteeAddress"] != DBNull.Value
+                            ? row["AllotteeAddress"]?.ToString()
                             : null;
-
-
                 }
-
                 // =====================================
                 // TABLE 2 - PropertyAuctionDetail
                 // =====================================
