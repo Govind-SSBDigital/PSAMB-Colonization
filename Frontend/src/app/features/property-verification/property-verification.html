@@ -67,21 +67,7 @@
                 </div>
             </div>
 
-            <div class="col-6 col-md-3 col-lg-3">
-                <div class="filter-select-wrapper">
-                    <select class="form-select form-select-sm border-1 rounded-3 p-2" [(ngModel)]="selectedMandi"
-                        (ngModelChange)="applyFilter()">
-                        <option value="All">All Mandis</option>
-                        <option *ngFor="let m of mandiList" [value]="m">{{ m }}</option>
-                    </select>
-                    <button *ngIf="selectedMandi !== 'All'" type="button" class="clear-filter-btn"
-                        (click)="clearMandi($event)" aria-label="Clear mandi" matTooltip="Clear mandi">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-1 col-lg-3 d-grid">
+             <div class="col-12 col-md-1 col-lg-3 d-grid">
                 <div class="filter-select-wrapper">
                     <select class="form-select form-select-sm border-1 rounded-3 p-2"
                         [(ngModel)]="selectedMarketCommittee" (ngModelChange)="onMarketCommitteeChange()">
@@ -91,6 +77,20 @@
                     <button *ngIf="selectedMarketCommittee !== 'All'" type="button" class="clear-filter-btn"
                         (click)="clearMarketCommittee($event)" aria-label="Clear market committee"
                         matTooltip="Clear market committee">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-3">
+                <div class="filter-select-wrapper">
+                    <select class="form-select form-select-sm border-1 rounded-3 p-2" [(ngModel)]="selectedMandi"
+                        (ngModelChange)="applyFilter()">
+                        <option value="All">All Mandis</option>
+                        <option *ngFor="let m of mandiList" [value]="m">{{ m }}</option>
+                    </select>
+                    <button *ngIf="selectedMandi !== 'All'" type="button" class="clear-filter-btn"
+                        (click)="clearMandi($event)" aria-label="Clear mandi" matTooltip="Clear mandi">
                         <mat-icon>close</mat-icon>
                     </button>
                 </div>

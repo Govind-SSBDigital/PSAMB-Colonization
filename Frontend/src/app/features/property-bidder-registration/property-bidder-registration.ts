@@ -216,6 +216,21 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   isStateDropdownOpen = false;
   isBidderDistrictDropdownOpen = false;
   isCityDropdownOpen = false;
+  isBranchDropdownOpen = false;
+  isPropertyCategoryDropdownOpen = false;
+  isBidderTypeDropdownOpen = false;
+
+  districtSearchText = '';
+  mandiSearchText = '';
+  plotTypeSearchText = '';
+  planSearchText = '';
+  propTypeSearchText = '';
+  stateSearchText = '';
+  bidderDistrictSearchText = '';
+  citySearchText = '';
+  branchSearchText = '';
+  propertyCategorySearchText = '';
+  bidderTypeSearchText = '';
 
   togglePlanDropdown(event: Event) {
     event.stopPropagation();
@@ -230,6 +245,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('planId')?.setValue(planVal);
     this.registerationForm.get('planId')?.markAsTouched();
     this.isPlanDropdownOpen = false;
+    this.planSearchText = '';
+  }
+
+  onDropdownInput(controlName: string, searchProperty: string, event: Event, openProperty: string): void {
+    const value = (event.target as HTMLInputElement).value;
+    (this as any)[searchProperty] = value;
+    (this as any)[openProperty] = true;
+    this.registerationForm.get(controlName)?.setValue(value, { emitEvent: false });
   }
 
   getSelectedPlanName(): string {
@@ -263,6 +286,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('districtId')?.setValue(districtId);
     this.registerationForm.get('districtId')?.markAsTouched();
     this.isDistrictDropdownOpen = false;
+    this.districtSearchText = '';
   }
 
   getSelectedDistrictName(): string {
@@ -291,6 +315,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('plotTypeId')?.setValue(val);
     this.registerationForm.get('plotTypeId')?.markAsTouched();
     this.isPlotTypeDropdownOpen = false;
+    this.plotTypeSearchText = '';
   }
 
   getSelectedPlotTypeName(): string {
@@ -324,6 +349,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('auctionPropertyType')?.setValue(val);
     this.registerationForm.get('auctionPropertyType')?.markAsTouched();
     this.isPropTypeDropdownOpen = false;
+    this.propTypeSearchText = '';
   }
 
   getSelectedPropTypeName(): string {
@@ -357,6 +383,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('mandiId')?.setValue(mandiId);
     this.registerationForm.get('mandiId')?.markAsTouched();
     this.isMandiDropdownOpen = false;
+    this.mandiSearchText = '';
   }
 
   getSelectedMandiName(): string {
@@ -401,6 +428,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (target.closest('.custom-select-wrapper')) {
+      return;
+    }
+
     this.isPlanDropdownOpen = false;
     this.isDistrictDropdownOpen = false;
     this.isPlotTypeDropdownOpen = false;
@@ -409,6 +441,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.isStateDropdownOpen = false;
     this.isBidderDistrictDropdownOpen = false;
     this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
   }
 
   ngOnInit(): void {
@@ -490,7 +525,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.commonService.getMarketCommittees(districtId).subscribe({
       next: (res: any) => {
         // console.log('API Market Committees:', res);
-        this.marketCommittees = res.data || [];
+        this.marketCommittees = res.data || res || [];
         this.isLoadingCommittees = false;
         this.registerationForm.get('branchId')?.enable({ emitEvent: false });
         if (callback) callback();
@@ -509,7 +544,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.commonService.GetMandisByMarketCommiteeByDistrictAsync(branchId).subscribe({
       next: (res: any) => {
         // console.log('API Mandis:', res);
-        this.mandis = res.data || [];
+        this.mandis = res.data || res || [];
         this.isLoadingMandis = false;
         this.registerationForm.get('mandiId')?.enable({ emitEvent: false });
         if (callback) callback();
@@ -526,7 +561,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.commonService.getPropertyCategories().subscribe({
       next: (res: any) => {
         // console.log('API Property Categories:', res);
-        this.propertyCategories = res.data || res || [];
+        this.propertyCategories = Array.isArray(res.data || res) ? (res.data || res) : [];
       },
       error: (err: any) => {
         console.error('Error fetching property categories:', err);
@@ -537,7 +572,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadBidderTypes() {
     this.commonService.getBidderTypes().subscribe({
       next: (res: any) => {
-        this.bidderTypes = res.data || res || [];
+        this.bidderTypes = Array.isArray(res.data || res) ? (res.data || res) : [];
       },
       error: (err: any) => {
         console.error('Error fetching bidder types:', err);
@@ -548,7 +583,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.commonService.getPlans().subscribe({
       next: (res: any) => {
         // console.log('API Plans:', res);
-        this.plans = res.data || res || [];
+        this.plans = Array.isArray(res.data || res) ? (res.data || res) : [];
       },
       error: (err: any) => {
         console.error('Error fetching plans:', err);
@@ -559,7 +594,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.commonService.getPlotTypes().subscribe({
       next: (res: any) => {
         // console.log('API Plot Types:', res);
-        this.plotTypes = res.data || res || [];
+        this.plotTypes = Array.isArray(res.data || res) ? (res.data || res) : [];
       },
       error: (err: any) => {
         console.error('Error fetching plot types:', err);
@@ -570,7 +605,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.commonService.getPropertyTypes().subscribe({
       next: (res: any) => {
         // console.log('API prop Types:', res);
-        this.auctionPropertyTypes = res.data || res || [];
+        this.auctionPropertyTypes = Array.isArray(res.data || res) ? (res.data || res) : [];
       },
       error: (err: any) => {
         console.error('Error fetching property types:', err);
@@ -602,9 +637,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         // console.log('API1:', res);
 
         if (isBidder) {
-          this.bidderDistricts = res.data || [];
+          this.bidderDistricts = res.data || res || [];
         } else {
-          this.districts = res.data || [];
+          this.districts = res.data || res || [];
         }
         if (callback) callback();
       },
@@ -617,7 +652,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadStates() {
     this.commonService.getAllStates().subscribe({
       next: (res: any) => {
-        this.states = res.data || [];
+        this.states = res.data || res || [];
         // console.log('s', this.states);
 
       },
@@ -630,7 +665,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadCities(districtId: any, callback?: () => void) {
     this.commonService.GetAllCityByDistrictID(districtId).subscribe({
       next: (res: any) => {
-        this.cities = res.data || [];
+        this.cities = res.data || res || [];
         if (callback) callback();
       },
       error: (err: any) => {
@@ -655,6 +690,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('ownerStateID')?.setValue(stateId);
     this.registerationForm.get('ownerStateID')?.markAsTouched();
     this.isStateDropdownOpen = false;
+    this.stateSearchText = '';
   }
 
   getSelectedStateName(): string {
@@ -686,6 +722,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('ownerDistrtictID')?.setValue(districtId);
     this.registerationForm.get('ownerDistrtictID')?.markAsTouched();
     this.isBidderDistrictDropdownOpen = false;
+    this.bidderDistrictSearchText = '';
   }
 
   getSelectedBidderDistrictName(): string {
@@ -717,6 +754,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('ownerCityID')?.setValue(cityId);
     this.registerationForm.get('ownerCityID')?.markAsTouched();
     this.isCityDropdownOpen = false;
+    this.citySearchText = '';
   }
 
   getSelectedCityName(): string {
@@ -731,6 +769,182 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (value === undefined || value === null || value === '') return false;
     return String(item?.cityId) === String(value);
   }
+
+  toggleBranchDropdown(event: Event) {
+    event.stopPropagation();
+    this.isBranchDropdownOpen = !this.isBranchDropdownOpen;
+    this.isDistrictDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isPlanDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
+  }
+
+  selectBranch(branchId: any) {
+    this.registerationForm.get('branchId')?.setValue(branchId);
+    this.registerationForm.get('branchId')?.markAsTouched();
+    this.isBranchDropdownOpen = false;
+    this.branchSearchText = '';
+  }
+
+  getSelectedBranchName(): string {
+    const value = this.registerationForm?.get('branchId')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.marketCommittees?.find(m => {
+      const id = m?.marketCommitteeId ?? m?.id ?? m?.branchId;
+      return String(id) === String(value);
+    });
+    if (!selected) return '';
+    return selected.marketCommitteeName ?? selected.name ?? selected.branchName ?? '';
+  }
+
+  isBranchSelected(item: any): boolean {
+    const value = this.registerationForm?.get('branchId')?.value;
+    if (value === undefined || value === null || value === '') return false;
+    const id = item?.marketCommitteeId ?? item?.id ?? item?.branchId;
+    return String(id) === String(value);
+  }
+
+  togglePropertyCategoryDropdown(event: Event) {
+    event.stopPropagation();
+    this.isPropertyCategoryDropdownOpen = !this.isPropertyCategoryDropdownOpen;
+    this.isDistrictDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isPlanDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
+  }
+
+  selectPropertyCategory(categoryId: any) {
+    this.registerationForm.get('propertyCategoryId')?.setValue(categoryId);
+    this.registerationForm.get('propertyCategoryId')?.markAsTouched();
+    this.isPropertyCategoryDropdownOpen = false;
+    this.propertyCategorySearchText = '';
+  }
+
+  isPropertyCategorySelected(item: any): boolean {
+    const value = this.registerationForm?.get('propertyCategoryId')?.value;
+    if (value === undefined || value === null || value === '') return false;
+    const id = item?.propertyCategoryId ?? item?.id ?? item;
+    return String(id) === String(value);
+  }
+
+  toggleBidderTypeDropdown(event: Event) {
+    event.stopPropagation();
+    this.isBidderTypeDropdownOpen = !this.isBidderTypeDropdownOpen;
+    this.isDistrictDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isPlanDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+  }
+
+  selectBidderType(typeId: any) {
+    this.registerationForm.get('bidderTypeId')?.setValue(typeId);
+    this.registerationForm.get('bidderTypeId')?.markAsTouched();
+    this.isBidderTypeDropdownOpen = false;
+    this.bidderTypeSearchText = '';
+  }
+
+  getSelectedBidderTypeName(): string {
+    const value = this.registerationForm?.get('bidderTypeId')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.bidderTypes?.find(t => {
+      const id = t?.bidderTypeId ?? t?.id ?? t;
+      return String(id) === String(value);
+    });
+    if (!selected) return '';
+    return selected.bidderTypeName ?? selected.name ?? selected;
+  }
+
+  isBidderTypeSelected(item: any): boolean {
+    const value = this.registerationForm?.get('bidderTypeId')?.value;
+    if (value === undefined || value === null || value === '') return false;
+    const id = item?.bidderTypeId ?? item?.id ?? item;
+    return String(id) === String(value);
+  }
+
+  onDistrictBlur() {
+    setTimeout(() => {
+      this.isDistrictDropdownOpen = false;
+    }, 150);
+  }
+
+  onBranchBlur() {
+    setTimeout(() => {
+      this.isBranchDropdownOpen = false;
+    }, 150);
+  }
+
+  onMandiBlur() {
+    setTimeout(() => {
+      this.isMandiDropdownOpen = false;
+    }, 150);
+  }
+
+  onPlotTypeBlur() {
+    setTimeout(() => {
+      this.isPlotTypeDropdownOpen = false;
+    }, 150);
+  }
+
+  onPlanBlur() {
+    setTimeout(() => {
+      this.isPlanDropdownOpen = false;
+    }, 150);
+  }
+
+  onPropertyCategoryBlur() {
+    setTimeout(() => {
+      this.isPropertyCategoryDropdownOpen = false;
+    }, 150);
+  }
+
+  onBidderTypeBlur() {
+    setTimeout(() => {
+      this.isBidderTypeDropdownOpen = false;
+    }, 150);
+  }
+
+  onStateBlur() {
+    setTimeout(() => {
+      this.isStateDropdownOpen = false;
+    }, 150);
+  }
+
+  onBidderDistrictBlur() {
+    setTimeout(() => {
+      this.isBidderDistrictDropdownOpen = false;
+    }, 150);
+  }
+
+  onCityBlur() {
+    setTimeout(() => {
+      this.isCityDropdownOpen = false;
+    }, 150);
+  }
+
+  onPropTypeBlur() {
+    setTimeout(() => {
+      this.isPropTypeDropdownOpen = false;
+    }, 150);
+  }
+
   mapBidderType(id: number) {
     return id === 1 ? 'Individual' : 'Company';
   }
@@ -794,13 +1008,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
               const branchValue = String(d.branchId).trim();
 
               const match = this.marketCommittees?.find((p: any) =>
+                String(p.marketCommitteeId ?? '').trim() === branchValue ||
                 String(p.branchId ?? '').trim() === branchValue ||
                 String(p.id ?? '').trim() === branchValue ||
                 String(p.marketCommitteeName ?? '').trim().toLowerCase() === branchValue.toLowerCase()
               );
 
               if (match) {
-                branchId = Number(match.branchId ?? match.id);
+                branchId = Number(match.marketCommitteeId ?? match.branchId ?? match.id);
                 // console.log('Branch matched:', match);
               } else {
                 // console.log('Branch not matched:', d.branchId);
@@ -832,9 +1047,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
               const propertyCategoryIdValue = String(d.propertyCategoryId).trim();
 
               const match = this.propertyCategories?.find((p: any) =>
-                String(p.mandiId ?? '').trim() === propertyCategoryIdValue ||
+                String(p.propertyCategoryId ?? '').trim() === propertyCategoryIdValue ||
                 String(p.id ?? '').trim() === propertyCategoryIdValue ||
-                String(p.mandiName ?? '').trim().toLowerCase() === propertyCategoryIdValue.toLowerCase()
+                String(p.categoryName ?? p.propertyCategoryName ?? '').trim().toLowerCase() === propertyCategoryIdValue.toLowerCase()
               );
 
               if (match) {
@@ -1246,6 +1461,72 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   //   }
   // }
 
+  get filteredDistricts(): any[] {
+    const term = this.districtSearchText?.toLowerCase().trim();
+    if (!term) return this.districts;
+    return this.districts.filter(d => (d.districtName || '').toLowerCase().includes(term));
+  }
+
+  get filteredMandis(): any[] {
+    const term = this.mandiSearchText?.toLowerCase().trim();
+    if (!term) return this.mandis;
+    return this.mandis.filter(m => (m.mandiName || m.name || '').toLowerCase().includes(term));
+  }
+
+  get filteredPlotTypes(): any[] {
+    const term = this.plotTypeSearchText?.toLowerCase().trim();
+    if (!term) return this.plotTypes;
+    return this.plotTypes.filter(t => (t.plotType || t.plotTypeName || t.name || '').toLowerCase().includes(term));
+  }
+
+  get filteredPlans(): any[] {
+    const term = this.planSearchText?.toLowerCase().trim();
+    if (!term) return this.plans;
+    return this.plans.filter(p => (p.planName || p.name || '').toLowerCase().includes(term));
+  }
+
+  get filteredPropertyTypes(): any[] {
+    const term = this.propTypeSearchText?.toLowerCase().trim();
+    if (!term) return this.auctionPropertyTypes;
+    return this.auctionPropertyTypes.filter(t => (t.propertyTypeName || t.name || t.propertyTypeName || '').toLowerCase().includes(term));
+  }
+
+  get filteredStates(): any[] {
+    const term = this.stateSearchText?.toLowerCase().trim();
+    if (!term) return this.states;
+    return this.states.filter(s => (s.stateName || '').toLowerCase().includes(term));
+  }
+
+  get filteredBidderDistricts(): any[] {
+    const term = this.bidderDistrictSearchText?.toLowerCase().trim();
+    if (!term) return this.bidderDistricts;
+    return this.bidderDistricts.filter(d => (d.districtName || '').toLowerCase().includes(term));
+  }
+
+  get filteredCities(): any[] {
+    const term = this.citySearchText?.toLowerCase().trim();
+    if (!term) return this.cities;
+    return this.cities.filter(c => (c.cityName || '').toLowerCase().includes(term));
+  }
+
+  get filteredMarketCommittees(): any[] {
+    const term = this.branchSearchText?.toLowerCase().trim();
+    if (!term) return this.marketCommittees;
+    return this.marketCommittees.filter(m => (m.marketCommitteeName || m.name || m.branchName || '').toLowerCase().includes(term));
+  }
+
+  get filteredPropertyCategories(): any[] {
+    const term = this.propertyCategorySearchText?.toLowerCase().trim();
+    if (!term) return this.propertyCategories;
+    return this.propertyCategories.filter(c => (c.categoryName || c.name || c.propertyCategoryName || '').toLowerCase().includes(term));
+  }
+
+  get filteredBidderTypes(): any[] {
+    const term = this.bidderTypeSearchText?.toLowerCase().trim();
+    if (!term) return this.bidderTypes;
+    return this.bidderTypes.filter(t => (t.bidderTypeName || t.name || '').toLowerCase().includes(term));
+  }
+
   isInvalid(controlName: string): boolean {
     const control = this.registerationForm.get(controlName);
     return !!control && control.invalid && (control.dirty || control.touched);
@@ -1479,15 +1760,17 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       next: (res: any) => {
         const msg = res.message || res.Message || '';
         const isAlreadyExists = msg.toLowerCase().includes('already exists');
+        const isSuccess = res.success || res.status === 'Success';
 
         if (isAlreadyExists) {
           this.toastr.warning(msg, 'Warning');
-        } else if (res.success || res.status === 'Success') {
+        } else if (isSuccess) {
           this.toastr.success(msg || 'Property bidder registration saved successfully.', 'Success');
+          this.resetForm();
+          this.closePreviewModal();
         } else {
           this.toastr.error(msg || 'Failed to save property registration.', 'Error');
         }
-        this.closePreviewModal();
       },
       error: (err: any) => {
         // console.error('Submit error:', err);
@@ -1503,20 +1786,52 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   resetForm(): void {
     this.registerationForm.reset({
+      branchId: '',
+      districtId: '',
+      mandiId: '',
+      propertycode: '',
+      plotsize: '',
+      plotTypeId: '',
+      plotNo: '',
+      planId: '',
+      plotStatus: '',
+      propertyCategoryId: '',
       isAssetResumed: false,
+      isAssetSurrendered: false,
+      isAssetLocked: false,
+      isDefaulter: false,
+      anyComplaint: false,
+      ndcIssued: false,
+      ndcGenerated: false,
+      assetVerified: false,
       isCourtCase: false,
-      IsAssetSurrendered: false,
-      IsLocked: false,
-      IsDefaulter: false,
-      IsAnyComplaint: false,
-      IsNDCGenerated: false,
-      IsNDCIssued: false,
-      IsAssetVerified: false,
       isAuctioned: false,
-      transfered: false,
-      bidderType: 'Individual',
-      relation: 'Son of (S/o)',
-      auctionPropertyType: 'Commercial Plots',
+      auctionDate: '',
+      bidderTypeId: '',
+      email: '',
+      bidderName: '',
+      isTransferred: false,
+      relation: 'Self',
+      fatherOrHusbandName: '',
+      panNo: '',
+      aadhaarNo: '',
+      mobileNo: '',
+      auctionPropertyType: '',
+      address: '',
+      reservePrice: '',
+      finalBidPrice: '',
+      formTransactionId: '',
+      formTxnDate: '',
+      formPaidAmount: '',
+      emdTxnId: '',
+      emdDate: '',
+      emdAmount: '',
+      allotmentDate: '',
+      allotmentTxnId: '',
+      allotmentAmount: '',
+      dueAmount: '',
+      accumulatedInterest: 0,
+      totalDueWithInterest: '',
       installmentNo: 'Installment 1',
       paidStatus: 'Pending',
       ownerStateID: '',
@@ -1529,6 +1844,19 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.bidderNamesFormArray.clear();
     this.calculatedSchedulesMatrix = [];
     this.propertyData = null;
+    this.showPreview = false;
+    this.previewConfirmed = false;
+    this.districtSearchText = '';
+    this.mandiSearchText = '';
+    this.plotTypeSearchText = '';
+    this.planSearchText = '';
+    this.propTypeSearchText = '';
+    this.stateSearchText = '';
+    this.bidderDistrictSearchText = '';
+    this.citySearchText = '';
+    this.branchSearchText = '';
+    this.propertyCategorySearchText = '';
+    this.bidderTypeSearchText = '';
   }
 
   letshowPreview(): void {

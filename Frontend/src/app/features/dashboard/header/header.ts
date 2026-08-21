@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,7 @@ export class Header {
 
   isUserMenuOpen = false;
 
-  constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
+  constructor(private readonly elementRef: ElementRef<HTMLElement>, private readonly router: Router) {}
 
   onToggleSidebar() {
     this.toggleSidebar.emit();
@@ -24,6 +25,12 @@ export class Header {
 
   closeUserMenu() {
     this.isUserMenuOpen = false;
+  }
+
+  logout() {
+    sessionStorage.clear();
+    this.closeUserMenu();
+    this.router.navigate(['/login']);
   }
 
   @HostListener('document:click', ['$event'])
