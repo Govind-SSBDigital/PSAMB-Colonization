@@ -267,3 +267,38 @@ $surface: #f7f8fb;
 .text-success{
     color: var(--theme-primary) !important;
 }
+  .modal {
+    background: rgba(#101418, 0.45);
+  }
+
+  .modal-content {
+    border-radius: 14px;
+  }
+
+  .role-detail-col {
+    border-right: 1px solid $border;
+
+    @media (max-width: 767.98px) {
+      border-right: none;
+      border-bottom: 1px solid $border;
+      padding-bottom: 1rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .icon-xs {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .btn-save {
+    background: var(--theme-primary);
+    border-color: var(--theme-primary);
+    color: #fff;
+
+    &:hover {
+      background: #fff;
+      color: var(--theme-primary);
+    }
+  }

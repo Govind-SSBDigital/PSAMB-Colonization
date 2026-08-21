@@ -38,11 +38,18 @@ interface PhotoItem {
 })
 export class HomePage {
   announcements: Announcement[] = [
-    { id: 1, title: 'Tender Document for Hiring Vehicles', isNew: true, url: 'https://emandikaran-pb.in/files/HiringVehicles.pdf' },
-    { id: 2, title: 'Notification Regarding Fruit Items', isNew: true, url: 'https://emandikaran-pb.in/files/Notification-Regarding-Fruit-Items.pdf' },
-    { id: 3, title: 'Self Declaration/Manual Form for Aayushmaan Scheme', isNew: false, url: 'https://emandikaran-pb.in/files/Ayushman_bharat_self_declaration.pdf' },
-    { id: 4, title: 'Instruction Regarding Manpower Contractor.', isNew: false ,url: 'https://emandikaran-pb.in/files/Draft%20Man_power_enlistment_26-27.pdf'},
-    { id: 5, title: 'Instruction Regarding Enlistment of Contractor', isNew: false, url: 'https://emandikaran-pb.in/files/Draft%20enlmt_Marketing_2026-27_.pdf' },
+    { id: 1, title: 'Tender Document for Hiring Vehicles', isNew: true, url: '#' },
+    { id: 2, title: 'Instruction Regarding Enlistment of Contractor', isNew: false, url: '#' },
+    { id: 3, title: 'Instruction Regarding Manpower Contractor', isNew: false, url: '#' },
+    { id: 4, title: 'EOI for Installation, Operation &amp; Maintenance of Electric Vehicles (EVs)', isNew: true ,url: '#'},
+    { id: 5, title: 'Notification Regarding Fruit Items', isNew: true, url: '#' },
+    { id: 6, title: 'Tender for Supply/ Stitching of Uniforms,&nbsp;Shoes&nbsp;etc', isNew: true, url: '#' },
+    { id: 7, title: 'Self Declaration/Manual Form for Aayushmaan Scheme', isNew: false, url: '#' },
+    { id: 8, title: 'Canteen corrigendum', isNew: true ,url: '#'},
+    { id: 9, title: 'E-Auction User Manual', isNew: false, url: '#' },
+    { id: 10, title: 'Video Guide for E-auction', isNew: false, url: '#' },
+    { id: 11, title: 'Tender Notice For Plantation and Grassing', isNew: false, url: '#' },
+    { id: 12, title: 'Kisan Bhawan Bid document for furniture', isNew: false, url: '#' },
   ];
 
   quickLinks: QuickLink[] = [
