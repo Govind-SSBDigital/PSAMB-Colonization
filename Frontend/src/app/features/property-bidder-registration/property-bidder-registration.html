@@ -432,7 +432,7 @@
               <div class="col-md-4">
                 <label for="mobileNo" class="form-label small text-dark fw-semibold text-uppercase">Mobile No.</label>
                 <input id="mobileNo" type="tel" class="form-control bg-light rounded-3 custom-input-color"
-                  placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')" />
+                  placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')" maxlength="10" minlength="10" />
                 @if (isInvalid('mobileNo')) { <div class="invalid-feedback">Mobile no. is required.</div> }
               </div>
               <div class="col-md-4">

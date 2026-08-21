@@ -76,6 +76,12 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../citizen-services/citizen-services')
                 .then((m) => m.CitizenServices),
+          },
+          {
+            path: 'role-management',
+            loadComponent: () =>
+              import('../admin-pages/role-management/role-management')
+                .then((m) => m.RoleManagement),
           }
         ]
       }

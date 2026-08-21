@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { IdleTimeoutService } from './../../../core/service/idle-timeout.service';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +13,11 @@ export class Header {
 
   isUserMenuOpen = false;
 
-  constructor(private readonly elementRef: ElementRef<HTMLElement>, private readonly router: Router) {}
+  constructor(
+    private readonly elementRef: ElementRef<HTMLElement>,
+    private readonly router: Router,
+    private idleTimeoutService: IdleTimeoutService
+  ) {}
 
   onToggleSidebar() {
     this.toggleSidebar.emit();
@@ -28,6 +33,7 @@ export class Header {
   }
 
   logout() {
+    this.idleTimeoutService.stop();
     sessionStorage.clear();
     this.closeUserMenu();
     this.router.navigate(['/login']);

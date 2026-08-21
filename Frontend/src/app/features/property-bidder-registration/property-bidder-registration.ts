@@ -152,7 +152,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       aadhaarNo: ['', [Validators.pattern(/^XXXXXXXX\d{4}$/)]],
 
-      mobileNo: ['', [Validators.pattern(/^[6-9]\d{9}$/)]],
+      mobileNo: ['', [Validators.pattern(/^[6-9]\d{9}$/), Validators.minLength(10), Validators.maxLength(10)]],
 
       auctionPropertyType: [''],
       address: ['', Validators.required],
@@ -1886,7 +1886,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         } else if (controlName === 'aadhaarNo') {
           control.setValidators([Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]);
         } else if (controlName === 'mobileNo') {
-          control.setValidators([Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]);
+          control.setValidators([Validators.required, Validators.pattern(/^[6-9]\d{9}$/), Validators.minLength(10), Validators.maxLength(10)]);
         } else {
           control.setValidators(Validators.required);
         }
