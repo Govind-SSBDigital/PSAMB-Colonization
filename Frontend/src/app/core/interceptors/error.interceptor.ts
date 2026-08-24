@@ -4,6 +4,7 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { IdleTimeoutService } from '../service/idle-timeout.service';
 
 
 export class AppHttpError extends Error {
@@ -22,6 +23,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: object,
+    private idleTimeoutService: IdleTimeoutService
   ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -31,6 +33,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           return throwError(() => error);
         }
         if (error.status === 401 && !this.isAuthEndpoint(request.url)) {
+          this.idleTimeoutService.stop();
           this.clearAuthSession();
           if (!this.router.url.startsWith('/auth/login')) {
             this.router.navigate(['/auth/login']);
@@ -87,7 +90,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   private isAuthEndpoint(url: string): boolean {
     const lower = url.toLowerCase();
-    return ['/auth/login', '/auth/signup', '/auth/register', '/auth/refresh'].some((e) => lower.includes(e));
+    return ['/auth/login', '/auth/signup', '/auth/register', '/auth/refresh', '/auth/refresh-token'].some((e) => lower.includes(e));
   }
 
   private clearAuthSession(): void {

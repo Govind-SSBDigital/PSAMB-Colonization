@@ -13,6 +13,7 @@ import { Procurement } from './procurement/procurement';
 import { AuthService } from '../../../core/service/auth.service';
 import { Common } from '../../../core/service/CommonService/common';
 import { MenuService } from '../../../core/service/MenuService/menu.service';
+import { IdleTimeoutService } from '../../../core/service/idle-timeout.service';
 
 interface EntityType {
   id: string;
@@ -202,7 +203,8 @@ export class SignupSignin implements OnInit {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private common: Common,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private idleTimeoutService: IdleTimeoutService
   ) { }
 
   ngOnInit() {
@@ -686,6 +688,7 @@ export class SignupSignin implements OnInit {
         sessionStorage.setItem('registration_success', 'true');
         sessionStorage.setItem('registered_user_id', response.data.userId);
 
+        this.idleTimeoutService.start();
         this.router.navigate(['/auth/login']);
         this.triggerToast('Account registered successfully!', 'success');
       },
@@ -841,6 +844,7 @@ export class SignupSignin implements OnInit {
         sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
 
         this.menuService.clearMenusCache();
+        this.idleTimeoutService.start();
         this.triggerToast(`Welcome back!`, 'success');
         this.router.navigate(['/dashboard']);
       },
@@ -874,6 +878,7 @@ export class SignupSignin implements OnInit {
         };
         sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
         this.menuService.clearMenusCache();
+        this.idleTimeoutService.start();
         this.triggerToast('Welcome back!', 'success');
         this.router.navigate(['/dashboard']);
       },
@@ -986,6 +991,7 @@ export class SignupSignin implements OnInit {
     }
     this.showResetPassword = false;
     this.pendingFirstLoginToken = null;
+    this.idleTimeoutService.stop();
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('refresh_token');
     this.resetPasswordData = { currentPassword: '', newPassword: '', confirmNewPassword: '' };

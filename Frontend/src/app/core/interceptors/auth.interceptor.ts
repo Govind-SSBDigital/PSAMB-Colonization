@@ -7,6 +7,7 @@ import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
+import { IdleTimeoutService } from '../service/idle-timeout.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -16,7 +17,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private idleTimeoutService: IdleTimeoutService
     ) {}
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -27,7 +29,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         return next.handle(request).pipe(
             catchError(error => {
-                if (error instanceof HttpErrorResponse && error.status === 401) {
+                if (error instanceof HttpErrorResponse && error.status === 401 && !this.isAuthEndpoint(request.url)) {
                     return this.handle401Error(request, next);
                 }
                 return throwError(() => error);
@@ -51,6 +53,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
             const refreshToken = sessionStorage.getItem('refresh_token');
             if (!refreshToken) {
+                this.idleTimeoutService.stop();
                 this.authService.logout();
                 this.router.navigate(['/auth/login']);
                 return throwError(() => new Error('No refresh token'));
@@ -70,6 +73,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError(err => {
                     this.isRefreshing = false;
+                    this.idleTimeoutService.stop();
                     this.authService.logout();
                     this.router.navigate(['/auth/login']);
                     return throwError(() => err);
@@ -82,5 +86,10 @@ export class AuthInterceptor implements HttpInterceptor {
             take(1),
             switchMap(token => next.handle(this.addToken(request, token!)))
         );
+    }
+
+    private isAuthEndpoint(url: string): boolean {
+        const lower = url.toLowerCase();
+        return ['/auth/login', '/auth/signup', '/auth/register', '/auth/refresh', '/auth/refresh-token'].some((e) => lower.includes(e));
     }
 }

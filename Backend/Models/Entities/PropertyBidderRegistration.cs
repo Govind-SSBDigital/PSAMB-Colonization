@@ -103,13 +103,15 @@ namespace Backend.Models.Entities
         public long? ModifiedBy { get; set; }
 
         public int? ApplicationStatusId { get; set; }
-        public string ?PlotStatus { get; set; }
+        public string? PlotStatus{ get; set; }
         public int PropertyCategoryId { get; set; }
         public string? PropertyCode { get; set; }
         public int? OwnerStateID { get; set; }
         public int? OwnerDistrtictID { get; set; }
 
         public int? OwnerCityID { get; set; }
+        public bool IsUser { get; set; } = false;
+        public int? VerificationUserEndStatusId { get; set; }
 
     }
     public class PlotSizeMaster
