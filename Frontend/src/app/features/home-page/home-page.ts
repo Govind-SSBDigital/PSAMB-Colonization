@@ -43,6 +43,15 @@ export class HomePage {
     { id: 3, title: 'Self Declaration/Manual Form for Aayushmaan Scheme', isNew: false, url: 'https://emandikaran-pb.in/files/Ayushman_bharat_self_declaration.pdf' },
     { id: 4, title: 'Instruction Regarding Manpower Contractor.', isNew: false ,url: 'https://emandikaran-pb.in/files/Draft%20Man_power_enlistment_26-27.pdf'},
     { id: 5, title: 'Instruction Regarding Enlistment of Contractor', isNew: false, url: 'https://emandikaran-pb.in/files/Draft%20enlmt_Marketing_2026-27_.pdf' },
+    { id: 5, title: 'Canteen corrigendum', isNew: false, url: 'https://emandikaran-pb.in/files/CafeTender.pdf' },
+    { id: 5, title: 'E-Auction User Manual', isNew: false, url: 'https://emandikaran-pb.in/files/UserManual_PMBeNavida_Registration.pdf' },
+    { id: 5, title: 'Video Guide for E-auction', isNew: false, url: 'https://emandikaran-pb.in/files/CafeTender.pdf' },
+    { id: 5, title: 'Tender Notice For Plantation and Grassing', isNew: false, url: 'https://emandikaran-pb.in/files/Tender_notice_for_plantation_and_grassing.pdf' },
+    { id: 5, title: 'Kisan Bhawan Bid document for furniture', isNew: false, url: 'https://emandikaran-pb.in/files/Kisan_Bhawan_Bid_document_for_furniture.pdf' },
+    { id: 5, title: 'Self Declaration/Manual Form for Aayushmaan', isNew: false, url: 'https://emandikaran-pb.in/files/Ayushman_bharat_self_declaration.pdf' },
+    { id: 5, title: 'Tender for Supply/ Stitching of Uniforms, Shoes etc', isNew: false, url: 'https://emandikaran-pb.in/files/Uniformtenders.pdf' },
+    { id: 5, title: 'Notification Regarding Fruit Items', isNew: false, url: 'https://emandikaran-pb.in/files/Notification-Regarding-Fruit-Items.pdf' },
+    { id: 5, title: 'EOI for Installation, Operation & Maintenance of Electric Vehicles (EVs)', isNew: false, url: 'https://emandikaran-pb.in/files/DNIT-RegEVCharger-Station-at-Kisan-Bhawan.pdf' },
   ];
 
   quickLinks: QuickLink[] = [
