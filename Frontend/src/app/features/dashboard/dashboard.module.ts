@@ -82,6 +82,12 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../admin-pages/role-management/role-management')
                 .then((m) => m.RoleManagement),
+          },
+          {
+            path: 'online-payment-details',
+            loadComponent: () =>
+              import('../../features/online-payment-detail/online-payment-detail')
+                .then((m) => m.OnlinePaymentDetail),
           }
         ]
       }

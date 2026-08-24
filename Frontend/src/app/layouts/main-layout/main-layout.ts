@@ -76,6 +76,7 @@ export class MainLayout {
       '/property-balance-calculation',
       '/dashboard-citizen-services',
       '/role-management',
+      '/online-payment-details',
     ];
     return dashboardRoutes.some(
       (route) =>
