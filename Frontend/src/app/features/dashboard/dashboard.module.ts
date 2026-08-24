@@ -88,6 +88,12 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../../features/online-payment-detail/online-payment-detail')
                 .then((m) => m.OnlinePaymentDetail),
+          },
+          {
+            path: 'coming-soon',
+            loadComponent: () =>
+              import('../../features/comming-soon-pages/comming-soon-pages')
+                .then((m) => m.CommingSoonPages),
           }
         ]
       }

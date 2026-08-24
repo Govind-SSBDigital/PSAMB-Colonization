@@ -2462,3 +2462,67 @@ color: var(--theme-primary) !important;
 .note-box-en strong, .note-box-pb strong {
     color: #be123c; /* Red color for Note label */
 }
+
+  .modal {
+    background: rgba(#101418, 0.45);
+  }
+
+  .modal-content {
+    border-radius: 14px;
+  }
+
+  .role-detail-col {
+    border-right: 1px solid #eef0f4;
+
+    @media (max-width: 767.98px) {
+      border-right: none;
+      border-bottom: 1px solid #eef0f4;
+      padding-bottom: 1rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .icon-xs {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .btn-save {
+    background: var(--theme-primary);
+    border-color: var(--theme-primary);
+    color: #fff;
+
+    &:hover {
+      background: #fff;
+      color: var(--theme-primary);
+    }
+  }
+  .icon-circle {
+  width: 42px;
+  height: 42px;
+  /* color: #064e3b; */
+}
+
+.text-eyebrow {
+  color: #c7eadc;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.doc-card {
+  background: #eef8f4;
+  border: 1px solid #d8ebe3;
+}
+
+.text-heading {
+  color: #123b35;
+}
+
+.badge-xs {
+  font-size: 0.65rem;
+}
+
+.doc-chip {
+  font-size: 0.8rem;
+}

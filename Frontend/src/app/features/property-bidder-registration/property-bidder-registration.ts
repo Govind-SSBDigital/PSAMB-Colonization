@@ -81,14 +81,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   private auctionRequiredControls = [
     'auctionDate',
     'bidderTypeId',
-    'email',
+    // 'email',
     'bidderName',
     'relation',
     'fatherOrHusbandName',
     'auctionPropertyType',
     'address',
     'finalBidPrice',
-    'formPaidAmount',
+    // 'formPaidAmount',
     'allotmentDate',
     'allotmentAmount',
     'installmentNo',
@@ -117,7 +117,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       branchId: ['', Validators.required],
       districtId: ['', Validators.required],
-      mandiId: [''],
+      mandiId: ['', Validators.required],
       // mandi: ['', Validators.required],
       propertycode: [''],
 
@@ -145,7 +145,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       transferredNames: this.fb.array([]),
       isTransferred: [false],
 
-      relation: ['Self'],
+      relation: [''],
       fatherOrHusbandName: [''],
 
       panNo: ['', [Validators.pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)]],
@@ -169,7 +169,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       emdAmount: [''],
 
       allotmentDate: [''],
-      allotmentTxnId: [''],
+      allotmentTxnId: ['', Validators.required],
       allotmentAmount: [''],
 
       dueAmount: [''],
@@ -1540,6 +1540,37 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return `${label} is required.`;
   }
 
+  getPendingRequiredFieldLabels(): string[] {
+    const labels: Record<string, string> = {
+      districtId: 'District',
+      branchId: 'Market Committee',
+      mandiId: 'Mandi',
+      plotNo: 'Plot No.',
+      plotsize: 'Plot Size',
+      plotTypeId: 'Plot Type',
+      plotStatus: 'Plot Status',
+      planId: 'Plan',
+      propertyCategoryId: 'Property Category',
+      address: 'Permanent Communication Address',
+      finalBidPrice: 'Highest Bidder / Allotment Amount',
+      allotmentTxnId: '25% Milestone Txn ID / Challan No.',
+      auctionDate: 'Auction Date & Time',
+      bidderTypeId: 'Bidder Type',
+      bidderName: 'Allotee Name',
+      relation: 'Relation',
+      fatherOrHusbandName: 'Father / Husband Name',
+      // auctionPropertyType: 'Property Type',
+      allotmentDate: 'Allotment Transaction Date',
+      allotmentAmount: 'Allotment Amount Paid',
+      // mobileNo: 'Mobile No.'
+    };
+    return Object.keys(labels)
+      .filter((controlName) => {
+        const control = this.registerationForm.get(controlName);
+        return !!control && control.invalid;
+      })
+      .map((controlName) => labels[controlName]);
+  }
 
   onSubmit(): void {
     // debugger
@@ -1811,7 +1842,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       email: '',
       bidderName: '',
       isTransferred: false,
-      relation: 'Self',
+      relation: '',
       fatherOrHusbandName: '',
       panNo: '',
       aadhaarNo: '',
@@ -1860,6 +1891,22 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   letshowPreview(): void {
+    this.updateAuctionValidators(!!this.registerationForm.get('isAuctioned')?.value);
+    this.registerationForm.markAllAsTouched();
+
+    if (this.registerationForm.invalid) {
+      const invalidControls: string[] = [];
+      const controls = this.registerationForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          invalidControls.push(name);
+        }
+      }
+
+      this.toastr.warning(`Please fill in all the required fields correctly: ${invalidControls.join(', ')}`, 'Validation Warning');
+      return;
+    }
+
     this.showPreview = true;
     this.previewConfirmed = false;
   }
@@ -1882,9 +1929,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       if (isAuctioned) {
         if (controlName === 'email') {
-          control.setValidators([Validators.required, Validators.email]);
+          control.setValidators([Validators.email]);
         } else if (controlName === 'aadhaarNo') {
-          control.setValidators([Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]);
+          control.setValidators([Validators.pattern(/^XXXXXXXX\d{4}$/)]);
         } else if (controlName === 'mobileNo') {
           control.setValidators([Validators.required, Validators.pattern(/^[6-9]\d{9}$/), Validators.minLength(10), Validators.maxLength(10)]);
         } else {
