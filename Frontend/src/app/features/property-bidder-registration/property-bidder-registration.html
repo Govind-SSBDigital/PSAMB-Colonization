@@ -33,20 +33,18 @@
                     District <span class="text-danger">*</span>
                   </label>
                   <div class="custom-select-wrapper position-relative">
-                    <div
-                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('districtId')" [class.open]="isDistrictDropdownOpen"
-                      (click)="toggleDistrictDropdown($event)">
-                      <span class="text-truncate" [class.text-muted]="!getSelectedDistrictName()">
-                        {{ getSelectedDistrictName() || 'Select District' }}
-                      </span>
-                    </div>
-
+                      [value]="districtSearchText || getSelectedDistrictName() || ''"
+                      (focus)="isDistrictDropdownOpen = true"
+                      (input)="onDropdownInput('districtId', 'districtSearchText', $event, 'isDistrictDropdownOpen')"
+                      (blur)="onDistrictBlur()"
+                      placeholder="Select District" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isDistrictDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectDistrict('')">
                         Select District
                       </div>
-                      @for (item of districts; track item.districtId) {
+                      @for (item of filteredDistricts; track item.districtId) {
                       <div class="custom-dropdown-item text-truncate" [class.active]="isDistrictSelected(item)"
                         (click)="selectDistrict(item.districtId)">
                         {{ item.districtName }}
@@ -61,16 +59,32 @@
                 <div class="col-sm-6">
                   <label for="branchId" class="form-label small text-dark fw-semibold text-uppercase">Market Committee
                     <span class="text-danger">*</span></label>
-                  <select id="branchId" class="form-select bg-light rounded-3 custom-input-color"
-                    formControlName="branchId" [class.is-invalid]="isInvalid('branchId')">
-                    <option value="" disabled>{{ isLoadingCommittees ? 'Loading Committees...' : 'Select Market
-                      Committee' }}</option>
-                    @for (committee of marketCommittees; track $index) {
-                    <option [value]="committee.marketCommitteeId || committee.id || committee.branchId">
-                      {{ committee.marketCommitteeName || committee.name || committee.branchName }}
-                    </option>
-                    }
-                  </select>
+                  <div class="custom-select-wrapper position-relative">
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
+                      [class.is-invalid]="isInvalid('branchId')" [class.open]="isBranchDropdownOpen"
+                      [value]="branchSearchText || getSelectedBranchName() || ''"
+                      (focus)="isBranchDropdownOpen = true"
+                      (input)="onDropdownInput('branchId', 'branchSearchText', $event, 'isBranchDropdownOpen')"
+                      (blur)="onBranchBlur()"
+                      [placeholder]="isLoadingCommittees ? 'Loading Committees...' : 'Select Market Committee'"
+                      autocomplete="off" />
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBranchDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" *ngIf="isLoadingCommittees">
+                        Loading Committees...
+                      </div>
+                      <ng-container *ngIf="!isLoadingCommittees">
+                        <div class="custom-dropdown-item text-muted" (click)="selectBranch('')">
+                          Select Market Committee
+                        </div>
+                        @for (committee of filteredMarketCommittees; track (committee.marketCommitteeId || committee.id || committee.branchId || $index)) {
+                        <div class="custom-dropdown-item text-truncate" [class.active]="isBranchSelected(committee)"
+                          (click)="selectBranch(committee.marketCommitteeId || committee.id || committee.branchId)">
+                          {{ committee.marketCommitteeName || committee.name || committee.branchName }}
+                        </div>
+                        }
+                      </ng-container>
+                    </div>
+                  </div>
                   @if (isInvalid('branchId')) { <div class="invalid-feedback">Market Committee is required.</div> }
                 </div>
                 <div class="col-sm-6">
@@ -78,15 +92,14 @@
                     Mandi <span class="text-danger">*</span>
                   </label>
                   <div class="custom-select-wrapper position-relative">
-                    <div
-                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('mandiId')" [class.open]="isMandiDropdownOpen"
-                      (click)="toggleMandiDropdown($event)">
-                      <span class="text-truncate" [class.text-muted]="!getSelectedMandiName()">
-                        {{ isLoadingMandis ? 'Loading Mandis...' : (getSelectedMandiName() || 'Select Mandi') }}
-                      </span>
-                    </div>
-
+                      [value]="mandiSearchText || getSelectedMandiName() || ''"
+                      (focus)="isMandiDropdownOpen = true"
+                      (input)="onDropdownInput('mandiId', 'mandiSearchText', $event, 'isMandiDropdownOpen')"
+                      (blur)="onMandiBlur()"
+                      [placeholder]="isLoadingMandis ? 'Loading Mandis...' : 'Select Mandi'"
+                      autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isMandiDropdownOpen">
                       <div class="custom-dropdown-item text-muted" *ngIf="isLoadingMandis">
                         Loading Mandis...
@@ -95,7 +108,7 @@
                         <div class="custom-dropdown-item text-muted" (click)="selectMandi('')">
                           Select Mandi
                         </div>
-                        @for (mandiItem of mandis; track mandiItem.mandiId) {
+                        @for (mandiItem of filteredMandis; track mandiItem.mandiId) {
                         <div class="custom-dropdown-item text-truncate" [class.active]="isMandiSelected(mandiItem)"
                           (click)="selectMandi(mandiItem.mandiId || mandiItem.id)">
                           {{ mandiItem.mandiName || mandiItem.name }}
@@ -134,20 +147,18 @@
                   <label class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
                       class="text-danger">*</span></label>
                   <div class="custom-select-wrapper position-relative">
-                    <div
-                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('plotTypeId')" [class.open]="isPlotTypeDropdownOpen"
-                      (click)="togglePlotTypeDropdown($event)">
-                      <span class="text-truncate" [class.text-muted]="!getSelectedPlotTypeName()">
-                        {{ getSelectedPlotTypeName() || 'Select Plot Type' }}
-                      </span>
-                    </div>
-
+                      [value]="plotTypeSearchText || getSelectedPlotTypeName() || ''"
+                      (focus)="isPlotTypeDropdownOpen = true"
+                      (input)="onDropdownInput('plotTypeId', 'plotTypeSearchText', $event, 'isPlotTypeDropdownOpen')"
+                      (blur)="onPlotTypeBlur()"
+                      placeholder="Select Plot Type" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotTypeDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectPlotType('')">
                         Select Plot Type
                       </div>
-                      @for (type of plotTypes; track (type.plotTypeId || type.id || type)) {
+                      @for (type of filteredPlotTypes; track (type.plotTypeId || type.id || type)) {
                       <div class="custom-dropdown-item text-truncate" [class.active]="isPlotTypeSelected(type)"
                         (click)="selectPlotType(type.plotTypeId || type.id || type)">
                         {{ type.plotType || type.plotType || type }}
@@ -184,20 +195,18 @@
                   <label class="form-label small text-dark fw-semibold text-uppercase">Plan <span
                       class="text-danger">*</span></label>
                   <div class="custom-select-wrapper position-relative">
-                    <div
-                      class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('planId')" [class.open]="isPlanDropdownOpen"
-                      (click)="togglePlanDropdown($event)">
-                      <span class="text-truncate" [class.text-muted]="!getSelectedPlanName()">
-                        {{ getSelectedPlanName() || 'Select Plan' }}
-                      </span>
-                    </div>
-
+                      [value]="planSearchText || getSelectedPlanName() || ''"
+                      (focus)="isPlanDropdownOpen = true"
+                      (input)="onDropdownInput('planId', 'planSearchText', $event, 'isPlanDropdownOpen')"
+                      (blur)="onPlanBlur()"
+                      placeholder="Select Plan" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlanDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectPlan('')">
                         Select Plan
                       </div>
-                      @for (plan of plans; track (plan.planId || plan.id || plan)) {
+                      @for (plan of filteredPlans; track (plan.planId || plan.id || plan)) {
                       <div class="custom-dropdown-item text-truncate" [class.active]="isPlanSelected(plan)"
                         (click)="selectPlan(plan.planId || plan.id || plan)">
                         {{ plan.planName || plan.name || plan }}
@@ -211,16 +220,26 @@
                 <div class="col-sm-6">
                   <label for="propertyCategoryId" class="form-label small text-dark fw-semibold text-uppercase">Property
                     Category <span class="text-danger">*</span></label>
-                  <select id="propertyCategoryId" class="form-select bg-light rounded-3 custom-input-color"
-                    formControlName="propertyCategoryId" [class.is-invalid]="isInvalid('propertyCategoryId')">
-                    <option value="" disabled>Select Category</option>
-                    @for (category of propertyCategories; track (category.propertyCategoryId || category.id ||
-                    category)) {
-                    <option [value]="category.propertyCategoryId || category.id || category">
-                      {{ category.categoryName || category.name || category.categoryName || category }}
-                    </option>
-                    }
-                  </select>
+                  <div class="custom-select-wrapper position-relative">
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
+                      [class.is-invalid]="isInvalid('propertyCategoryId')" [class.open]="isPropertyCategoryDropdownOpen"
+                      [value]="propertyCategorySearchText || getSelectedPropertyCategoryName() || ''"
+                      (focus)="isPropertyCategoryDropdownOpen = true"
+                      (input)="onDropdownInput('propertyCategoryId', 'propertyCategorySearchText', $event, 'isPropertyCategoryDropdownOpen')"
+                      (blur)="onPropertyCategoryBlur()"
+                      placeholder="Select Category" autocomplete="off" />
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropertyCategoryDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" (click)="selectPropertyCategory('')">
+                        Select Category
+                      </div>
+                      @for (category of filteredPropertyCategories; track (category.propertyCategoryId || category.id || category)) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isPropertyCategorySelected(category)"
+                        (click)="selectPropertyCategory(category.propertyCategoryId || category.id || category)">
+                        {{ category.categoryName || category.name || category.categoryName || category }}
+                      </div>
+                      }
+                    </div>
+                  </div>
                   @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback">Property category is required.
                   </div> }
                 </div>
@@ -294,15 +313,26 @@
               <div class="col-md-4">
                 <label for="bidderTypeId" class="form-label small text-dark fw-semibold text-uppercase">Bidder
                   Type <span class="text-danger">*</span></label>
-                <select id="bidderTypeId" class="form-select bg-light rounded-3 custom-input-color"
-                  formControlName="bidderTypeId" [class.is-invalid]="isInvalid('bidderTypeId')">
-                  <option value="" disabled>Select Bidder Type</option>
-                  @for (type of bidderTypes; track (type.bidderTypeId || type.id || type)) {
-                  <option [value]="type.bidderTypeId || type.id || type">
-                    {{ type.bidderTypeName || type.name || type }}
-                  </option>
-                  }
-                </select>
+                <div class="custom-select-wrapper position-relative">
+                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
+                    [class.is-invalid]="isInvalid('bidderTypeId')" [class.open]="isBidderTypeDropdownOpen"
+                    [value]="bidderTypeSearchText || getSelectedBidderTypeName() || ''"
+                    (focus)="isBidderTypeDropdownOpen = true"
+                    (input)="onDropdownInput('bidderTypeId', 'bidderTypeSearchText', $event, 'isBidderTypeDropdownOpen')"
+                    (blur)="onBidderTypeBlur()"
+                    placeholder="Select Bidder Type" autocomplete="off" />
+                  <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderTypeDropdownOpen">
+                    <div class="custom-dropdown-item text-muted" (click)="selectBidderType('')">
+                      Select Bidder Type
+                    </div>
+                    @for (type of filteredBidderTypes; track (type.bidderTypeId || type.id || type)) {
+                    <div class="custom-dropdown-item text-truncate" [class.active]="isBidderTypeSelected(type)"
+                      (click)="selectBidderType(type.bidderTypeId || type.id || type)">
+                      {{ type.bidderTypeName || type.name || type }}
+                    </div>
+                    }
+                  </div>
+                </div>
                 @if (isInvalid('bidderTypeId')) { <div class="invalid-feedback">Bidder type is required.</div> }
               </div>
               <div class="col-md-4">
@@ -402,26 +432,24 @@
               <div class="col-md-4">
                 <label for="mobileNo" class="form-label small text-dark fw-semibold text-uppercase">Mobile No.</label>
                 <input id="mobileNo" type="tel" class="form-control bg-light rounded-3 custom-input-color"
-                  placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')" />
+                  placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')" maxlength="10" minlength="10" />
                 @if (isInvalid('mobileNo')) { <div class="invalid-feedback">Mobile no. is required.</div> }
               </div>
               <div class="col-md-4">
                 <label class="form-label small text-dark fw-semibold text-uppercase">Property Type</label>
                 <div class="custom-select-wrapper position-relative">
-                  <div
-                    class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('auctionPropertyType')" [class.open]="isPropTypeDropdownOpen"
-                    (click)="togglePropTypeDropdown($event)">
-                    <span class="text-truncate" [class.text-muted]="!getSelectedPropTypeName()">
-                      {{ getSelectedPropTypeName() || 'Select Property Type' }}
-                    </span>
-                  </div>
-
+                    [value]="propTypeSearchText || getSelectedPropTypeName() || ''"
+                    (focus)="isPropTypeDropdownOpen = true"
+                    (input)="onDropdownInput('auctionPropertyType', 'propTypeSearchText', $event, 'isPropTypeDropdownOpen')"
+                    (blur)="onPropTypeBlur()"
+                    placeholder="Select Property Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropTypeDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectPropType('')">
                       Select Property Type
                     </div>
-                    @for (type of auctionPropertyTypes; track (type.propertyTypeId || type.id || type)) {
+                    @for (type of filteredPropertyTypes; track (type.propertyTypeId || type.id || type)) {
                     <div class="custom-dropdown-item text-truncate" [class.active]="isPropTypeSelected(type)"
                       (click)="selectPropType(type.propertyTypeId || type.id || type)">
                       {{ type.propertyTypeName || type.propertyTypeName || type.propertyTypeName || type }}
@@ -436,20 +464,18 @@
               <div class="col-md-4">
                 <label class="form-label small text-dark fw-semibold text-uppercase">State</label>
                 <div class="custom-select-wrapper position-relative">
-                  <div
-                    class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerStateID')" [class.open]="isStateDropdownOpen"
-                    (click)="toggleStateDropdown($event)">
-                    <span class="text-truncate" [class.text-muted]="!getSelectedStateName()">
-                      {{ getSelectedStateName() || 'Select State' }}
-                    </span>
-                  </div>
-
+                    [value]="stateSearchText || getSelectedStateName() || ''"
+                    (focus)="isStateDropdownOpen = true"
+                    (input)="onDropdownInput('ownerStateID', 'stateSearchText', $event, 'isStateDropdownOpen')"
+                    (blur)="onStateBlur()"
+                    placeholder="Select State" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isStateDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectState('')">
                       Select State
                     </div>
-                    @for (item of states; track item.stateId) {
+                    @for (item of filteredStates; track item.stateId) {
                     <div class="custom-dropdown-item text-truncate" [class.active]="isStateSelected(item)"
                       (click)="selectState(item.stateId)">
                       {{ item.stateName }}
@@ -464,20 +490,18 @@
               <div class="col-md-4">
                 <label class="form-label small text-dark fw-semibold text-uppercase">District</label>
                 <div class="custom-select-wrapper position-relative">
-                  <div
-                    class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerDistrtictID')" [class.open]="isBidderDistrictDropdownOpen"
-                    (click)="toggleBidderDistrictDropdown($event)">
-                    <span class="text-truncate" [class.text-muted]="!getSelectedBidderDistrictName()">
-                      {{ getSelectedBidderDistrictName() || 'Select District' }}
-                    </span>
-                  </div>
-
+                    [value]="bidderDistrictSearchText || getSelectedBidderDistrictName() || ''"
+                    (focus)="isBidderDistrictDropdownOpen = true"
+                    (input)="onDropdownInput('ownerDistrtictID', 'bidderDistrictSearchText', $event, 'isBidderDistrictDropdownOpen')"
+                    (blur)="onBidderDistrictBlur()"
+                    placeholder="Select District" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderDistrictDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectBidderDistrict('')">
                       Select District
                     </div>
-                    @for (item of bidderDistricts; track item.districtId) {
+                    @for (item of filteredBidderDistricts; track item.districtId) {
                     <div class="custom-dropdown-item text-truncate" [class.active]="isBidderDistrictSelected(item)"
                       (click)="selectBidderDistrict(item.districtId)">
                       {{ item.districtName }}
@@ -492,20 +516,18 @@
               <div class="col-md-4">
                 <label class="form-label small text-dark fw-semibold text-uppercase">City</label>
                 <div class="custom-select-wrapper position-relative">
-                  <div
-                    class="form-select bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between cursor-pointer"
+                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerCityID')" [class.open]="isCityDropdownOpen"
-                    (click)="toggleCityDropdown($event)">
-                    <span class="text-truncate" [class.text-muted]="!getSelectedCityName()">
-                      {{ getSelectedCityName() || 'Select City' }}
-                    </span>
-                  </div>
-
+                    [value]="citySearchText || getSelectedCityName() || ''"
+                    (focus)="isCityDropdownOpen = true"
+                    (input)="onDropdownInput('ownerCityID', 'citySearchText', $event, 'isCityDropdownOpen')"
+                    (blur)="onCityBlur()"
+                    placeholder="Select City" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isCityDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectCity('')">
                       Select City
                     </div>
-                    @for (item of cities; track item.cityId) {
+                    @for (item of filteredCities; track item.cityId) {
                     <div class="custom-dropdown-item text-truncate" [class.active]="isCitySelected(item)"
                       (click)="selectCity(item.cityId)">
                       {{ item.cityName }}
