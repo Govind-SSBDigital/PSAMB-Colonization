@@ -430,6 +430,7 @@ color: var(--theme-primary) !important;
     padding: 2px 4px;
     height: 50px;
     transition: var(--transition-smooth);
+    position: relative;
 }
 
 .form-input-box-screenshot:focus-within {
@@ -473,6 +474,22 @@ color: var(--theme-primary) !important;
 
 .form-input-box-screenshot input::placeholder {
     color: #94a3b8;
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 12px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 2;
+    padding: 4px;
+    transition: var(--transition-smooth);
+}
+
+.password-toggle-icon:hover {
+    color: var(--primary-color);
 }
 
 /* Captcha styling */

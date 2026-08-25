@@ -135,8 +135,9 @@
                             <i class="fas fa-lock"></i>
                         </div>
                         <div class="vertical-divider-screenshot">|</div>
-                        <input type="password" name="password" [(ngModel)]="loginData.password" required
+                        <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="loginData.password" required
                             placeholder="Enter Password">
+                            <i class="fa-solid password-toggle-icon" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" (click)="toggleShowPassword()"></i>
                     </div>
 
                     <!-- Captcha Section -->

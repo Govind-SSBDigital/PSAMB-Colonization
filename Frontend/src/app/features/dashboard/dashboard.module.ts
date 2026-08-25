@@ -66,7 +66,7 @@ import { Footer } from './footer/footer';
                 .then((m) => m.DeoRegistrationStatus),
           },
           {
-            path: 'property-balance-calculation',
+            path: 'property-details',
             loadComponent: () =>
               import('../property-balance-calculate/property-balance-calculate')
                 .then((m) => m.PropertyBalanceCalculate),

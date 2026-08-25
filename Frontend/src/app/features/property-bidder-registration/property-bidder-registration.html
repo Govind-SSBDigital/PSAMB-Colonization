@@ -307,7 +307,7 @@
 
               <div class="col-md-4">
                 <label for="bidderTypeId" class="form-label small text-dark fw-semibold text-uppercase">Bidder
-                  Type <span class="text-danger">*</span></label>
+                  Type</label>
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('bidderTypeId')" [class.open]="isBidderTypeDropdownOpen"
@@ -328,7 +328,7 @@
                     }
                   </div>
                 </div>
-                @if (isInvalid('bidderTypeId')) { <div class="invalid-feedback d-block">Bidder type is required.</div> }
+                <!-- @if (isInvalid('bidderTypeId')) { <div class="invalid-feedback d-block">Bidder type is required.</div> } -->
               </div>
               <div class="col-md-4">
                 <label for="email" class="form-label small text-dark fw-semibold text-uppercase">Email ID</label>
@@ -669,6 +669,24 @@
                 </div>
               </div>
             </div>
+
+             <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
+              <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Allotment Details</h3>
+              <div class="row g-2">
+                <div class="col-sm-6"><label class="form-label small text-dark fw-semibold">Allotment
+                    Date <span class="text-danger">*</span></label><input type="date" class="form-control bg-white custom-input-color uppercase"
+                    formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />@if
+                  (isInvalid('allotmentDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
+                  </div> }
+                </div>
+                <div class="col-sm-6"><label class="form-label small text-dark fw-semibold"> Allotment
+                    Amount (Rs.) <span class="text-danger">*</span></label><input type="number" class="form-control bg-white custom-input-color"
+                    formControlName="allotmentAmount" [class.is-invalid]="isInvalid('allotmentAmount')" />@if
+                  (isInvalid('allotmentAmount')) { <div class="invalid-feedback">Amount paid is required.</div> }
+                </div>
+              </div>
+            </div>
+
             <div class="financial-panel bg-light border rounded-4 p-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp;
                 Installment Scheduler <span class="text-danger">*</span></h3>
@@ -757,7 +775,7 @@
               </div>
               <div class="col-sm-12">
                 <div
-                  class="table-responsive table-responsive-scroll rounded-3 overflow-hidden border shadow-sm bg-white">
+                  class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
                   <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap"
                     formArrayName="receiptsFormArray" scrollable="true">
                     <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
@@ -1245,7 +1263,7 @@
               <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
             </div>
             <div class="col-sm-12">
-              <div class="table-responsive table-responsive-scroll rounded-3 overflow-hidden border shadow-sm bg-white">
+                  <div class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
                 <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
                   <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
                     <tr>

@@ -80,12 +80,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   private auctionRequiredControls = [
     'auctionDate',
-    'bidderTypeId',
+    // 'bidderTypeId',
     // 'email',
     'bidderName',
     'relation',
     'fatherOrHusbandName',
-    'auctionPropertyType',
+    // 'auctionPropertyType',
     'address',
     'finalBidPrice',
     // 'formPaidAmount',
@@ -1555,7 +1555,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       finalBidPrice: 'Highest Bidder / Allotment Amount',
       allotmentTxnId: '25% Milestone Txn ID / Challan No.',
       auctionDate: 'Auction Date & Time',
-      bidderTypeId: 'Bidder Type',
+      // bidderTypeId: 'Bidder Type',
       bidderName: 'Allotee Name',
       relation: 'Relation',
       fatherOrHusbandName: 'Father / Husband Name',

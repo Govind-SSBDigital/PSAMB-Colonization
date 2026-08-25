@@ -242,6 +242,7 @@ export class SignupSignin implements OnInit {
   requiredAddressDocs = ['Utility Bill', 'Rental Agreement', 'Bank Statement'];
   showViewModal = false;
   showInstructionsModal = false;
+  showPassword = false;
 
   loggedInUser = {
     userId: '',
@@ -1197,5 +1198,8 @@ export class SignupSignin implements OnInit {
     if (this.selectedEntityType && this.proceedToForm && !this.shouldShowProcurementSection()) {
       this.showViewModal = true;
     }
+  }
+   toggleShowPassword(): void {
+    this.showPassword = !this.showPassword;
   }
 }

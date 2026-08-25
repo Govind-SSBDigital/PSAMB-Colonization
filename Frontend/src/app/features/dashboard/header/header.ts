@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { IdleTimeoutService } from './../../../core/service/idle-timeout.service';
+import { MenuService } from '../../../core/service/MenuService/menu.service';
 
 @Component({
   selector: 'app-header',
@@ -12,12 +13,20 @@ export class Header {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   isUserMenuOpen = false;
+  fullName: string = '';
 
   constructor(
     private readonly elementRef: ElementRef<HTMLElement>,
     private readonly router: Router,
-    private idleTimeoutService: IdleTimeoutService
+    private idleTimeoutService: IdleTimeoutService,
+    private menuService: MenuService
   ) {}
+
+   ngOnInit(): void {
+    this.menuService.profile$.subscribe(profile => {
+      this.fullName = profile?.fullName || '';
+    });
+  }
 
   onToggleSidebar() {
     this.toggleSidebar.emit();
