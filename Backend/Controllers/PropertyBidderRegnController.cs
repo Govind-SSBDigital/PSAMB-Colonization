@@ -37,6 +37,19 @@ namespace Backend.Controllers
             return Ok(response);
         }
 
+
+        [HttpGet("getAllRegisterPropertyById")]
+        public async Task<IActionResult> GetAllRegisterPropertyById()
+        {
+            var response = await _service.GetAllRegisterPropertyById(GetUserId());
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
         [HttpGet("getRegistrationById")]
         public async Task<IActionResult> GetRegistrationById(int id)
         {

@@ -57,7 +57,14 @@ namespace Backend.Models.Dtos
         public int ApplicationStatusId { get; set; }
         public string ApplicationStatusName { get; set; } = string.Empty;
     }
-
+    public class PropertyBidderRegistration
+    {
+        public int PropertyId { get; set; }
+        public string? AllotteeCode { get; set; }
+        public string? AllotteeName { get; set; }
+        public string? ApplicationStatusName { get; set; }
+        public string? Remarks { get; set; }
+    }
     public class PropertyBidderRegistrationDto
     {
         public int Id { get; set; }

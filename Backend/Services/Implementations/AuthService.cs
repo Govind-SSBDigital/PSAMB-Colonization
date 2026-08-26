@@ -506,25 +506,51 @@ namespace Backend.Services.Implementations
 
         public async Task ChangePasswordAsync(ChangePasswordRequest request)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+                throw new ArgumentException("Email is required");
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+                throw new ArgumentException("New password is required");
+
             if (request.NewPassword != request.ConfirmNewPassword)
                 throw new ArgumentException("New passwords do not match");
-            var user = await _userManager.FindByEmailAsync(request.Email)
-                ?? throw new KeyNotFoundException("User not found with this email");
+
+            var email = request.Email.Trim();
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                throw new KeyNotFoundException(
+                    "No account found with this email address.");
 
             if (!user.IsActive)
-                throw new UnauthorizedAccessException("Your account has been deactivated");
+                throw new UnauthorizedAccessException(
+                    "Your account has been deactivated.");
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var result = await _userManager.ChangePasswordAsync(
-                user, request.CurrentPassword, request.NewPassword);
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                resetToken,
+                request.NewPassword
+            );
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                var errors = string.Join(
+                    ", ",
+                    result.Errors.Select(e => e.Description)
+                );
+
                 throw new ArgumentException(errors);
             }
+
             user.IsFirstLogin = false;
+
             await _userManager.UpdateAsync(user);
 
+            // Update ApplicantAuth if record exists
             var auth = await _context.ApplicantAuths
                 .FirstOrDefaultAsync(x => x.Username == user.Email);
 
@@ -532,11 +558,15 @@ namespace Backend.Services.Implementations
             {
                 auth.PasswordHash = user.PasswordHash ?? string.Empty;
                 auth.UpdatedDate = DateTime.UtcNow;
+
                 _context.ApplicantAuths.Update(auth);
                 await _context.SaveChangesAsync();
             }
 
-            _logger.LogInformation("Password changed for: {Email}", request.Email);
+            _logger.LogInformation(
+                "Password changed successfully for: {Email}",
+                user.Email
+            );
         }
 
         private LoginResponse BuildLoginResponse(

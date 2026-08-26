@@ -983,8 +983,8 @@ namespace Backend.Services.Implementations
         }
         public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk(string? userid,string? searchCode,int districtId,int branchId,int mandiid)
         {
-            try
-            {
+            try 
+            { 
                 using var connection = _context.Database.GetDbConnection();
 
                 if (connection.State != ConnectionState.Open)
@@ -1867,6 +1867,30 @@ namespace Backend.Services.Implementations
         public Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ApiResponse<List<Models.Dtos.PropertyBidderRegistration>>> GetAllRegisterPropertyById(string v)
+        {
+            try
+            {
+                var result = await _context.Database
+                    .SqlQuery<Models.Dtos.PropertyBidderRegistration>(
+                        $"EXEC GetAllRegisterPropertyById @UserId={v}"
+                    )
+                    .ToListAsync();
+
+                return ApiResponse<List<Models.Dtos.PropertyBidderRegistration>>.Ok(
+                    result,
+                    "Properties fetched successfully"
+                );
+            }
+            catch (Exception ex)
+            {    
+
+                return ApiResponse<List<Models.Dtos.PropertyBidderRegistration>>.Fail(
+                    "Failed to fetch registered properties"
+                );
+            }
         }
     }
 }

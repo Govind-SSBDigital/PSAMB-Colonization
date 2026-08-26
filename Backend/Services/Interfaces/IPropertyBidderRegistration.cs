@@ -14,5 +14,6 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<bool>> VerifyByClerk(ClerkVerificationDto dto);
         Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyEAuctionDetailsByPropertyCodeAsync(string propertyCode);
         Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v);
+        Task<ApiResponse<List<PropertyBidderRegistration>>> GetAllRegisterPropertyById(string v);
     }
 }
