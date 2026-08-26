@@ -15,7 +15,11 @@ export class Propertybidderregn {
     // debugger
     return this.http.post<any>(`${this.baseUrl}/PropertyBidderRegn/registerProperty`, payload);
   }
-
+  GetAllRegisterPropertyById() {
+    return this.http.get<any>(
+      `${this.baseUrl}/PropertyBidderRegn/GetAllRegisterPropertyById`
+    );
+  }
   getRegistrationById(id: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/getRegistrationById?id=${id}`);
   }

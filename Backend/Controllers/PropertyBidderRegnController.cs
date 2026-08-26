@@ -10,7 +10,7 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class PropertyBidderRegnController : ControllerBase
     {
         private readonly IPropertyBidderRegistration _service;
