@@ -89,9 +89,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'address',
     'finalBidPrice',
     // 'formPaidAmount',
-    // 'allotmentDate',
+    'allotmentDate',
     // 'allotmentAmount',
-    'finalallotmentDate',
+    // 'AllotmentTransactionDate',
     'installmentNo',
     'dueDate',
     'paidStatus',
@@ -169,11 +169,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       emdDate: [''],
       emdAmount: [''],
       //25% form values 
-      allotmentDate: [''],
+      allotmentDate: ['', Validators.required],
       allotmentTxnId: [''],
-      allotmentAmount: [''],
+      allotmentTransactionDate: [''],
       //allotement form fields 
-      finalallotmentDate: ['', Validators.required],
+      allotmentAmount: [''],
       dueAmount: [''],
       accumulatedInterest: [0],
       totalDueWithInterest: [{ value: '', disabled: true }],
@@ -1138,6 +1138,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
               allotmentTxnId: d.allotmentTxnId,
               allotmentDate: d.allotmentDate ? d.allotmentDate.split('T')[0] : '',
+              allotmentTransactionDate: d.allotmentTransactionDate ? d.allotmentTransactionDate.split('T')[0] : '',
               allotmentAmount: d.allotmentAmount,
 
               dueAmount: d.dueAmount,
@@ -1524,10 +1525,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       relation: 'Relation',
       fatherOrHusbandName: 'Father / Husband Name',
       // auctionPropertyType: 'Property Type',
-      // allotmentDate: 'Allotment Transaction Date',
+      allotmentDate: 'Allotment Date',
       // allotmentAmount: 'Allotment Amount Paid',
       // mobileNo: 'Mobile No.'
-      finalallotmentDate: 'Final Allotment Date',
     };
     return Object.keys(labels)
       .filter((controlName) => {
@@ -1547,6 +1547,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         if (controls[name].invalid) {
           invalidControls.push(name);
         }
+      }
+      const isAuctioned = !!this.registerationForm.get('isAuctioned')?.value;
+      const plotStatus = this.registerationForm.get('plotStatus')?.value;
+      const isUnsold = plotStatus === '0' || plotStatus === 'Unsold';
+      if (!isAuctioned || isUnsold) {
+        return;
       }
       this.toastr.warning(`Please fill in all the required fields correctly: ${invalidControls.join(', ')}`, 'Validation Warning');
       return;
@@ -1711,6 +1717,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       allotmentTxnId: formRaw.allotmentTxnId,
       allotmentDate: formRaw.allotmentDate,
+      allotmentTransactionDate: formRaw.allotmentTransactionDate,
       allotmentAmount: formRaw.allotmentAmount,
 
       dueAmount: formRaw.dueAmount,
@@ -1826,8 +1833,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       allotmentDate: '',
       allotmentTxnId: '',
       allotmentAmount: '',
-      //allotment form fields
-      finalallotmentDate: '',
+      allotmentTransactionDate: '',
       dueAmount: '',
       accumulatedInterest: 0,
       totalDueWithInterest: '',
@@ -1869,6 +1875,13 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         if (controls[name].invalid) {
           invalidControls.push(name);
         }
+      }
+
+      const isAuctioned = !!this.registerationForm.get('isAuctioned')?.value;
+      const plotStatus = this.registerationForm.get('plotStatus')?.value;
+      const isUnsold = plotStatus === '0' || plotStatus === 'Unsold';
+      if (!isAuctioned || isUnsold) {
+        return;
       }
 
       this.toastr.warning(`Please fill in all the required fields correctly: ${invalidControls.join(', ')}`, 'Validation Warning');
@@ -1954,7 +1967,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('finalBidPrice')?.value) || 0;
     const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentAmount')?.value) || 0;
-    const milestoneDateStr = this.registerationForm.get('finalallotmentDate')?.value;
+    const milestoneDateStr = this.registerationForm.get('allotmentDate')?.value;
     const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
 
     // 2. Calculate TOTAL Outstanding Principal Balance
