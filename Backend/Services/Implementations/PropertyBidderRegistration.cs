@@ -96,6 +96,7 @@ namespace Backend.Services.Implementations
                     Address = dto.Address,
                     ReservePrice = dto.ReservePrice,
                     FinalBidPrice = dto.FinalBidPrice,
+                    AllotmentDate = dto.AllotmentDate,
                     FormTransactionId = dto.FormTransactionId,
                     FormTxnDate = dto.FormTxnDate,
                     FormPaidAmount = dto.FormPaidAmount,
@@ -103,7 +104,7 @@ namespace Backend.Services.Implementations
                     EmdDate = dto.EmdDate,
                     EmdAmount = dto.EmdAmount,
                     AllotmentTxnId = dto.AllotmentTxnId,
-                    AllotmentDate = dto.AllotmentDate,
+                    AllotmentTransactionDate = dto.AllotmentTransactionDate,
                     AllotmentAmount = dto.AllotmentAmount,
                     DueAmount = dto.DueAmount,
                     TotalDueWithInterest = dto.TotalDueWithInterest,
@@ -211,6 +212,7 @@ namespace Backend.Services.Implementations
                         Address = x.Address,
                         ReservePrice = x.ReservePrice,
                         FinalBidPrice = x.FinalBidPrice,
+                        AllotmentDate = x.AllotmentDate,
                         FormTransactionId = x.FormTransactionId,
                         FormTxnDate = x.FormTxnDate,
                         FormPaidAmount = x.FormPaidAmount,
@@ -218,7 +220,7 @@ namespace Backend.Services.Implementations
                         EmdDate = x.EmdDate,
                         EmdAmount = x.EmdAmount,
                         AllotmentTxnId = x.AllotmentTxnId,
-                        AllotmentDate = x.AllotmentDate,
+                        AllotmentTransactionDate = x.AllotmentTransactionDate,
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
@@ -326,6 +328,7 @@ namespace Backend.Services.Implementations
                         EmdAmount = x.EmdAmount,
                         AllotmentTxnId = x.AllotmentTxnId,
                         AllotmentDate = x.AllotmentDate,
+                        AllotmentTransactionDate= x.AllotmentTransactionDate,
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
@@ -749,7 +752,7 @@ namespace Backend.Services.Implementations
                             ? row["TransactionId"]?.ToString()
                             : null;
 
-                    response.AllotmentDate =
+                    response.AllotmentTransactionDate =
                         row["ReceiptDate"] != DBNull.Value
                             ? Convert.ToDateTime(row["ReceiptDate"])
                             : null;
@@ -819,6 +822,7 @@ namespace Backend.Services.Implementations
                         EmdAmount = x.EmdAmount,
                         AllotmentTxnId = x.AllotmentTxnId,
                         AllotmentDate = x.AllotmentDate,
+                        AllotmentTransactionDate = x.AllotmentTransactionDate,
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,

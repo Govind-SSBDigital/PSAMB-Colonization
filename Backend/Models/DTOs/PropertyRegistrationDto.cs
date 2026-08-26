@@ -109,6 +109,7 @@ namespace Backend.Models.Dtos
         // Financial Details
         public decimal? ReservePrice { get; set; }
         public decimal? FinalBidPrice { get; set; }
+        public DateTime? AllotmentDate { get; set; }
 
         // Form Fee
         public string? FormTransactionId { get; set; }
@@ -122,7 +123,7 @@ namespace Backend.Models.Dtos
 
         // 25% Allotment
         public string? AllotmentTxnId { get; set; }
-        public DateTime? AllotmentDate { get; set; }
+        public DateTime? AllotmentTransactionDate { get; set; }
         public decimal? AllotmentAmount { get; set; }
 
         // Outstanding
