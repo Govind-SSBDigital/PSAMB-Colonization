@@ -10,7 +10,9 @@ namespace Backend.Services.Interfaces
         Task<LoginResponse> LoginAsync(LoginRequest request);
         Task<UserProfileWithMenuResponse> GetProfileAsync(string userId);
         Task<UserResponse> UpdateProfileAsync(string userId, UpdateProfileRequest request);
-        Task ChangePasswordAsync(string userId, ChangePasswordRequest request);
+        Task ChangePasswordAsync(ChangePasswordRequest request);
         Task<LoginResponse> GenerateTokenForUser(ApplicationUser user);
+        Task<LoginResponse> firtLogin(LoginRequest request);
+        Task ChangeFirstLoginPasswordAsync(string userId, FirstLoginChangePasswordRequest request);
     }
 }

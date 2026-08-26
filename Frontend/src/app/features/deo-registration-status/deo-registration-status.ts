@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { PageEvent } from '@angular/material/paginator';
+import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 interface RegistrationRecord {
   allotteeCode: string;
   allotteeName: string;
@@ -53,26 +54,56 @@ export class DeoRegistrationStatus implements OnInit {
 
   filteredList: RegistrationRecord[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,private _service: Propertybidderregn) { }
 
   ngOnInit(): void {
-    this.filteredList = [...this.registrationList];
+        this.getRegistrationList();
+   // this.filteredList = [...this.registrationList];
   }
 
   onSearch(): void {
-    this.applyFilters();
-  }
 
+   // this.applyFilters();
+  }
+  getRegistrationList(): void {
+    debugger
+    this._service.GetAllRegisterPropertyById().subscribe({
+      next: (res: any) => {
+
+        if (res?.data) {
+          this.registrationList = res.data.map((item: any) => ({
+            allotteeCode: item.allotteeCode,
+            allotteeName: item.allotteeName,
+            approvalStatus: item.applicationStatusName,
+            remarks: item.remarks
+          }));
+        } else {
+          this.registrationList = [];
+        }
+
+        this.applyFilters();
+        this.updatePagedList();
+      },
+
+      error: (err) => {
+        console.error('Error loading registration list:', err);
+
+        this.registrationList = [];
+        this.filteredList = [];
+        this.pagedPropertyList = [];
+      }
+    });
+  }
   onFilterChange(): void {
     this.applyFilters();
   }
 
   private applyFilters(): void {
     this.filteredList = this.registrationList.filter(item => {
-      const matchesSearch = 
+      const matchesSearch =
         item.allotteeCode.toLowerCase().includes(this.searchText.toLowerCase()) ||
         item.allotteeName.toLowerCase().includes(this.searchText.toLowerCase());
-      
+
       const matchesStatus = this.selectedFilter === '' || item.approvalStatus === this.selectedFilter;
 
       return matchesSearch && matchesStatus;
@@ -108,12 +139,12 @@ export class DeoRegistrationStatus implements OnInit {
       }
     });
   }
-   onPageChange(event: PageEvent): void {
+  onPageChange(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.pageIndex = event.pageIndex;
     this.updatePagedList();
   }
-   updatePagedList(): void {
+  updatePagedList(): void {
     const startIndex = this.pageIndex * this.pageSize;
     this.pagedPropertyList = this.filteredList.slice(startIndex, startIndex + this.pageSize);
   }

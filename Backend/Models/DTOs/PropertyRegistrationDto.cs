@@ -57,7 +57,14 @@ namespace Backend.Models.Dtos
         public int ApplicationStatusId { get; set; }
         public string ApplicationStatusName { get; set; } = string.Empty;
     }
-
+    public class PropertyBidderRegistration
+    {
+        public int PropertyId { get; set; }
+        public string? AllotteeCode { get; set; }
+        public string? AllotteeName { get; set; }
+        public string? ApplicationStatusName { get; set; }
+        public string? Remarks { get; set; }
+    }
     public class PropertyBidderRegistrationDto
     {
         public int Id { get; set; }
@@ -169,7 +176,7 @@ namespace Backend.Models.Dtos
         public decimal? PenaltyAmount { get; set; }
         public string? PenaltyType { get; set; }
         public string? Remarks { get; set; }
-        public int ApplicantId { get; set; }
+        public int? ApplicantId { get; set; }
         public int? PropertyId { get; set; }
         public bool? IsVerified { get; set; }
     }
@@ -184,5 +191,15 @@ namespace Backend.Models.Dtos
         public string? Role { get; set; }
 
     }
+
+    public class PropertyApprovalRequestDto
+    {
+        public int UserId { get; set; }
+        public string? RoleId { get; set; }
+        public int DistrictId { get; set; }
+        public int BranchId { get; set; }
+        public int MandiId { get; set; }
+    }
+
 
 }

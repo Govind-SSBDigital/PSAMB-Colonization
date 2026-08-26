@@ -73,7 +73,7 @@ export class MainLayout {
       '/user-verification-view',
       '/verification',
       '/registration-status',
-      '/property-balance-calculation',
+      '/property-details',
       '/dashboard-citizen-services',
       '/role-management',
       '/online-payment-details',
