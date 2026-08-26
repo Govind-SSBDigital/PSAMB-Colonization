@@ -1,10 +1,5 @@
 <main class="registration-page min-vh-100 py-3 py-lg-4">
   <div class="registration-container container-xxl">
-    <!-- <div class="registration-title-card bg-white bg-opacity-75 rounded-4 p-4 mb-4 border shadow-sm">
-      <div class="d-flex flex-column flex-md-row justify-content-center align-items-md-center gap-3">
-        <h1 class="h4 text-dark mt-0 mb-0">Property &amp; Bidder Detail Registration</h1>
-      </div>
-    </div> -->
     <form [formGroup]="registerationForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="row g-4 mb-4">
         <div class="col-lg-8">
@@ -85,7 +80,7 @@
                       </ng-container>
                     </div>
                   </div>
-                  @if (isInvalid('branchId')) { <div class="invalid-feedback">Market Committee is required.</div> }
+                  @if (isInvalid('branchId')) { <div class="invalid-feedback d-block">Market Committee is required.</div> }
                 </div>
                 <div class="col-sm-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">
@@ -240,7 +235,7 @@
                       }
                     </div>
                   </div>
-                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback">Property category is required.
+                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback d-block">Property category is required.
                   </div> }
                 </div>
 
@@ -312,7 +307,7 @@
 
               <div class="col-md-4">
                 <label for="bidderTypeId" class="form-label small text-dark fw-semibold text-uppercase">Bidder
-                  Type <span class="text-danger">*</span></label>
+                  Type</label>
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('bidderTypeId')" [class.open]="isBidderTypeDropdownOpen"
@@ -333,11 +328,10 @@
                     }
                   </div>
                 </div>
-                @if (isInvalid('bidderTypeId')) { <div class="invalid-feedback">Bidder type is required.</div> }
+                <!-- @if (isInvalid('bidderTypeId')) { <div class="invalid-feedback d-block">Bidder type is required.</div> } -->
               </div>
               <div class="col-md-4">
-                <label for="email" class="form-label small text-dark fw-semibold text-uppercase">Email ID <span
-                    class="text-danger">*</span></label>
+                <label for="email" class="form-label small text-dark fw-semibold text-uppercase">Email ID</label>
                 <input id="email" type="email" class="form-control bg-light rounded-3 custom-input-color"
                   placeholder="bidder@domain.com" formControlName="email" [class.is-invalid]="isInvalid('email')" />
                 @if (isInvalid('email')) { <div class="invalid-feedback">{{ getErrorMessage('email', 'Email ID') }}
@@ -363,7 +357,7 @@
 
               <div class="col-md-4">
                 <label class="form-label small text-secondary fw-bold text-uppercase" for="isTransferred">Is
-                  Transfered<span class="text-danger"> *</span></label>
+                  Transfered</label>
                 <div class="bg-light rounded-3 p-2 border-1 border-secondary">
                   <div class="form-check form-switch d-flex align-items-center justify-content-between m-0 p-0">
                     <label class="form-check-label fw-semibold text-dark" for="isTransferred">Is Transfered</label>
@@ -400,9 +394,10 @@
                 </label>
                 <select id="relation" class="form-select bg-light rounded-3 custom-input-color"
                   formControlName="relation" [class.is-invalid]="isInvalid('relation')">
+                  <option value="" disabled>Select Relation</option>
                   @for (relation of relations; track relation) { <option [value]="relation">{{ relation }}</option> }
                 </select>
-                @if (isInvalid('relation')) { <div class="invalid-feedback">Relation is required.</div> }
+                @if (isInvalid('relation')) { <div class="invalid-feedback d-block">Relation is required.</div> }
               </div>
               <div class="col-md-4">
                 <label for="fatherOrHusbandName" class="form-label small text-dark fw-semibold text-uppercase">Father /
@@ -561,7 +556,7 @@
             </div>
 
             <div class="row g-3 mb-4">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="financial-tile bg-light border rounded-4 p-3 h-100">
                   <label for="reservePrice" class="form-label small text-dark fw-semibold text-uppercase">Reserve
                     Price</label>
@@ -574,7 +569,7 @@
                   </div> } -->
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="financial-tile bg-light border rounded-4 p-3 h-100">
                   <label for="h1BidderFinalPrice" class="form-label small text-dark fw-semibold text-uppercase">Highest
                     Bidder / Allotment Amount <span class="text-danger">*</span></label>
@@ -588,6 +583,17 @@
                     required.</div> }
                 </div>
               </div>
+              <div class="col-sm-4">
+                <div class="financial-tile bg-light border rounded-4 p-3 h-100">
+                  <label class="form-label small text-dark fw-semibold">Allotment
+                    Date <span class="text-danger">*</span>
+                  </label>
+                    <input type="date" class="form-control bg-white custom-input-color uppercase"
+                    formControlName="finalallotmentDate" [class.is-invalid]="isInvalid('finalallotmentDate')" />@if
+                  (isInvalid('finalallotmentDate')) { <div class="invalid-feedback">Allotment date is required.
+                  </div> }
+                  </div>
+                </div>
             </div>
 
             <div class="row g-3 mb-3">
@@ -603,17 +609,17 @@
                       (isInvalid('formTransactionId'))
                       { <div class="invalid-feedback">Transaction ID is required.</div> } -->
                     </div>
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date
-                        <span class="text-danger">*</span></label><input type="date"
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input type="date"
                         class="form-control bg-white custom-input-color uppercase" formControlName="formTxnDate"
                         [class.is-invalid]="isInvalid('formTxnDate')" />@if
                       (isInvalid('formTxnDate')) { <div class="invalid-feedback">Enter the date as
                         DD/MM/YYYY.</div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Paid Amount
-                        (Rs.) <span class="text-danger">*</span></label><input type="number"
+                        (Rs.)</label><input type="number"
                         class="form-control bg-white custom-input-color" formControlName="formPaidAmount"
-                        [class.is-invalid]="isInvalid('formPaidAmount')" />@if
-                      (isInvalid('formPaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> }
+                        [class.is-invalid]="isInvalid('formPaidAmount')" />
+                        <!-- @if
+                      (isInvalid('formPaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> } -->
                     </div>
                   </div>
                 </div>
@@ -652,28 +658,32 @@
             </div>
             <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money
-                Milestone <span class="text-danger">*</span></h3>
+                Milestone</h3>
               <div class="row g-2">
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">25% Milestone Txn
-                    ID</label><input type="text" class="form-control bg-white font-monospace custom-input-color"
+                    ID / Challan No.</label><input type="text" class="form-control bg-white font-monospace custom-input-color"
                     formControlName="allotmentTxnId" [class.is-invalid]="isInvalid('allotmentTxnId')" />
                   <!-- @if
                   (isInvalid('allotmentTxnId'))
                   { <div class="invalid-feedback">25% milestone transaction ID is required.</div> } -->
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
-                    Date</label><input type="date" class="form-control bg-white custom-input-color uppercase"
-                    formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />@if
+                    Date </label><input type="date" class="form-control bg-white custom-input-color uppercase"
+                    formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />
+                    <!-- @if
                   (isInvalid('allotmentDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
-                  </div> }
+                  </div> } -->
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid
                     (Rs.)</label><input type="number" class="form-control bg-white custom-input-color"
-                    formControlName="allotmentAmount" [class.is-invalid]="isInvalid('allotmentAmount')" />@if
-                  (isInvalid('allotmentAmount')) { <div class="invalid-feedback">Amount paid is required.</div> }
+                    formControlName="allotmentAmount" [class.is-invalid]="isInvalid('allotmentAmount')" />
+                    <!-- @if
+                  (isInvalid('allotmentAmount')) { <div class="invalid-feedback">Amount paid is required.</div> } -->
                 </div>
               </div>
             </div>
+
+
             <div class="financial-panel bg-light border rounded-4 p-3">
               <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp;
                 Installment Scheduler <span class="text-danger">*</span></h3>
@@ -747,6 +757,24 @@
                         </tr>
                         }
                       </tbody>
+                      <tfoot class="table-light">
+                        <tr class="fw-bold">
+                      
+                          <td colspan="2" class="text-end py-3">
+                            <!-- TOTAL: -->
+                          </td>
+                          <td class="py-3 text-muted fw-bold">
+                            ₹{{ totalBasePrincipal | number:'1.2-2' }}
+                          </td>
+                          <td class="py-3 text-muted fw-bold">
+                            ₹{{ totalInterest | number:'1.2-2' }}
+                          </td>
+                          <td class="text-end text-success py-3 pe-3 fw-bold">
+                            ₹{{ totalDueAmount | number:'1.2-2' }}
+                          </td>
+                      
+                        </tr>
+                      </tfoot>
                     </table>
                   </div>
                 </div>
@@ -762,7 +790,7 @@
               </div>
               <div class="col-sm-12">
                 <div
-                  class="table-responsive table-responsive-scroll rounded-3 overflow-hidden border shadow-sm bg-white">
+                  class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
                   <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap"
                     formArrayName="receiptsFormArray" scrollable="true">
                     <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
@@ -934,13 +962,21 @@
         </div>
       </div>
       }
+      @if (registerationForm.invalid && getPendingRequiredFieldLabels().length > 0) {
+      <div class="alert alert-warning py-2 px-3 small mb-3" role="alert">
+        <strong>Pending required fields:</strong>
+        {{ getPendingRequiredFieldLabels().join(', ') }}
+      </div>
+      }
       <div class="form-actions d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
           (click)="resetForm()">Cancel</button>
         <button type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
-          style="background: var(--theme-primary-alpha);" (click)="letshowPreview()" [disabled]="registerationForm.invalid">Preview</button>
+          style="background: var(--theme-primary-alpha);" (click)="letshowPreview()"
+          [disabled]="registerationForm.invalid">Preview</button>
       </div>
     </form>
+    <!-- preview  section  -->
     @if (showPreview) {
     <div class="preview-modal-backdrop mt-2" (click)="closePreviewModal()">
       <div id="preview-section" class="preview-modal-dialog" role="dialog" aria-modal="true"
@@ -1119,11 +1155,11 @@
             <h2 class="h5 mb-0">Financial Breakdowns</h2>
           </div>
           <div class="row g-3 mb-4">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label small text-dark fw-semibold text-uppercase">Reserve Price</label>
               <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('reservePrice')?.value ? ('Rs. ' + (registerationForm.get('reservePrice')?.value | number:'1.2-2')) : '—' }}</p>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label small text-dark fw-semibold text-uppercase">Highest Bidder / Allotment Amount</label>
               <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('finalBidPrice')?.value ? ('Rs. ' + (registerationForm.get('finalBidPrice')?.value | number:'1.2-2')) : '—' }}</p>
             </div>
@@ -1172,7 +1208,7 @@
             <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money Milestone</h3>
             <div class="row g-2">
               <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">25% Milestone Txn ID</label>
+                <label class="form-label small text-dark fw-semibold">25% Milestone Txn ID / Challan No.</label>
                 <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTxnId')?.value || '—' }}</p>
               </div>
               <div class="col-sm-4">
@@ -1185,6 +1221,21 @@
               </div>
             </div>
           </div>
+
+           <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
+            <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Allotment Details</h3>
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <label class="form-label small text-dark fw-semibold">Allotment Date</label>
+                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-dark fw-semibold">Allotment Amount (Rs.)</label>
+                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' + (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
+              </div>
+            </div>
+          </div>
+
           <div class="financial-panel bg-light border rounded-4 p-3">
             <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp; Installment Scheduler</h3>
             <div class="row g-3">
@@ -1230,6 +1281,24 @@
                       </tr>
                       }
                     </tbody>
+                     <tfoot class="table-light">
+                        <tr class="fw-bold">
+                      
+                          <td colspan="2" class="text-end py-3">
+                            <!-- TOTAL: -->
+                          </td>
+                          <td class="py-3 text-muted fw-bold">
+                            ₹{{ totalBasePrincipal | number:'1.2-2' }}
+                          </td>
+                          <td class="py-3 text-muted fw-bold">
+                            ₹{{ totalInterest | number:'1.2-2' }}
+                          </td>
+                          <td class="text-end text-success py-3 pe-3 fw-bold">
+                            ₹{{ totalDueAmount | number:'1.2-2' }}
+                          </td>
+                      
+                        </tr>
+                      </tfoot>
                   </table>
                 </div>
               </div>
@@ -1242,7 +1311,7 @@
               <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
             </div>
             <div class="col-sm-12">
-              <div class="table-responsive table-responsive-scroll rounded-3 overflow-hidden border shadow-sm bg-white">
+                  <div class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
                 <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
                   <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
                     <tr>

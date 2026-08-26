@@ -135,8 +135,9 @@
                             <i class="fas fa-lock"></i>
                         </div>
                         <div class="vertical-divider-screenshot">|</div>
-                        <input type="password" name="password" [(ngModel)]="loginData.password" required
+                        <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="loginData.password" required
                             placeholder="Enter Password">
+                            <i class="fa-solid password-toggle-icon" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" (click)="toggleShowPassword()"></i>
                     </div>
 
                     <!-- Captcha Section -->
@@ -349,7 +350,7 @@
                             </div>
                             <div class="category-inline-buttons">
                                 <button type="button" class="btn-proceed-signup" [disabled]="!selectedEntityType"
-                                    (click)="onProceedToForm()">
+                                    (click)="onProceedToForm(); checkAndShowModal()">
                                     Proceed (ਅੱਗੇ ਵਧੋ)
                                 </button>
                             </div>
@@ -397,3 +398,95 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade show d-block mt-3" tabindex="-1" *ngIf="showViewModal" (click)="closeViewModal()" role="dialog" aria-labelledby="instructionsModalLabel">
+    <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-content rounded-3 shadow border-0 overflow-hidden">
+
+            <!-- Header -->
+            <div class="modal-header text-white bg-success p-0 p-md-3">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="icon-circle d-flex align-items-center justify-content-center rounded-2 flex-shrink-0">
+                        <i class="fa-solid fa-file-lines fs-4"></i>
+                    </span>
+                    <div>
+                        <span class="d-block text-uppercase fw-bold small text-eyebrow">
+                            Before you begin
+                        </span>
+                        <h2 class="modal-title fs-5 fw-semibold mb-0" id="instructionsModalLabel">
+                            Required Documents / ਲੋੜੀਂਦੇ ਦਸਤਾਵੇਜ਼
+                        </h2>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" (click)="closeViewModal()" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body p-1 p-md-3 bg-white">
+                <p class="text-dark small mb-4">
+                    Please keep these documents ready before starting. All files should be clear, legible and valid.
+                </p>
+
+                <!-- Identity Proof -->
+                <div class="doc-card rounded-3 p-3 mb-3">
+                    <h3 class="d-flex flex-wrap align-items-center gap-2 fs-6 fw-bold mb-3 text-heading">
+                        <i class="fas fa-id-card text-success"></i>
+                        Identity Proof
+                        <span class="fw-semibold text-secondary">/ ਪਛਾਣ ਪ੍ਰਮਾਣ</span>
+                        <span class="badge bg-white text-success border ms-auto text-uppercase fw-bold badge-xs">
+                            Any one
+                        </span>
+                    </h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span *ngFor="let d of requiredIdDocs"
+                              class="doc-chip d-inline-flex align-items-center gap-2 bg-white border border-success-subtle rounded-2 px-3 py-2 fw-bold text-success">
+                            <i class="fas fa-check small"></i>{{ d }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Address Proof -->
+                <div class="doc-card rounded-3 p-3 mb-3">
+                    <h3 class="d-flex flex-wrap align-items-center gap-2 fs-6 fw-bold mb-3 text-heading">
+                        <i class="fas fa-home text-success"></i>
+                        Address Proof
+                        <span class="fw-semibold text-secondary">/ ਪਤਾ ਪ੍ਰਮਾਣ</span>
+                        <span class="badge bg-white text-success border ms-auto text-uppercase fw-bold badge-xs">
+                            Any one
+                        </span>
+                    </h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span *ngFor="let d of requiredAddressDocs"
+                              class="doc-chip d-inline-flex align-items-center gap-2 bg-white border border-success-subtle rounded-2 px-3 py-2 fw-bold text-success">
+                            <i class="fas fa-check small"></i>{{ d }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Photograph -->
+                <div class="doc-card rounded-3 p-3 mb-0">
+                    <h3 class="d-flex flex-wrap align-items-center gap-2 fs-6 fw-bold mb-3 text-heading">
+                        <i class="fas fa-camera text-success"></i>
+                        Photograph
+                        <span class="fw-semibold text-secondary">/ ਫੋਟੋ</span>
+                    </h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="doc-chip d-inline-flex align-items-center gap-2 bg-white border border-success-subtle rounded-2 px-3 py-2 fw-bold text-success">
+                            <i class="fas fa-check small"></i>Upload your Photo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer justify-content-end bg-light border-top p-3">
+                <button type="button" class="btn btn-success fw-semibold d-inline-flex align-items-center gap-2"
+                        (click)="closeViewModal()">
+                    Got it / ਸਮਝ ਗਿਆ <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop show" *ngIf="showViewModal"></div>

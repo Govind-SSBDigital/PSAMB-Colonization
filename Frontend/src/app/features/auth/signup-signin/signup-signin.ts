@@ -189,6 +189,11 @@ export class SignupSignin implements OnInit {
   showRegistrationSuccessAlert = false;
   errorMessage = '';
   private toastHideTimer: any = null;
+  requiredIdDocs = ['Aadhaar Card', 'Voter Card', 'Passport', 'Driving License'];
+  requiredAddressDocs = ['Utility Bill', 'Rental Agreement', 'Bank Statement'];
+  showViewModal = false;
+  showInstructionsModal = false;
+  showPassword = false;
 
   loggedInUser = {
     userId: '',
@@ -1003,5 +1008,22 @@ export class SignupSignin implements OnInit {
     navigator.clipboard.writeText(text);
     this.triggerToast('Copied to clipboard!', 'success');
   }
+  closeViewModal() {
+    if (this.bootstrapModal) {
+      this.bootstrapModal.hide();
+      this.bootstrapModal.dispose();
+      this.bootstrapModal = null;
+    }
+    this.showViewModal = false;
+    this.showInstructionsModal = false;
+  }
 
+  checkAndShowModal() {
+    if (this.selectedEntityType && this.proceedToForm && !this.shouldShowProcurementSection()) {
+      this.showViewModal = true;
+    }
+  }
+   toggleShowPassword(): void {
+    this.showPassword = !this.showPassword;
+  }
 }
