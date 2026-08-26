@@ -589,8 +589,8 @@
                     Date <span class="text-danger">*</span>
                   </label>
                     <input type="date" class="form-control bg-white custom-input-color uppercase"
-                    formControlName="finalallotmentDate" [class.is-invalid]="isInvalid('finalallotmentDate')" />@if
-                  (isInvalid('finalallotmentDate')) { <div class="invalid-feedback">Allotment date is required.
+                    formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />@if
+                  (isInvalid('allotmentDate')) { <div class="invalid-feedback">Allotment date is required.
                   </div> }
                   </div>
                 </div>
@@ -669,9 +669,9 @@
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
                     Date </label><input type="date" class="form-control bg-white custom-input-color uppercase"
-                    formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />
+                    formControlName="allotmentTransactionDate" [class.is-invalid]="isInvalid('allotmentTransactionDate')" />
                     <!-- @if
-                  (isInvalid('allotmentDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
+                  (isInvalid('allotmentTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
                   </div> } -->
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid
@@ -1163,6 +1163,10 @@
               <label class="form-label small text-dark fw-semibold text-uppercase">Highest Bidder / Allotment Amount</label>
               <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('finalBidPrice')?.value ? ('Rs. ' + (registerationForm.get('finalBidPrice')?.value | number:'1.2-2')) : '—' }}</p>
             </div>
+            <div class="col-md-4">
+              <label class="form-label small text-dark fw-semibold text-uppercase">Allotment Date</label>
+              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
+            </div>
           </div>
           <div class="row g-3 mb-3">
             <div class="col-lg-12">
@@ -1213,24 +1217,10 @@
               </div>
               <div class="col-sm-4">
                 <label class="form-label small text-dark fw-semibold">Transaction Date</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
+                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTransactionDate')?.value || '—' }}</p>
               </div>
               <div class="col-sm-4">
                 <label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' + (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-            </div>
-          </div>
-
-           <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
-            <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Allotment Details</h3>
-            <div class="row g-2">
-              <div class="col-sm-6">
-                <label class="form-label small text-dark fw-semibold">Allotment Date</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
-              </div>
-              <div class="col-sm-6">
-                <label class="form-label small text-dark fw-semibold">Allotment Amount (Rs.)</label>
                 <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' + (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
               </div>
             </div>

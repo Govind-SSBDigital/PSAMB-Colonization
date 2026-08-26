@@ -1,1 +1,318 @@
-<p>This is the online payment details page.</p>
+<div class="ip-page">
+
+  <div class="ip-card mb-4">
+    <div class="ip-card-header">
+      <i class="fa-solid fa-filter me-2"></i>Select Plot
+    </div>
+    <div class="ip-card-body">
+      <form [formGroup]="filterForm" class="row g-3 align-items-end">
+
+        <div class="col-12 col-md-3">
+          <label class="ip-label" for="plotNo">Plot Number <span class="text-danger">*</span></label>
+          <select id="plotNo" class="form-select ip-select" formControlName="plotNo">
+            <option [ngValue]="null">---Select Plot No---</option>
+            @for (plot of plotOptions; track plot.plotNo) {
+              <option [ngValue]="plot.plotNo">{{ plot.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (plotDetail) {
+          <div class="col-12 col-md-3">
+            <label class="ip-label" for="paymentType">Payment Type <span class="text-danger">*</span></label>
+            <select id="paymentType" class="form-select ip-select" formControlName="paymentType">
+              <option [ngValue]="null">--Select Payment type---</option>
+              @for (type of paymentTypes; track type) {
+                <option [ngValue]="type">{{ type }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="ip-label" for="totalAmount">Total Amount <span class="text-danger">*</span></label>
+            <input
+              id="totalAmount"
+              type="text"
+              class="form-control ip-select"
+              formControlName="totalAmount">
+          </div>
+
+          <div class="col-12 col-md-2">
+            <button
+              type="button"
+              class="btn ip-btn-primary w-75"
+              [disabled]="paymentTypeControl.invalid"
+              (click)="payNow()">
+              Pay Now
+            </button>
+          </div>
+        }
+
+      </form>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="ip-loading text-center py-5">
+      <div class="spinner-border" role="status" style="color:#14513f;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 mb-0 text-muted">Fetching plot details…</p>
+    </div>
+  }
+
+  @if (plotDetail && !loading) {
+
+    <div class="ip-card mb-4">
+      <div class="ip-card-header">
+        <i class="fa-solid fa-location-dot me-2"></i>Plot Detail
+      </div>
+      <div class="ip-card-body">
+        <div class="row gy-3">
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Mandi Name</div>
+            <div class="ip-detail-value">{{ plotDetail.mandiName }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Plot No.</div>
+            <div class="ip-detail-value">{{ plotDetail.plotNo }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Plot Type</div>
+            <div class="ip-detail-value">{{ plotDetail.plotType }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Plot Size</div>
+            <div class="ip-detail-value">{{ plotDetail.plotSize }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Reserve Price</div>
+            <div class="ip-detail-value">₹{{ plotDetail.reservePrice | number:'1.0-0' }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Sales Amount</div>
+            <div class="ip-detail-value">₹{{ plotDetail.salesAmount | number:'1.0-0' }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Initial 25% Amount</div>
+            <div class="ip-detail-value">₹{{ plotDetail.initial25Amount | number:'1.0-0' }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">EMD Amount</div>
+            <div class="ip-detail-value">₹{{ plotDetail.emdAmount | number:'1.0-0' }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Processing Fees</div>
+            <div class="ip-detail-value">₹{{ plotDetail.processingFees | number:'1.0-0' }} <span class="text-muted small">(Incl. GST 18%)</span></div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Initial Payable Amount</div>
+            <div class="ip-detail-value" [class.text-danger]="plotDetail.initialPayableAmount < 0">
+              ₹{{ plotDetail.initialPayableAmount | number:'1.0-0' }}
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Initial Penalty (If Any)</div>
+            <div class="ip-detail-value text-danger">₹{{ plotDetail.initialPenalty | number:'1.0-0' }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Total Payable Initially</div>
+            <div class="ip-detail-value fw-bold" [class.text-danger]="plotDetail.totalToBePaidInitially < 0">
+              ₹{{ plotDetail.totalToBePaidInitially | number:'1.0-0' }}
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Auction Date</div>
+            <div class="ip-detail-value">{{ plotDetail.auctionDate }}</div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ip-detail-label">Allotment Date</div>
+            <div class="ip-detail-value">{{ plotDetail.allotmentDate }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ip-card mb-4">
+      <div class="ip-card-header">
+        <i class="fa-solid fa-receipt me-2"></i>Payment Detail
+      </div>
+      <div class="ip-card-body">
+
+        <div class="ip-notice mb-4">
+          <div class="ip-notice-title">
+            <i class="fa-solid fa-circle-info me-2"></i>Important Notice
+          </div>
+          <ol class="ip-notice-list mb-0">
+            <li>Amount payable if outstanding plot dues are cleared by <strong>10-07-2025</strong> with a 5% cash discount: <strong>₹5,60,737.5</strong></li>
+            <li>Amount payable if outstanding plot dues are cleared by <strong>09-08-2025</strong> without any discount: <strong>₹5,90,250</strong></li>
+            <li>If paid in equal installments from <strong>10-06-2025</strong> at 12% annual interest, amounts are as shown under Installment Details.</li>
+          </ol>
+        </div>
+
+        <ul class="nav ip-tabs mb-3" role="tablist">
+          @for (tab of tabs; track tab.key) {
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link ip-tab"
+                [class.active]="activeTab === tab.key"
+                type="button"
+                (click)="setActiveTab(tab.key)">
+                <i class="fa-solid me-1" [ngClass]="tab.icon"></i>{{ tab.label }}
+              </button>
+            </li>
+          }
+        </ul>
+
+        <!-- Tab: Payment Successful -->
+        @if (activeTab === 'successful') {
+          <div class="table-responsive">
+            <table class="table ip-table align-middle">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Date of Payment</th>
+                  <th>Transaction Ref. No.</th>
+                  <th>Payment Type</th>
+                  <th>Payment Mode</th>
+                  <th>Status</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of successfulPayments; track trackByRef($index, p)) {
+                  <tr>
+                    <td><button type="button" class="btn btn-sm ip-icon-btn" title="Print receipt"><i class="fa-solid fa-print"></i></button></td>
+                    <td>{{ p.dateOfPayment }}</td>
+                    <td>{{ p.transactionRef }}</td>
+                    <td>{{ p.paymentType }}</td>
+                    <td>{{ p.paymentMode }}</td>
+                    <td><span [ngClass]="statusBadgeClass(p.status)">{{ p.status }}</span></td>
+                    <td class="text-end">₹{{ p.amount | number:'1.0-0' }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No successful payments yet.</td>
+                  </tr>
+                }
+              </tbody>
+              @if (successfulPayments.length) {
+                <tfoot>
+                  <tr>
+                    <td colspan="6" class="text-end fw-semibold">Total</td>
+                    <td class="text-end fw-bold">₹{{ totalPaid | number:'1.0-0' }}</td>
+                  </tr>
+                </tfoot>
+              }
+            </table>
+          </div>
+        }
+
+        <!-- Tab: Payment History -->
+        @if (activeTab === 'history') {
+          <div class="table-responsive">
+            <table class="table ip-table align-middle">
+              <thead>
+                <tr>
+                  <th>Date of Payment</th>
+                  <th>Transaction Ref. No.</th>
+                  <th>Payment Type</th>
+                  <th>Payment Mode</th>
+                  <th>Status</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of paymentHistory; track trackByRef($index, p)) {
+                  <tr>
+                    <td>{{ p.dateOfPayment }}</td>
+                    <td>{{ p.transactionRef }}</td>
+                    <td>{{ p.paymentType }}</td>
+                    <td>{{ p.paymentMode }}</td>
+                    <td><span [ngClass]="statusBadgeClass(p.status)">{{ p.status }}</span></td>
+                    <td class="text-end">₹{{ p.amount | number:'1.0-0' }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">No payment history found.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- Tab: Installment Details -->
+        @if (activeTab === 'installments') {
+          <div class="table-responsive">
+            <table class="table ip-table align-middle">
+              <thead>
+                <tr>
+                  <th>Installment No.</th>
+                  <th>Due Date</th>
+                  <th class="text-end">Principal</th>
+                  <th class="text-end">Interest @12%</th>
+                  <th class="text-end">Total Due</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (i of installmentSchedule; track i.installmentNo) {
+                  <tr>
+                    <td>{{ i.installmentNo }}</td>
+                    <td>{{ i.dueDate }}</td>
+                    <td class="text-end">₹{{ i.principal | number:'1.0-0' }}</td>
+                    <td class="text-end">₹{{ i.interest | number:'1.0-0' }}</td>
+                    <td class="text-end fw-semibold">₹{{ i.totalDue | number:'1.0-0' }}</td>
+                    <td><span [ngClass]="statusBadgeClass(i.status)">{{ i.status }}</span></td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">No installment schedule available.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- Tab: Awaited / Failure -->
+        @if (activeTab === 'awaited') {
+          <div class="table-responsive">
+            <table class="table ip-table align-middle">
+              <thead>
+                <tr>
+                  <th>Date of Payment</th>
+                  <th>Transaction Ref. No.</th>
+                  <th>Payment Type</th>
+                  <th>Payment Mode</th>
+                  <th>Status</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of awaitedFailures; track trackByRef($index, p)) {
+                  <tr>
+                    <td>{{ p.dateOfPayment }}</td>
+                    <td>{{ p.transactionRef }}</td>
+                    <td>{{ p.paymentType }}</td>
+                    <td>{{ p.paymentMode }}</td>
+                    <td><span [ngClass]="statusBadgeClass(p.status)">{{ p.status }}</span></td>
+                    <td class="text-end">₹{{ p.amount | number:'1.0-0' }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">No awaited or failed payments.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+      </div>
+    </div>
+
+  }
+
+</div>
