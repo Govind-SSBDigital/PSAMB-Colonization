@@ -17,7 +17,7 @@
     <button class="navbar-toggler dashboard-menu-toggle" type="button" [attr.aria-expanded]="isUserMenuOpen"
       aria-label="Toggle navigation" (click)="toggleUserMenu($event)">
       <span class="menu-toggle-text d-none d-md-inline-flex align-items-center gap-3">
-         User
+         {{ fullName }}
         <i class="fa-solid fa-chevron-down"></i>
       </span>
       <i class="fa-solid fa-ellipsis-vertical custom-icon d-inline-flex d-md-none"></i>

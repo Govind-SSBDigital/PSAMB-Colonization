@@ -66,7 +66,7 @@ import { Footer } from './footer/footer';
                 .then((m) => m.DeoRegistrationStatus),
           },
           {
-            path: 'property-balance-calculation',
+            path: 'property-details',
             loadComponent: () =>
               import('../property-balance-calculate/property-balance-calculate')
                 .then((m) => m.PropertyBalanceCalculate),
@@ -88,6 +88,12 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../../features/online-payment-detail/online-payment-detail')
                 .then((m) => m.OnlinePaymentDetail),
+          },
+          {
+            path: 'coming-soon',
+            loadComponent: () =>
+              import('../../features/comming-soon-pages/comming-soon-pages')
+                .then((m) => m.CommingSoonPages),
           }
         ]
       }

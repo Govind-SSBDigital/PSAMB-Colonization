@@ -77,6 +77,7 @@ export class MainLayout {
       '/dashboard-citizen-services',
       '/role-management',
       '/online-payment-details',
+      '/coming-soon',
     ];
     return dashboardRoutes.some(
       (route) =>

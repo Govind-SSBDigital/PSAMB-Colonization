@@ -80,17 +80,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   private auctionRequiredControls = [
     'auctionDate',
-    'bidderTypeId',
-    'email',
+    // 'bidderTypeId',
+    // 'email',
     'bidderName',
     'relation',
     'fatherOrHusbandName',
-    'auctionPropertyType',
+    // 'auctionPropertyType',
     'address',
     'finalBidPrice',
-    'formPaidAmount',
-    'allotmentDate',
-    'allotmentAmount',
+    // 'formPaidAmount',
+    // 'allotmentDate',
+    // 'allotmentAmount',
+    'finalallotmentDate',
     'installmentNo',
     'dueDate',
     'paidStatus',
@@ -117,7 +118,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       branchId: ['', Validators.required],
       districtId: ['', Validators.required],
-      mandiId: [''],
+      mandiId: ['', Validators.required],
       // mandi: ['', Validators.required],
       propertycode: [''],
 
@@ -145,7 +146,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       transferredNames: this.fb.array([]),
       isTransferred: [false],
 
-      relation: ['Self'],
+      relation: [''],
       fatherOrHusbandName: [''],
 
       panNo: ['', [Validators.pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)]],
@@ -167,11 +168,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       emdTxnId: [''],
       emdDate: [''],
       emdAmount: [''],
-
+      //25% form values 
       allotmentDate: [''],
       allotmentTxnId: [''],
       allotmentAmount: [''],
-
+      //allotement form fields 
+      finalallotmentDate: ['', Validators.required],
       dueAmount: [''],
       accumulatedInterest: [0],
       totalDueWithInterest: [{ value: '', disabled: true }],
@@ -1235,29 +1237,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     });
   }
 
-  // loadReceiptData(): void {
-  //   this.receiptList = [
-  //     {
-  //       receiptNo: 'REC-2026-001',
-  //       receiptDate: '2026-07-10',
-  //       draftNo: 'DRF987654',
-  //       draftAmount: 55000.00,
-  //       draftDate: '2026-07-09',
-  //       draftBank: 'abc',
-  //       principalAmount: 50000.00,
-  //       interestAmount: 4500.00,
-  //       otherAmount: 500.00,
-  //       penaltyAmount: 0.00,
-  //       penaltyType: 'N/A',
-  //       remarks: '1st Installment received.'
-  //     }
-  //   ];
-  //   // Set interest amount dynamically to Form State before running layout calculations
-  //   const receiptInterest = this.receiptList.reduce((acc, rec) => acc + (rec.interestAmount || 0), 0);
-  //   this.registerationForm.get('accumulatedInterest')?.setValue(receiptInterest, { emitEvent: false });
-  //   this.populateReceiptsFormArray();
-  // }
-
   private populateReceiptsFormArray(): void {
     this.receiptsFormArray.clear();
     this.receiptList.forEach(receipt => {
@@ -1446,21 +1425,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return isNaN(fallbackDate.getTime()) ? null : fallbackDate;
   }
 
-  // formatDateField(event: Event): void {
-  //   const input = event.target as HTMLInputElement;
-  //   let digits = input.value.replace(/\D/g, '').slice(0, 8);
-  //   if (digits.length >= 5) {
-  //     digits = digits.replace(/^(\d{2})(\d{2})(\d{0,4}).*$/, '$1/$2/$3');
-  //   } else if (digits.length >= 3) {
-  //     digits = digits.replace(/^(\d{2})(\d{0,2}).*$/, '$1/$2');
-  //   }
-  //   input.value = digits;
-  //   const controlName = input.getAttribute('formControlName');
-  //   if (controlName && this.registerationForm.get(controlName)) {
-  //     this.registerationForm.get(controlName)?.setValue(digits, { emitEvent: false });
-  //   }
-  // }
-
   get filteredDistricts(): any[] {
     const term = this.districtSearchText?.toLowerCase().trim();
     if (!term) return this.districts;
@@ -1540,6 +1504,38 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return `${label} is required.`;
   }
 
+  getPendingRequiredFieldLabels(): string[] {
+    const labels: Record<string, string> = {
+      districtId: 'District',
+      branchId: 'Market Committee',
+      mandiId: 'Mandi',
+      plotNo: 'Plot No.',
+      plotsize: 'Plot Size',
+      plotTypeId: 'Plot Type',
+      plotStatus: 'Plot Status',
+      planId: 'Plan',
+      propertyCategoryId: 'Property Category',
+      address: 'Permanent Communication Address',
+      finalBidPrice: 'Highest Bidder / Allotment Amount',
+      // allotmentTxnId: '25% Milestone Txn ID / Challan No.',
+      auctionDate: 'Auction Date & Time',
+      // bidderTypeId: 'Bidder Type',
+      bidderName: 'Allotee Name',
+      relation: 'Relation',
+      fatherOrHusbandName: 'Father / Husband Name',
+      // auctionPropertyType: 'Property Type',
+      // allotmentDate: 'Allotment Transaction Date',
+      // allotmentAmount: 'Allotment Amount Paid',
+      // mobileNo: 'Mobile No.'
+      finalallotmentDate: 'Final Allotment Date',
+    };
+    return Object.keys(labels)
+      .filter((controlName) => {
+        const control = this.registerationForm.get(controlName);
+        return !!control && control.invalid;
+      })
+      .map((controlName) => labels[controlName]);
+  }
 
   onSubmit(): void {
     // debugger
@@ -1811,7 +1807,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       email: '',
       bidderName: '',
       isTransferred: false,
-      relation: 'Self',
+      relation: '',
       fatherOrHusbandName: '',
       panNo: '',
       aadhaarNo: '',
@@ -1826,9 +1822,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       emdTxnId: '',
       emdDate: '',
       emdAmount: '',
+      //25% form fields
       allotmentDate: '',
       allotmentTxnId: '',
       allotmentAmount: '',
+      //allotment form fields
+      finalallotmentDate: '',
       dueAmount: '',
       accumulatedInterest: 0,
       totalDueWithInterest: '',
@@ -1860,6 +1859,22 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   letshowPreview(): void {
+    this.updateAuctionValidators(!!this.registerationForm.get('isAuctioned')?.value);
+    this.registerationForm.markAllAsTouched();
+
+    if (this.registerationForm.invalid) {
+      const invalidControls: string[] = [];
+      const controls = this.registerationForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          invalidControls.push(name);
+        }
+      }
+
+      this.toastr.warning(`Please fill in all the required fields correctly: ${invalidControls.join(', ')}`, 'Validation Warning');
+      return;
+    }
+
     this.showPreview = true;
     this.previewConfirmed = false;
   }
@@ -1882,9 +1897,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       if (isAuctioned) {
         if (controlName === 'email') {
-          control.setValidators([Validators.required, Validators.email]);
+          control.setValidators([Validators.email]);
         } else if (controlName === 'aadhaarNo') {
-          control.setValidators([Validators.required, Validators.pattern(/^XXXXXXXX\d{4}$/)]);
+          control.setValidators([Validators.pattern(/^XXXXXXXX\d{4}$/)]);
         } else if (controlName === 'mobileNo') {
           control.setValidators([Validators.required, Validators.pattern(/^[6-9]\d{9}$/), Validators.minLength(10), Validators.maxLength(10)]);
         } else {
@@ -1931,92 +1946,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
   // CORE CALCULATION ALGORITHM
 
-  // Core calculation logic for dynamic installment schedule generation and UI binding
-  //  private calculateUIInstallments(): void {
-  //   // 1. Fetch form variables safely
-  //   const finalBidderPrice = Number(this.registerationForm.get('h1BidderFinalPrice')?.value) || 0;
-  //   const emdPaid = Number(this.registerationForm.get('emdPaidAmount')?.value) || 0;
-  //   const allotmentPaid_25_percentage= Number(this.registerationForm.get('allotmentPaidAmount')?.value) || 0;
-  //   const milestoneDateStr = this.registerationForm.get('allotmentTransactionDate')?.value;
-  //   const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
-  //   const currentInterest = Number(this.registerationForm.get('accumulatedInterest')?.value) || 0;
-
-  //   // 2. Calculate TOTAL Outstanding Principal Balance
-  //   // const downPaymentsTotal = emdPaid + allotmentPaid;
-  //   const outstandingPrincipal = finalBidderPrice - allotmentPaid_25_percentage;
-
-  //   // Compute the base installment rate (1/6th of total outstanding principal)
-  //   let computedDueAmount = 0;
-  //   if (outstandingPrincipal > 0) {
-  //     computedDueAmount = outstandingPrincipal / 6;
-  //     computedDueAmount = Math.round((computedDueAmount + Number.EPSILON) * 100) / 100;
-  //   }
-
-  //   // NEW: Divide the interest evenly across all 6 installments
-  //   let computedInterestPerInstallment = 0;
-  //   if (currentInterest > 0) {
-  //     computedInterestPerInstallment = currentInterest / 6;
-  //     computedInterestPerInstallment = Math.round((computedInterestPerInstallment + Number.EPSILON) * 100) / 100;
-  //   }
-
-  //   // 3. Generate the 6-part amortization matrix table
-  //   const generatedMatrix: InstallmentScheduleView[] = [];
-
-  //   //date calculation part below
-  //   for (let step = 1; step <= 6; step++) {
-  //     let calculatedDateStr = '';
-
-  //     if (milestoneDateStr) {
-  //       const parts = milestoneDateStr.split('-');
-  //       if (parts.length === 3) {
-  //         const baseYear = parseInt(parts[0], 10);
-  //         const baseMonth = parseInt(parts[1], 10) - 1;
-  //         const baseDay = parseInt(parts[2], 10);
-
-  //         const targetTotalMonths = baseMonth + (step * 6);
-  //         const targetYear = baseYear + Math.floor(targetTotalMonths / 12);
-  //         const targetMonth = targetTotalMonths % 12;
-
-  //         const targetDateObj = new Date(targetYear, targetMonth, baseDay);
-
-  //         if (targetDateObj.getDate() !== baseDay) {
-  //           targetDateObj.setDate(0);
-  //         }
-
-  //         const pad = (num: number) => num.toString().padStart(2, '0');
-  //         calculatedDateStr = `${targetDateObj.getFullYear()}-${pad(targetDateObj.getMonth() + 1)}-${pad(targetDateObj.getDate())}`;
-  //       }
-  //     }
-
-  //     const currentLabel = `Installment ${step}`;
-
-  //     // Calculate total amount for this row (Base Principal + Evenly Split Interest)
-  //     const stepTotalWithInterest = computedDueAmount > 0 ? (computedDueAmount + computedInterestPerInstallment) : 0;
-
-  //     generatedMatrix.push({
-  //       index: step,
-  //       installmentLabel: currentLabel,
-  //       dueDate: calculatedDateStr,
-  //       baseAmountDue: computedDueAmount,
-  //       totalWithInterest: Math.round((stepTotalWithInterest + Number.EPSILON) * 100) / 100
-  //     });
-  //   }
-
-  //   this.calculatedSchedulesMatrix = generatedMatrix;
-
-  //   // 4. Calculate total overall due (Full Principal + Accumulated Interest)
-  //   const finalTotalDueIncludingInterest = outstandingPrincipal > 0 ? (outstandingPrincipal + currentInterest) : 0;
-  //   const activeNode = generatedMatrix.find(item => item.installmentLabel === selectedInstallmentString);
-  //   const activeDueDate = activeNode ? activeNode.dueDate : '';
-
-  //   // 5. Patch corrected, high-level overview values to UI inputs
-  //   this.registerationForm.patchValue({
-  //     dueAmount: outstandingPrincipal > 0 ? outstandingPrincipal : '', // Displays 27,500.00
-  //     dueDate: activeDueDate,
-  //     totalDueAmount: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : '' // Displays 32,000.00
-  //   }, { emitEvent: false });
-  // }
-
   private calculateUIInstallments(): void {
     if (!this.registerationForm.get('isAuctioned')?.value) {
       return;
@@ -2025,7 +1954,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('finalBidPrice')?.value) || 0;
     const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentAmount')?.value) || 0;
-    const milestoneDateStr = this.registerationForm.get('allotmentDate')?.value;
+    const milestoneDateStr = this.registerationForm.get('finalallotmentDate')?.value;
     const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
 
     // 2. Calculate TOTAL Outstanding Principal Balance
@@ -2126,5 +2055,28 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       dueDate: activeDueDate,
       totalDueWithInterest: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : ''
     }, { emitEvent: false });
+  }
+//Total Interest, Principal and Total Due amount from calculatedSchedulesMatrix
+
+  get totalInterest(): number {
+  const totalInterest = this.calculatedSchedulesMatrix.reduce(
+    (sum, schedule) => sum + (schedule.interestAmount || 0),
+    0
+  );
+  return Math.round(totalInterest);
+}
+  get totalBasePrincipal(): number {
+    const totalBasePrincipal = this.calculatedSchedulesMatrix.reduce(
+      (sum, schedule) => sum + (schedule.baseAmountDue || 0),
+      0
+    );
+    return Math.round(totalBasePrincipal);
+  }
+  get totalDueAmount(): number {
+    const totalDueAmount = this.calculatedSchedulesMatrix.reduce(
+      (sum, schedule) => sum + (schedule.totalWithInterest || 0),
+      0
+    );
+    return Math.round(totalDueAmount);
   }
 }
