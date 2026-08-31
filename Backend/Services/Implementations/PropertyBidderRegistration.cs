@@ -509,14 +509,7 @@ namespace Backend.Services.Implementations
                     
                 }
 
-                if (response.PlanId > 0 && string.IsNullOrEmpty(response.PlanName))
-                {
-                    var plan = await _context.PlanMaster.AsNoTracking().FirstOrDefaultAsync(p => p.PlanId == response.PlanId);
-                    if (plan != null)
-                    {
-                        response.PlanName = plan.PlanName;
-                    }
-                }
+               
                 // Allottee Details 
                 if (dataSet.Tables.Count > 1 &&
                     dataSet.Tables[1].Rows.Count > 0)
@@ -2135,7 +2128,7 @@ namespace Backend.Services.Implementations
 
                 await connection.OpenAsync();
 
-                using var command = new SqlCommand("SP_GetPropertyDetailsByMandiPlot", connection); 
+                using var command = new SqlCommand("SP_GetPropertyDetailsByMandiPlot", connection);
                 command.CommandType = CommandType.StoredProcedure;
                 // NEW PARAMETERS
                 command.Parameters.AddWithValue("@MandiId", MandiId);
@@ -2255,14 +2248,7 @@ namespace Backend.Services.Implementations
 
                 }
 
-                if (response.PlanId > 0 && string.IsNullOrEmpty(response.PlanName))
-                {
-                    var plan = await _context.PlanMaster.AsNoTracking().FirstOrDefaultAsync(p => p.PlanId == response.PlanId);
-                    if (plan != null)
-                    {
-                        response.PlanName = plan.PlanName;
-                    }
-                }
+
                 // Allottee Details 
                 if (dataSet.Tables.Count > 1 &&
                     dataSet.Tables[1].Rows.Count > 0)
@@ -2511,10 +2497,10 @@ namespace Backend.Services.Implementations
                             ? row["DraftNo"]?.ToString()
                             : null;
 
-                     response.AllotmentTransactionDate =
-                        row["ReceiptDate"] != DBNull.Value
-                            ? Convert.ToDateTime(row["ReceiptDate"])
-                            : null;
+                    response.AllotmentTransactionDate =
+                       row["ReceiptDate"] != DBNull.Value
+                           ? Convert.ToDateTime(row["ReceiptDate"])
+                           : null;
 
                     response.AllotmentAmount =
                         row["DraftAmount"] != DBNull.Value
@@ -2529,6 +2515,7 @@ namespace Backend.Services.Implementations
                 return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
 
             }
+        }
         public Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v)
         {
             throw new NotImplementedException();
