@@ -62,7 +62,11 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
         builder.Entity<DistrictMaster>().ToTable("DistrictMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.DistrictId);
         builder.Entity<CityMaster>().ToTable("CityMaster", t => t.ExcludeFromMigrations()).HasKey(x => x.CityId);
         builder.Entity<EmailOtp>().ToTable("EmailOTP", t => t.ExcludeFromMigrations()).HasKey(x => x.OTPId);
-
+        builder.Entity<IdentityApplicationUser>(b =>
+        {
+            b.Property(x => x.IsFirstLogin)
+             .HasDefaultValue(true); 
+        });
         // 3. ApplicationUser ENTITY CONFIGURATION
         builder.Entity<ApplicationUser>(b =>
         {

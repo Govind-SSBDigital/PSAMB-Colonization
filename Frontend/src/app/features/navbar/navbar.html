@@ -71,7 +71,56 @@
         <i class="fas fa-chevron-down dropdown-arrow" [class.rotated]="isDownloadsOpen"></i>
         </button>
         <ul class="dropdown-menu custom-bg" [class.show]="isDownloadsOpen">
+            <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_sale_gift.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-invoice icon-dropdown"></i> Sale/Gift/Transfer Application Proforma
+            </a>
+          </li>
           <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_tfr_wtht_approval.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-signature icon-dropdown"></i> Transfer After Unauthorized Sale/Gift
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_tfr_lgl_heir.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-users-slash icon-dropdown"></i> 	Ownership Transfer to Legal Heir
+            </a>
+          </li>  <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_tfr_with_approval.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-invoice icon-dropdown"></i> Transfer After Approved Sale/Gift
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_reg_will.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-signature icon-dropdown"></i> Transfer via Registered Will
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_unreg_will.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-users-slash icon-dropdown"></i> 	Transfer via Unregistered Will
+            </a>
+          </li>
+            <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_tfr_policy.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-invoice icon-dropdown"></i> 	Transfer Under Transfer Policy
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_bank_loan.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-file-signature icon-dropdown"></i> 	Bank Loan on Allotment Letter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_convy_sale_bankloan.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-users-slash icon-dropdown"></i> 	Conveyance Deed/Sale/Loan Application
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://mandiboard.emandikaran-pb.in/plots/pmb_formB_conveyance_deed.pdf" download (click)="closeMobileMenu()">
+              <i class="fas fa-users-slash icon-dropdown"></i> 		Conveyance Deed Form-B
+            </a>
+          </li>
+          <!-- <li>
             <a class="dropdown-item" href="/downloads/ndc_requirements.txt" download (click)="closeMobileMenu()">
               <i class="fas fa-file-invoice icon-dropdown"></i> Documents for NDC
             </a>
@@ -85,7 +134,7 @@
             <a class="dropdown-item" href="/downloads/permission_to_transfer_death_case.txt" download (click)="closeMobileMenu()">
               <i class="fas fa-users-slash icon-dropdown"></i> Permission to Transfer
             </a>
-          </li>
+          </li> -->
         </ul>
       </div>
 

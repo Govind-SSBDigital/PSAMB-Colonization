@@ -52,13 +52,45 @@ export class PropertyVerification implements OnInit {
     this.GetPendingForClerk();
   }
 
-  mapStatus(statusId: number | null | undefined): string {
-    if (statusId === 2 || statusId === 3 || statusId === 4) return 'Verified';
-    if (statusId === 7) return 'Objection';
+  mapStatus(statusId: number | null | undefined, roleName: string | null | undefined
+  ): string {
+    debugger
+    const role = (roleName || '').trim().toLowerCase();
+
+    // Objection
+    if (statusId === 7) {
+      return 'Objection';
+    }
+    if (role === 'senior assistant') {
+      if (statusId === 2) {
+        return 'Pending';
+      }
+      if (statusId === 3 || statusId === 4) {
+        return 'Verified';
+      }
+      return 'Pending';
+    }
+    if (role === 'clerk') {
+      if (statusId === 1) {
+        return 'Pending';
+      }
+
+      if (statusId === 2 || statusId === 3 || statusId === 4) {
+        return 'Verified';
+      }
+      return 'Pending';
+    }
+
+    if (statusId === 2 || statusId === 3 || statusId === 4) {
+      return 'Verified';
+    }
     return 'Pending';
   }
 
   GetPendingForClerk(searchCode?: string) {
+
+    const roleName = this.getUserRole();
+    console.log('Current Role:', roleName);
     this.service.GetPendingForClerk(searchCode).subscribe({
       next: (res: any) => {
         // console.log('API prop Types:', res);
@@ -71,11 +103,12 @@ export class PropertyVerification implements OnInit {
           branch: d.branchName || 'N/A',
           district: d.districtName || 'N/A',
           mandiName: d.mandiName || 'N/A',
-          status: this.mapStatus(d.applicationStatusId),
+          status: this.mapStatus(d.applicationStatusId, roleName),
           registrationDate: d.createdDate ? d.createdDate : new Date().toISOString(),
           label: d.label || 'User',
           firstName: d.firstName,
-          applicationStatusId: d.applicationStatusId
+          applicationStatusId: d.applicationStatusId,
+          roleName: roleName
         }));
         this.buildFilterOptions();
         this.applyFilter();
@@ -85,6 +118,28 @@ export class PropertyVerification implements OnInit {
         console.error('Error fetching property types:', err);
       }
     });
+  }
+  getUserRole(): string {
+    try {
+      debugger
+      const cpMenus = sessionStorage.getItem('cp_menus');
+
+      if (!cpMenus) {
+        return '';
+      }
+
+      const user = JSON.parse(cpMenus);
+
+      console.log('cp_menus:', user);
+      console.log('profile:', user?.profile);
+      console.log('roles:', user?.profile?.roles);
+
+      return user?.profile?.roles?.[0] || '';
+
+    } catch (error) {
+      console.error('Error getting user role:', error);
+      return '';
+    }
   }
   buildFilterOptions(): void {
     this.marketCommitteeList = Array.from(

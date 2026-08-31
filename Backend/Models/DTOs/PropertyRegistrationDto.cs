@@ -57,7 +57,14 @@ namespace Backend.Models.Dtos
         public int ApplicationStatusId { get; set; }
         public string ApplicationStatusName { get; set; } = string.Empty;
     }
-
+    public class PropertyBidderRegistration
+    {
+        public int PropertyId { get; set; }
+        public string? AllotteeCode { get; set; }
+        public string? AllotteeName { get; set; }
+        public string? ApplicationStatusName { get; set; }
+        public string? Remarks { get; set; }
+    }
     public class PropertyBidderRegistrationDto
     {
         public int Id { get; set; }
@@ -103,6 +110,7 @@ namespace Backend.Models.Dtos
         // Financial Details
         public decimal? ReservePrice { get; set; }
         public decimal? FinalBidPrice { get; set; }
+        public DateTime? AllotmentDate { get; set; }
 
         // Form Fee
         public string? FormTransactionId { get; set; }
@@ -116,7 +124,7 @@ namespace Backend.Models.Dtos
 
         // 25% Allotment
         public string? AllotmentTxnId { get; set; }
-        public DateTime? AllotmentDate { get; set; }
+        public DateTime? AllotmentTransactionDate { get; set; }
         public decimal? AllotmentAmount { get; set; }
 
         // Outstanding
@@ -169,7 +177,7 @@ namespace Backend.Models.Dtos
         public decimal? PenaltyAmount { get; set; }
         public string? PenaltyType { get; set; }
         public string? Remarks { get; set; }
-        public int ApplicantId { get; set; }
+        public int? ApplicantId { get; set; }
         public int? PropertyId { get; set; }
         public bool? IsVerified { get; set; }
     }
@@ -196,4 +204,14 @@ namespace Backend.Models.Dtos
     {
         public int? PlotNo { get; set; }
     }
+    public class PropertyApprovalRequestDto
+    {
+        public int UserId { get; set; }
+        public string? RoleId { get; set; }
+        public int DistrictId { get; set; }
+        public int BranchId { get; set; }
+        public int MandiId { get; set; }
+    }
+
+
 }

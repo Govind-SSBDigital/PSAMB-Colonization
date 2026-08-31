@@ -97,6 +97,7 @@ namespace Backend.Services.Implementations
                     Address = dto.Address,
                     ReservePrice = dto.ReservePrice,
                     FinalBidPrice = dto.FinalBidPrice,
+                    AllotmentDate = dto.AllotmentDate,
                     FormTransactionId = dto.FormTransactionId,
                     FormTxnDate = dto.FormTxnDate,
                     FormPaidAmount = dto.FormPaidAmount,
@@ -104,7 +105,7 @@ namespace Backend.Services.Implementations
                     EmdDate = dto.EmdDate,
                     EmdAmount = dto.EmdAmount,
                     AllotmentTxnId = dto.AllotmentTxnId,
-                    AllotmentDate = dto.AllotmentDate,
+                    AllotmentTransactionDate = dto.AllotmentTransactionDate,
                     AllotmentAmount = dto.AllotmentAmount,
                     DueAmount = dto.DueAmount,
                     TotalDueWithInterest = dto.TotalDueWithInterest,
@@ -212,6 +213,7 @@ namespace Backend.Services.Implementations
                         Address = x.Address,
                         ReservePrice = x.ReservePrice,
                         FinalBidPrice = x.FinalBidPrice,
+                        AllotmentDate = x.AllotmentDate,
                         FormTransactionId = x.FormTransactionId,
                         FormTxnDate = x.FormTxnDate,
                         FormPaidAmount = x.FormPaidAmount,
@@ -219,7 +221,7 @@ namespace Backend.Services.Implementations
                         EmdDate = x.EmdDate,
                         EmdAmount = x.EmdAmount,
                         AllotmentTxnId = x.AllotmentTxnId,
-                        AllotmentDate = x.AllotmentDate,
+                        AllotmentTransactionDate = x.AllotmentTransactionDate,
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
@@ -327,6 +329,7 @@ namespace Backend.Services.Implementations
                         EmdAmount = x.EmdAmount,
                         AllotmentTxnId = x.AllotmentTxnId,
                         AllotmentDate = x.AllotmentDate,
+                        AllotmentTransactionDate= x.AllotmentTransactionDate,
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
@@ -762,7 +765,7 @@ namespace Backend.Services.Implementations
                             ? row["DraftNo"]?.ToString()
                             : null;
 
-                    response.AllotmentDate =
+                    response.AllotmentTransactionDate =
                         row["ReceiptDate"] != DBNull.Value
                             ? Convert.ToDateTime(row["ReceiptDate"])
                             : null;
@@ -832,6 +835,7 @@ namespace Backend.Services.Implementations
                         EmdAmount = x.EmdAmount,
                         AllotmentTxnId = x.AllotmentTxnId,
                         AllotmentDate = x.AllotmentDate,
+                        AllotmentTransactionDate = x.AllotmentTransactionDate,
                         AllotmentAmount = x.AllotmentAmount,
                         DueAmount = x.DueAmount,
                         TotalDueWithInterest = x.TotalDueWithInterest,
@@ -994,124 +998,292 @@ namespace Backend.Services.Implementations
                 return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
             }
         }
-
-        public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk(string? searchCode)
+        public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk(string? userid,string? searchCode,int districtId,int branchId,int mandiid)
         {
-            try
-            {
-                var list = await (
-                    from x in _context.PropertyBidderRegistration
+            try 
+            { 
+                using var connection = _context.Database.GetDbConnection();
 
-                    join u in _context.ApplicationUsers
-                        on x.CreatedBy equals u.ApplicantId into userJoin
-                    from u in userJoin.DefaultIfEmpty()
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
 
-                    join ur in _context.UserRoles
-                        on u.IdentityUserId equals ur.UserId into userRoleJoin
-                    from ur in userRoleJoin.DefaultIfEmpty()
+                using var command = connection.CreateCommand();
 
-                    join r in _context.Roles
-                        on ur.RoleId equals r.Id into roleJoin
-                    from r in roleJoin.DefaultIfEmpty()
+                command.CommandText = "SP_GetDateForPropertyVerification";
+                command.CommandType = CommandType.StoredProcedure;
 
-                    where x.IsActive && !x.IsDeleted && (string.IsNullOrEmpty(searchCode) || x.PropertyCode.Contains(searchCode))
+                command.Parameters.Add(
+                    new SqlParameter("@UserId",
+                        (object?)userid ?? DBNull.Value));
 
-                    select new PropertyBidderRegistrationDto
+                command.Parameters.Add(
+                    new SqlParameter("@SearchCode",
+                        (object?)searchCode ?? DBNull.Value));
+
+                command.Parameters.Add(
+                    new SqlParameter("@DistrictId", districtId));
+
+                command.Parameters.Add(
+                    new SqlParameter("@BranchId", branchId));
+
+                command.Parameters.Add(
+                    new SqlParameter("@MandiId", mandiid));
+
+                using var reader = await command.ExecuteReaderAsync();
+
+                var list = new List<PropertyBidderRegistrationDto>();
+
+                while (await reader.ReadAsync())
+                {
+                    var item = new PropertyBidderRegistrationDto
                     {
-                        Id = x.Id,
-                        MandiId = x.MandiId,
-                        BranchId = x.BranchId,
-                        ApplicantId = x.ApplicantId,
-                        DistrictId = x.DistrictId,
-                        PlotTypeId = x.PlotTypeId,
-                        PlanId = x.PlanId,
-                        PlotSize = x.PlotSize,
-                        PlotNo = x.PlotNo,
-                        AssetResumed = x.AssetResumed,
-                        AssetSurrendered = x.AssetSurrendered,
-                        IsAssetLocked = x.IsAssetLocked,
-                        IsDefaulter = x.IsDefaulter,
-                        AnyComplaint = x.AnyComplaint,
-                        NdcGenerated = x.NdcGenerated,
-                        NdcIssued = x.NdcIssued,
-                        AssetVerified = x.AssetVerified,
-                        IsCourtCase = x.IsCourtCase,
-                        IsAuctioned = x.IsAuctioned,
-                        AuctionDate = x.AuctionDate,
-                        BidderTypeId = x.BidderTypeId,
-                        BidderName = x.BidderName,
-                        Email = x.Email,
-                        IsTransferred = x.IsTransferred,
-                        Relation = x.Relation,
-                        FatherOrHusbandName = x.FatherOrHusbandName,
-                        PANNo = x.PANNo,
-                        AadhaarNo = x.AadhaarNo,
-                        MobileNo = x.MobileNo,
-                        PropertyTypeId = x.PropertyTypeId,
-                        Address = x.Address,
-                        ReservePrice = x.ReservePrice,
-                        FinalBidPrice = x.FinalBidPrice,
-                        FormTransactionId = x.FormTransactionId,
-                        FormTxnDate = x.FormTxnDate,
-                        FormPaidAmount = x.FormPaidAmount,
-                        EmdTxnId = x.EmdTxnId,
-                        EmdDate = x.EmdDate,
-                        EmdAmount = x.EmdAmount,
-                        AllotmentTxnId = x.AllotmentTxnId,
-                        AllotmentDate = x.AllotmentDate,
-                        AllotmentAmount = x.AllotmentAmount,
-                        DueAmount = x.DueAmount,
-                        TotalDueWithInterest = x.TotalDueWithInterest,
-                        ApplicationStatusId = x.ApplicationStatusId,
-                        PlotStatus = x.PlotStatus,
-                        PropertyCategoryId = x.PropertyCategoryId,
-                        PropertyCode = x.PropertyCode,
-                        CreatedBy = x.CreatedBy,
-                        Remarks=x.Remarks,
-                        DistrictName = x.District != null ? x.District.DistrictName : "",
-                        BranchName = x.Branch != null ? x.Branch.BranchName : "",
-                        MandiName = x.Mandi != null ? x.Mandi.MandiName : "",
+                        Id = Convert.ToInt32(reader["Id"]),
 
-                        IdentityUserId = u != null ? u.IdentityUserId : null,
-                        UserId = ur != null ? ur.UserId : null,
-                        RoleName = r != null ? r.Name : null,
-                        FirstName= u.FirstName,
+                        MandiId = Convert.ToInt32(reader["MandiId"]),
 
-                        Label = r != null && r.Name.ToUpper() == "DEO" ? "DEO" : "User",
-                        OwnerStateID = x.OwnerStateID,
-                        OwnerDistrtictID = x.OwnerDistrtictID,
-                        OwnerCityID = x.OwnerCityID
+                        BranchId = Convert.ToInt32(reader["BranchId"]),
+
+                        ApplicantId = GetInt(reader, "ApplicantId"),
+
+                        DistrictId = Convert.ToInt32(reader["DistrictId"]),
+
+                        PlotTypeId = GetInt(reader, "PlotTypeId"),
+
+                        PlanId = GetInt(reader, "PlanId"),
+
+                        PlotSize = GetString(reader, "PlotSize"),
+
+                        // IMPORTANT:
+                        // DB = int, DTO = int?
+                        PlotNo = GetInt(reader, "PlotNo"),
+
+                        // Flags
+                        AssetResumed = GetBool(reader, "AssetResumed"),
+
+                        AssetSurrendered = GetBool(reader, "AssetSurrendered"),
+
+                        IsAssetLocked = GetBool(reader, "IsAssetLocked"),
+
+                        IsDefaulter = GetBool(reader, "IsDefaulter"),
+
+                        AnyComplaint = GetBool(reader, "AnyComplaint"),
+
+                        NdcGenerated = GetBool(reader, "NdcGenerated"),
+
+                        NdcIssued = GetBool(reader, "NdcIssued"),
+
+                        AssetVerified = GetBool(reader, "AssetVerified"),
+
+                        IsCourtCase = GetBool(reader, "IsCourtCase"),
+
+                        // Auction
+                        IsAuctioned = GetBool(reader, "IsAuctioned"),
+
+                        AuctionDate = GetDateTime(reader, "AuctionDate"),
+
+                        BidderTypeId = GetInt(reader, "BidderTypeId"),
+
+                        BidderName = GetString(reader, "BidderName"),
+
+                        Email = GetString(reader, "Email"),
+
+                        IsTransferred = GetBool(reader, "IsTransferred"),
+
+                        // Personal
+                        Relation = GetString(reader, "Relation"),
+
+                        FatherOrHusbandName =
+                            GetString(reader, "FatherOrHusbandName"),
+
+                        PANNo = GetString(reader, "PANNo"),
+
+                        AadhaarNo = GetString(reader, "AadhaarNo"),
+
+                        MobileNo = GetString(reader, "MobileNo"),
+
+                        PropertyTypeId = GetInt(reader, "PropertyTypeId"),
+
+                        Address = GetString(reader, "Address"),
+
+                        // Financial
+                        ReservePrice = GetDecimal(reader, "ReservePrice"),
+
+                        FinalBidPrice = GetDecimal(reader, "FinalBidPrice"),
+
+                        // Form
+                        FormTransactionId =
+                            GetString(reader, "FormTransactionId"),
+
+                        FormTxnDate =
+                            GetDateTime(reader, "FormTxnDate"),
+
+                        FormPaidAmount =
+                            GetDecimal(reader, "FormPaidAmount"),
+
+                        // EMD
+                        EmdTxnId =
+                            GetString(reader, "EmdTxnId"),
+
+                        EmdDate =
+                            GetDateTime(reader, "EmdDate"),
+
+                        EmdAmount =
+                            GetDecimal(reader, "EmdAmount"),
+
+                        // Allotment
+                        AllotmentTxnId =
+                            GetString(reader, "AllotmentTxnId"),
+
+                        AllotmentDate =
+                            GetDateTime(reader, "AllotmentDate"),
+
+                        AllotmentAmount =
+                            GetDecimal(reader, "AllotmentAmount"),
+
+                        // Outstanding
+                        DueAmount =
+                            GetDecimal(reader, "DueAmount"),
+
+                        TotalDueWithInterest =
+                            GetDecimal(reader, "TotalDueWithInterest"),
+
+                        ApplicationStatusId =
+                            GetInt(reader, "ApplicationStatusId"),
+
+                        PlotStatus =
+                            GetString(reader, "PlotStatus") ?? string.Empty,
+
+                        PropertyCategoryId =
+                            GetInt(reader, "PropertyCategoryId"),
+
+                        PropertyCode =
+                            GetString(reader, "PropertyCode"),
+
+                        // CreatedBy is BIGINT
+                        CreatedBy =
+                            GetLong(reader, "CreatedBy"),
+
+                        Remarks =
+                            GetString(reader, "Remarks"),
+
+                        // Owner
+                        OwnerStateID =
+                            GetInt(reader, "OwnerStateID"),
+
+                        OwnerDistrtictID =
+                            GetInt(reader, "OwnerDistrtictID"),
+
+                        OwnerCityID =
+                            GetInt(reader, "OwnerCityID"),
+
+                        // Master names
+                        DistrictName =
+                            GetString(reader, "DistrictName") ?? string.Empty,
+
+                        BranchName =
+                            GetString(reader, "BranchName") ?? string.Empty,
+
+                        MandiName =
+                            GetString(reader, "MandiName") ?? string.Empty,
+
+                        // User / Role
+                        IdentityUserId =
+                            GetString(reader, "IdentityUserId"),
+
+                        FirstName =
+                            GetString(reader, "FirstName"),
+
+                        UserId =
+                            GetString(reader, "UserId"),
+
+                        RoleName =
+                            GetString(reader, "RoleName"),
+
+                        Label =
+                            GetString(reader, "Label"),
+
+                        // Initialize
+                        Installments = new List<InstallmentDetailsDto>()
+                    };
+
+                    list.Add(item);
+                }
+
+
+                var installments = new List<InstallmentDetailsDto>();
+
+                if (await reader.NextResultAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var installment = new InstallmentDetailsDto
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+
+                            ReceiptNo =
+                                GetString(reader, "ReceiptNo"),
+
+                            ReceiptDate =
+                                GetDateTime(reader, "ReceiptDate"),
+
+                            DraftNo =
+                                GetString(reader, "DraftNo"),
+
+                            DraftAmount =
+                                GetDecimal(reader, "DraftAmount"),
+
+                            DraftDate =
+                                GetDateTime(reader, "DraftDate"),
+
+                            DraftBank =
+                                GetString(reader, "DraftBank"),
+
+                            PrincipalAmount =
+                                GetDecimal(reader, "PrincipalAmount"),
+
+                            InterestAmount =
+                                GetDecimal(reader, "InterestAmount"),
+
+                            OtherAmount =
+                                GetDecimal(reader, "OtherAmount"),
+
+                            PenaltyAmount =
+                                GetDecimal(reader, "PenaltyAmount"),
+
+                            PenaltyType =
+                                GetString(reader, "PenaltyType"),
+
+                            Remarks =
+                                GetString(reader, "Remarks"),
+
+                            ApplicantId =
+                                GetInt(reader, "ApplicantId"),
+
+                            PropertyId =
+                                GetInt(reader, "PropertyId"),
+
+                            IsVerified =
+                                GetBool(reader, "IsVerified")
+                        };
+
+                        installments.Add(installment);
                     }
-                ).OrderByDescending(x=>x.Id).ToListAsync();
+                }
 
-                var propertyIds = list.Select(x => (int?)x.Id).ToList();
 
-                var allInstallments = await _context.InstallmentDetails
-                    .AsNoTracking()
-                    .Where(i => propertyIds.Contains(i.PropertyId))
-                    .Select(i => new InstallmentDetailsDto
-                    {
-                        Id = i.Id,
-                        ReceiptNo = i.ReceiptNo,
-                        ReceiptDate = i.ReceiptDate,
-                        DraftNo = i.DraftNo,
-                        DraftAmount = i.DraftAmount,
-                        DraftDate = i.DraftDate,
-                        DraftBank = i.DraftBank,
-                        PrincipalAmount = i.Principal,
-                        InterestAmount = i.Interest,
-                        OtherAmount = i.OtherAmount,
-                        PenaltyAmount = i.PenaltyAmount,
-                        PenaltyType = i.Type,
-                        Remarks = i.Remarks,
-                        ApplicantId = i.ApplicantId,
-                        PropertyId = i.PropertyId,
-                        IsVerified = i.IsVerified
-                    })
-                    .ToListAsync();
+                foreach (var property in list)
+                {
+                    property.Installments = installments
+                        .Where(i => i.PropertyId == property.Id)
+                        .ToList();
+                }
+
 
                 return ApiResponse<List<PropertyBidderRegistrationDto>>
-                    .Ok(list, "Registrations fetched successfully");
+                    .Ok(
+                        list,
+                        "Registrations fetched successfully"
+                    );
             }
             catch (Exception ex)
             {
@@ -1119,6 +1291,516 @@ namespace Backend.Services.Implementations
                     .Fail(ex.Message);
             }
         }
+        private static int? GetInt(IDataRecord reader, string column)
+        {
+            var value = reader[column];
+
+            if (value == DBNull.Value || value == null)
+                return null;
+
+            return Convert.ToInt32(value);
+        }
+
+        private static long? GetLong(IDataRecord reader, string column)
+        {
+            var value = reader[column];
+
+            if (value == DBNull.Value || value == null)
+                return null;
+
+            return Convert.ToInt64(value);
+        }
+
+        private static decimal? GetDecimal(IDataRecord reader, string column)
+        {
+            var value = reader[column];
+
+            if (value == DBNull.Value || value == null)
+                return null;
+
+            return Convert.ToDecimal(value);
+        }
+
+        private static DateTime? GetDateTime(IDataRecord reader, string column)
+        {
+            var value = reader[column];
+
+            if (value == DBNull.Value || value == null)
+                return null;
+
+            return Convert.ToDateTime(value);
+        }
+
+        private static bool? GetBool(IDataRecord reader, string column)
+        {
+            var value = reader[column];
+
+            if (value == DBNull.Value || value == null)
+                return null;
+
+            return Convert.ToBoolean(value);
+        }
+
+        private static string? GetString(IDataRecord reader, string column)
+        {
+            var value = reader[column];
+
+            if (value == DBNull.Value || value == null)
+                return null;
+
+            return value.ToString();
+        }
+        //public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk(
+        //    string? userid,
+        //    string? searchCode,
+        //    int districtId,
+        //    int branchId,
+        //    int mandiid)
+        //{
+        //    try
+        //    {
+        //        using var connection = _context.Database.GetDbConnection();
+        //        await connection.OpenAsync();
+
+        //        using var command = connection.CreateCommand();
+
+        //        command.CommandText = "SP_GetDateForPropertyVerification";
+        //        command.CommandType = CommandType.StoredProcedure;
+
+        //        command.Parameters.Add(
+        //            new SqlParameter("@UserId", (object?)userid ?? DBNull.Value));
+
+        //        command.Parameters.Add(
+        //            new SqlParameter("@SearchCode", (object?)searchCode ?? DBNull.Value));
+
+        //        command.Parameters.Add(
+        //            new SqlParameter("@DistrictId", districtId));
+
+        //        command.Parameters.Add(
+        //            new SqlParameter("@BranchId", branchId));
+
+        //        command.Parameters.Add(
+        //            new SqlParameter("@MandiId", mandiid));
+
+        //        using var reader = await command.ExecuteReaderAsync();
+
+        //        var list = new List<PropertyBidderRegistrationDto>();
+
+        //        while (await reader.ReadAsync())
+        //        {
+        //            list.Add(new PropertyBidderRegistrationDto
+        //            {
+        //                Id = Convert.ToInt32(reader["Id"]),
+        //                MandiId = Convert.ToInt32(reader["MandiId"]),
+        //                BranchId = Convert.ToInt32(reader["BranchId"]),
+        //                ApplicantId = Convert.ToInt32(reader["ApplicantId"]),
+        //                DistrictId = Convert.ToInt32(reader["DistrictId"]),
+
+        //                PlotTypeId = reader["PlotTypeId"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToInt32(reader["PlotTypeId"]),
+
+        //                PlanId = reader["PlanId"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToInt32(reader["PlanId"]),
+
+        //                PlotSize = reader["PlotSize"].ToString(),
+
+        //                PlotNo = reader["PlotNo"] == DBNull.Value ? 0 : Convert.ToInt32("PlotNo"),
+
+        //                AssetResumed = reader["AssetResumed"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["AssetResumed"]),
+
+        //                AssetSurrendered = reader["AssetSurrendered"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["AssetSurrendered"]),
+
+        //                IsAssetLocked = reader["IsAssetLocked"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["IsAssetLocked"]),
+
+        //                IsDefaulter = reader["IsDefaulter"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["IsDefaulter"]),
+
+        //                AnyComplaint = reader["AnyComplaint"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["AnyComplaint"]),
+
+        //                NdcGenerated = reader["NdcGenerated"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["NdcGenerated"]),
+
+        //                NdcIssued = reader["NdcIssued"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["NdcIssued"]),
+
+        //                AssetVerified = reader["AssetVerified"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["AssetVerified"]),
+
+        //                IsCourtCase = reader["IsCourtCase"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["IsCourtCase"]),
+
+        //                IsAuctioned = reader["IsAuctioned"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["IsAuctioned"]),
+
+        //                AuctionDate = reader["AuctionDate"] == DBNull.Value
+        //                    ? null
+        //                    : Convert.ToDateTime(reader["AuctionDate"]),
+
+        //                BidderTypeId = reader["BidderTypeId"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToInt32(reader["BidderTypeId"]),
+
+        //                BidderName = reader["BidderName"]?.ToString(),
+        //                Email = reader["Email"]?.ToString(),
+
+        //                IsTransferred = reader["IsTransferred"] == DBNull.Value
+        //                    ? false
+        //                    : Convert.ToBoolean(reader["IsTransferred"]),
+
+        //                Relation = reader["Relation"]?.ToString(),
+        //                FatherOrHusbandName = reader["FatherOrHusbandName"]?.ToString(),
+        //                PANNo = reader["PANNo"]?.ToString(),
+        //                AadhaarNo = reader["AadhaarNo"]?.ToString(),
+        //                MobileNo = reader["MobileNo"]?.ToString(),
+
+        //                PropertyTypeId = reader["PropertyTypeId"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToInt32(reader["PropertyTypeId"]),
+
+        //                Address = reader["Address"]?.ToString(),
+
+        //                ReservePrice = reader["ReservePrice"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["ReservePrice"]),
+
+        //                FinalBidPrice = reader["FinalBidPrice"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["FinalBidPrice"]),
+
+        //                FormTransactionId = reader["FormTransactionId"]?.ToString(),
+
+        //                FormTxnDate = reader["FormTxnDate"] == DBNull.Value
+        //                    ? null
+        //                    : Convert.ToDateTime(reader["FormTxnDate"]),
+
+        //                FormPaidAmount = reader["FormPaidAmount"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["FormPaidAmount"]),
+
+        //                EmdTxnId = reader["EmdTxnId"]?.ToString(),
+
+        //                EmdDate = reader["EmdDate"] == DBNull.Value
+        //                    ? null
+        //                    : Convert.ToDateTime(reader["EmdDate"]),
+
+        //                EmdAmount = reader["EmdAmount"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["EmdAmount"]),
+
+        //                AllotmentTxnId = reader["AllotmentTxnId"]?.ToString(),
+
+        //                AllotmentDate = reader["AllotmentDate"] == DBNull.Value
+        //                    ? null
+        //                    : Convert.ToDateTime(reader["AllotmentDate"]),
+
+        //                AllotmentAmount = reader["AllotmentAmount"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["AllotmentAmount"]),
+
+        //                DueAmount = reader["DueAmount"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["DueAmount"]),
+
+        //                TotalDueWithInterest =
+        //                    reader["TotalDueWithInterest"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToDecimal(reader["TotalDueWithInterest"]),
+
+        //                ApplicationStatusId =
+        //                    reader["ApplicationStatusId"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToInt32(reader["ApplicationStatusId"]),
+
+        //                PlotStatus = reader["PlotStatus"]?.ToString(),
+
+        //                PropertyCategoryId =
+        //                    reader["PropertyCategoryId"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToInt32(reader["PropertyCategoryId"]),
+
+        //                PropertyCode = reader["PropertyCode"]?.ToString(),
+
+        //                CreatedBy = reader["CreatedBy"]== DBNull.Value ?0 : Convert.ToInt32("CreatedBy"),
+
+        //                Remarks = reader["Remarks"]?.ToString(),
+
+        //                OwnerStateID =
+        //                    reader["OwnerStateID"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToInt32(reader["OwnerStateID"]),
+
+        //                OwnerDistrtictID =
+        //                    reader["OwnerDistrtictID"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToInt32(reader["OwnerDistrtictID"]),
+
+        //                OwnerCityID =
+        //                    reader["OwnerCityID"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToInt32(reader["OwnerCityID"]),
+
+        //                // Master
+        //                DistrictName =
+        //                    reader["DistrictName"]?.ToString() ?? "",
+
+        //                BranchName =
+        //                    reader["BranchName"]?.ToString() ?? "",
+
+        //                MandiName =
+        //                    reader["MandiName"]?.ToString() ?? "",
+
+        //                // User / Role
+        //                IdentityUserId =
+        //                    reader["IdentityUserId"]?.ToString(),
+
+        //                FirstName =
+        //                    reader["FirstName"]?.ToString(),
+
+        //                UserId =
+        //                    reader["UserId"]?.ToString(),
+
+        //                RoleName =
+        //                    reader["RoleName"]?.ToString(),
+
+        //                Label =
+        //                    reader["Label"]?.ToString(),
+
+        //                // Initially empty
+        //                Installments = new List<InstallmentDetailsDto>()
+        //            });
+        //        }
+
+        //        await reader.NextResultAsync();
+
+        //        var installments = new List<InstallmentDetailsDto>();
+
+        //        while (await reader.ReadAsync())
+        //        {
+        //            installments.Add(new InstallmentDetailsDto
+        //            {
+        //                Id = Convert.ToInt32(reader["Id"]),
+
+        //                ReceiptNo = reader["ReceiptNo"]?.ToString(),
+
+        //                ReceiptDate = reader["ReceiptDate"] == DBNull.Value
+        //                    ? null
+        //                    : Convert.ToDateTime(reader["ReceiptDate"]),
+
+        //                DraftNo = reader["DraftNo"]?.ToString(),
+
+        //                DraftAmount = reader["DraftAmount"] == DBNull.Value
+        //                    ? 0
+        //                    : Convert.ToDecimal(reader["DraftAmount"]),
+
+        //                DraftDate = reader["DraftDate"] == DBNull.Value
+        //                    ? null
+        //                    : Convert.ToDateTime(reader["DraftDate"]),
+
+        //                DraftBank = reader["DraftBank"]?.ToString(),
+
+        //                PrincipalAmount =
+        //                    reader["PrincipalAmount"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToDecimal(reader["PrincipalAmount"]),
+
+        //                InterestAmount =
+        //                    reader["InterestAmount"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToDecimal(reader["InterestAmount"]),
+
+        //                OtherAmount =
+        //                    reader["OtherAmount"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToDecimal(reader["OtherAmount"]),
+
+        //                PenaltyAmount =
+        //                    reader["PenaltyAmount"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToDecimal(reader["PenaltyAmount"]),
+
+        //                PenaltyType =
+        //                    reader["PenaltyType"]?.ToString(),
+
+        //                Remarks =
+        //                    reader["Remarks"]?.ToString(),
+
+        //                ApplicantId =
+        //                    reader["ApplicantId"] == DBNull.Value
+        //                        ? 0
+        //                        : Convert.ToInt32(reader["ApplicantId"]),
+
+        //                PropertyId =
+        //                    reader["PropertyId"] == DBNull.Value
+        //                        ? null
+        //                        : Convert.ToInt32(reader["PropertyId"]),
+
+        //                IsVerified =
+        //                    reader["IsVerified"] == DBNull.Value
+        //                        ? false
+        //                        : Convert.ToBoolean(reader["IsVerified"])
+        //            });
+        //        }
+
+
+        //        foreach (var property in list)
+        //        {
+        //            property.Installments = installments
+        //                .Where(x => x.PropertyId == property.Id)
+        //                .ToList();
+        //        }
+
+        //        return ApiResponse<List<PropertyBidderRegistrationDto>>
+        //            .Ok(
+        //                list,
+        //                "Registrations fetched successfully"
+        //            );
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ApiResponse<List<PropertyBidderRegistrationDto>>
+        //            .Fail(ex.Message);
+        //    }
+        //}
+        //public async Task<ApiResponse<List<PropertyBidderRegistrationDto>>> GetPendingForClerk(string? userid,string? searchCode, int districtId, int branchId, int mandiid)
+        //{
+        //    try
+        //    {
+        //        var list = await (
+        //            from x in _context.PropertyBidderRegistration
+
+        //            join u in _context.ApplicationUsers
+        //                on x.CreatedBy equals u.ApplicantId into userJoin
+        //            from u in userJoin.DefaultIfEmpty()
+
+        //            join ur in _context.UserRoles
+        //                on u.IdentityUserId equals ur.UserId into userRoleJoin
+        //            from ur in userRoleJoin.DefaultIfEmpty()
+
+        //            join r in _context.Roles
+        //                on ur.RoleId equals r.Id into roleJoin
+        //            from r in roleJoin.DefaultIfEmpty()
+
+        //            where x.IsActive && !x.IsDeleted && (string.IsNullOrEmpty(searchCode) || x.PropertyCode.Contains(searchCode))
+
+        //            select new PropertyBidderRegistrationDto
+        //            {
+        //                Id = x.Id,
+        //                MandiId = x.MandiId,
+        //                BranchId = x.BranchId,
+        //                ApplicantId = x.ApplicantId,
+        //                DistrictId = x.DistrictId,
+        //                PlotTypeId = x.PlotTypeId,
+        //                PlanId = x.PlanId,
+        //                PlotSize = x.PlotSize,
+        //                PlotNo = x.PlotNo,
+        //                AssetResumed = x.AssetResumed,
+        //                AssetSurrendered = x.AssetSurrendered,
+        //                IsAssetLocked = x.IsAssetLocked,
+        //                IsDefaulter = x.IsDefaulter,
+        //                AnyComplaint = x.AnyComplaint,
+        //                NdcGenerated = x.NdcGenerated,
+        //                NdcIssued = x.NdcIssued,
+        //                AssetVerified = x.AssetVerified,
+        //                IsCourtCase = x.IsCourtCase,
+        //                IsAuctioned = x.IsAuctioned,
+        //                AuctionDate = x.AuctionDate,
+        //                BidderTypeId = x.BidderTypeId,
+        //                BidderName = x.BidderName,
+        //                Email = x.Email,
+        //                IsTransferred = x.IsTransferred,
+        //                Relation = x.Relation,
+        //                FatherOrHusbandName = x.FatherOrHusbandName,
+        //                PANNo = x.PANNo,
+        //                AadhaarNo = x.AadhaarNo,
+        //                MobileNo = x.MobileNo,
+        //                PropertyTypeId = x.PropertyTypeId,
+        //                Address = x.Address,
+        //                ReservePrice = x.ReservePrice,
+        //                FinalBidPrice = x.FinalBidPrice,
+        //                FormTransactionId = x.FormTransactionId,
+        //                FormTxnDate = x.FormTxnDate,
+        //                FormPaidAmount = x.FormPaidAmount,
+        //                EmdTxnId = x.EmdTxnId,
+        //                EmdDate = x.EmdDate,
+        //                EmdAmount = x.EmdAmount,
+        //                AllotmentTxnId = x.AllotmentTxnId,
+        //                AllotmentDate = x.AllotmentDate,
+        //                AllotmentAmount = x.AllotmentAmount,
+        //                DueAmount = x.DueAmount,
+        //                TotalDueWithInterest = x.TotalDueWithInterest,
+        //                ApplicationStatusId = x.ApplicationStatusId,
+        //                PlotStatus = x.PlotStatus,
+        //                PropertyCategoryId = x.PropertyCategoryId,
+        //                PropertyCode = x.PropertyCode,
+        //                CreatedBy = x.CreatedBy,
+        //                Remarks=x.Remarks,
+        //                DistrictName = x.District != null ? x.District.DistrictName : "",
+        //                BranchName = x.Branch != null ? x.Branch.BranchName : "",
+        //                MandiName = x.Mandi != null ? x.Mandi.MandiName : "",
+
+        //                IdentityUserId = u != null ? u.IdentityUserId : null,
+        //                UserId = ur != null ? ur.UserId : null,
+        //                RoleName = r != null ? r.Name : null,
+        //                FirstName= u.FirstName,
+
+        //                Label = r != null && r.Name.ToUpper() == "DEO" ? "DEO" : "User",
+        //                OwnerStateID = x.OwnerStateID,
+        //                OwnerDistrtictID = x.OwnerDistrtictID,
+        //                OwnerCityID = x.OwnerCityID
+        //            }
+        //        ).OrderByDescending(x=>x.Id).ToListAsync();
+
+        //        var propertyIds = list.Select(x => (int?)x.Id).ToList();
+
+        //        var allInstallments = await _context.InstallmentDetails
+        //            .AsNoTracking()
+        //            .Where(i => propertyIds.Contains(i.PropertyId))
+        //            .Select(i => new InstallmentDetailsDto
+        //            {
+        //                Id = i.Id,
+        //                ReceiptNo = i.ReceiptNo,
+        //                ReceiptDate = i.ReceiptDate,
+        //                DraftNo = i.DraftNo,
+        //                DraftAmount = i.DraftAmount,
+        //                DraftDate = i.DraftDate,
+        //                DraftBank = i.DraftBank,
+        //                PrincipalAmount = i.Principal,
+        //                InterestAmount = i.Interest,
+        //                OtherAmount = i.OtherAmount,
+        //                PenaltyAmount = i.PenaltyAmount,
+        //                PenaltyType = i.Type,
+        //                Remarks = i.Remarks,
+        //                ApplicantId = i.ApplicantId,
+        //                PropertyId = i.PropertyId,
+        //                IsVerified = i.IsVerified
+        //            })
+        //            .ToListAsync();
+
+        //        return ApiResponse<List<PropertyBidderRegistrationDto>>
+        //            .Ok(list, "Registrations fetched successfully");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ApiResponse<List<PropertyBidderRegistrationDto>>
+        //            .Fail(ex.Message);
+        //    }
+        //}
         public async Task<ApiResponse<bool>> VerifyByClerk(ClerkVerificationDto dto)
         {
             try
@@ -1829,7 +2511,7 @@ namespace Backend.Services.Implementations
                             ? row["DraftNo"]?.ToString()
                             : null;
 
-                    response.AllotmentDate =
+                     response.AllotmentTransactionDate =
                         row["ReceiptDate"] != DBNull.Value
                             ? Convert.ToDateTime(row["ReceiptDate"])
                             : null;
@@ -1846,6 +2528,33 @@ namespace Backend.Services.Implementations
             {
                 return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
 
+            }
+        public Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ApiResponse<List<Models.Dtos.PropertyBidderRegistration>>> GetAllRegisterPropertyById(string v)
+        {
+            try
+            {
+                var result = await _context.Database
+                    .SqlQuery<Models.Dtos.PropertyBidderRegistration>(
+                        $"EXEC GetAllRegisterPropertyById @UserId={v}"
+                    )
+                    .ToListAsync();
+
+                return ApiResponse<List<Models.Dtos.PropertyBidderRegistration>>.Ok(
+                    result,
+                    "Properties fetched successfully"
+                );
+            }
+            catch (Exception ex)
+            {    
+
+                return ApiResponse<List<Models.Dtos.PropertyBidderRegistration>>.Fail(
+                    "Failed to fetch registered properties"
+                );
             }
         }
     }

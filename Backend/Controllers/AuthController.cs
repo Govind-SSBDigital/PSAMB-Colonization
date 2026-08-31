@@ -52,12 +52,30 @@ namespace Backend.Controllers
 
         [HttpPost("login")]
         [EnableRateLimiting("AuthPolicy")]
-        public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
-            [FromBody] LoginRequest request)
+        public async Task<ActionResult<ApiResponse<LoginResponse>>> Login([FromBody] LoginRequest request)
         {
-            var result = await _authService.LoginAsync(request);
+            var result = await _authService.firtLogin(request);
             return Ok(ApiResponse<LoginResponse>.Ok(result, "Login successful"));
         }
+        [HttpPost("change-first-login-password")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse>> ChangeFirstLoginPassword([FromBody] FirstLoginChangePasswordRequest request)
+        {
+            var userId = GetUserId();
+            await _authService.ChangeFirstLoginPasswordAsync(userId, request);
+            return Ok(ApiResponse.Ok("Password changed successfully"));
+        }
+
+
+        //[HttpPost("login")]
+        //[EnableRateLimiting("AuthPolicy")]
+        //public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
+        //    [FromBody] LoginRequest request)
+        //{
+        //    var result = await _authService.LoginAsync(request);
+        //    return Ok(ApiResponse<LoginResponse>.Ok(result, "Login successful"));
+        //}
+
 
         [HttpGet("profile")]
         [Authorize]
@@ -76,18 +94,16 @@ namespace Backend.Controllers
             return Ok(ApiResponse<UserResponse>.Ok(result, "Profile updated"));
         }
         [HttpPost("change-password")]
-        [Authorize]
         public async Task<ActionResult<ApiResponse>> ChangePassword(
             [FromBody] ChangePasswordRequest request)
         {
-            await _authService.ChangePasswordAsync(GetUserId(), request);
+            await _authService.ChangePasswordAsync(request);
             return Ok(ApiResponse.Ok("Password changed successfully"));
         }
 
         [HttpPost("send-login-otp")]
         [EnableRateLimiting("AuthPolicy")]
-        public async Task<ActionResult<ApiResponse>> SendLoginOtp(
-     [FromBody] SendMobileOtpRequest request)
+        public async Task<ActionResult<ApiResponse>> SendLoginOtp([FromBody] SendMobileOtpRequest request)
         {
             try
             {

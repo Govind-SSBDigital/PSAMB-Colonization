@@ -90,9 +90,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'address',
     'finalBidPrice',
     // 'formPaidAmount',
-    // 'allotmentDate',
+    'allotmentDate',
     // 'allotmentAmount',
-    'finalallotmentDate',
+    // 'AllotmentTransactionDate',
     'installmentNo',
     'dueDate',
     'paidStatus',
@@ -170,11 +170,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       emdDate: [''],
       emdAmount: [''],
       //25% form values 
-      allotmentDate: [''],
+      allotmentDate: ['', Validators.required],
       allotmentTxnId: [''],
-      allotmentAmount: [''],
+      allotmentTransactionDate: [''],
       //allotement form fields 
-      finalallotmentDate: ['', Validators.required],
+      allotmentAmount: [''],
       dueAmount: [''],
       accumulatedInterest: [0],
       totalDueWithInterest: [{ value: '', disabled: true }],
@@ -1404,6 +1404,105 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
           mappedPlotStatus = String(d.plotStatus).trim();
         }
       }
+            const isAuctionedValue = mappedPlotStatus === '1' ? true : (mappedPlotStatus === '0' ? false : !!d.isAuctioned);
+
+            const patchValues = {
+              // districtId: d.districtId,
+              // mandiId: d.mandiId,
+              // branchId: d.branchId,
+              districtId: districtId,
+              mandiId: mandiId,
+              branchId: branchId,
+              plotNo: d.plotNo,
+              plotTypeId: d.plotTypeId,
+              plotsize: d.plotSize,
+              planId: d.planId,
+              plotStatus: mappedPlotStatus,
+              propertyCategoryId: d.propertyCategoryId,
+              propertycode: d.propertyCode,
+              isAssetResumed: d.assetResumed,
+              isCourtCase: d.isCourtCase,
+              isAssetSurrendered: d.assetSurrendered,
+              isAssetLocked: d.isAssetLocked,
+              isDefaulter: d.isDefaulter,
+              anyComplaint: d.anyComplaint,
+              ndcGenerated: d.ndcGenerated,
+              ndcIssued: d.ndcIssued,
+              assetVerified: d.assetVerified,
+              isAuctioned: isAuctionedValue,
+              auctionDate: d.auctionDate ? d.auctionDate.substring(0, 16) : '',
+              bidderTypeId: d.bidderTypeId,
+              email: d.email,
+              bidderName: displayBidderName,
+              isTransferred: d.isTransferred,
+              relation: d.relation,
+              fatherOrHusbandName: d.fatherOrHusbandName,
+              panNo: d.panNo,
+              aadhaarNo: d.aadhaarNo,
+              mobileNo: d.mobileNo,
+              address: d.address,
+              auctionPropertyType: d.propertyTypeId,
+              reservePrice: d.reservePrice,
+              finalBidPrice: d.finalBidPrice,
+              formTransactionId: d.formTransactionId,
+              formTxnDate: d.formTxnDate ? d.formTxnDate.split('T')[0] : '',
+              formPaidAmount: d.formPaidAmount,
+              emdTxnId: d.emdTxnId,
+              emdDate: d.emdDate ? d.emdDate.split('T')[0] : '',
+              emdAmount: d.emdAmount,
+
+              allotmentTxnId: d.allotmentTxnId,
+              allotmentDate: d.allotmentDate ? d.allotmentDate.split('T')[0] : '',
+              allotmentTransactionDate: d.allotmentTransactionDate ? d.allotmentTransactionDate.split('T')[0] : '',
+              allotmentAmount: d.allotmentAmount,
+
+              dueAmount: d.dueAmount,
+              accumulatedInterest: d.totalDueWithInterest - d.dueAmount,
+              totalDueWithInterest: d.totalDueWithInterest,
+              ownerStateID: d.ownerStateID,
+              ownerDistrtictID: d.ownerDistrtictID,
+              ownerCityID: d.ownerCityID
+            };
+
+
+
+            this.registerationForm.patchValue(patchValues, { emitEvent: false });
+
+            const receiptsFromDb = d.installments || d.Installments || d.receipts || d.receiptList || d.receiptsFormArray || d.receiptAllocations || d.propertyBidderReceipts;
+            if (receiptsFromDb && Array.isArray(receiptsFromDb)) {
+              this.receiptList = receiptsFromDb.map((rec: any) => {
+                const receiptNo = rec.receiptNo || rec.ReceiptNo || '';
+                const receiptDate = rec.receiptDate || rec.ReceiptDate || '';
+                const draftNo = rec.draftNo || rec.DraftNo || '';
+                const draftAmount = rec.draftAmount !== undefined ? rec.draftAmount : rec.DraftAmount;
+                const draftDate = rec.draftDate || rec.DraftDate || '';
+                const draftBank = rec.draftBank || rec.DraftBank || '';
+                const principalAmount = rec.principalAmount !== undefined ? rec.principalAmount : rec.PrincipalAmount;
+                const interestAmount = rec.interestAmount !== undefined ? rec.interestAmount : rec.InterestAmount;
+                const otherAmount = rec.otherAmount !== undefined ? rec.otherAmount : rec.OtherAmount;
+                const penaltyAmount = rec.penaltyAmount !== undefined ? rec.penaltyAmount : rec.PenaltyAmount;
+                const penaltyType = rec.penaltyType || rec.PenaltyType || 'N/A';
+                const remarks = rec.remarks || rec.Remarks || '';
+                const isVerified = rec.isVerified !== undefined ? rec.isVerified : rec.IsVerified;
+
+                return {
+                  receiptNo,
+                  receiptDate: receiptDate ? receiptDate.split('T')[0] : '',
+                  draftNo,
+                  draftAmount: draftAmount || 0,
+                  draftDate: draftDate ? draftDate.split('T')[0] : '',
+                  draftBank,
+                  principalAmount: principalAmount || 0,
+                  interestAmount: interestAmount || 0,
+                  otherAmount: otherAmount || 0,
+                  penaltyAmount: penaltyAmount || 0,
+                  penaltyType,
+                  remarks,
+                  isVerified
+                };
+              });
+              this.populateReceiptsFormArray();
+            }
 
       const isAuctionedValue = mappedPlotStatus === '1' ? true : (mappedPlotStatus === '0' ? false : !!d.isAuctioned);
 
@@ -1845,10 +1944,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       relation: 'Relation',
       fatherOrHusbandName: 'Father / Husband Name',
       // auctionPropertyType: 'Property Type',
-      // allotmentDate: 'Allotment Transaction Date',
+      allotmentDate: 'Allotment Date',
       // allotmentAmount: 'Allotment Amount Paid',
       // mobileNo: 'Mobile No.'
-      finalallotmentDate: 'Final Allotment Date',
     };
     return Object.keys(labels)
       .filter((controlName) => {
@@ -1868,6 +1966,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         if (controls[name].invalid) {
           invalidControls.push(name);
         }
+      }
+      const isAuctioned = !!this.registerationForm.get('isAuctioned')?.value;
+      const plotStatus = this.registerationForm.get('plotStatus')?.value;
+      const isUnsold = plotStatus === '0' || plotStatus === 'Unsold';
+      if (!isAuctioned || isUnsold) {
+        return;
       }
       this.toastr.warning(`Please fill in all the required fields correctly: ${invalidControls.join(', ')}`, 'Validation Warning');
       return;
@@ -2037,6 +2141,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       allotmentTxnId: formRaw.allotmentTxnId,
       allotmentDate: formRaw.allotmentDate,
+      allotmentTransactionDate: formRaw.allotmentTransactionDate,
       allotmentAmount: formRaw.allotmentAmount,
 
       dueAmount: formRaw.dueAmount,
@@ -2153,8 +2258,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       allotmentDate: '',
       allotmentTxnId: '',
       allotmentAmount: '',
-      //allotment form fields
-      finalallotmentDate: '',
+      allotmentTransactionDate: '',
       dueAmount: '',
       accumulatedInterest: 0,
       totalDueWithInterest: '',
@@ -2199,6 +2303,13 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         if (controls[name].invalid) {
           invalidControls.push(name);
         }
+      }
+
+      const isAuctioned = !!this.registerationForm.get('isAuctioned')?.value;
+      const plotStatus = this.registerationForm.get('plotStatus')?.value;
+      const isUnsold = plotStatus === '0' || plotStatus === 'Unsold';
+      if (!isAuctioned || isUnsold) {
+        return;
       }
 
       this.toastr.warning(`Please fill in all the required fields correctly: ${invalidControls.join(', ')}`, 'Validation Warning');
@@ -2284,7 +2395,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('finalBidPrice')?.value) || 0;
     const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentAmount')?.value) || 0;
-    const milestoneDateStr = this.registerationForm.get('finalallotmentDate')?.value;
+    const milestoneDateStr = this.registerationForm.get('allotmentDate')?.value;
     const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
 
     // 2. Calculate TOTAL Outstanding Principal Balance

@@ -116,7 +116,7 @@
           @if (isInvalid('plotNumber')) { <div class="invalid-feedback">Plot number is required.</div> }
         </div>
 
-        <div class="col-md-6 col-xl-3">
+        <!-- <div class="col-md-6 col-xl-3">
           <label for="dispatched" class="form-label small text-dark fw-semibold text-uppercase">
             Dispatched <span class="text-danger">*</span>
           </label>
@@ -128,9 +128,9 @@
                 formControlName="dispatched" [class.is-invalid]="isInvalid('dispatched')" />
             </div>
           </div>
-        </div>
+        </div> -->
 
-        <div class="col-md-6 col-xl-3">
+        <!-- <div class="col-md-6 col-xl-3">
           <label for="installmentPenalty" class="form-label small text-dark fw-semibold text-uppercase">
             Installment Penalty(%) <span class="text-danger">*</span>
           </label>
@@ -142,16 +142,16 @@
           </select>
           @if (isInvalid('installmentPenalty')) { <div class="invalid-feedback">Installment penalty is
             required.</div> }
-        </div>
+        </div> -->
 
-        <div class="col-md-6 col-xl-3">
+        <!-- <div class="col-md-6 col-xl-3">
           <label for="balanceDate" class="form-label small text-dark fw-semibold text-uppercase">
             Balance Date <span class="text-danger">*</span>
           </label>
           <input id="balanceDate" type="date" class="form-control bg-light rounded-3 custom-input-color"
             formControlName="balanceDate" [class.is-invalid]="isInvalid('balanceDate')" />
           @if (isInvalid('balanceDate')) { <div class="invalid-feedback d-block">Balance date is required.</div> }
-        </div>
+        </div> -->
 
         <div class="col-md-6 col-xl-3 d-flex align-items-end">
           <button type="submit" class="btn bg-success text-white rounded-3 w-100" [disabled]="isCalculating">

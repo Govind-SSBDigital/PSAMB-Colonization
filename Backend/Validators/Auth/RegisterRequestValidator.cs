@@ -88,9 +88,9 @@ namespace Backend.Validators.Auth
             //    .GreaterThan(0).WithMessage("Please select a city")
             //    .When(x => x.IndividualCityId.HasValue);
 
-            RuleFor(x => x.IndividualPinCode)
-                .Matches(@"^[0-9]{6}$").WithMessage("Please enter a valid 6-digit pin code")
-                .When(x => !string.IsNullOrEmpty(x.IndividualPinCode));
+            //RuleFor(x => x.IndividualPinCode)
+            //    .Matches(@"^[0-9]{6}$").WithMessage("Please enter a valid 6-digit pin code")
+            //    .When(x => !string.IsNullOrEmpty(x.IndividualPinCode));
 
             RuleFor(x => x.AddrDocNumber)
                 .NotEmpty().WithMessage("Address document number is required")

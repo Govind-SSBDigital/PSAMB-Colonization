@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819053519_AddIsFirstLoginToUser")]
+    partial class AddIsFirstLoginToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -998,9 +1001,6 @@ namespace Backend.Migrations
                     b.Property<DateTime?>("AllotmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("AllotmentTransactionDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AllotmentTxnId")
                         .HasColumnType("nvarchar(max)");
 
@@ -1098,9 +1098,6 @@ namespace Backend.Migrations
                     b.Property<bool>("IsTransferred")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsUser")
-                        .HasColumnType("bit");
-
                     b.Property<int>("MandiId")
                         .HasColumnType("int");
 
@@ -1168,9 +1165,6 @@ namespace Backend.Migrations
                     b.Property<decimal?>("TotalDueWithInterest")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("VerificationUserEndStatusId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
