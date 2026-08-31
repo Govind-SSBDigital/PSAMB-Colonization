@@ -345,7 +345,7 @@
                     placeholder="Enter full name of highest bidder" formControlName="bidderName"
                     [class.is-invalid]="isInvalid('bidderName')" />
                   @if (registerationForm.get('isTransferred')?.value) {
-                  <button type="button" class="btn btn-outline-secondary rounded-end-3" (click)="addBidderName()">+
+                  <button *ngIf="mode !== 'view'" type="button" class="btn btn-outline-secondary rounded-end-3" (click)="addBidderName()">+
                     Add</button>
                   }
                 </div>
@@ -377,7 +377,7 @@
                   @for (bidder of bidderNamesFormArray.controls; track bidder) {
                   <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
                     <span>{{ bidder.value }}</span>
-                    <button type="button" class="btn btn-sm btn-outline-danger"
+                    <button *ngIf="mode !== 'view'" type="button" class="btn btn-sm btn-outline-danger"
                       (click)="removeBidderName(bidderNamesFormArray.controls.indexOf(bidder))"><i
                         class="fa-solid fa-trash"></i></button>
                   </li>
@@ -783,7 +783,7 @@
             <div class="financial-panel bg-light border rounded-4 p-3 mt-3" [formGroup]="registerationForm">
               <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
                 <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
-                <button type="button" class="btn btn-sm btn-success px-3 rounded-pill" (click)="addNewReceiptRow()"
+                <button *ngIf="mode !== 'view'" type="button" class="btn btn-sm btn-success px-3 rounded-pill" (click)="addNewReceiptRow()"
                   [disabled]="hasActiveReceiptRowEditing">
                   <i class="fa-solid fa-plus me-1"></i> Add Record
                 </button>
@@ -807,7 +807,7 @@
                         <th scope="col" class="fw-normal px-1">Penalty</th>
                         <th scope="col" class="fw-normal px-1">Type</th>
                         <th scope="col" class="fw-normal px-1">Remarks</th>
-                        <th scope="col" class="fw-normal px-1 text-end">Actions</th>
+                        <th *ngIf="mode !== 'view'" scope="col" class="fw-normal px-1 text-end">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -921,7 +921,7 @@
                           }
                         </td>
                         <td class="text-end pe-3">
-                          <div class="btn-group btn-group-sm">
+                          <div class="btn-group btn-group-sm" *ngIf="mode !== 'view'">
                             @if (row.get('isEditing')?.value) {
                             <button type="button" class="btn btn-outline-success border-0 px-2"
                               (click)="saveRowData(idx)" title="Save changes">
@@ -970,8 +970,8 @@
       }
       <div class="form-actions d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
-          (click)="resetForm()">Cancel</button>
-        <button type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
+          (click)="mode === 'view' ? goBack() : resetForm()">{{ mode === 'view' ? 'Back' : 'Cancel' }}</button>
+        <button *ngIf="mode !== 'view'" type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
           style="background: var(--theme-primary-alpha);" (click)="letshowPreview()"
           [disabled]="registerationForm.invalid">Preview</button>
       </div>
@@ -1347,7 +1347,7 @@
     }
 
       <div class="form-actions d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 pt-4 border-top">
-        <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold" (click)="closePreviewModal()">Back to Edit</button>
+        <button *ngIf="mode !== 'view'" type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold" (click)="closePreviewModal()">Back to Edit</button>
         <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
           <div class="form-check d-flex align-items-center gap-2 m-0">
             <input class="form-check-input custom-switch-color custom-switch-border" type="checkbox" role="switch"

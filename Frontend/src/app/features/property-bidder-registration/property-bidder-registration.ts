@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -112,7 +112,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     private service: Propertybidderregn,
     private commonService: Common,
     private toastr: ToastrService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.registerationForm = this.fb.group({
 
@@ -1890,6 +1891,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
     this.showPreview = true;
     this.previewConfirmed = false;
+  }
+  goBack(): void {
+    this.router.navigate(['/registration-status']);
   }
 
   closePreviewModal(): void {

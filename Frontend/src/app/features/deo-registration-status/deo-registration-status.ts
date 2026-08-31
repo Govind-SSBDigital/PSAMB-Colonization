@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -25,36 +25,11 @@ export class DeoRegistrationStatus implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   pagedPropertyList: RegistrationRecord[] = [];
-  registrationList: RegistrationRecord[] = [
-    {
-      allotteeCode: 'ALL-2026-001',
-      allotteeName: 'VIKAS KUMAR',
-      approvalStatus: 'Approved',
-      remarks: 'All documents verified and payment confirmed.'
-    },
-    {
-      allotteeCode: 'ALL-2026-002',
-      allotteeName: 'HARPREET SINGH',
-      approvalStatus: 'Rejected',
-      remarks: 'Invalid PAN card document uploaded.'
-    },
-    {
-      allotteeCode: 'ALL-2026-003',
-      allotteeName: 'RAJESH SHARMA',
-      approvalStatus: 'Pending',
-      remarks: 'Awaiting senior officer approval.'
-    },
-    {
-      allotteeCode: 'ALL-2026-004',
-      allotteeName: 'SURESH KUMAR',
-      approvalStatus: 'Objection',
-      remarks: 'Documents returned for clarification.'
-    }
-  ];
+  registrationList: RegistrationRecord[] = [];
 
   filteredList: RegistrationRecord[] = [];
 
-  constructor(private router: Router,private _service: Propertybidderregn) { }
+  constructor(private router: Router,private _service: Propertybidderregn, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
         this.getRegistrationList();
@@ -83,6 +58,7 @@ export class DeoRegistrationStatus implements OnInit {
 
         this.applyFilters();
         this.updatePagedList();
+        this.cdr.detectChanges();
       },
 
       error: (err) => {

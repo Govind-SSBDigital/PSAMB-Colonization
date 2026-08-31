@@ -70,7 +70,7 @@ export class MainLayout {
       '/property-bidder-registration',
       '/property-verification',
       '/profile',
-      '/user-verification-view',
+      '/verification-view',
       '/verification',
       '/registration-status',
       '/property-details',
