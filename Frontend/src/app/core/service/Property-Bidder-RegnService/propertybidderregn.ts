@@ -50,4 +50,29 @@ export class Propertybidderregn {
   VerifyByClerk(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/PropertyBidderRegn/VerifyByClerk`, payload);
   }
+
+  getPropertyDistricts(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyDistricts`);
+  }
+
+  getPropertyBranches(districtId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyBranches/${districtId}`);
+  }
+
+  getPropertyMandis(branchId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyMandis/${branchId}`);
+  }
+
+  getPropertyPlotTypes(mandiId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyPlotTypes/${mandiId}`);
+  }
+
+  getAuctionedPlots(mandiId: any, plotTypeId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetAuctionedPlots?mandiId=${mandiId}&plotTypeId=${plotTypeId}`);
+  }
+
+  getPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyDetailsByMandiPlot?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
+  }
 }
+
