@@ -58,9 +58,7 @@
                       [class.is-invalid]="isInvalid('branchId')" [class.open]="isBranchDropdownOpen"
                       [value]="branchSearchText || getSelectedBranchName() || ''" (focus)="isBranchDropdownOpen = true"
                       (input)="onDropdownInput('branchId', 'branchSearchText', $event, 'isBranchDropdownOpen')"
-                      (blur)="onBranchBlur()"
-                      placeholder="Select Market Committee"
-                      autocomplete="off" />
+                      (blur)="onBranchBlur()" placeholder="Select Market Committee" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBranchDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectBranch('')">
                         Select Market Committee
@@ -86,8 +84,7 @@
                       [class.is-invalid]="isInvalid('mandiId')" [class.open]="isMandiDropdownOpen"
                       [value]="mandiSearchText || getSelectedMandiName() || ''" (focus)="isMandiDropdownOpen = true"
                       (input)="onDropdownInput('mandiId', 'mandiSearchText', $event, 'isMandiDropdownOpen')"
-                      (blur)="onMandiBlur()" placeholder="Select Mandi"
-                      autocomplete="off" />
+                      (blur)="onMandiBlur()" placeholder="Select Mandi" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isMandiDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectMandi('')">
                         Select Mandi
@@ -114,9 +111,7 @@
                       [value]="plotTypeSearchText || getSelectedPlotTypeName() || ''"
                       (focus)="isPlotTypeDropdownOpen = true"
                       (input)="onDropdownInput('plotTypeId', 'plotTypeSearchText', $event, 'isPlotTypeDropdownOpen')"
-                      (blur)="onPlotTypeBlur()"
-                      placeholder="Select Plot Type"
-                      autocomplete="off" />
+                      (blur)="onPlotTypeBlur()" placeholder="Select Plot Type" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotTypeDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectPlotType('')">
                         Select Plot Type
@@ -162,8 +157,8 @@
                   <label class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span
                       class="text-danger">*</span></label>
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    formControlName="plotsize" [class.is-invalid]="isInvalid('plotsize')"
-                    placeholder="Plot Size" autocomplete="off" />
+                    formControlName="plotsize" [class.is-invalid]="isInvalid('plotsize')" placeholder="Plot Size"
+                    autocomplete="off" />
                   @if (isInvalid('plotsize')) { <div class="invalid-feedback d-block">Plot size is required.</div> }
                 </div>
 
@@ -577,7 +572,7 @@
                   <label class="form-label small text-dark fw-semibold">Allotment
                     Date <span class="text-danger">*</span>
                   </label>
-                    <input type="date" class="form-control bg-white custom-input-color uppercase"
+                  <input type="date" class="form-control bg-white custom-input-color uppercase"
                     formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />@if
                   (isInvalid('allotmentDate')) { <div class="invalid-feedback">Allotment date is required.
                   </div> }
@@ -658,8 +653,9 @@
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
                     Date </label><input type="date" class="form-control bg-white custom-input-color uppercase"
-                    formControlName="allotmentTransactionDate" [class.is-invalid]="isInvalid('allotmentTransactionDate')" />
-                    <!-- @if
+                    formControlName="allotmentTransactionDate"
+                    [class.is-invalid]="isInvalid('allotmentTransactionDate')" />
+                  <!-- @if
                   (isInvalid('allotmentTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
                   </div> } -->
                 </div>
@@ -1225,7 +1221,8 @@
                   </div>
                   <div class="col-sm-4">
                     <label class="form-label small text-dark fw-semibold">Transaction Date</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
+                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTransactionDate')?.value ||
+                      '—' }}</p>
                   </div>
                   <div class="col-sm-4">
                     <label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label>
@@ -1328,37 +1325,8 @@
                   </div>
                 </div>
                 }
-            </div>
-          </div>
-          <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
-            <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money Milestone</h3>
-            <div class="row g-2">
-              <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">25% Milestone Txn ID / Challan No.</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTxnId')?.value || '—' }}</p>
               </div>
-              <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">Transaction Date</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTransactionDate')?.value || '—' }}</p>
-              </div>
-              <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' + (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-            </div>
-          </div>
 
-          <div class="financial-panel bg-light border rounded-4 p-3">
-            <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp; Installment Scheduler</h3>
-            <div class="row g-3">
-              <div class="col-sm-6 col-lg-6">
-                <label class="form-label small text-dark fw-semibold text-uppercase">Due Amount (Principal)</label>
-                <p class="mb-0 text-dark fw-bold text-success">{{ registerationForm.get('dueAmount')?.value ? ('Rs. ' + (registerationForm.get('dueAmount')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-              <div class="col-sm-6 col-lg-6">
-                <label class="form-label small text-dark fw-semibold text-uppercase">Total Due (Inc. Interest)</label>
-                <p class="mb-0 text-dark fw-bold text-danger">{{ registerationForm.get('totalDueWithInterest')?.value ? ('Rs. ' + (registerationForm.get('totalDueWithInterest')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
               @if (receiptsFormArray.length) {
               <div class="financial-panel bg-light border rounded-4 p-3 mt-3">
                 <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
