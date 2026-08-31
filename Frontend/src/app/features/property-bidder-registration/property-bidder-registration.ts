@@ -51,6 +51,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   mandis: any[] = [];
   isLoadingMandis = false;
   plotTypes: any[] = [];
+  isLoadingPlotTypes = false;
   propertyCategories: any[] = [];
   bidderTypes: any[] = [];
   plans: any[] = [];
@@ -123,7 +124,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       // mandi: ['', Validators.required],
       propertycode: [''],
 
-      plotsize: ['', [Validators.required, Validators.min(1)]],
+      plotsize: ['', Validators.required],
       plotTypeId: ['', Validators.required],
       plotNo: ['', Validators.required],
       planId: ['', Validators.required],
@@ -213,7 +214,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   isPlanDropdownOpen = false;
   isDistrictDropdownOpen = false;
+  isPlotNoDropdownOpen = false;
   isPlotTypeDropdownOpen = false;
+  isPlotSizeDropdownOpen = false;
   isPropTypeDropdownOpen = false;
   isMandiDropdownOpen = false;
   isStateDropdownOpen = false;
@@ -225,7 +228,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
   districtSearchText = '';
   mandiSearchText = '';
+  plotNoSearchText = '';
   plotTypeSearchText = '';
+  plotSizeSearchText = '';
   planSearchText = '';
   propTypeSearchText = '';
   stateSearchText = '';
@@ -235,11 +240,16 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   propertyCategorySearchText = '';
   bidderTypeSearchText = '';
 
+  plotNos: any[] = [];
+  plotSizes: any[] = [];
+
   togglePlanDropdown(event: Event) {
     event.stopPropagation();
     this.isPlanDropdownOpen = !this.isPlanDropdownOpen;
     this.isDistrictDropdownOpen = false;
+    this.isPlotNoDropdownOpen = false;
     this.isPlotTypeDropdownOpen = false;
+    this.isPlotSizeDropdownOpen = false;
     this.isPropTypeDropdownOpen = false;
     this.isMandiDropdownOpen = false;
   }
@@ -262,18 +272,25 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     const value = this.registerationForm?.get('planId')?.value;
     if (value === undefined || value === null || value === '') return '';
     const selected = this.plans?.find(p => {
-      const id = p?.planId ?? p?.id ?? p;
-      return String(id) === String(value);
+      const id = p?.planId ?? p?.PlanId ?? p?.id ?? p;
+      const name = p?.planName ?? p?.PlanName ?? p?.name;
+      return String(id) === String(value) || String(name) === String(value);
     });
-    if (!selected) return '';
-    return selected.planName ?? selected.name ?? selected;
+    if (selected) {
+      return selected.planName ?? selected.PlanName ?? selected.name ?? String(selected);
+    }
+    if (this.propertyData?.planName || this.propertyData?.PlanName) {
+      return this.propertyData.planName || this.propertyData.PlanName;
+    }
+    return '';
   }
 
   isPlanSelected(plan: any): boolean {
     const value = this.registerationForm?.get('planId')?.value;
     if (value === undefined || value === null || value === '') return false;
-    const planId = plan?.planId ?? plan?.id ?? plan;
-    return String(planId) === String(value);
+    const planId = plan?.planId ?? plan?.PlanId ?? plan?.id ?? plan;
+    const planName = plan?.planName ?? plan?.PlanName ?? plan?.name;
+    return String(planId) === String(value) || String(planName) === String(value);
   }
 
   toggleDistrictDropdown(event: Event) {
@@ -305,13 +322,82 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return String(item?.districtId) === String(value);
   }
 
+  togglePlotNoDropdown(event: Event) {
+    event.stopPropagation();
+    this.isPlotNoDropdownOpen = !this.isPlotNoDropdownOpen;
+    this.isDistrictDropdownOpen = false;
+    this.isPlanDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPlotSizeDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
+  }
+
+  selectPlotNo(val: any) {
+    this.registerationForm.get('plotNo')?.setValue(val);
+    this.registerationForm.get('plotNo')?.markAsTouched();
+    this.isPlotNoDropdownOpen = false;
+    this.plotNoSearchText = '';
+
+    const selected = this.plotNos?.find(p => {
+      const id = p?.plotNo ?? p?.id ?? p;
+      return String(id) === String(val) || String(p?.label) === String(val);
+    });
+
+    if (selected) {
+      const sizeVal = selected.plotSize ?? selected.PlotSize ?? selected.plotSizeId ?? selected.PlotSizeId;
+      if (sizeVal !== undefined && sizeVal !== null && sizeVal !== '') {
+        this.registerationForm.get('plotsize')?.setValue(sizeVal);
+        this.registerationForm.get('plotsize')?.markAsTouched();
+      }
+    }
+
+    const mandiId = this.registerationForm.get('mandiId')?.value;
+    const plotTypeId = this.registerationForm.get('plotTypeId')?.value;
+    if (mandiId && plotTypeId && val) {
+      this.fetchAndPatchPropertyDetailsByMandiPlot(mandiId, plotTypeId, val);
+    }
+  }
+
+  getSelectedPlotNoName(): string {
+    const value = this.registerationForm?.get('plotNo')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.plotNos?.find(p => {
+      const id = p?.plotNo ?? p?.id ?? p;
+      return String(id) === String(value) || String(p?.label) === String(value);
+    });
+    if (!selected) return String(value);
+    return selected.plotNo ? String(selected.plotNo) : (selected.label ? String(selected.label) : String(selected));
+  }
+
+  isPlotNoSelected(item: any): boolean {
+    const value = this.registerationForm?.get('plotNo')?.value;
+    if (value === undefined || value === null || value === '') return false;
+    const id = item?.plotNo ?? item?.id ?? item;
+    return String(id) === String(value) || String(item?.label) === String(value);
+  }
+
   togglePlotTypeDropdown(event: Event) {
     event.stopPropagation();
     this.isPlotTypeDropdownOpen = !this.isPlotTypeDropdownOpen;
+    this.isPlotNoDropdownOpen = false;
+    this.isPlotSizeDropdownOpen = false;
     this.isPlanDropdownOpen = false;
     this.isDistrictDropdownOpen = false;
     this.isPropTypeDropdownOpen = false;
     this.isMandiDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
   }
 
   selectPlotType(val: any) {
@@ -337,6 +423,50 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     if (value === undefined || value === null || value === '') return false;
     const id = item?.plotTypeId ?? item?.id ?? item;
     return String(id) === String(value);
+  }
+
+  togglePlotSizeDropdown(event: Event) {
+    event.stopPropagation();
+    this.isPlotSizeDropdownOpen = !this.isPlotSizeDropdownOpen;
+    this.isPlotNoDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPlanDropdownOpen = false;
+    this.isDistrictDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
+  }
+
+  selectPlotSize(val: any) {
+    this.registerationForm.get('plotsize')?.setValue(val);
+    this.registerationForm.get('plotsize')?.markAsTouched();
+    this.isPlotSizeDropdownOpen = false;
+    this.plotSizeSearchText = '';
+  }
+
+  getSelectedPlotSizeName(): string {
+    const value = this.registerationForm?.get('plotsize')?.value;
+    if (value === undefined || value === null || value === '') return '';
+    const selected = this.plotSizes?.find(s => {
+      const id = s?.plotSizeId ?? s?.id ?? s?.plotSize ?? s;
+      const name = s?.plotSize ?? s?.name ?? s;
+      return String(id) === String(value) || String(name) === String(value);
+    });
+    if (!selected) return String(value);
+    return selected.plotSize ?? selected.name ?? String(selected);
+  }
+
+  isPlotSizeSelected(item: any): boolean {
+    const value = this.registerationForm?.get('plotsize')?.value;
+    if (value === undefined || value === null || value === '') return false;
+    const id = item?.plotSizeId ?? item?.id ?? item?.plotSize ?? item;
+    const name = item?.plotSize ?? item?.name ?? item;
+    return String(id) === String(value) || String(name) === String(value);
   }
 
   togglePropTypeDropdown(event: Event) {
@@ -438,7 +568,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
     this.isPlanDropdownOpen = false;
     this.isDistrictDropdownOpen = false;
+    this.isPlotNoDropdownOpen = false;
     this.isPlotTypeDropdownOpen = false;
+    this.isPlotSizeDropdownOpen = false;
     this.isPropTypeDropdownOpen = false;
     this.isMandiDropdownOpen = false;
     this.isStateDropdownOpen = false;
@@ -452,11 +584,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   ngOnInit(): void {
     // debugger
     this.loadStates();
-    this.loadDistricts(1); // Load Punjab districts for property district dropdown
+    this.loadPropertyDistricts();
     this.loadPropertyCategories();
     this.loadBidderTypes();
     this.loadPlans();
-    this.loadPlotTypes();
+    this.loadPlotSizes();
     this.getPropertyTypes();
     this.setupCalculationListeners();
     this.registerationForm.get('districtId')?.valueChanges.subscribe((districtId) => {
@@ -464,6 +596,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       this.registerationForm.get('branchId')?.setValue('', { emitEvent: false });
       this.mandis = [];
       this.registerationForm.get('mandiId')?.setValue('', { emitEvent: false });
+      this.plotTypes = [];
+      this.registerationForm.get('plotTypeId')?.setValue('', { emitEvent: false });
+      this.plotNos = [];
+      this.registerationForm.get('plotNo')?.setValue('', { emitEvent: false });
+      this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
       if (districtId) {
         this.loadMarketCommittees(districtId);
       }
@@ -487,8 +624,32 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.registerationForm.get('branchId')?.valueChanges.subscribe((branchId) => {
       this.mandis = [];
       this.registerationForm.get('mandiId')?.setValue('', { emitEvent: false });
+      this.plotTypes = [];
+      this.registerationForm.get('plotTypeId')?.setValue('', { emitEvent: false });
+      this.plotNos = [];
+      this.registerationForm.get('plotNo')?.setValue('', { emitEvent: false });
+      this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
       if (branchId) {
         this.loadMandis(branchId);
+      }
+    });
+    this.registerationForm.get('mandiId')?.valueChanges.subscribe((mandiId) => {
+      this.plotTypes = [];
+      this.registerationForm.get('plotTypeId')?.setValue('', { emitEvent: false });
+      this.plotNos = [];
+      this.registerationForm.get('plotNo')?.setValue('', { emitEvent: false });
+      this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
+      if (mandiId) {
+        this.loadPlotTypes(mandiId);
+      }
+    });
+    this.registerationForm.get('plotTypeId')?.valueChanges.subscribe((plotTypeId) => {
+      this.plotNos = [];
+      this.registerationForm.get('plotNo')?.setValue('', { emitEvent: false });
+      this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
+      const mandiId = this.registerationForm.get('mandiId')?.value;
+      if (mandiId && plotTypeId) {
+        this.loadAuctionedPlots(mandiId, plotTypeId);
       }
     });
     this.registerationForm.get('plotStatus')?.valueChanges.subscribe((status) => {
@@ -496,6 +657,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         this.registerationForm.get('isAuctioned')?.setValue(true);
       } else if (status === '0' || status === 'Unsold') {
         this.registerationForm.get('isAuctioned')?.setValue(false);
+      }
+    });
+    this.registerationForm.get('propertycode')?.valueChanges.subscribe((code) => {
+      if (this.propertyData && (this.propertyData.propertyCode !== code && this.propertyData.PropertyCode !== code)) {
+        this.propertyData = null;
       }
     });
 
@@ -522,10 +688,22 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     });
   }
 
+  loadPropertyDistricts(callback?: () => void) {
+    this.service.getPropertyDistricts().subscribe({
+      next: (res: any) => {
+        this.districts = res.data || res || [];
+        if (callback) callback();
+      },
+      error: (err: any) => {
+        console.error('Error fetching property districts:', err);
+      }
+    });
+  }
+
   loadMarketCommittees(districtId: any, callback?: () => void) {
     this.isLoadingCommittees = true;
     this.registerationForm.get('branchId')?.disable({ emitEvent: false });
-    this.commonService.getMarketCommittees(districtId).subscribe({
+    this.service.getPropertyBranches(districtId).subscribe({
       next: (res: any) => {
         // console.log('API Market Committees:', res);
         this.marketCommittees = res.data || res || [];
@@ -544,7 +722,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   loadMandis(branchId: any, callback?: () => void) {
     this.isLoadingMandis = true;
     this.registerationForm.get('mandiId')?.disable({ emitEvent: false });
-    this.commonService.GetMandisByMarketCommiteeByDistrictAsync(branchId).subscribe({
+    this.service.getPropertyMandis(branchId).subscribe({
       next: (res: any) => {
         // console.log('API Mandis:', res);
         this.mandis = res.data || res || [];
@@ -593,15 +771,117 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       }
     });
   }
-  loadPlotTypes() {
-    this.commonService.getPlotTypes().subscribe({
+  loadPlotTypes(mandiId?: any, callback?: () => void) {
+    if (!mandiId) {
+      this.plotTypes = [];
+      if (callback) callback();
+      return;
+    }
+    this.isLoadingPlotTypes = true;
+    this.registerationForm.get('plotTypeId')?.disable({ emitEvent: false });
+    this.service.getPropertyPlotTypes(mandiId).subscribe({
       next: (res: any) => {
         // console.log('API Plot Types:', res);
         this.plotTypes = Array.isArray(res.data || res) ? (res.data || res) : [];
+        this.isLoadingPlotTypes = false;
+        this.registerationForm.get('plotTypeId')?.enable({ emitEvent: false });
+        if (callback) callback();
       },
       error: (err: any) => {
         console.error('Error fetching plot types:', err);
+        this.isLoadingPlotTypes = false;
+        this.registerationForm.get('plotTypeId')?.enable({ emitEvent: false });
       }
+    });
+  }
+
+  loadAuctionedPlots(mandiId: any, plotTypeId: any, callback?: () => void) {
+    if (!mandiId || !plotTypeId) {
+      this.plotNos = [];
+      if (callback) callback();
+      return;
+    }
+    this.service.getAuctionedPlots(mandiId, plotTypeId).subscribe({
+      next: (res: any) => {
+        const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        this.plotNos = data.map((item: any) => {
+          const num = item.plotNo ?? item.PlotNo ?? item;
+          return {
+            plotNo: num,
+            label: `${num}`,
+            plotSize: item.plotSize ?? item.PlotSize,
+            plotSizeId: item.plotSizeId ?? item.PlotSizeId,
+            ...item
+          };
+        });
+
+        const availableSizes = data
+          .filter((item: any) => item.plotSize || item.PlotSize || item.plotSizeId || item.PlotSizeId)
+          .map((item: any) => ({
+            plotSizeId: item.plotSizeId ?? item.PlotSizeId ?? item.plotSize ?? item.PlotSize,
+            plotSize: item.plotSize ?? item.PlotSize ?? item.plotSizeId ?? item.PlotSizeId
+          }));
+
+        if (availableSizes.length > 0) {
+          const uniqueSizes = availableSizes.filter((v: any, i: number, a: any[]) =>
+            a.findIndex((t: any) => (String(t.plotSize) === String(v.plotSize) || String(t.plotSizeId) === String(v.plotSizeId))) === i
+          );
+          this.plotSizes = uniqueSizes;
+        }
+
+        const currentPlotNo = this.registerationForm.get('plotNo')?.value;
+        if (currentPlotNo) {
+          const matched = this.plotNos.find((p: any) => String(p.plotNo) === String(currentPlotNo));
+          if (matched && (matched.plotSize || matched.PlotSize || matched.plotSizeId || matched.PlotSizeId)) {
+            const sz = matched.plotSize ?? matched.PlotSize ?? matched.plotSizeId ?? matched.PlotSizeId;
+            this.registerationForm.get('plotsize')?.setValue(sz);
+          }
+        }
+
+        if (callback) callback();
+      },
+      error: (err: any) => {
+        console.error('Error fetching auctioned plots:', err);
+        this.plotNos = [];
+      }
+    });
+  }
+
+  loadPlotSizes() {
+    this.commonService.getPlotSizes().subscribe({
+      next: (res: any) => {
+        const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        if (data.length > 0) {
+          this.plotSizes = data;
+        } else {
+          this.setDefaultPlotSizes();
+        }
+      },
+      error: (err: any) => {
+        console.error('Error fetching plot sizes:', err);
+        this.setDefaultPlotSizes();
+      }
+    });
+  }
+
+  setDefaultPlotSizes() {
+    this.plotSizes = [
+      { plotSizeId: '50', plotSize: '50 Sq. Yards' },
+      { plotSizeId: '100', plotSize: '100 Sq. Yards' },
+      { plotSizeId: '150', plotSize: '150 Sq. Yards' },
+      { plotSizeId: '200', plotSize: '200 Sq. Yards' },
+      { plotSizeId: '250', plotSize: '250 Sq. Yards' },
+      { plotSizeId: '300', plotSize: '300 Sq. Yards' },
+      { plotSizeId: '400', plotSize: '400 Sq. Yards' },
+      { plotSizeId: '500', plotSize: '500 Sq. Yards' },
+      { plotSizeId: '1000', plotSize: '1000 Sq. Yards' }
+    ];
+  }
+
+  initPlotNos() {
+    this.plotNos = Array.from({ length: 200 }, (_, i) => {
+      const num = (i + 1).toString();
+      return { plotNo: num, label: `${num}` };
     });
   }
   getPropertyTypes() {
@@ -900,9 +1180,21 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     }, 150);
   }
 
+  onPlotNoBlur() {
+    setTimeout(() => {
+      this.isPlotNoDropdownOpen = false;
+    }, 150);
+  }
+
   onPlotTypeBlur() {
     setTimeout(() => {
       this.isPlotTypeDropdownOpen = false;
+    }, 150);
+  }
+
+  onPlotSizeBlur() {
+    setTimeout(() => {
+      this.isPlotSizeDropdownOpen = false;
     }, 150);
   }
 
@@ -965,278 +1257,288 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         const d = res.data;
         const hasValidData = !!res.success && !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName);
         if (hasValidData) {
-          this.propertyData = d;
-          // console.log('data', d);
-
-          const patchFormValues = () => {
-            this.bidderNamesFormArray.clear();
-            let displayBidderName = d.bidderName;
-            if (d.isTransferred && d.bidderName) {
-              const names = d.bidderName.split(',').map((n: string) => n.trim());
-              displayBidderName = '';
-              names.forEach((name: string) => {
-                this.bidderNamesFormArray.push(this.fb.control(name, Validators.required));
-              });
-            }
-            let districtId: number | null = null;
-            let branchId: number | null = null;
-            let mandiId: number | null = null;
-            let propertyCategoryId: number | null = null;
-            let bidderTypeId: number | null = null;
-
-
-
-            // DISTRICT
-            if (d.districtId !== null && d.districtId !== undefined && d.districtId !== '') {
-
-              const districtValue = String(d.districtId).trim();
-
-              const match = this.districts?.find((p: any) =>
-                String(p.districtId ?? '').trim() === districtValue ||
-                String(p.id ?? '').trim() === districtValue ||
-                String(p.districtName ?? '').trim().toLowerCase() === districtValue.toLowerCase()
-              );
-
-              if (match) {
-                districtId = Number(match.districtId ?? match.id);
-              } else {
-                // console.log('District not matched:', d.districtId);
-              }
-            }
-
-
-            // BRANCH / MARKET COMMITTEE
-            if (d.branchId !== null && d.branchId !== undefined && d.branchId !== '') {
-
-              const branchValue = String(d.branchId).trim();
-
-              const match = this.marketCommittees?.find((p: any) =>
-                String(p.marketCommitteeId ?? '').trim() === branchValue ||
-                String(p.branchId ?? '').trim() === branchValue ||
-                String(p.id ?? '').trim() === branchValue ||
-                String(p.marketCommitteeName ?? '').trim().toLowerCase() === branchValue.toLowerCase()
-              );
-
-              if (match) {
-                branchId = Number(match.marketCommitteeId ?? match.branchId ?? match.id);
-                // console.log('Branch matched:', match);
-              } else {
-                // console.log('Branch not matched:', d.branchId);
-              }
-            }
-
-
-            // MANDI
-            if (d.mandiId !== null && d.mandiId !== undefined && d.mandiId !== '') {
-
-              const mandiValue = String(d.mandiId).trim();
-
-              const match = this.mandis?.find((p: any) =>
-                String(p.mandiId ?? '').trim() === mandiValue ||
-                String(p.id ?? '').trim() === mandiValue ||
-                String(p.mandiName ?? '').trim().toLowerCase() === mandiValue.toLowerCase()
-              );
-
-              if (match) {
-                mandiId = Number(match.mandiId ?? match.id);
-                // console.log('Mandi matched:', match);
-              } else {
-                // console.log('Mandi not matched:', d.mandiId);
-              }
-            }
-
-            if (d.propertyCategoryId !== null && d.propertyCategoryId !== undefined && d.propertyCategoryId !== '') {
-
-              const propertyCategoryIdValue = String(d.propertyCategoryId).trim();
-
-              const match = this.propertyCategories?.find((p: any) =>
-                String(p.propertyCategoryId ?? '').trim() === propertyCategoryIdValue ||
-                String(p.id ?? '').trim() === propertyCategoryIdValue ||
-                String(p.categoryName ?? p.propertyCategoryName ?? '').trim().toLowerCase() === propertyCategoryIdValue.toLowerCase()
-              );
-
-              if (match) {
-                propertyCategoryId = Number(match.propertyCategoryId ?? match.id);
-              } else {
-                // console.log('Mandi not matched:', d.propertyCategoryId);
-              }
-            }
-
-            if (d.bidderTypeId !== null && d.bidderTypeId !== undefined && d.bidderTypeId !== '') {
-
-              const bidderTypeIdValue = String(d.bidderTypeId).trim();
-
-              const match = this.bidderTypes?.find((p: any) =>
-                String(p.bidderTypeId ?? '').trim() === bidderTypeIdValue ||
-                String(p.id ?? '').trim() === bidderTypeIdValue ||
-                String(p.bidderTypeName ?? '').trim().toLowerCase() === bidderTypeIdValue.toLowerCase()
-              );
-
-              if (match) {
-                bidderTypeId = Number(match.bidderTypeId ?? match.id);
-              } else {
-                // console.log('Mandi not matched:', d.propertyCategoryId);
-              }
-            }
-            let mappedPlotStatus = '';
-            if (d.plotStatus !== null && d.plotStatus !== undefined && d.plotStatus !== '') {
-              const statusStr = String(d.plotStatus).trim().toLowerCase();
-              if (statusStr === '1' || statusStr === 'true' || statusStr === 'sold') {
-                mappedPlotStatus = '1';
-              } else if (statusStr === '0' || statusStr === 'false' || statusStr === 'unsold') {
-                mappedPlotStatus = '0';
-              } else {
-                mappedPlotStatus = String(d.plotStatus).trim();
-              }
-            }
-
-            const isAuctionedValue = mappedPlotStatus === '1' ? true : (mappedPlotStatus === '0' ? false : !!d.isAuctioned);
-
-            const patchValues = {
-              // districtId: d.districtId,
-              // mandiId: d.mandiId,
-              // branchId: d.branchId,
-              districtId: districtId,
-              mandiId: mandiId,
-              branchId: branchId,
-              plotNo: d.plotNo,
-              plotTypeId: d.plotTypeId,
-              plotsize: d.plotSize,
-              planId: d.planId,
-              plotStatus: mappedPlotStatus,
-              propertyCategoryId: d.propertyCategoryId,
-              propertycode: d.propertyCode,
-              isAssetResumed: d.assetResumed,
-              isCourtCase: d.isCourtCase,
-              isAssetSurrendered: d.assetSurrendered,
-              isAssetLocked: d.isAssetLocked,
-              isDefaulter: d.isDefaulter,
-              anyComplaint: d.anyComplaint,
-              ndcGenerated: d.ndcGenerated,
-              ndcIssued: d.ndcIssued,
-              assetVerified: d.assetVerified,
-              isAuctioned: isAuctionedValue,
-              auctionDate: d.auctionDate ? d.auctionDate.substring(0, 16) : '',
-              bidderTypeId: d.bidderTypeId,
-              email: d.email,
-              bidderName: displayBidderName,
-              isTransferred: d.isTransferred,
-              relation: d.relation,
-              fatherOrHusbandName: d.fatherOrHusbandName,
-              panNo: d.panNo,
-              aadhaarNo: d.aadhaarNo,
-              mobileNo: d.mobileNo,
-              address: d.address,
-              auctionPropertyType: d.propertyTypeId,
-              reservePrice: d.reservePrice,
-              finalBidPrice: d.finalBidPrice,
-              formTransactionId: d.formTransactionId,
-              formTxnDate: d.formTxnDate ? d.formTxnDate.split('T')[0] : '',
-              formPaidAmount: d.formPaidAmount,
-              emdTxnId: d.emdTxnId,
-              emdDate: d.emdDate ? d.emdDate.split('T')[0] : '',
-              emdAmount: d.emdAmount,
-
-              allotmentTxnId: d.allotmentTxnId,
-              allotmentDate: d.allotmentDate ? d.allotmentDate.split('T')[0] : '',
-              allotmentTransactionDate: d.allotmentTransactionDate ? d.allotmentTransactionDate.split('T')[0] : '',
-              allotmentAmount: d.allotmentAmount,
-
-              dueAmount: d.dueAmount,
-              accumulatedInterest: d.totalDueWithInterest - d.dueAmount,
-              totalDueWithInterest: d.totalDueWithInterest,
-              ownerStateID: d.ownerStateID,
-              ownerDistrtictID: d.ownerDistrtictID,
-              ownerCityID: d.ownerCityID
-            };
-
-
-
-            this.registerationForm.patchValue(patchValues, { emitEvent: false });
-
-            const receiptsFromDb = d.installments || d.Installments || d.receipts || d.receiptList || d.receiptsFormArray || d.receiptAllocations || d.propertyBidderReceipts;
-            if (receiptsFromDb && Array.isArray(receiptsFromDb)) {
-              this.receiptList = receiptsFromDb.map((rec: any) => {
-                const receiptNo = rec.receiptNo || rec.ReceiptNo || '';
-                const receiptDate = rec.receiptDate || rec.ReceiptDate || '';
-                const draftNo = rec.draftNo || rec.DraftNo || '';
-                const draftAmount = rec.draftAmount !== undefined ? rec.draftAmount : rec.DraftAmount;
-                const draftDate = rec.draftDate || rec.DraftDate || '';
-                const draftBank = rec.draftBank || rec.DraftBank || '';
-                const principalAmount = rec.principalAmount !== undefined ? rec.principalAmount : rec.PrincipalAmount;
-                const interestAmount = rec.interestAmount !== undefined ? rec.interestAmount : rec.InterestAmount;
-                const otherAmount = rec.otherAmount !== undefined ? rec.otherAmount : rec.OtherAmount;
-                const penaltyAmount = rec.penaltyAmount !== undefined ? rec.penaltyAmount : rec.PenaltyAmount;
-                const penaltyType = rec.penaltyType || rec.PenaltyType || 'N/A';
-                const remarks = rec.remarks || rec.Remarks || '';
-                const isVerified = rec.isVerified !== undefined ? rec.isVerified : rec.IsVerified;
-
-                return {
-                  receiptNo,
-                  receiptDate: receiptDate ? receiptDate.split('T')[0] : '',
-                  draftNo,
-                  draftAmount: draftAmount || 0,
-                  draftDate: draftDate ? draftDate.split('T')[0] : '',
-                  draftBank,
-                  principalAmount: principalAmount || 0,
-                  interestAmount: interestAmount || 0,
-                  otherAmount: otherAmount || 0,
-                  penaltyAmount: penaltyAmount || 0,
-                  penaltyType,
-                  remarks,
-                  isVerified
-                };
-              });
-              this.populateReceiptsFormArray();
-            }
-
-            this.updateAuctionValidators(isAuctionedValue);
-            if (isAuctionedValue) {
-              this.calculateUIInstallments();
-            }
-            this.updateBidderNameValidators();
-            this.toastr.success('Record found and loaded successfully.', 'Success');
-          };
-
-          const proceedToBidderLocationPatch = () => {
-            if (d.ownerStateID) {
-              this.loadDistricts(d.ownerStateID, true, () => {
-                if (d.ownerDistrtictID) {
-                  this.loadCities(d.ownerDistrtictID, () => {
-                    patchFormValues();
-                  });
-                } else {
-                  patchFormValues();
-                }
-              });
-            } else {
-              patchFormValues();
-            }
-          };
-
-          if (d.districtId) {
-            this.loadMarketCommittees(d.districtId, () => {
-              if (d.branchId) {
-                this.loadMandis(d.branchId, proceedToBidderLocationPatch);
-              } else {
-                proceedToBidderLocationPatch();
-              }
-            });
-          } else {
-            proceedToBidderLocationPatch();
-          }
+          this.patchPropertyData(d, false);
         } else {
           this.toastr.warning('No records found related to this Allottee Code', 'Error');
+          this.propertyData = null;
           this.resetForm();
           this.registerationForm.patchValue({ propertycode: propertyCode });
         }
       },
       error: (err: any) => {
         this.toastr.warning('No records found related to this Allottee Code', 'Error');
+        this.propertyData = null;
         this.resetForm();
         this.registerationForm.patchValue({ propertycode: propertyCode });
       }
     });
+  }
+
+  fetchAndPatchPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any) {
+    if (!mandiId || !plotTypeId || !plotNo) return;
+    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo).subscribe({
+      next: (res: any) => {
+        const d = res?.data || res;
+        const hasValidData = !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName || !!d.plotSize);
+        if (hasValidData) {
+          this.patchPropertyData(d, true);
+        }
+      },
+      error: (err: any) => {
+        console.error('Error fetching property details by mandi plot:', err);
+      }
+    });
+  }
+
+  patchPropertyData(d: any, isFromPlotSelection: boolean = false) {
+    this.propertyData = d;
+
+    const patchFormValues = () => {
+      this.bidderNamesFormArray.clear();
+      let displayBidderName = d.bidderName;
+      if (d.isTransferred && d.bidderName) {
+        const names = d.bidderName.split(',').map((n: string) => n.trim());
+        displayBidderName = '';
+        names.forEach((name: string) => {
+          this.bidderNamesFormArray.push(this.fb.control(name, Validators.required));
+        });
+      }
+      let districtId: number | null = null;
+      let branchId: number | null = null;
+      let mandiId: number | null = null;
+      let propertyCategoryId: number | null = null;
+      let bidderTypeId: number | null = null;
+
+      // DISTRICT
+      if (d.districtId !== null && d.districtId !== undefined && d.districtId !== '') {
+        const districtValue = String(d.districtId).trim();
+        const match = this.districts?.find((p: any) =>
+          String(p.districtId ?? '').trim() === districtValue ||
+          String(p.id ?? '').trim() === districtValue ||
+          String(p.districtName ?? '').trim().toLowerCase() === districtValue.toLowerCase()
+        );
+        if (match) {
+          districtId = Number(match.districtId ?? match.id);
+        }
+      }
+
+      // BRANCH / MARKET COMMITTEE
+      if (d.branchId !== null && d.branchId !== undefined && d.branchId !== '') {
+        const branchValue = String(d.branchId).trim();
+        const match = this.marketCommittees?.find((p: any) =>
+          String(p.marketCommitteeId ?? '').trim() === branchValue ||
+          String(p.branchId ?? '').trim() === branchValue ||
+          String(p.id ?? '').trim() === branchValue ||
+          String(p.marketCommitteeName ?? '').trim().toLowerCase() === branchValue.toLowerCase()
+        );
+        if (match) {
+          branchId = Number(match.marketCommitteeId ?? match.branchId ?? match.id);
+        }
+      }
+
+      // MANDI
+      if (d.mandiId !== null && d.mandiId !== undefined && d.mandiId !== '') {
+        const mandiValue = String(d.mandiId).trim();
+        const match = this.mandis?.find((p: any) =>
+          String(p.mandiId ?? '').trim() === mandiValue ||
+          String(p.id ?? '').trim() === mandiValue ||
+          String(p.mandiName ?? '').trim().toLowerCase() === mandiValue.toLowerCase()
+        );
+        if (match) {
+          mandiId = Number(match.mandiId ?? match.id);
+        }
+      }
+
+      if (d.propertyCategoryId !== null && d.propertyCategoryId !== undefined && d.propertyCategoryId !== '') {
+        const propertyCategoryIdValue = String(d.propertyCategoryId).trim();
+        const match = this.propertyCategories?.find((p: any) =>
+          String(p.propertyCategoryId ?? '').trim() === propertyCategoryIdValue ||
+          String(p.id ?? '').trim() === propertyCategoryIdValue ||
+          String(p.categoryName ?? p.propertyCategoryName ?? '').trim().toLowerCase() === propertyCategoryIdValue.toLowerCase()
+        );
+        if (match) {
+          propertyCategoryId = Number(match.propertyCategoryId ?? match.id);
+        }
+      }
+
+      if (d.bidderTypeId !== null && d.bidderTypeId !== undefined && d.bidderTypeId !== '') {
+        const bidderTypeIdValue = String(d.bidderTypeId).trim();
+        const match = this.bidderTypes?.find((p: any) =>
+          String(p.bidderTypeId ?? '').trim() === bidderTypeIdValue ||
+          String(p.id ?? '').trim() === bidderTypeIdValue ||
+          String(p.bidderTypeName ?? '').trim().toLowerCase() === bidderTypeIdValue.toLowerCase()
+        );
+        if (match) {
+          bidderTypeId = Number(match.bidderTypeId ?? match.id);
+        }
+      }
+
+      let planId: any = null;
+      const rawPlanId = d.planId ?? d.PlanId;
+      const rawPlanName = d.planName ?? d.PlanName ?? d.plan ?? d.Plan;
+      if (rawPlanId || rawPlanName) {
+        const match = this.plans?.find((p: any) => {
+          const pId = p?.planId ?? p?.PlanId ?? p?.id;
+          const pName = p?.planName ?? p?.PlanName ?? p?.name;
+          if (rawPlanId && String(pId) === String(rawPlanId)) return true;
+          if (rawPlanName && String(pName).trim().toLowerCase() === String(rawPlanName).trim().toLowerCase()) return true;
+          return false;
+        });
+        if (match) {
+          planId = match.planId ?? match.PlanId ?? match.id;
+        } else {
+          if (rawPlanId && rawPlanName && rawPlanName !== String(rawPlanId)) {
+            this.plans.push({ planId: rawPlanId, planName: rawPlanName });
+          }
+          planId = rawPlanId ?? rawPlanName;
+        }
+      }
+
+      let mappedPlotStatus = '';
+      if (d.plotStatus !== null && d.plotStatus !== undefined && d.plotStatus !== '') {
+        const statusStr = String(d.plotStatus).trim().toLowerCase();
+        if (statusStr === '1' || statusStr === 'true' || statusStr === 'sold') {
+          mappedPlotStatus = '1';
+        } else if (statusStr === '0' || statusStr === 'false' || statusStr === 'unsold') {
+          mappedPlotStatus = '0';
+        } else {
+          mappedPlotStatus = String(d.plotStatus).trim();
+        }
+      }
+
+      const isAuctionedValue = mappedPlotStatus === '1' ? true : (mappedPlotStatus === '0' ? false : !!d.isAuctioned);
+
+      const patchValues: any = {
+        districtId: isFromPlotSelection ? this.registerationForm.get('districtId')?.value : (districtId || d.districtId),
+        branchId: isFromPlotSelection ? this.registerationForm.get('branchId')?.value : (branchId || d.branchId),
+        mandiId: isFromPlotSelection ? this.registerationForm.get('mandiId')?.value : (mandiId || d.mandiId),
+        plotTypeId: isFromPlotSelection ? this.registerationForm.get('plotTypeId')?.value : (d.plotTypeId),
+        plotNo: d.plotNo !== undefined && d.plotNo !== null ? String(d.plotNo) : this.registerationForm.get('plotNo')?.value,
+        plotsize: d.plotSize ?? d.PlotSize ?? this.registerationForm.get('plotsize')?.value,
+        planId: planId ?? (d.planId ?? d.PlanId),
+        plotStatus: mappedPlotStatus,
+        propertyCategoryId: d.propertyCategoryId,
+        propertycode: d.propertyCode || this.registerationForm.get('propertycode')?.value,
+        isAssetResumed: d.assetResumed,
+        isCourtCase: d.isCourtCase,
+        isAssetSurrendered: d.assetSurrendered,
+        isAssetLocked: d.isAssetLocked,
+        isDefaulter: d.isDefaulter,
+        anyComplaint: d.anyComplaint,
+        ndcGenerated: d.ndcGenerated,
+        ndcIssued: d.ndcIssued,
+        assetVerified: d.assetVerified,
+        isAuctioned: isAuctionedValue,
+        auctionDate: d.auctionDate ? d.auctionDate.substring(0, 16) : '',
+        bidderTypeId: d.bidderTypeId,
+        email: d.email,
+        bidderName: displayBidderName,
+        isTransferred: d.isTransferred,
+        relation: d.relation,
+        fatherOrHusbandName: d.fatherOrHusbandName,
+        panNo: d.panNo,
+        aadhaarNo: d.aadhaarNo,
+        mobileNo: d.mobileNo,
+        address: d.address,
+        auctionPropertyType: d.propertyTypeId,
+        reservePrice: d.reservePrice,
+        finalBidPrice: d.finalBidPrice,
+        formTransactionId: d.formTransactionId,
+        formTxnDate: d.formTxnDate ? d.formTxnDate.split('T')[0] : '',
+        formPaidAmount: d.formPaidAmount,
+        emdTxnId: d.emdTxnId,
+        emdDate: d.emdDate ? d.emdDate.split('T')[0] : '',
+        allotmentTxnId: d.allotmentTxnId ?? d.AllotmentTxnId,
+        allotmentDate: d.allotmentDate ? d.allotmentDate.split('T')[0] : (d.AllotmentDate ? d.AllotmentDate.split('T')[0] : ''),
+        allotmentTransactionDate: d.allotmentTransactionDate ? d.allotmentTransactionDate.split('T')[0] : (d.AllotmentTransactionDate ? d.AllotmentTransactionDate.split('T')[0] : (d.allotmentTxnDate ? d.allotmentTxnDate.split('T')[0] : (d.AllotmentTxnDate ? d.AllotmentTxnDate.split('T')[0] : ''))),
+        allotmentAmount: d.allotmentAmount ?? d.AllotmentAmount,
+        dueAmount: d.dueAmount,
+        accumulatedInterest: d.totalDueWithInterest - d.dueAmount,
+        totalDueWithInterest: d.totalDueWithInterest,
+        ownerStateID: d.ownerStateID,
+        ownerDistrtictID: d.ownerDistrtictID,
+        ownerCityID: d.ownerCityID
+      };
+
+      this.registerationForm.patchValue(patchValues, { emitEvent: false });
+
+      const receiptsFromDb = d.installments || d.Installments || d.receipts || d.receiptList || d.receiptsFormArray || d.receiptAllocations || d.propertyBidderReceipts;
+      if (receiptsFromDb && Array.isArray(receiptsFromDb)) {
+        this.receiptList = receiptsFromDb.map((rec: any) => {
+          const receiptNo = rec.receiptNo || rec.ReceiptNo || '';
+          const receiptDate = rec.receiptDate || rec.ReceiptDate || '';
+          const draftNo = rec.draftNo || rec.DraftNo || '';
+          const draftAmount = rec.draftAmount !== undefined ? rec.draftAmount : rec.DraftAmount;
+          const draftDate = rec.draftDate || rec.DraftDate || '';
+          const draftBank = rec.draftBank || rec.DraftBank || '';
+          const principalAmount = rec.principalAmount !== undefined ? rec.principalAmount : rec.PrincipalAmount;
+          const interestAmount = rec.interestAmount !== undefined ? rec.interestAmount : rec.InterestAmount;
+          const otherAmount = rec.otherAmount !== undefined ? rec.otherAmount : rec.OtherAmount;
+          const penaltyAmount = rec.penaltyAmount !== undefined ? rec.penaltyAmount : rec.PenaltyAmount;
+          const penaltyType = rec.penaltyType || rec.PenaltyType || 'N/A';
+          const remarks = rec.remarks || rec.Remarks || '';
+          const isVerified = rec.isVerified !== undefined ? rec.isVerified : rec.IsVerified;
+
+          return {
+            receiptNo,
+            receiptDate: receiptDate ? receiptDate.split('T')[0] : '',
+            draftNo,
+            draftAmount: draftAmount || 0,
+            draftDate: draftDate ? draftDate.split('T')[0] : '',
+            draftBank,
+            principalAmount: principalAmount || 0,
+            interestAmount: interestAmount || 0,
+            otherAmount: otherAmount || 0,
+            penaltyAmount: penaltyAmount || 0,
+            penaltyType,
+            remarks,
+            isVerified
+          };
+        });
+        this.populateReceiptsFormArray();
+      }
+
+      this.updateAuctionValidators(isAuctionedValue);
+      if (isAuctionedValue) {
+        this.calculateUIInstallments();
+      }
+      this.updateBidderNameValidators();
+      this.toastr.success('Record found and loaded successfully.', 'Success');
+    };
+
+    const proceedToBidderLocationPatch = () => {
+      if (d.ownerStateID) {
+        this.loadDistricts(d.ownerStateID, true, () => {
+          if (d.ownerDistrtictID) {
+            this.loadCities(d.ownerDistrtictID, () => {
+              patchFormValues();
+            });
+          } else {
+            patchFormValues();
+          }
+        });
+      } else {
+        patchFormValues();
+      }
+    };
+
+    if (!isFromPlotSelection && d.districtId) {
+      this.loadMarketCommittees(d.districtId, () => {
+        if (d.branchId) {
+          this.loadMandis(d.branchId, () => {
+            if (d.mandiId) {
+              this.loadPlotTypes(d.mandiId, proceedToBidderLocationPatch);
+            } else {
+              proceedToBidderLocationPatch();
+            }
+          });
+        } else {
+          proceedToBidderLocationPatch();
+        }
+      });
+    } else {
+      proceedToBidderLocationPatch();
+    }
   }
 
   private populateReceiptsFormArray(): void {
@@ -1439,16 +1741,34 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     return this.mandis.filter(m => (m.mandiName || m.name || '').toLowerCase().includes(term));
   }
 
+  get filteredPlotNos(): any[] {
+    const term = this.plotNoSearchText?.toLowerCase().trim();
+    if (!term) return this.plotNos;
+    return this.plotNos.filter(p => {
+      const text = `${p?.plotNo ?? ''} ${p?.label ?? ''}`;
+      return text.toLowerCase().includes(term);
+    });
+  }
+
   get filteredPlotTypes(): any[] {
     const term = this.plotTypeSearchText?.toLowerCase().trim();
     if (!term) return this.plotTypes;
     return this.plotTypes.filter(t => (t.plotType || t.plotTypeName || t.name || '').toLowerCase().includes(term));
   }
 
+  get filteredPlotSizes(): any[] {
+    const term = this.plotSizeSearchText?.toLowerCase().trim();
+    if (!term) return this.plotSizes;
+    return this.plotSizes.filter(s => {
+      const text = s?.plotSize ?? s?.name ?? s?.plotSizeId ?? String(s);
+      return String(text).toLowerCase().includes(term);
+    });
+  }
+
   get filteredPlans(): any[] {
     const term = this.planSearchText?.toLowerCase().trim();
     if (!term) return this.plans;
-    return this.plans.filter(p => (p.planName || p.name || '').toLowerCase().includes(term));
+    return this.plans.filter(p => (p.planName || p.PlanName || p.name || '').toLowerCase().includes(term));
   }
 
   get filteredPropertyTypes(): any[] {
@@ -1539,7 +1859,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    // debugger
+    debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];
@@ -1637,14 +1957,19 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         .join(', ');
     }
 
+    const hasValidPropertyData = !!this.propertyData && !!(this.propertyData.id || this.propertyData.propertyId || this.propertyData.propertyCode || this.propertyData.PropertyCode);
+    const finalPropertyCode = hasValidPropertyData
+      ? (formRaw.propertycode || this.propertyData.propertyCode || this.propertyData.PropertyCode || null)
+      : null;
+
     const payload = {
       ...(this.propertyData || {}),
 
       districtId: formRaw.districtId,
       mandiId: formRaw.mandiId,
       branchId: formRaw.branchId,
-      propertyCode: formRaw.propertycode,
-      PropertyCode: formRaw.propertycode,
+      propertyCode: finalPropertyCode,
+      PropertyCode: finalPropertyCode,
 
       ownerStateID: formRaw.ownerStateID,
       ownerDistrtictID: formRaw.ownerDistrtictID,
@@ -1789,6 +2114,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   resetForm(): void {
+    this.propertyData = null;
     this.registerationForm.reset({
       branchId: '',
       districtId: '',
@@ -1846,6 +2172,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     });
     this.cities = [];
     this.bidderDistricts = [];
+    this.marketCommittees = [];
+    this.mandis = [];
+    this.plotTypes = [];
     this.receiptsFormArray.clear();
     this.bidderNamesFormArray.clear();
     this.calculatedSchedulesMatrix = [];
@@ -2073,15 +2402,15 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       totalDueWithInterest: finalTotalDueIncludingInterest > 0 ? finalTotalDueIncludingInterest : ''
     }, { emitEvent: false });
   }
-//Total Interest, Principal and Total Due amount from calculatedSchedulesMatrix
+  //Total Interest, Principal and Total Due amount from calculatedSchedulesMatrix
 
   get totalInterest(): number {
-  const totalInterest = this.calculatedSchedulesMatrix.reduce(
-    (sum, schedule) => sum + (schedule.interestAmount || 0),
-    0
-  );
-  return Math.round(totalInterest);
-}
+    const totalInterest = this.calculatedSchedulesMatrix.reduce(
+      (sum, schedule) => sum + (schedule.interestAmount || 0),
+      0
+    );
+    return Math.round(totalInterest);
+  }
   get totalBasePrincipal(): number {
     const totalBasePrincipal = this.calculatedSchedulesMatrix.reduce(
       (sum, schedule) => sum + (schedule.baseAmountDue || 0),

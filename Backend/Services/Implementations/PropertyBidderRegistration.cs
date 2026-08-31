@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using static Backend.Models.Dtos.DistrictMasterDto;
 
 namespace Backend.Services.Implementations
 {
@@ -379,8 +380,7 @@ namespace Backend.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyEAuctionDetailsByPropertyCodeAsync(
-    string propertyCode)
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyEAuctionDetailsByPropertyCodeAsync(string propertyCode)
         {
             try
             {
@@ -433,6 +433,10 @@ namespace Backend.Services.Implementations
 
                     response.PlanId = row["PlanId"] != DBNull.Value
                         ? Convert.ToInt32(row["PlanId"])
+                        : null;
+
+                    response.PlanName = table.Columns.Contains("PlanName") && row["PlanName"] != DBNull.Value
+                        ? row["PlanName"].ToString()
                         : null;
 
                     response.PlotSize = row["PlotSize"] != DBNull.Value
@@ -504,6 +508,8 @@ namespace Backend.Services.Implementations
                     //      : null;
                     
                 }
+
+               
                 // Allottee Details 
                 if (dataSet.Tables.Count > 1 &&
                     dataSet.Tables[1].Rows.Count > 0)
@@ -729,8 +735,8 @@ namespace Backend.Services.Implementations
                     var row = dataSet.Tables[6].Rows[0];
                     // Form Fee
                     response.FormTransactionId =
-                        row["TransactionId"] != DBNull.Value
-                            ? row["TransactionId"]?.ToString()
+                        row["DraftNo"] != DBNull.Value
+                            ? row["DraftNo"]?.ToString()
                             : null;
 
                     response.FormTxnDate =
@@ -748,8 +754,8 @@ namespace Backend.Services.Implementations
                     var row = dataSet.Tables[7].Rows[0];
                     // Form Fee
                     response.AllotmentTxnId =
-                        row["TransactionId"] != DBNull.Value
-                            ? row["TransactionId"]?.ToString()
+                        row["DraftNo"] != DBNull.Value
+                            ? row["DraftNo"]?.ToString()
                             : null;
 
                     response.AllotmentTransactionDate =
@@ -1868,6 +1874,648 @@ namespace Backend.Services.Implementations
             }
         }
 
+        public async Task<ApiResponse<List<DistrictDto>>> GetPropertyDistrictsAsync()
+        {
+            try
+            {
+                var districts = new List<DistrictDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetPropertyDistricts";
+                command.CommandType = CommandType.StoredProcedure;
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    districts.Add(new DistrictDto
+                    {
+                        DistrictId = reader["DistrictId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["DistrictId"])
+                            : 0,
+
+                        DistrictName = reader["DistrictName"] != DBNull.Value
+                            ? reader["DistrictName"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<DistrictDto>>.Ok(
+                    districts,
+                    "Districts fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<DistrictDto>>.Fail(
+                    $"Error while fetching districts: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<ApiResponse<List<BranchDto>>> GetPropertyBranchesAsync(int districtId)
+        {
+            try
+            {
+                var branches = new List<BranchDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetPropertyBranches";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var districtParam = command.CreateParameter();
+                districtParam.ParameterName = "@DistrictId";
+                districtParam.Value = districtId;
+                districtParam.DbType = DbType.Int32;
+
+                command.Parameters.Add(districtParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    branches.Add(new BranchDto
+                    {
+                        BranchId = reader["BranchId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["BranchId"])
+                            : 0,
+
+                        BranchName = reader["BranchName"] != DBNull.Value
+                            ? reader["BranchName"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<BranchDto>>.Ok(
+                    branches,
+                    "Branches fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<BranchDto>>.Fail(
+                    $"Error while fetching branches: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<ApiResponse<List<MandiDto>>> GetPropertyMandisAsync(int branchId)
+        {
+            try
+            {
+                var mandis = new List<MandiDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetPropertyMandis";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var branchParam = command.CreateParameter();
+                branchParam.ParameterName = "@BranchId";
+                branchParam.Value = branchId;
+                branchParam.DbType = DbType.Int32;
+
+                command.Parameters.Add(branchParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    mandis.Add(new MandiDto
+                    {
+                        MandiId = reader["MandiId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["MandiId"])
+                            : 0,
+
+                        MandiName = reader["MandiName"] != DBNull.Value
+                            ? reader["MandiName"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<MandiDto>>.Ok(
+                    mandis,
+                    "Mandis fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<MandiDto>>.Fail(
+                    $"Error while fetching mandis: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<ApiResponse<List<PlotTypeDto>>> GetPropertyPlotTypesAsync(int mandiId)
+        {
+            try
+            {
+                var plotTypes = new List<PlotTypeDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetPropertyPlotTypes";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var mandiParam = command.CreateParameter();
+                mandiParam.ParameterName = "@MandiId";
+                mandiParam.Value = mandiId;
+                mandiParam.DbType = DbType.Int32;
+
+                command.Parameters.Add(mandiParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    plotTypes.Add(new PlotTypeDto
+                    {
+                        PlotTypeId = reader["PlotTypeId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["PlotTypeId"])
+                            : 0,
+
+                        PlotType = reader["PlotType"] != DBNull.Value
+                            ? reader["PlotType"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<PlotTypeDto>>.Ok(
+                    plotTypes,
+                    "Plot types fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<PlotTypeDto>>.Fail(
+                    $"Error while fetching plot types: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<List<AuctionedPlotDto>> GetAuctionedPlotsAsync(int mandiId, int plotTypeId)
+        {
+            var result = new List<AuctionedPlotDto>();
+
+            await using var connection = _context.Database.GetDbConnection();
+
+            if (connection.State != ConnectionState.Open)
+                await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+
+            command.CommandText = "sp_GetAuctionedPlots";
+            command.CommandType = CommandType.StoredProcedure;
+
+            var mandiParameter = command.CreateParameter();
+            mandiParameter.ParameterName = "@MandiId";
+            mandiParameter.Value = mandiId;
+            command.Parameters.Add(mandiParameter);
+
+            var plotTypeParameter = command.CreateParameter();
+            plotTypeParameter.ParameterName = "@PlotTypeId";
+            plotTypeParameter.Value = plotTypeId;
+            command.Parameters.Add(plotTypeParameter);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                columns.Add(reader.GetName(i));
+            }
+
+            while (await reader.ReadAsync())
+            {
+                var dto = new AuctionedPlotDto();
+                if (columns.Contains("PlotNo") && reader["PlotNo"] != DBNull.Value)
+                {
+                    dto.PlotNo = Convert.ToInt32(reader["PlotNo"]);
+                }
+                result.Add(dto);
+            }
+
+            return result;
+        }
+
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo)
+        {
+            try
+            {
+                var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("SP_GetPropertyDetailsByMandiPlot", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                // NEW PARAMETERS
+                command.Parameters.AddWithValue("@MandiId", MandiId);
+                command.Parameters.AddWithValue("@PlotTypeId", PlotTypeId);
+                command.Parameters.AddWithValue("@PlotNo", PlotNo);
+
+                using var adapter = new SqlDataAdapter(command);
+
+                var dataSet = new DataSet();
+
+                adapter.Fill(dataSet);
+                // Create response for checking
+                var response = new PropertyBidderRegistrationDto();
+
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                {
+                    var table = dataSet.Tables[0];
+                    var row = table.Rows[0];
+
+                    response.Id = row["PropertyId"] != DBNull.Value
+                        ? Convert.ToInt32(row["PropertyId"])
+                        : 0;
+
+                    response.PropertyCode = row["PropertyCode"]?.ToString();
+
+                    response.MandiId = row["MandiId"] != DBNull.Value
+                        ? Convert.ToInt32(row["MandiId"])
+                        : 0;
+
+                    response.BranchId = row["BranchId"] != DBNull.Value
+                        ? Convert.ToInt32(row["BranchId"])
+                        : 0;
+
+                    response.DistrictId = row["DistrictId"] != DBNull.Value
+                        ? Convert.ToInt32(row["DistrictId"])
+                        : 0;
+
+                    response.PlotTypeId = row["PlotTypeId"] != DBNull.Value
+                        ? Convert.ToInt32(row["PlotTypeId"])
+                        : null;
+
+                    response.PlanId = row["PlanId"] != DBNull.Value
+                        ? Convert.ToInt32(row["PlanId"])
+                        : null;
+
+                    response.PlanName = table.Columns.Contains("PlanName") && row["PlanName"] != DBNull.Value
+                        ? row["PlanName"].ToString()
+                        : null;
+
+                    response.PlotSize = row["PlotSize"] != DBNull.Value
+                        ? Convert.ToString(row["PlotSize"])
+                        : null;
+
+                    response.PlotNo = row["PlotNo"] != DBNull.Value
+                        ? Convert.ToInt32(row["PlotNo"])
+                        : null;
+
+                    response.PlotStatus = row["PropertyStatus"] != DBNull.Value
+                      ? Convert.ToString(row["PropertyStatus"])
+                      : null;
+                    response.AssetVerified =
+                            row["IsAssetVerified"] != DBNull.Value
+                                ? Convert.ToBoolean(row["IsAssetVerified"])
+                                : null;
+
+                    response.NdcGenerated =
+                        row["IsNDCGenerated"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsNDCGenerated"])
+                            : null;
+
+                    response.NdcIssued =
+                        row["IsNDCIssued"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsNDCIssued"])
+                            : null;
+
+                    response.AnyComplaint =
+                        row["IsAnyComplaint"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsAnyComplaint"])
+                            : null;
+
+                    response.IsDefaulter =
+                        row["IsDefaulter"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsDefaulter"])
+                            : null;
+
+                    response.AssetSurrendered =
+                        row["IsAssetSurrendered"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsAssetSurrendered"])
+                            : null;
+
+                    response.IsAssetLocked =
+                        row["IsLocked"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsLocked"])
+                            : null;
+
+                    response.AssetResumed =
+                        row["IsAssetResumed"] != DBNull.Value
+                            ? Convert.ToBoolean(row["IsAssetResumed"])
+                            : null;
+                    response.IsAuctioned = row["IsAssetAuctioned"] != DBNull.Value ? Convert.ToBoolean(row["IsAssetAuctioned"]) : null;
+
+                    response.PropertyCategoryId =
+                      row["PropertyCategoryId"] != DBNull.Value
+                          ? Convert.ToInt32(row["PropertyCategoryId"])
+                          : null;
+                    response.PropertyTypeId =
+                      row["PropertyTypeId"] != DBNull.Value
+                          ? Convert.ToInt32(row["PropertyTypeId"])
+                          : null;
+
+
+
+                    //response.BidderTypeId =
+                    //  row["BiddingType"] != DBNull.Value
+                    //      ? Convert.ToInt32(row["BiddingType"])
+                    //      : null;
+
+                }
+
+
+                // Allottee Details 
+                if (dataSet.Tables.Count > 1 &&
+                    dataSet.Tables[1].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[1].Rows[0];
+                    response.BidderName = row["AllotteeName"] != DBNull.Value
+                            ? row["AllotteeName"]?.ToString()
+                           : null;
+
+                    response.Email =
+                        row["EmailId"] != DBNull.Value
+                            ? row["EmailId"]?.ToString()
+                            : null;
+
+
+
+                    // =====================================
+                    // Personal Details
+                    // =====================================
+
+                    //response.Relation =
+                    //    row["Relation"] != DBNull.Value
+                    //        ? row["Relation"]?.ToString()
+                    //        : null;
+
+                    response.FatherOrHusbandName =
+                        row["AllotteeFatherName"] != DBNull.Value
+                            ? row["AllotteeFatherName"]?.ToString()
+                            : null;
+
+                    response.PANNo =
+                        row["PanNumber"] != DBNull.Value
+                            ? row["PanNumber"]?.ToString()
+                            : null;
+
+                    //response.AadhaarNo =
+                    //    row["DocumentNumber"] != DBNull.Value
+                    //        ? row["DocumentNumber"]?.ToString()
+                    //        : null;
+
+                    response.MobileNo =
+                        row["MobileNo"] != DBNull.Value
+                            ? row["MobileNo"]?.ToString()
+                            : null;
+
+                    // Owner Details
+                    response.OwnerStateID =
+                        row["StateId"] != DBNull.Value
+                            ? Convert.ToInt32(row["StateId"])
+                            : null;
+
+                    response.OwnerDistrtictID =
+                        row["DistrictId"] != DBNull.Value
+                            ? Convert.ToInt32(row["DistrictId"])
+                            : null;
+
+                    response.OwnerCityID =
+                        row["CityId"] != DBNull.Value
+                            ? Convert.ToInt32(row["CityId"])
+                            : null;
+
+                    response.Address =
+                        row["AllotteeAddress"] != DBNull.Value
+                            ? row["AllotteeAddress"]?.ToString()
+                            : null;
+                }
+                // =====================================
+                // TABLE 2 - PropertyAuctionDetail
+                // =====================================
+
+                if (dataSet.Tables.Count > 2 &&
+                    dataSet.Tables[2].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[2].Rows[0];
+                    response.AuctionDate =
+                      row["AuctionDate"] != DBNull.Value
+                          ? Convert.ToDateTime(row["AuctionDate"])
+                          : null;
+                    // Financial Details
+                    response.ReservePrice =
+                        row["ReservePrice"] != DBNull.Value
+                            ? Convert.ToDecimal(row["ReservePrice"])
+                            : null;
+
+                    response.FinalBidPrice =
+                        row["SalesAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["SalesAmount"])
+                            : null;
+
+
+                    // EMD
+                    //response.EmdTxnId =
+                    //    row["EmdTxnId"] != DBNull.Value
+                    //        ? row["EmdTxnId"]?.ToString()
+                    //        : null;
+
+                    //response.EmdDate =
+                    //    row["EmdDate"] != DBNull.Value
+                    //        ? Convert.ToDateTime(row["EmdDate"])
+                    //        : null;
+
+                    //response.EmdAmount =
+                    //    row["EmdAmount"] != DBNull.Value
+                    //        ? Convert.ToDecimal(row["EmdAmount"])
+                    //        : null;
+
+
+                    // 25% Allotment
+                    //response.AllotmentTxnId =
+                    //    row["AllotmentTxnId"] != DBNull.Value
+                    //        ? row["AllotmentTxnId"]?.ToString()
+                    //        : null;
+
+                    response.AllotmentDate =
+                        row["DateOfAllotment"] != DBNull.Value
+                            ? Convert.ToDateTime(row["DateOfAllotment"])
+                            : null;
+
+                    //response.AllotmentAmount =
+                    //    row["AllotmentAmount"] != DBNull.Value
+                    //        ? Convert.ToDecimal(row["AllotmentAmount"])
+                    //        : null;
+
+
+                    // Outstanding
+                    response.DueAmount =
+                        row["BalanceAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["BalanceAmount"])
+                            : null;
+
+                    //response.TotalDueWithInterest =
+                    //    row["TotalDueWithInterest"] != DBNull.Value
+                    //        ? Convert.ToDecimal(row["TotalDueWithInterest"])
+                    //        : null;
+
+
+                    // Remarks
+                    //response.Remarks =
+                    //    row["Remarks"] != DBNull.Value
+                    //        ? row["Remarks"]?.ToString()
+                    //        : null;
+                }
+
+                // =====================================
+                // TABLE 5 - PropertyInstallmentDetails
+                // =====================================
+
+                response.Installments = new List<InstallmentDetailsDto>();
+
+                if (dataSet.Tables.Count > 5 &&
+                    dataSet.Tables[5].Rows.Count > 0)
+                {
+                    var table = dataSet.Tables[5];
+
+                    foreach (DataRow row in table.Rows)
+                    {
+                        var installment = new InstallmentDetailsDto
+                        {
+                            Id = row["DraftId"] != DBNull.Value
+                                ? Convert.ToInt32(row["DraftId"])
+                                : 0,
+
+                            ReceiptNo = row["ReceiptNo"] != DBNull.Value
+                                ? row["ReceiptNo"]?.ToString()
+                                : null,
+
+                            ReceiptDate = row["ReceiptDate"] != DBNull.Value
+                                ? Convert.ToDateTime(row["ReceiptDate"])
+                                : null,
+
+                            DraftNo = row["DraftNo"] != DBNull.Value
+                                ? row["DraftNo"]?.ToString()
+                                : null,
+
+                            DraftAmount = row["DraftAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["DraftAmount"])
+                                : null,
+
+                            DraftDate = row["DraftDate"] != DBNull.Value
+                                ? Convert.ToDateTime(row["DraftDate"])
+                                : null,
+
+                            DraftBank = row["ChallanBank"] != DBNull.Value
+                                ? row["DraftBankId"]?.ToString()
+                                : null,
+
+                            PrincipalAmount = row["PrincipalAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["PrincipalAmount"])
+                                : null,
+
+                            InterestAmount = row["InterestAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["InterestAmount"])
+                                : null,
+
+                            OtherAmount = row["OtherAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["OtherAmount"])
+                                : null,
+
+                            PenaltyAmount = row["PenalityAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["PenalityAmount"])
+                                : null,
+
+                            PenaltyType = row["PenalityTypeId"] != DBNull.Value
+                                ? row["PenalityTypeId"]?.ToString()
+                                : null,
+
+                            Remarks = row["Remarks"] != DBNull.Value
+                                ? row["Remarks"]?.ToString()
+                                : null,
+
+
+                            //IsVerified = row["IsVerified"] != DBNull.Value
+                            //    ? Convert.ToBoolean(row["IsVerified"])
+                            //    : null
+                        };
+
+                        response.Installments.Add(installment);
+                    }
+                }
+
+                if (dataSet.Tables.Count > 6 && dataSet.Tables[6].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[6].Rows[0];
+                    // Form Fee
+                    response.FormTransactionId =
+                        row["DraftNo"] != DBNull.Value
+                            ? row["DraftNo"]?.ToString()
+                            : null;
+
+                    response.FormTxnDate =
+                        row["ReceiptDate"] != DBNull.Value
+                            ? Convert.ToDateTime(row["ReceiptDate"])
+                            : null;
+
+                    response.FormPaidAmount =
+                        row["DraftAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["DraftAmount"])
+                            : null;
+                }
+                if (dataSet.Tables.Count > 7 && dataSet.Tables[7].Rows.Count > 0)
+                {
+                    var row = dataSet.Tables[7].Rows[0];
+                    // Form Fee
+                    response.AllotmentTxnId =
+                        row["DraftNo"] != DBNull.Value
+                            ? row["DraftNo"]?.ToString()
+                            : null;
+
+                    response.AllotmentTransactionDate =
+                       row["ReceiptDate"] != DBNull.Value
+                           ? Convert.ToDateTime(row["ReceiptDate"])
+                           : null;
+
+                    response.AllotmentAmount =
+                        row["DraftAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(row["DraftAmount"])
+                            : null;
+                }
+                return ApiResponse<PropertyBidderRegistrationDto>.Ok(response, "Registration fetched successfully");
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<PropertyBidderRegistrationDto>.Fail(ex.Message);
+
+            }
+        }
         public Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v)
         {
             throw new NotImplementedException();
