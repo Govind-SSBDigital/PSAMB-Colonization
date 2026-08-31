@@ -67,6 +67,7 @@ namespace Backend.Models.Dtos
         public int DistrictId { get; set; }
         public int? PlotTypeId { get; set; }
         public int? PlanId { get; set; }
+        public string? PlanName { get; set; }
         public string? PlotSize { get; set; }
         public int? PlotNo { get; set; }
         public int? ApplicantId { get; set; }
@@ -184,4 +185,15 @@ namespace Backend.Models.Dtos
 
     }
 
+
+    public class BranchDto
+    {
+        public int BranchId { get; set; }
+        public string? BranchName { get; set; }
+    }
+
+    public class AuctionedPlotDto
+    {
+        public int? PlotNo { get; set; }
+    }
 }

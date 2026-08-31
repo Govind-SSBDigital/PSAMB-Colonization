@@ -33,8 +33,7 @@
                       [value]="districtSearchText || getSelectedDistrictName() || ''"
                       (focus)="isDistrictDropdownOpen = true"
                       (input)="onDropdownInput('districtId', 'districtSearchText', $event, 'isDistrictDropdownOpen')"
-                      (blur)="onDistrictBlur()"
-                      placeholder="Select District" autocomplete="off" />
+                      (blur)="onDistrictBlur()" placeholder="Select District" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isDistrictDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectDistrict('')">
                         Select District
@@ -57,30 +56,26 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('branchId')" [class.open]="isBranchDropdownOpen"
-                      [value]="branchSearchText || getSelectedBranchName() || ''"
-                      (focus)="isBranchDropdownOpen = true"
+                      [value]="branchSearchText || getSelectedBranchName() || ''" (focus)="isBranchDropdownOpen = true"
                       (input)="onDropdownInput('branchId', 'branchSearchText', $event, 'isBranchDropdownOpen')"
                       (blur)="onBranchBlur()"
-                      [placeholder]="isLoadingCommittees ? 'Loading Committees...' : 'Select Market Committee'"
+                      placeholder="Select Market Committee"
                       autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBranchDropdownOpen">
-                      <div class="custom-dropdown-item text-muted" *ngIf="isLoadingCommittees">
-                        Loading Committees...
+                      <div class="custom-dropdown-item text-muted" (click)="selectBranch('')">
+                        Select Market Committee
                       </div>
-                      <ng-container *ngIf="!isLoadingCommittees">
-                        <div class="custom-dropdown-item text-muted" (click)="selectBranch('')">
-                          Select Market Committee
-                        </div>
-                        @for (committee of filteredMarketCommittees; track (committee.marketCommitteeId || committee.id || committee.branchId || $index)) {
-                        <div class="custom-dropdown-item text-truncate" [class.active]="isBranchSelected(committee)"
-                          (click)="selectBranch(committee.marketCommitteeId || committee.id || committee.branchId)">
-                          {{ committee.marketCommitteeName || committee.name || committee.branchName }}
-                        </div>
-                        }
-                      </ng-container>
+                      @for (committee of filteredMarketCommittees; track (committee.marketCommitteeId || committee.id
+                      || committee.branchId || $index)) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isBranchSelected(committee)"
+                        (click)="selectBranch(committee.marketCommitteeId || committee.id || committee.branchId)">
+                        {{ committee.marketCommitteeName || committee.name || committee.branchName }}
+                      </div>
+                      }
                     </div>
                   </div>
-                  @if (isInvalid('branchId')) { <div class="invalid-feedback d-block">Market Committee is required.</div> }
+                  @if (isInvalid('branchId')) { <div class="invalid-feedback d-block">Market Committee is required.
+                  </div> }
                 </div>
                 <div class="col-sm-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">
@@ -89,54 +84,26 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('mandiId')" [class.open]="isMandiDropdownOpen"
-                      [value]="mandiSearchText || getSelectedMandiName() || ''"
-                      (focus)="isMandiDropdownOpen = true"
+                      [value]="mandiSearchText || getSelectedMandiName() || ''" (focus)="isMandiDropdownOpen = true"
                       (input)="onDropdownInput('mandiId', 'mandiSearchText', $event, 'isMandiDropdownOpen')"
-                      (blur)="onMandiBlur()"
-                      [placeholder]="isLoadingMandis ? 'Loading Mandis...' : 'Select Mandi'"
+                      (blur)="onMandiBlur()" placeholder="Select Mandi"
                       autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isMandiDropdownOpen">
-                      <div class="custom-dropdown-item text-muted" *ngIf="isLoadingMandis">
-                        Loading Mandis...
+                      <div class="custom-dropdown-item text-muted" (click)="selectMandi('')">
+                        Select Mandi
                       </div>
-                      <ng-container *ngIf="!isLoadingMandis">
-                        <div class="custom-dropdown-item text-muted" (click)="selectMandi('')">
-                          Select Mandi
-                        </div>
-                        @for (mandiItem of filteredMandis; track mandiItem.mandiId) {
-                        <div class="custom-dropdown-item text-truncate" [class.active]="isMandiSelected(mandiItem)"
-                          (click)="selectMandi(mandiItem.mandiId || mandiItem.id)">
-                          {{ mandiItem.mandiName || mandiItem.name }}
-                        </div>
-                        }
-                      </ng-container>
+                      @for (mandiItem of filteredMandis; track mandiItem.mandiId) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isMandiSelected(mandiItem)"
+                        (click)="selectMandi(mandiItem.mandiId || mandiItem.id)">
+                        {{ mandiItem.mandiName || mandiItem.name }}
+                      </div>
+                      }
                     </div>
                   </div>
                   @if (isInvalid('mandiId')) {
                   <div class="invalid-feedback d-block">Mandi is required.</div>
                   }
                 </div>
-
-                <div class="col-sm-6">
-                  <label for="plotNo" class="form-label small text-dark fw-semibold text-uppercase">Plot No. <span
-                      class="text-danger">*</span></label>
-                  <input id="plotNo" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    placeholder="e.g., B-12" formControlName="plotNo" [class.is-invalid]="isInvalid('plotNo')" />
-                  @if (isInvalid('plotNo')) { <div class="invalid-feedback">Plot no. is required.</div> }
-                </div>
-                <!-- <div class="col-sm-6">
-                  <label for="branch" class="form-label small text-dark fw-semibold text-uppercase">Branch <span
-                      class="text-danger">*</span></label>
-                  <input id="branch" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    list="branches" placeholder="Select or Type Branch" formControlName="branch"
-                    [class.is-invalid]="isInvalid('branch')" />
-                  <datalist id="branches">
-                    @for (branch of branches; track branch) {
-                    <option [value]="branch"></option>
-                    }
-                  </datalist>
-                  @if (isInvalid('branch')) { <div class="invalid-feedback">Branch is required.</div> }
-                </div>  -->
 
                 <div class="col-sm-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">Plot Type <span
@@ -148,7 +115,8 @@
                       (focus)="isPlotTypeDropdownOpen = true"
                       (input)="onDropdownInput('plotTypeId', 'plotTypeSearchText', $event, 'isPlotTypeDropdownOpen')"
                       (blur)="onPlotTypeBlur()"
-                      placeholder="Select Plot Type" autocomplete="off" />
+                      placeholder="Select Plot Type"
+                      autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotTypeDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectPlotType('')">
                         Select Plot Type
@@ -156,20 +124,47 @@
                       @for (type of filteredPlotTypes; track (type.plotTypeId || type.id || type)) {
                       <div class="custom-dropdown-item text-truncate" [class.active]="isPlotTypeSelected(type)"
                         (click)="selectPlotType(type.plotTypeId || type.id || type)">
-                        {{ type.plotType || type.plotType || type }}
+                        {{ type.plotType || type.plotTypeName || type.name || type }}
                       </div>
                       }
                     </div>
                   </div>
                   @if (isInvalid('plotTypeId')) { <div class="invalid-feedback d-block">Plot type is required.</div> }
                 </div>
+
                 <div class="col-sm-6">
-                  <label for="plotsize" class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Plot No. <span
                       class="text-danger">*</span></label>
-                  <input id="plotsize" type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    placeholder="e.g., 200 Sq. Yards" formControlName="plotsize"
-                    [class.is-invalid]="isInvalid('plotsize')" />
-                  @if (isInvalid('plotsize')) { <div class="invalid-feedback">Plot size is required.</div> }
+                  <div class="custom-select-wrapper position-relative">
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
+                      [class.is-invalid]="isInvalid('plotNo')" [class.open]="isPlotNoDropdownOpen"
+                      [value]="plotNoSearchText || getSelectedPlotNoName() || ''" (focus)="isPlotNoDropdownOpen = true"
+                      (input)="onDropdownInput('plotNo', 'plotNoSearchText', $event, 'isPlotNoDropdownOpen')"
+                      (blur)="onPlotNoBlur()" placeholder="Select or Type Plot No." autocomplete="off" />
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotNoDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" (click)="selectPlotNo('')">
+                        Select Plot No.
+                      </div>
+                      @for (item of filteredPlotNos; track (item.plotNo || item.id || item)) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isPlotNoSelected(item)"
+                        (click)="selectPlotNo(item.plotNo || item.id || item)">
+                        {{ item.plotNo || item.label || item }}
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  @if (isInvalid('plotNo')) { <div class="invalid-feedback d-block">Plot no. is required.</div> }
+                </div>
+
+
+
+                <div class="col-sm-6">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span
+                      class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
+                    formControlName="plotsize" [class.is-invalid]="isInvalid('plotsize')"
+                    placeholder="Plot Size" autocomplete="off" />
+                  @if (isInvalid('plotsize')) { <div class="invalid-feedback d-block">Plot size is required.</div> }
                 </div>
 
 
@@ -192,11 +187,9 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('planId')" [class.open]="isPlanDropdownOpen"
-                      [value]="planSearchText || getSelectedPlanName() || ''"
-                      (focus)="isPlanDropdownOpen = true"
+                      [value]="planSearchText || getSelectedPlanName() || ''" (focus)="isPlanDropdownOpen = true"
                       (input)="onDropdownInput('planId', 'planSearchText', $event, 'isPlanDropdownOpen')"
-                      (blur)="onPlanBlur()"
-                      placeholder="Select Plan" autocomplete="off" />
+                      (blur)="onPlanBlur()" placeholder="Select Plan" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlanDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectPlan('')">
                         Select Plan
@@ -221,21 +214,23 @@
                       [value]="propertyCategorySearchText || getSelectedPropertyCategoryName() || ''"
                       (focus)="isPropertyCategoryDropdownOpen = true"
                       (input)="onDropdownInput('propertyCategoryId', 'propertyCategorySearchText', $event, 'isPropertyCategoryDropdownOpen')"
-                      (blur)="onPropertyCategoryBlur()"
-                      placeholder="Select Category" autocomplete="off" />
+                      (blur)="onPropertyCategoryBlur()" placeholder="Select Category" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropertyCategoryDropdownOpen">
                       <div class="custom-dropdown-item text-muted" (click)="selectPropertyCategory('')">
                         Select Category
                       </div>
-                      @for (category of filteredPropertyCategories; track (category.propertyCategoryId || category.id || category)) {
-                      <div class="custom-dropdown-item text-truncate" [class.active]="isPropertyCategorySelected(category)"
+                      @for (category of filteredPropertyCategories; track (category.propertyCategoryId || category.id ||
+                      category)) {
+                      <div class="custom-dropdown-item text-truncate"
+                        [class.active]="isPropertyCategorySelected(category)"
                         (click)="selectPropertyCategory(category.propertyCategoryId || category.id || category)">
                         {{ category.categoryName || category.name || category.categoryName || category }}
                       </div>
                       }
                     </div>
                   </div>
-                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback d-block">Property category is required.
+                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback d-block">Property category is
+                    required.
                   </div> }
                 </div>
 
@@ -314,8 +309,7 @@
                     [value]="bidderTypeSearchText || getSelectedBidderTypeName() || ''"
                     (focus)="isBidderTypeDropdownOpen = true"
                     (input)="onDropdownInput('bidderTypeId', 'bidderTypeSearchText', $event, 'isBidderTypeDropdownOpen')"
-                    (blur)="onBidderTypeBlur()"
-                    placeholder="Select Bidder Type" autocomplete="off" />
+                    (blur)="onBidderTypeBlur()" placeholder="Select Bidder Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderTypeDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectBidderType('')">
                       Select Bidder Type
@@ -427,7 +421,8 @@
               <div class="col-md-4">
                 <label for="mobileNo" class="form-label small text-dark fw-semibold text-uppercase">Mobile No.</label>
                 <input id="mobileNo" type="tel" class="form-control bg-light rounded-3 custom-input-color"
-                  placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')" maxlength="10" minlength="10" />
+                  placeholder="+91 XXXXX XXXXX" formControlName="mobileNo" [class.is-invalid]="isInvalid('mobileNo')"
+                  maxlength="10" minlength="10" />
                 @if (isInvalid('mobileNo')) { <div class="invalid-feedback">Mobile no. is required.</div> }
               </div>
               <div class="col-md-4">
@@ -438,8 +433,7 @@
                     [value]="propTypeSearchText || getSelectedPropTypeName() || ''"
                     (focus)="isPropTypeDropdownOpen = true"
                     (input)="onDropdownInput('auctionPropertyType', 'propTypeSearchText', $event, 'isPropTypeDropdownOpen')"
-                    (blur)="onPropTypeBlur()"
-                    placeholder="Select Property Type" autocomplete="off" />
+                    (blur)="onPropTypeBlur()" placeholder="Select Property Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropTypeDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectPropType('')">
                       Select Property Type
@@ -461,11 +455,9 @@
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerStateID')" [class.open]="isStateDropdownOpen"
-                    [value]="stateSearchText || getSelectedStateName() || ''"
-                    (focus)="isStateDropdownOpen = true"
+                    [value]="stateSearchText || getSelectedStateName() || ''" (focus)="isStateDropdownOpen = true"
                     (input)="onDropdownInput('ownerStateID', 'stateSearchText', $event, 'isStateDropdownOpen')"
-                    (blur)="onStateBlur()"
-                    placeholder="Select State" autocomplete="off" />
+                    (blur)="onStateBlur()" placeholder="Select State" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isStateDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectState('')">
                       Select State
@@ -490,8 +482,7 @@
                     [value]="bidderDistrictSearchText || getSelectedBidderDistrictName() || ''"
                     (focus)="isBidderDistrictDropdownOpen = true"
                     (input)="onDropdownInput('ownerDistrtictID', 'bidderDistrictSearchText', $event, 'isBidderDistrictDropdownOpen')"
-                    (blur)="onBidderDistrictBlur()"
-                    placeholder="Select District" autocomplete="off" />
+                    (blur)="onBidderDistrictBlur()" placeholder="Select District" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderDistrictDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectBidderDistrict('')">
                       Select District
@@ -513,11 +504,9 @@
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerCityID')" [class.open]="isCityDropdownOpen"
-                    [value]="citySearchText || getSelectedCityName() || ''"
-                    (focus)="isCityDropdownOpen = true"
+                    [value]="citySearchText || getSelectedCityName() || ''" (focus)="isCityDropdownOpen = true"
                     (input)="onDropdownInput('ownerCityID', 'citySearchText', $event, 'isCityDropdownOpen')"
-                    (blur)="onCityBlur()"
-                    placeholder="Select City" autocomplete="off" />
+                    (blur)="onCityBlur()" placeholder="Select City" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isCityDropdownOpen">
                     <div class="custom-dropdown-item text-muted" (click)="selectCity('')">
                       Select City
@@ -588,12 +577,12 @@
                   <label class="form-label small text-dark fw-semibold">Allotment
                     Date <span class="text-danger">*</span>
                   </label>
-                    <input type="date" class="form-control bg-white custom-input-color uppercase"
+                  <input type="date" class="form-control bg-white custom-input-color uppercase"
                     formControlName="finalallotmentDate" [class.is-invalid]="isInvalid('finalallotmentDate')" />@if
                   (isInvalid('finalallotmentDate')) { <div class="invalid-feedback">Allotment date is required.
                   </div> }
-                  </div>
                 </div>
+              </div>
             </div>
 
             <div class="row g-3 mb-3">
@@ -609,16 +598,15 @@
                       (isInvalid('formTransactionId'))
                       { <div class="invalid-feedback">Transaction ID is required.</div> } -->
                     </div>
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input type="date"
-                        class="form-control bg-white custom-input-color uppercase" formControlName="formTxnDate"
-                        [class.is-invalid]="isInvalid('formTxnDate')" />@if
+                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input
+                        type="date" class="form-control bg-white custom-input-color uppercase"
+                        formControlName="formTxnDate" [class.is-invalid]="isInvalid('formTxnDate')" />@if
                       (isInvalid('formTxnDate')) { <div class="invalid-feedback">Enter the date as
                         DD/MM/YYYY.</div> }</div>
                     <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Paid Amount
-                        (Rs.)</label><input type="number"
-                        class="form-control bg-white custom-input-color" formControlName="formPaidAmount"
-                        [class.is-invalid]="isInvalid('formPaidAmount')" />
-                        <!-- @if
+                        (Rs.)</label><input type="number" class="form-control bg-white custom-input-color"
+                        formControlName="formPaidAmount" [class.is-invalid]="isInvalid('formPaidAmount')" />
+                      <!-- @if
                       (isInvalid('formPaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> } -->
                     </div>
                   </div>
@@ -661,8 +649,9 @@
                 Milestone</h3>
               <div class="row g-2">
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">25% Milestone Txn
-                    ID / Challan No.</label><input type="text" class="form-control bg-white font-monospace custom-input-color"
-                    formControlName="allotmentTxnId" [class.is-invalid]="isInvalid('allotmentTxnId')" />
+                    ID / Challan No.</label><input type="text"
+                    class="form-control bg-white font-monospace custom-input-color" formControlName="allotmentTxnId"
+                    [class.is-invalid]="isInvalid('allotmentTxnId')" />
                   <!-- @if
                   (isInvalid('allotmentTxnId'))
                   { <div class="invalid-feedback">25% milestone transaction ID is required.</div> } -->
@@ -670,14 +659,14 @@
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
                     Date </label><input type="date" class="form-control bg-white custom-input-color uppercase"
                     formControlName="allotmentDate" [class.is-invalid]="isInvalid('allotmentDate')" />
-                    <!-- @if
+                  <!-- @if
                   (isInvalid('allotmentDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
                   </div> } -->
                 </div>
                 <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid
                     (Rs.)</label><input type="number" class="form-control bg-white custom-input-color"
                     formControlName="allotmentAmount" [class.is-invalid]="isInvalid('allotmentAmount')" />
-                    <!-- @if
+                  <!-- @if
                   (isInvalid('allotmentAmount')) { <div class="invalid-feedback">Amount paid is required.</div> } -->
                 </div>
               </div>
@@ -759,7 +748,7 @@
                       </tbody>
                       <tfoot class="table-light">
                         <tr class="fw-bold">
-                      
+
                           <td colspan="2" class="text-end py-3">
                             <!-- TOTAL: -->
                           </td>
@@ -772,7 +761,7 @@
                           <td class="text-end text-success py-3 pe-3 fw-bold">
                             ₹{{ totalDueAmount | number:'1.2-2' }}
                           </td>
-                      
+
                         </tr>
                       </tfoot>
                     </table>
@@ -789,8 +778,7 @@
                 </button>
               </div>
               <div class="col-sm-12">
-                <div
-                  class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
+                <div class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
                   <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap"
                     formArrayName="receiptsFormArray" scrollable="true">
                     <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
@@ -986,389 +974,434 @@
           <button type="button" class="btn-close" aria-label="Close preview" (click)="closePreviewModal()"></button>
         </div>
         <div class="preview-modal-body">
-      <div class="row g-3 mb-3">
-        <div class="col-lg-8">
-      <div class="registration-card card border-0 rounded-4 shadow-sm h-100">
-        <div class="card-body p-4">
-          <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-            <h3 class="h5 mb-0 text-white">Property Information</h3>
-          </div>
-          <div class="row g-3">
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Search/Property Code</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('propertycode')?.value || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">District</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedDistrictName() || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Market Committee</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedMarketCommitteeName() || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Mandi</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedMandiName() || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Plot No.</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('plotNo')?.value || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Plot Type</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedPlotTypeName() || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Plot Size</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('plotsize')?.value || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Plot Status</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('plotStatus')?.value || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Plan</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedPlanName() || '—' }}</p>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Property Category</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedPropertyCategoryName() || '—' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-        </div>
-
-        <div class="col-lg-4">
-      <div class="registration-card compliance-card card border-0 rounded-4 shadow-sm h-100">
-        <div class="card-body p-4">
-          <div class="section-heading d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-            <h3 class="h5 mb-0 text-white">Compliance &amp; Flags</h3>
-          </div>
-          <div class="row g-2">
-            @for (status of statusFields; track status.control) {
-            <div class="col-sm-6 col-md-4">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge rounded-pill {{ registerationForm.get(status.control)?.value ? 'bg-success' : 'bg-secondary' }}">{{ status.label }}</span>
-                <span class="small text-muted">{{ registerationForm.get(status.control)?.value ? 'Yes' : 'No' }}</span>
-              </div>
-            </div>
-            }
-          </div>
-        </div>
-      </div>
-        </div>
-      </div>
-      @if (registerationForm.get('isAuctioned')?.value) {
-      <div class="auction-status-card card border-0 rounded-4 shadow-sm text-white mb-4">
-        <div class="card-body p-4">
-          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
-            <div>
-              <h3 class="h5 mb-1">Has this asset been Auctioned?</h3>
-              <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment Milestone panels.</p>
-            </div>
-            <div class="form-check form-check-reverse form-switch d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 px-3 py-2 m-0">
-              <label class="form-check-label fw-semibold text-white" for="preview-isAuctioned">Auctioned</label>
-              <input class="form-check-input float-none m-0 custom-switch-color" type="checkbox" role="switch"
-                id="preview-isAuctioned" [checked]="registerationForm.get('isAuctioned')?.value" disabled />
-            </div>
-          </div>
-        </div>
-      </div>
-      }
-
-      @if (registerationForm.get('isAuctioned')?.value) {
-      <div class="registration-card card border-0 rounded-4 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-            <h2 class="h5 mb-0">Bidder &amp; Auction Details</h2>
-          </div>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Auction Date &amp; Time</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('auctionDate')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Bidder Type</label>
-              <p class="mb-0 text-dark fw-medium">{{ mapBidderType(registerationForm.get('bidderTypeId')?.value) || registerationForm.get('bidderTypeId')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Email ID</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('email')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-8">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Allotee Name</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('bidderName')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Is Transferred</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('isTransferred')?.value ? 'Yes' : 'No' }}</p>
-            </div>
-            @if (registerationForm.get('isTransferred')?.value && bidderNamesFormArray.length) {
-            <div class="col-12">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Allotee Names</label>
-              <ul class="list-group list-group-flush">
-                @for (bidder of bidderNamesFormArray.controls; track bidder) {
-                <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
-                  <span>{{ bidder.value }}</span>
-                </li>
-                }
-              </ul>
-            </div>
-            }
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Relation</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('relation')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Father / Husband Name</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('fatherOrHusbandName')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">PAN No.</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('panNo')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Aadhar No.</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('aadhaarNo')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Mobile No.</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('mobileNo')?.value || '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Property Type</label>
-              <p class="mb-0 text-dark fw-medium">{{ getSelectedPropTypeName() || '—' }}</p>
-            </div>
-            <div class="col-12">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Permanent Communication Address</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('address')?.value || '—' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      }
-      @if (registerationForm.get('isAuctioned')?.value) {
-      <div class="registration-card card border-0 rounded-4 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-            <h2 class="h5 mb-0">Financial Breakdowns</h2>
-          </div>
-          <div class="row g-3 mb-4">
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Reserve Price</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('reservePrice')?.value ? ('Rs. ' + (registerationForm.get('reservePrice')?.value | number:'1.2-2')) : '—' }}</p>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Highest Bidder / Allotment Amount</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('finalBidPrice')?.value ? ('Rs. ' + (registerationForm.get('finalBidPrice')?.value | number:'1.2-2')) : '—' }}</p>
-            </div>
-          </div>
           <div class="row g-3 mb-3">
-            <div class="col-lg-12">
-              <div class="financial-panel bg-light border rounded-4 p-3 h-100">
-                <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Form Fees Structure</h3>
-                <div class="row g-2">
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">Transaction ID</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formTransactionId')?.value || '—' }}</p>
+            <div class="col-lg-8">
+              <div class="registration-card card border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                    <h3 class="h5 mb-0 text-white">Property Information</h3>
                   </div>
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">Txn Date</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formTxnDate')?.value || '—' }}</p>
-                  </div>
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">Paid Amount (Rs.)</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formPaidAmount')?.value ? ('Rs. ' + (registerationForm.get('formPaidAmount')?.value | number:'1.2-2')) : '—' }}</p>
+                  <div class="row g-3">
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Search/Property Code</label>
+                      <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('propertycode')?.value || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">District</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedDistrictName() || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Market Committee</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedMarketCommitteeName() || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Mandi</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedMandiName() || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Plot No.</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedPlotNoName() ||
+                        registerationForm.get('plotNo')?.value || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Plot Type</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedPlotTypeName() || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Plot Size</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedPlotSizeName() ||
+                        registerationForm.get('plotsize')?.value || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Plot Status</label>
+                      <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('plotStatus')?.value || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Plan</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedPlanName() || '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Property Category</label>
+                      <p class="mb-0 text-dark fw-medium">{{ getSelectedPropertyCategoryName() || '—' }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-12">
-              <div class="financial-panel bg-light border rounded-4 p-3 h-100">
-                <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">EMD (Earnest Money Deposit)</h3>
-                <div class="row g-2">
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">EMD Txn ID</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdTxnId')?.value || '—' }}</p>
-                  </div>
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">EMD Date</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdDate')?.value || '—' }}</p>
-                  </div>
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">EMD Paid (Rs.)</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdAmount')?.value ? ('Rs. ' + (registerationForm.get('emdAmount')?.value | number:'1.2-2')) : '—' }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
-            <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money Milestone</h3>
-            <div class="row g-2">
-              <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">25% Milestone Txn ID / Challan No.</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTxnId')?.value || '—' }}</p>
-              </div>
-              <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">Transaction Date</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
-              </div>
-              <div class="col-sm-4">
-                <label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' + (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-            </div>
-          </div>
 
-           <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
-            <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Allotment Details</h3>
-            <div class="row g-2">
-              <div class="col-sm-6">
-                <label class="form-label small text-dark fw-semibold">Allotment Date</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
-              </div>
-              <div class="col-sm-6">
-                <label class="form-label small text-dark fw-semibold">Allotment Amount (Rs.)</label>
-                <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' + (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="financial-panel bg-light border rounded-4 p-3">
-            <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp; Installment Scheduler</h3>
-            <div class="row g-3">
-              <div class="col-sm-6 col-lg-6">
-                <label class="form-label small text-dark fw-semibold text-uppercase">Due Amount (Principal)</label>
-                <p class="mb-0 text-dark fw-bold text-success">{{ registerationForm.get('dueAmount')?.value ? ('Rs. ' + (registerationForm.get('dueAmount')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-              <div class="col-sm-6 col-lg-6">
-                <label class="form-label small text-dark fw-semibold text-uppercase">Total Due (Inc. Interest)</label>
-                <p class="mb-0 text-dark fw-bold text-danger">{{ registerationForm.get('totalDueWithInterest')?.value ? ('Rs. ' + (registerationForm.get('totalDueWithInterest')?.value | number:'1.2-2')) : '—' }}</p>
-              </div>
-            </div>
-            @if (registerationForm.get('isAuctioned')?.value && calculatedSchedulesMatrix.length) {
-            <div class="col-12 mt-4">
-              <div class="border rounded-4 bg-white p-3 shadow-sm">
-                <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
-                  <h4 class="h6 mb-0 fw-semibold text-uppercase custom-color">
-                    <i class="fa-solid fa-calendar me-2 custom-color"></i>Complete 6-Month Installments Overview Schedule
-                  </h4>
-                </div>
-                <div class="table-responsive table-responsive-scroll">
-                  <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
-                    <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
-                      <tr>
-                        <th scope="col" class="text-start ps-3 custom-color">Installments</th>
-                        <th scope="col" class="custom-color">Calculated Due Date</th>
-                        <th scope="col" class="custom-color">Base Principal</th>
-                        <th scope="col" class="custom-color">Interest</th>
-                        <th scope="col" class="text-end pe-3 custom-color">Total Estimated Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (schedule of calculatedSchedulesMatrix; track schedule.index) {
-                      <tr>
-                        <td class="text-start fw-semibold ps-4 py-2">
-                          <span class="dot-indicator me-2 bg-primary"></span>
-                          {{ schedule.installmentLabel }}
-                        </td>
-                        <td class="fw-medium text-dark">{{ schedule.dueDate ? formatDisplayDate(schedule.dueDate) : '—' }}</td>
-                        <td class="text-muted fw-semibold">{{ schedule.baseAmountDue > 0 ? ('Rs.' + (schedule.baseAmountDue | number:'1.2-2')) : '—' }}</td>
-                        <td class="text-muted fw-semibold">{{ schedule.interestAmount > 0 ? ('Rs.' + (schedule.interestAmount | number:'1.2-2')) : '—' }}</td>
-                        <td class="text-end fw-semibold text-success pe-3">{{ schedule.totalWithInterest > 0 ? ('Rs.' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}</td>
-                      </tr>
-                      }
-                    </tbody>
-                     <tfoot class="table-light">
-                        <tr class="fw-bold">
-                      
-                          <td colspan="2" class="text-end py-3">
-                            <!-- TOTAL: -->
-                          </td>
-                          <td class="py-3 text-muted fw-bold">
-                            ₹{{ totalBasePrincipal | number:'1.2-2' }}
-                          </td>
-                          <td class="py-3 text-muted fw-bold">
-                            ₹{{ totalInterest | number:'1.2-2' }}
-                          </td>
-                          <td class="text-end text-success py-3 pe-3 fw-bold">
-                            ₹{{ totalDueAmount | number:'1.2-2' }}
-                          </td>
-                      
-                        </tr>
-                      </tfoot>
-                  </table>
-                </div>
-              </div>
-            </div>
-            }
-          </div>
-          @if (receiptsFormArray.length) {
-          <div class="financial-panel bg-light border rounded-4 p-3 mt-3">
-            <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
-              <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
-            </div>
-            <div class="col-sm-12">
-                  <div class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
-                <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
-                  <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
-                    <tr>
-                      <th scope="col" class="fw-normal px-1">Receipt No.</th>
-                      <th scope="col" class="fw-normal px-1">Receipt Date</th>
-                      <th scope="col" class="fw-normal px-1">Draft No.</th>
-                      <th scope="col" class="fw-normal px-1">Draft Amount</th>
-                      <th scope="col" class="fw-normal px-1">Draft Date</th>
-                      <th scope="col" class="fw-normal px-1">Draft Bank</th>
-                      <th scope="col" class="fw-normal px-1">Principal</th>
-                      <th scope="col" class="fw-normal px-1">Interest</th>
-                      <th scope="col" class="fw-normal px-1">Other</th>
-                      <th scope="col" class="fw-normal px-1">Penalty</th>
-                      <th scope="col" class="fw-normal px-1">Type</th>
-                      <th scope="col" class="fw-normal px-1">Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (row of receiptsFormArray.controls; track row; let idx = $index) {
-                    <tr>
-                      <td><span class="fw-semibold text-secondary">{{ row.get('receiptNo')?.value }}</span></td>
-                      <td><span class="font-monospace text-dark">{{ row.get('receiptDate')?.value | date:'dd/MM/yyyy' }}</span></td>
-                      <td><span class="font-monospace text-muted">{{ row.get('draftNo')?.value }}</span></td>
-                      <td><span class="fw-bold text-dark">{{ row.get('draftAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span></td>
-                      <td><span class="font-monospace text-dark">{{ row.get('draftDate')?.value | date:'dd/MM/yyyy' }}</span></td>
-                      <td><span>{{ row.get('draftBank')?.value }}</span></td>
-                      <td><span class="text-success fw-bold">{{ row.get('principalAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span></td>
-                      <td><span class="text-danger">{{ row.get('interestAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span></td>
-                      <td><span class="text-muted">{{ row.get('otherAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span></td>
-                      <td><span class="text-warning-dark">{{ row.get('penaltyAmount')?.value | currency:'INR':'symbol':'1.2-2' }}</span></td>
-                      <td><span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value }}</span></td>
-                      <td><span class="text-start d-inline-block text-truncate" style="max-width: 120px;" [title]="row.get('remarks')?.value">{{ row.get('remarks')?.value || '—' }}</span></td>
-                    </tr>
+            <div class="col-lg-4">
+              <div class="registration-card compliance-card card border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <div class="section-heading d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                    <h3 class="h5 mb-0 text-white">Compliance &amp; Flags</h3>
+                  </div>
+                  <div class="row g-2">
+                    @for (status of statusFields; track status.control) {
+                    <div class="col-sm-6 col-md-4">
+                      <div class="d-flex align-items-center gap-2">
+                        <span
+                          class="badge rounded-pill {{ registerationForm.get(status.control)?.value ? 'bg-success' : 'bg-secondary' }}">{{
+                          status.label }}</span>
+                        <span class="small text-muted">{{ registerationForm.get(status.control)?.value ? 'Yes' : 'No'
+                          }}</span>
+                      </div>
+                    </div>
                     }
-                  </tbody>
-                </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          @if (registerationForm.get('isAuctioned')?.value) {
+          <div class="auction-status-card card border-0 rounded-4 shadow-sm text-white mb-4">
+            <div class="card-body p-4">
+              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                  <h3 class="h5 mb-1">Has this asset been Auctioned?</h3>
+                  <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment
+                    Milestone panels.</p>
+                </div>
+                <div
+                  class="form-check form-check-reverse form-switch d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 px-3 py-2 m-0">
+                  <label class="form-check-label fw-semibold text-white" for="preview-isAuctioned">Auctioned</label>
+                  <input class="form-check-input float-none m-0 custom-switch-color" type="checkbox" role="switch"
+                    id="preview-isAuctioned" [checked]="registerationForm.get('isAuctioned')?.value" disabled />
+                </div>
               </div>
             </div>
           </div>
           }
-        </div>
-      </div>
-    }
 
-      <div class="form-actions d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 pt-4 border-top">
-        <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold" (click)="closePreviewModal()">Back to Edit</button>
-        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-          <div class="form-check d-flex align-items-center gap-2 m-0">
-            <input class="form-check-input custom-switch-color custom-switch-border" type="checkbox" role="switch"
-              [checked]="previewConfirmed" (change)="onPreviewConfirmChange($event)" id="previewConfirm">
-            <label class="form-check-label fw-semibold" for="previewConfirm">I confirm the information is correct</label>
+          @if (registerationForm.get('isAuctioned')?.value) {
+          <div class="registration-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                <h2 class="h5 mb-0">Bidder &amp; Auction Details</h2>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Auction Date &amp; Time</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('auctionDate')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Bidder Type</label>
+                  <p class="mb-0 text-dark fw-medium">{{ mapBidderType(registerationForm.get('bidderTypeId')?.value) ||
+                    registerationForm.get('bidderTypeId')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Email ID</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('email')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Allotee Name</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('bidderName')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Is Transferred</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('isTransferred')?.value ? 'Yes' : 'No' }}
+                  </p>
+                </div>
+                @if (registerationForm.get('isTransferred')?.value && bidderNamesFormArray.length) {
+                <div class="col-12">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Allotee Names</label>
+                  <ul class="list-group list-group-flush">
+                    @for (bidder of bidderNamesFormArray.controls; track bidder) {
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+                      <span>{{ bidder.value }}</span>
+                    </li>
+                    }
+                  </ul>
+                </div>
+                }
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Relation</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('relation')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Father / Husband Name</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('fatherOrHusbandName')?.value || '—' }}
+                  </p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">PAN No.</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('panNo')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Aadhar No.</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('aadhaarNo')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Mobile No.</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('mobileNo')?.value || '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Property Type</label>
+                  <p class="mb-0 text-dark fw-medium">{{ getSelectedPropTypeName() || '—' }}</p>
+                </div>
+                <div class="col-12">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Permanent Communication
+                    Address</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('address')?.value || '—' }}</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <button type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
-            [disabled]="!previewConfirmed" style="background: var(--theme-primary-alpha);"
-            (click)="onSubmit()">Save &amp; Register Asset</button>
-        </div>
-      </div>
+          }
+          @if (registerationForm.get('isAuctioned')?.value) {
+          <div class="registration-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <div class="section-heading no-accent d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                <h2 class="h5 mb-0">Financial Breakdowns</h2>
+              </div>
+              <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Reserve Price</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('reservePrice')?.value ? ('Rs. ' +
+                    (registerationForm.get('reservePrice')?.value | number:'1.2-2')) : '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Highest Bidder / Allotment
+                    Amount</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('finalBidPrice')?.value ? ('Rs. ' +
+                    (registerationForm.get('finalBidPrice')?.value | number:'1.2-2')) : '—' }}</p>
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-lg-12">
+                  <div class="financial-panel bg-light border rounded-4 p-3 h-100">
+                    <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Form Fees Structure
+                    </h3>
+                    <div class="row g-2">
+                      <div class="col-sm-4">
+                        <label class="form-label small text-dark fw-semibold">Transaction ID</label>
+                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formTransactionId')?.value || '—'
+                          }}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="form-label small text-dark fw-semibold">Txn Date</label>
+                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formTxnDate')?.value || '—' }}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="form-label small text-dark fw-semibold">Paid Amount (Rs.)</label>
+                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formPaidAmount')?.value ? ('Rs. '
+                          + (registerationForm.get('formPaidAmount')?.value | number:'1.2-2')) : '—' }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="financial-panel bg-light border rounded-4 p-3 h-100">
+                    <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">EMD (Earnest Money
+                      Deposit)</h3>
+                    <div class="row g-2">
+                      <div class="col-sm-4">
+                        <label class="form-label small text-dark fw-semibold">EMD Txn ID</label>
+                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdTxnId')?.value || '—' }}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="form-label small text-dark fw-semibold">EMD Date</label>
+                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdDate')?.value || '—' }}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="form-label small text-dark fw-semibold">EMD Paid (Rs.)</label>
+                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdAmount')?.value ? ('Rs. ' +
+                          (registerationForm.get('emdAmount')?.value | number:'1.2-2')) : '—' }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
+                <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money
+                  Milestone</h3>
+                <div class="row g-2">
+                  <div class="col-sm-4">
+                    <label class="form-label small text-dark fw-semibold">25% Milestone Txn ID / Challan No.</label>
+                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTxnId')?.value || '—' }}</p>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label small text-dark fw-semibold">Transaction Date</label>
+                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label>
+                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' +
+                      (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
+                <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Allotment Details</h3>
+                <div class="row g-2">
+                  <div class="col-sm-6">
+                    <label class="form-label small text-dark fw-semibold">Allotment Date</label>
+                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label small text-dark fw-semibold">Allotment Amount (Rs.)</label>
+                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' +
+                      (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="financial-panel bg-light border rounded-4 p-3">
+                <h3 class="small fw-bold text-secondary text-uppercase border-bottom  pb-2 mb-3">Outstanding Dues &amp;
+                  Installment Scheduler</h3>
+                <div class="row g-3">
+                  <div class="col-sm-6 col-lg-6">
+                    <label class="form-label small text-dark fw-semibold text-uppercase">Due Amount (Principal)</label>
+                    <p class="mb-0 text-dark fw-bold text-success">{{ registerationForm.get('dueAmount')?.value ? ('Rs.
+                      ' + (registerationForm.get('dueAmount')?.value | number:'1.2-2')) : '—' }}</p>
+                  </div>
+                  <div class="col-sm-6 col-lg-6">
+                    <label class="form-label small text-dark fw-semibold text-uppercase">Total Due (Inc.
+                      Interest)</label>
+                    <p class="mb-0 text-dark fw-bold text-danger">{{
+                      registerationForm.get('totalDueWithInterest')?.value ? ('Rs. ' +
+                      (registerationForm.get('totalDueWithInterest')?.value | number:'1.2-2')) : '—' }}</p>
+                  </div>
+                </div>
+                @if (registerationForm.get('isAuctioned')?.value && calculatedSchedulesMatrix.length) {
+                <div class="col-12 mt-4">
+                  <div class="border rounded-4 bg-white p-3 shadow-sm">
+                    <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                      <h4 class="h6 mb-0 fw-semibold text-uppercase custom-color">
+                        <i class="fa-solid fa-calendar me-2 custom-color"></i>Complete 6-Month Installments Overview
+                        Schedule
+                      </h4>
+                    </div>
+                    <div class="table-responsive table-responsive-scroll">
+                      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                        <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                          <tr>
+                            <th scope="col" class="text-start ps-3 custom-color">Installments</th>
+                            <th scope="col" class="custom-color">Calculated Due Date</th>
+                            <th scope="col" class="custom-color">Base Principal</th>
+                            <th scope="col" class="custom-color">Interest</th>
+                            <th scope="col" class="text-end pe-3 custom-color">Total Estimated Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (schedule of calculatedSchedulesMatrix; track schedule.index) {
+                          <tr>
+                            <td class="text-start fw-semibold ps-4 py-2">
+                              <span class="dot-indicator me-2 bg-primary"></span>
+                              {{ schedule.installmentLabel }}
+                            </td>
+                            <td class="fw-medium text-dark">{{ schedule.dueDate ? formatDisplayDate(schedule.dueDate) :
+                              '—' }}</td>
+                            <td class="text-muted fw-semibold">{{ schedule.baseAmountDue > 0 ? ('Rs.' +
+                              (schedule.baseAmountDue | number:'1.2-2')) : '—' }}</td>
+                            <td class="text-muted fw-semibold">{{ schedule.interestAmount > 0 ? ('Rs.' +
+                              (schedule.interestAmount | number:'1.2-2')) : '—' }}</td>
+                            <td class="text-end fw-semibold text-success pe-3">{{ schedule.totalWithInterest > 0 ?
+                              ('Rs.' + (schedule.totalWithInterest | number:'1.2-2')) : '—' }}</td>
+                          </tr>
+                          }
+                        </tbody>
+                        <tfoot class="table-light">
+                          <tr class="fw-bold">
+
+                            <td colspan="2" class="text-end py-3">
+                              <!-- TOTAL: -->
+                            </td>
+                            <td class="py-3 text-muted fw-bold">
+                              ₹{{ totalBasePrincipal | number:'1.2-2' }}
+                            </td>
+                            <td class="py-3 text-muted fw-bold">
+                              ₹{{ totalInterest | number:'1.2-2' }}
+                            </td>
+                            <td class="text-end text-success py-3 pe-3 fw-bold">
+                              ₹{{ totalDueAmount | number:'1.2-2' }}
+                            </td>
+
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+              @if (receiptsFormArray.length) {
+              <div class="financial-panel bg-light border rounded-4 p-3 mt-3">
+                <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                  <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
+                </div>
+                <div class="col-sm-12">
+                  <div
+                    class="table-responsive table-responsive-scroll rounded-3 overflow-auto border shadow-sm bg-white">
+                    <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                      <thead class="table-success text-dark font-monospace text-uppercase" style="font-size: 0.75rem;">
+                        <tr>
+                          <th scope="col" class="fw-normal px-1">Receipt No.</th>
+                          <th scope="col" class="fw-normal px-1">Receipt Date</th>
+                          <th scope="col" class="fw-normal px-1">Draft No.</th>
+                          <th scope="col" class="fw-normal px-1">Draft Amount</th>
+                          <th scope="col" class="fw-normal px-1">Draft Date</th>
+                          <th scope="col" class="fw-normal px-1">Draft Bank</th>
+                          <th scope="col" class="fw-normal px-1">Principal</th>
+                          <th scope="col" class="fw-normal px-1">Interest</th>
+                          <th scope="col" class="fw-normal px-1">Other</th>
+                          <th scope="col" class="fw-normal px-1">Penalty</th>
+                          <th scope="col" class="fw-normal px-1">Type</th>
+                          <th scope="col" class="fw-normal px-1">Remarks</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (row of receiptsFormArray.controls; track row; let idx = $index) {
+                        <tr>
+                          <td><span class="fw-semibold text-secondary">{{ row.get('receiptNo')?.value }}</span></td>
+                          <td><span class="font-monospace text-dark">{{ row.get('receiptDate')?.value |
+                              date:'dd/MM/yyyy' }}</span></td>
+                          <td><span class="font-monospace text-muted">{{ row.get('draftNo')?.value }}</span></td>
+                          <td><span class="fw-bold text-dark">{{ row.get('draftAmount')?.value |
+                              currency:'INR':'symbol':'1.2-2' }}</span></td>
+                          <td><span class="font-monospace text-dark">{{ row.get('draftDate')?.value | date:'dd/MM/yyyy'
+                              }}</span></td>
+                          <td><span>{{ row.get('draftBank')?.value }}</span></td>
+                          <td><span class="text-success fw-bold">{{ row.get('principalAmount')?.value |
+                              currency:'INR':'symbol':'1.2-2' }}</span></td>
+                          <td><span class="text-danger">{{ row.get('interestAmount')?.value |
+                              currency:'INR':'symbol':'1.2-2' }}</span></td>
+                          <td><span class="text-muted">{{ row.get('otherAmount')?.value |
+                              currency:'INR':'symbol':'1.2-2' }}</span></td>
+                          <td><span class="text-warning-dark">{{ row.get('penaltyAmount')?.value |
+                              currency:'INR':'symbol':'1.2-2' }}</span></td>
+                          <td><span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value
+                              }}</span></td>
+                          <td><span class="text-start d-inline-block text-truncate" style="max-width: 120px;"
+                              [title]="row.get('remarks')?.value">{{ row.get('remarks')?.value || '—' }}</span></td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          <div
+            class="form-actions d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 pt-4 border-top">
+            <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
+              (click)="closePreviewModal()">Back to Edit</button>
+            <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+              <div class="form-check d-flex align-items-center gap-2 m-0">
+                <input class="form-check-input custom-switch-color custom-switch-border" type="checkbox" role="switch"
+                  [checked]="previewConfirmed" (change)="onPreviewConfirmChange($event)" id="previewConfirm">
+                <label class="form-check-label fw-semibold" for="previewConfirm">I confirm the information is
+                  correct</label>
+              </div>
+              <button type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
+                [disabled]="!previewConfirmed" style="background: var(--theme-primary-alpha);" (click)="onSubmit()">Save
+                &amp; Register Asset</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
