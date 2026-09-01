@@ -1858,7 +1858,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    debugger
+    // debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];
@@ -1961,6 +1961,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       ? (formRaw.propertycode || this.propertyData.propertyCode || this.propertyData.PropertyCode || null)
       : null;
 
+    const cleanSchedules = (this.calculatedSchedulesMatrix || []).map((s: InstallmentScheduleView) => ({
+      installmentNo: s.index,
+      calculatedDueDate: s.dueDate ? s.dueDate : null,
+      basePrincipal: Number(s.baseAmountDue) || 0,
+      interest: Number(s.interestAmount) || 0,
+      totalEstimatedAmount: Number(s.totalWithInterest) || 0
+    }));
+
     const payload = {
       ...(this.propertyData || {}),
 
@@ -2055,6 +2063,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
       installments: cleanReceipts,
       Installments: cleanReceipts,
+
+      installmentSchedules: cleanSchedules,
+      InstallmentSchedules: cleanSchedules,
 
     };
 

@@ -136,6 +136,7 @@ namespace Backend.Models.Dtos
         public int? ApplicationStatusId { get; set; }
 
         public List<InstallmentDetailsDto>? Installments { get; set; }
+        public List<InstallmentScheduleDto>? InstallmentSchedules { get; set; }
         public string PlotStatus { get; set; } = string.Empty;
         public int? PropertyCategoryId { get; set; }
         public long? CreatedBy { get; set; }
@@ -154,6 +155,19 @@ namespace Backend.Models.Dtos
         public int? OwnerDistrtictID { get; set; }
 
         public int? OwnerCityID { get; set; }
+    }
+
+    public class InstallmentScheduleDto
+    {
+        public int Id { get; set; }
+        public int PropertyId { get; set; }
+        public string? PropertyCode { get; set; }
+        public int InstallmentNo { get; set; }
+        public DateTime? CalculatedDueDate { get; set; }
+        public decimal? BasePrincipal { get; set; }
+        public decimal? Interest { get; set; }
+        public decimal? TotalEstimatedAmount { get; set; }
+        public bool? IsActive { get; set; }
     }
 
     public class PropertyCategoryDto

@@ -43,6 +43,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityApplicationUser>
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<IdentityUserRole<string>> UserRoles { get; set; }
 
+    public DbSet<InstallmentSchedule> InstallmentSchedule { get; set; }
+
+
     public DbSet<HRMSData> HRMSDatas => Set<HRMSData>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
