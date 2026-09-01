@@ -1,6 +1,6 @@
 <section class="card register-section-card border-0 rounded-4 shadow-sm mb-4">
   <div class="card-header bg-success text-white rounded-top-3 py-3 px-3 px-lg-4">
-    <h2 class="h5 fw-semibold mb-0">Property Balance Details</h2>
+    <h2 class="h5 fw-semibold mb-0">Property Details</h2>
   </div>
 
   <div class="card-body p-3 p-lg-4">
@@ -36,13 +36,16 @@
             District <span class="text-danger">*</span>
           </label>
           <select id="district" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="district" [class.is-invalid]="isInvalid('district')">
+            formControlName="districtId" [class.is-invalid]="isInvalid('districtId')"
+            (change)="onDistrictChange()">
             <option value="" disabled>Select district</option>
-            @for (district of districts; track district) {
-            <option [value]="district">{{ district }}</option>
+            @for (district of districts; track district.districtId ?? district.id) {
+            <option [value]="district.districtId ?? district.id">
+              {{ district.districtName ?? district.name }}
+            </option>
             }
           </select>
-          @if (isInvalid('district')) { <div class="invalid-feedback">District is required.</div> }
+          @if (isInvalid('districtId')) { <div class="invalid-feedback">District is required.</div> }
         </div>
 
         <div class="col-md-6 col-xl-3">
@@ -50,55 +53,51 @@
             Market Committee <span class="text-danger">*</span>
           </label>
           <select id="marketCommittee" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="marketCommittee" [class.is-invalid]="isInvalid('marketCommittee')">
+            formControlName="branchId" [class.is-invalid]="isInvalid('branchId')"
+            [disabled]="!marketCommittees.length"
+            (change)="onMarketCommitteeChange()">
             <option value="" disabled>Select committee</option>
-            @for (committee of marketCommittees; track committee) {
-            <option [value]="committee">{{ committee }}</option>
+            @for (committee of marketCommittees; track committee.marketCommitteeId ?? committee.branchId ?? committee.id) {
+            <option [value]="committee.marketCommitteeId ?? committee.branchId ?? committee.id">
+              {{ committee.marketCommitteeName ?? committee.branchName ?? committee.name }}
+            </option>
             }
           </select>
-          @if (isInvalid('marketCommittee')) { <div class="invalid-feedback">Market committee is required.</div> }
+          @if (isInvalid('branchId')) { <div class="invalid-feedback">Market committee is required.</div> }
         </div>
 
-        <div class="col-md-6 col-xl-3">
-          <label for="propertyType" class="form-label small text-dark fw-semibold text-uppercase">
-            Property Type <span class="text-danger">*</span>
-          </label>
-          <select id="propertyType" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="propertyType" [class.is-invalid]="isInvalid('propertyType')">
-            <option value="" disabled>Select property type</option>
-            @for (type of propertyTypes; track type) {
-            <option [value]="type">{{ type }}</option>
-            }
-          </select>
-          @if (isInvalid('propertyType')) { <div class="invalid-feedback">Property type is required.</div> }
-        </div>
-
-        <div class="col-md-6 col-xl-3">
-          <label for="mandiCategory" class="form-label small text-dark fw-semibold text-uppercase">
-            Mandi Category <span class="text-danger">*</span>
-          </label>
-          <select id="mandiCategory" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="mandiCategory" [class.is-invalid]="isInvalid('mandiCategory')">
-            <option value="" disabled>Select category</option>
-            @for (category of mandiCategories; track category) {
-            <option [value]="category">{{ category }}</option>
-            }
-          </select>
-          @if (isInvalid('mandiCategory')) { <div class="invalid-feedback">Mandi category is required.</div> }
-        </div>
-
-        <div class="col-md-6 col-xl-3">
+         <div class="col-md-6 col-xl-3">
           <label for="mandi" class="form-label small text-dark fw-semibold text-uppercase">
             Mandi <span class="text-danger">*</span>
           </label>
-          <select id="mandi" class="form-select bg-light rounded-3 custom-input-color" formControlName="mandi"
-            [class.is-invalid]="isInvalid('mandi')">
+          <select id="mandi" class="form-select bg-light rounded-3 custom-input-color" formControlName="mandiId"
+            [class.is-invalid]="isInvalid('mandiId')"
+            [disabled]="!mandis.length"
+            (change)="onMandiChange()">
             <option value="" disabled>Select mandi</option>
-            @for (mandi of mandis; track mandi) {
-            <option [value]="mandi">{{ mandi }}</option>
+            @for (mandi of mandis; track mandi.mandiId ?? mandi.id) {
+            <option [value]="mandi.mandiId ?? mandi.id">{{ mandi.mandiName ?? mandi.name }}</option>
             }
           </select>
-          @if (isInvalid('mandi')) { <div class="invalid-feedback">Mandi is required.</div> }
+          @if (isInvalid('mandiId')) { <div class="invalid-feedback">Mandi is required.</div> }
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <label for="plotType" class="form-label small text-dark fw-semibold text-uppercase">
+            Plot Type <span class="text-danger">*</span>
+          </label>
+          <select id="plotType" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="plotTypeId" [class.is-invalid]="isInvalid('plotTypeId')"
+            [disabled]="!plotTypes.length"
+            (change)="onPlotTypeChange()">
+            <option value="" disabled>Select plot type</option>
+            @for (type of plotTypes; track type.plotTypeId ?? type.id) {
+            <option [value]="type.plotTypeId ?? type.id">
+              {{ type.plotType ?? type.plotTypeName ?? type.name }}
+            </option>
+            }
+          </select>
+          @if (isInvalid('plotTypeId')) { <div class="invalid-feedback">Plot type is required.</div> }
         </div>
 
         <div class="col-md-6 col-xl-3">
@@ -106,58 +105,18 @@
             Plot Number <span class="text-danger">*</span>
           </label>
           <select id="plotNumber" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="plotNumber" [class.is-invalid]="isInvalid('plotNumber')"
+            formControlName="plotNo" [class.is-invalid]="isInvalid('plotNo')"
             [disabled]="!plotNumbers.length">
             <option value="" disabled>Select plot</option>
-            @for (plot of plotNumbers; track plot) {
-            <option [value]="plot">{{ plot }}</option>
+            @for (plot of plotNumbers; track plot.plotNo ?? plot.id) {
+            <option [value]="plot.plotNo ?? plot.id">{{ plot.plotNo ?? plot.plotNumber ?? plot.name }}</option>
             }
           </select>
-          @if (isInvalid('plotNumber')) { <div class="invalid-feedback">Plot number is required.</div> }
+          @if (isInvalid('plotNo')) { <div class="invalid-feedback">Plot number is required.</div> }
         </div>
 
-        <!-- <div class="col-md-6 col-xl-3">
-          <label for="dispatched" class="form-label small text-dark fw-semibold text-uppercase">
-            Dispatched <span class="text-danger">*</span>
-          </label>
-          <div
-            class="form-control bg-light rounded-3 custom-input-color d-flex align-items-center justify-content-between">
-            <label class="form-check-label fw-normal text-dark mb-0" for="dispatched">Is Dispatched</label>
-            <div class="form-check mb-0 p-1">
-              <input class="form-check-input custom-switch-color border border-secondary m-0" type="checkbox" role="switch" id="dispatched"
-                formControlName="dispatched" [class.is-invalid]="isInvalid('dispatched')" />
-            </div>
-          </div>
-        </div> -->
-
-        <!-- <div class="col-md-6 col-xl-3">
-          <label for="installmentPenalty" class="form-label small text-dark fw-semibold text-uppercase">
-            Installment Penalty(%) <span class="text-danger">*</span>
-          </label>
-          <select id="installmentPenalty" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="installmentPenalty" [class.is-invalid]="isInvalid('installmentPenalty')">
-            @for (penalty of installmentPenaltyOptions; track penalty) {
-            <option [value]="penalty">{{ penalty }}</option>
-            }
-          </select>
-          @if (isInvalid('installmentPenalty')) { <div class="invalid-feedback">Installment penalty is
-            required.</div> }
-        </div> -->
-
-        <!-- <div class="col-md-6 col-xl-3">
-          <label for="balanceDate" class="form-label small text-dark fw-semibold text-uppercase">
-            Balance Date <span class="text-danger">*</span>
-          </label>
-          <input id="balanceDate" type="date" class="form-control bg-light rounded-3 custom-input-color"
-            formControlName="balanceDate" [class.is-invalid]="isInvalid('balanceDate')" />
-          @if (isInvalid('balanceDate')) { <div class="invalid-feedback d-block">Balance date is required.</div> }
-        </div> -->
-
         <div class="col-md-6 col-xl-3 d-flex align-items-end">
-          <button type="submit" class="btn bg-success text-white rounded-3 w-100" [disabled]="isCalculating">
-            <!-- <i class="fa-solid fa-calculator me-1"></i> -->
-            <span *ngIf="!isCalculating">Calculate Balance</span>
-            <span *ngIf="isCalculating">Calculating...</span>
+          <button type="submit" class="btn bg-success text-white rounded-3 w-50">Submit
           </button>
         </div>
       </div>
@@ -402,9 +361,9 @@
                             <td>{{ other.receiptNo }}</td>
                             <td>{{ other.receiptDate }}</td>
                             <td>{{ other.draftNo || '-' }}</td>
-                            <td>{{ other.draftRtgsDate }}</td>
-                            <td>{{ other.paymentMode }}</td>
-                            <td>{{ other.draftRtgsBank }}</td>
+                            <td>{{ other.draftRtgsDate || '-' }}</td>
+                            <td>{{ other.paymentMode  || '-' }}</td>
+                            <td>{{ other.draftRtgsBank || '-' }}</td>
                             <td class="text-end">₹{{ other.draftAmount | number }}</td>
                         </tr>
                     </tbody>
@@ -425,8 +384,7 @@
                 <span class="fw-semibold">₹{{ balanceData.summary.rebate | number }}</span>
             </p>
             <p class="mb-2">
-                Total Payment received till date (Including 25% of Initial Deposit)-
-                {{ balanceForm.get('balanceDate')?.value | date: 'dd-MM-yyyy' }} (In ₹):
+                Total Payment received till date (Including 25% of Initial Deposit) (In ₹):
                 <span class="fw-semibold">₹{{ balanceData.summary.totalPaymentReceivedTillDate | number: '1.2-2'
                     }}</span>
             </p>
@@ -435,17 +393,15 @@
                 <span class="fw-semibold">₹{{ balanceData.summary.totalBalanceFromSaleOfPlot | number }}</span>
             </p>
             <p class="mb-2">
-                Amount of interest({{ balanceForm.get('installmentPenalty')?.value }}%) on late installments
-                (In ₹):
+                Amount of interest on late installments (In ₹):
                 <span class="fw-semibold">₹{{ balanceData.summary.interestOnLateInstallments | number }}</span>
             </p>
             <p class="mb-2">
-                Amount of penalty({{ balanceForm.get('installmentPenalty')?.value }}%) on late installments:
+                Amount of penalty on late installments:
                 <span class="fw-semibold">₹{{ balanceData.summary.penaltyOnLateInstallments | number }}</span>
             </p>
             <p class="mb-0">
-                Total amount of recoverable installments &amp; interests on installments till
-                {{ balanceForm.get('balanceDate')?.value | date: 'dd-MM-yyyy' }} (Including future
+                Total amount of recoverable installments &amp; interests on installments (Including future
                 installments) (In ₹):
                 <span class="fw-semibold">₹{{ balanceData.summary.totalRecoverableAmount | number }}</span>
             </p>

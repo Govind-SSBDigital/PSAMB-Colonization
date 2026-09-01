@@ -80,7 +80,7 @@
                     <i class="fas fa-arrow-left"></i> Back / ਵਾਪਸ
                 </button>
 
-                <div class="auth-card-header-screenshot mt-0 text-center">
+                <div class="auth-card-header-screenshot mt-0 text-center" *ngIf="!forgotPasswordMode">
                     <h2>Login</h2>
                 </div>
 
@@ -106,7 +106,7 @@
                 </div>
 
                 <!-- LOGIN FORM WITH CAPTCHA (MATCHING SCREENSHOT) -->
-                <form *ngIf="loginMethod === 'password'" (ngSubmit)="onSignInSubmit()"
+                <form *ngIf="loginMethod === 'password' && !forgotPasswordMode" (ngSubmit)="onSignInSubmit()"
                     class="signin-form-screenshot animated fade-in mt-3">
                     <div class="login-actions-row-parallel">
                         <button type="button" class="login-role-btn flex-grow-1"
@@ -154,9 +154,9 @@
                     <input type="text" name="captchaInput" [(ngModel)]="captchaInput" required
                         placeholder="Enter Captcha Code" class="captcha-input-field-screenshot">
 
-                    <!-- Forgot Password & Submit Button -->
+                    <!-- Forgot Password -->
                     <div class="forgot-pwd-row-screenshot">
-                        <a href="javascript:void(0)" class="forgot-link-screenshot">Forgot Password</a>
+                        <button type="button" class="forgot-link-screenshot" (click)="openForgotPassword()">Forgot Password</button>
                     </div>
 
                     <div class="login-actions-row-parallel">
@@ -170,7 +170,7 @@
                 </form>
 
                 <!-- LOGIN FORM FOR MOBILE OTP LOGIN -->
-                <form *ngIf="loginMethod === 'otp'" (ngSubmit)="onSignInOtpSubmit()"
+                <form *ngIf="loginMethod === 'otp' && !forgotPasswordMode" (ngSubmit)="onSignInOtpSubmit()"
                     class="signin-form-screenshot animated fade-in">
 
                     <!-- Mobile Number Input -->
@@ -213,15 +213,76 @@
                         <button type="submit" *ngIf="loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1">
                             Verify & Login
                         </button>
-
-
-                        <!-- <button type="button" class="btn-login-mobile-toggle" (click)="toggleLoginMethod('password')">
-              <i class="fas fa-key"></i> Login with Password
-            </button> -->
                     </div>
                 </form>
 
-                <div class="auth-card-footer text-center">
+                <!-- FORGOT PASSWORD FORM -->
+                <form *ngIf="forgotPasswordMode" [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()"
+                    class="signin-form-screenshot animated fade-in mt-3 forgot-password-form" novalidate>
+                    <div class="auth-card-header-screenshot text-center mb-1 mt-3">
+                        <h3 class="fw-semibold fs-4">Forgot Password</h3>
+                        <p class="text-muted mt-2 fs-6">Enter your registered email to reset your password.</p>
+                    </div>
+
+                    <div class="login-error-banner-material" *ngIf="forgotPasswordErrorMessage">
+                        <mat-icon>warning</mat-icon>
+                        <span>{{ forgotPasswordErrorMessage }}</span>
+                    </div>
+
+                    <div class="forgot-password-fields">
+                        <div *ngIf="forgotPasswordStep === 1" class="form-input-box-screenshot forgot-password-email-box">
+                            <div class="input-prefix-icon-screenshot">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="vertical-divider-screenshot">|</div>
+                            <input type="email" formControlName="email" required placeholder="Enter Registered Email">
+                        </div>
+
+                        <div *ngIf="forgotPasswordStep === 2" class="form-input-box-screenshot forgot-password-email-box">
+                            <div class="input-prefix-icon-screenshot">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="vertical-divider-screenshot">|</div>
+                            <input type="text" formControlName="otp" maxlength="6" required placeholder="Enter 6-digit OTP">
+                        </div>
+
+                        <div *ngIf="forgotPasswordStep === 3">
+                            <div class="form-input-box-screenshot">
+                                <div class="input-prefix-icon-screenshot">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="vertical-divider-screenshot">|</div>
+                                <input [type]="showPassword ? 'text' : 'password'" formControlName="newPassword" required placeholder="Enter New Password" minlength="6">
+                                <i class="fa-solid password-toggle-icon" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" (click)="toggleShowPassword()"></i>
+                            </div>
+
+                            <div class="form-input-box-screenshot mt-2">
+                                <div class="input-prefix-icon-screenshot">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="vertical-divider-screenshot">|</div>
+                                <input [type]="showPassword ? 'text' : 'password'" formControlName="confirmNewPassword" required placeholder="Confirm New Password" minlength="6">
+                                <i class="fa-solid password-toggle-icon" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" (click)="toggleShowPassword()"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="otp-timer-row-helper" *ngIf="forgotPasswordStep === 2 && forgotPasswordOtpSent">
+                        <span *ngIf="forgotPasswordTimerValue > 0">Resend OTP in: <strong>{{ forgotPasswordTimerValue }}s</strong></span>
+                        <button type="button" class="btn-resend-link" *ngIf="forgotPasswordTimerValue === 0" (click)="resendForgotPasswordOtp()">Resend OTP</button>
+                    </div>
+
+                    <div class="login-actions-row-parallel mt-3">
+                        <button type="button" class="btn-login-mobile-toggle" (click)="forgotPasswordStep === 1 ? closeForgotPassword() : forgotPasswordStep = 1">
+                            <i class="fas fa-arrow-left"></i> {{ forgotPasswordStep === 1 ? 'Back to Login' : 'Back' }}
+                        </button>
+                        <button type="submit" class="btn-login-screenshot flex-grow-1">
+                            {{ forgotPasswordStep === 1 ? 'Send OTP / OTP ਭੇਜੋ' : forgotPasswordStep === 2 ? 'Verify OTP ' : 'Reset Password ' }}
+                        </button>
+                    </div>
+                </form>
+
+                <div class="auth-card-footer text-center" *ngIf="!forgotPasswordMode">
                     <p>Don't have an account? / ਖਾਤਾ ਨਹੀਂ ਹੈ? <button type="button" class="btn-link-action"
                             (click)="openSignUp()">Register as Applicant / ਬਿਨੈਕਾਰ ਵਜੋਂ ਰਜਿਸਟਰ ਕਰੋ</button></p>
                 </div>

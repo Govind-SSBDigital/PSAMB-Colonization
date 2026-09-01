@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PropertyBalanceFilter, PropertyBalanceResponse } from '../../models/property-balance-calculatation.model';
+import { ToastrService } from 'ngx-toastr';
+import { Common } from '../../core/service/CommonService/common';
+import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
+import { PropertyBalanceResponse } from '../../models/property-balance-calculatation.model';
 
 @Component({
   selector: 'app-property-balance-calculate',
@@ -14,25 +17,27 @@ export class PropertyBalanceCalculate implements OnInit {
 
   balanceForm!: FormGroup;
 
-  districts: string[] = ['District A', 'District B', 'District C'];
-  marketCommittees: string[] = ['Market Committee 1', 'Market Committee 2', 'Market Committee 3'];
-  propertyTypes: string[] = ['Residential', 'Commercial', 'Industrial'];
-  mandiCategories: string[] = ['Category A', 'Category B', 'Category C'];
-  mandis: string[] = ['Mandi 1', 'Mandi 2', 'Mandi 3'];
-  plotNumbers: string[] = ['Plot 101', 'Plot 102', 'Plot 103'];
-  installmentPenaltyOptions: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  districts: any[] = [];
+  marketCommittees: any[] = [];
+  propertyTypes: any[] = [];
+  mandis: any[] = [];
+  plotNumbers: any[] = [];
+  plotTypes: any[] = [];
 
   isSearching = false;
   isCalculating = false;
 
   showResults = false;
   balanceData: PropertyBalanceResponse | null = null;
-
-  // Cutoff date used for the penalty note shown under the Calculate button.
-  readonly penaltyNoticeDate = '26/10/2016';
+  propertyDetails: any = null;
+  private readonly defaultStateId = 1;
 
   constructor(
-    private fb: FormBuilder) {}
+    private fb: FormBuilder,
+    private service: Propertybidderregn,
+    private commonService: Common,
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.buildForm();
@@ -42,27 +47,99 @@ export class PropertyBalanceCalculate implements OnInit {
   private buildForm(): void {
     this.balanceForm = this.fb.group({
       allotteeCode: [''],
-      district: ['', Validators.required],
-      marketCommittee: ['', Validators.required],
-      propertyType: ['', Validators.required],
-      mandiCategory: ['', Validators.required],
-      mandi: ['', Validators.required],
-      plotNumber: ['', Validators.required],
-      dispatched: [false],
-      installmentPenalty: [3, Validators.required],
-      balanceDate: [this.getToday(), Validators.required]
+      districtId: ['', Validators.required],
+      branchId: ['', Validators.required],
+      plotTypeId: ['', Validators.required],
+      mandiId: ['', Validators.required],
+      plotNo: ['', Validators.required]
     });
   }
 
   private loadMasterData(): void {
+    this.commonService.getAllDistrict(this.defaultStateId).subscribe({
+      next: (res: any) => {
+        this.districts = res?.data || res || [];
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => console.error('Error loading districts:', err)
+    });
   }
 
-  private getToday(): string {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    return `${yyyy}-${mm}-${dd}`;
+  onDistrictChange(): void {
+    const districtId = this.balanceForm.get('districtId')?.value;
+    this.balanceForm.patchValue({
+      branchId: '',
+      mandiId: '',
+      plotNo: '',
+      plotTypeId: ''
+    });
+    this.marketCommittees = [];
+    this.propertyTypes = [];
+    this.mandis = [];
+    this.plotNumbers = [];
+    this.plotTypes = [];
+
+    if (districtId) {
+      this.commonService.getMarketCommittees(districtId).subscribe({
+        next: (res: any) => {
+          this.marketCommittees = res?.data || res || [];
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => console.error('Error loading market committees:', err)
+      });
+    }
+  }
+
+  onMarketCommitteeChange(): void {
+    const branchId = this.balanceForm.get('branchId')?.value;
+    this.balanceForm.patchValue({
+      mandiId: '',
+      plotTypeId: '',
+      plotNo: ''
+    });
+    this.propertyTypes = [];
+    this.mandis = [];
+    this.plotNumbers = [];
+    this.plotTypes = [];
+
+    if (branchId) {
+      this.service.getPropertyMandis(branchId).subscribe({
+        next: (res: any) => {
+          this.mandis = res?.data || res || [];
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => console.error('Error loading mandis:', err)
+      });
+    }
+  }
+
+  onMandiChange(): void {
+    const mandiId = this.balanceForm.get('mandiId')?.value;
+    this.balanceForm.patchValue({ plotNo: '', plotTypeId: '' });
+    this.plotNumbers = [];
+    this.plotTypes = [];
+
+    if (mandiId) {
+      this.service.getPropertyPlotTypes(mandiId).subscribe({
+        next: (res: any) => {
+          this.plotTypes = res?.data || res || [];
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => console.error('Error loading plot types:', err)
+      });
+    }
+  }
+
+  onPlotTypeChange(): void {
+    const mandiId = this.balanceForm.get('mandiId')?.value;
+    const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
+
+    this.balanceForm.patchValue({ plotNo: '' });
+    this.plotNumbers = [];
+
+    if (mandiId && plotTypeId) {
+      this.loadPlotNumbers(mandiId, plotTypeId);
+    }
   }
 
   get f() {
@@ -74,47 +151,147 @@ export class PropertyBalanceCalculate implements OnInit {
     return !!control && control.invalid && (control.touched || control.dirty);
   }
 
-  // onDistrictChange(): void {
-  //   const district = this.balanceForm.get('district')?.value;
-  //   this.balanceForm.patchValue({ marketCommittee: '', mandi: '', plotNumber: '' });
-  //   this.mandis = [];
-  //   this.plotNumbers = [];
-  //   if (district) {
-  //   } else {
-  //     this.marketCommittees = [];
-  //   }
-  // }
-
-  // onMarketCommitteeChange(): void {
-  //   const marketCommittee = this.balanceForm.get('marketCommittee')?.value;
-  //   this.balanceForm.patchValue({ mandi: '', plotNumber: '' });
-  //   this.plotNumbers = [];
-  //   if (marketCommittee) {
-  //   } else {
-  //     this.mandis = [];
-  //   }
-  // }
-
-  // onMandiChange(): void {
-  //   const mandi = this.balanceForm.get('mandi')?.value;
-  //   this.balanceForm.patchValue({ plotNumber: '' });
-  //   if (mandi) {
-  //   } else {
-  //     this.plotNumbers = [];
-  //   }
-  // }
-
   onSearch(): void {
-    const allotteeCode = this.balanceForm.get('allotteeCode')?.value?.trim();
-    if (!allotteeCode) {
+    const allotteeCodeControl = this.balanceForm.get('allotteeCode');
+    const propertyCode = (allotteeCodeControl?.value || '').toString().trim();
+
+    if (!propertyCode) {
+      allotteeCodeControl?.markAsTouched();
+      this.toastr.warning('Please enter an Allottee Code to search.', 'Validation');
       return;
     }
 
     this.isSearching = true;
+    this.showResults = false;
+    this.balanceData = null;
+    this.propertyDetails = null;
 
-    setTimeout(() => {
-      this.isSearching = false;
-    }, 300);
+    this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode).subscribe({
+      next: (res: any) => {
+        this.isSearching = false;
+        const d = res?.data;
+        const hasValidData =
+          !!res?.success && !!d && (
+            (d.id && d.id > 0) ||
+            (d.propertyId && d.propertyId > 0) ||
+            !!d.propertyCode ||
+            d.plotNo !== null && d.plotNo !== undefined ||
+            !!d.bidderName
+          );
+
+        if (hasValidData) {
+          this.propertyDetails = d;
+          this.bindPropertyDetails(d, () => {
+            this.balanceData = this.buildBalanceDataFromResponse(d);
+            this.showResults = true;
+            this.cdr.detectChanges();
+          });
+          this.toastr.success('Property details loaded successfully.', 'Success');
+        } else {
+          this.toastr.warning('No records found related to this Allottee Code', 'Not Found');
+        }
+      },
+      error: (err: any) => {
+        this.isSearching = false;
+        console.error('Error fetching property details by code:', err);
+        this.toastr.warning('No records found related to this Allottee Code', 'Error');
+      }
+    });
+  }
+
+  private bindPropertyDetails(d: any, onComplete?: () => void): void {
+    const districtId = d.districtId;
+    const branchId = d.branchId;
+    const plotTypeId = d.plotTypeId;
+    const mandiId = d.mandiId;
+
+    if (!districtId) {
+      onComplete?.();
+      return;
+    }
+
+    this.service.getPropertyBranches(districtId).subscribe({
+      next: (res: any) => {
+        this.marketCommittees = res?.data || res || [];
+        if (branchId) {
+          this.service.getPropertyMandis(branchId).subscribe({
+            next: (mres: any) => {
+              this.mandis = mres?.data || mres || [];
+              this.patchFormAndLoadDependents(districtId, branchId, plotTypeId, mandiId, d, onComplete);
+              this.cdr.detectChanges();
+            },
+            error: (err: any) => {
+              console.error('Error loading mandis:', err);
+              onComplete?.();
+            }
+          });
+        } else {
+          this.patchFormDistrict(districtId);
+          this.cdr.detectChanges();
+          onComplete?.();
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading market committees:', err);
+        onComplete?.();
+      }
+    });
+  }
+
+  private patchFormDistrict(districtId: any): void {
+    this.balanceForm.patchValue({ districtId: districtId ?? '' });
+  }
+
+  private patchFormAndLoadDependents(
+    districtId: any,
+    branchId: any,
+    plotTypeId: any,
+    mandiId: any,
+    d: any,
+    onComplete?: () => void
+  ): void {
+    this.balanceForm.patchValue({
+      districtId: districtId ?? '',
+      branchId: branchId ?? ''
+    });
+
+    if (!mandiId) {
+      this.balanceForm.patchValue({
+        mandiId: '',
+        plotTypeId: '',
+        plotNo: ''
+      });
+      onComplete?.();
+      return;
+    }
+
+    this.service.getPropertyPlotTypes(mandiId).subscribe({
+      next: (res: any) => {
+        this.plotTypes = res?.data || res || [];
+        this.balanceForm.patchValue({
+          mandiId: mandiId ?? '',
+          plotTypeId: plotTypeId ?? '',
+          plotNo: d.plotNo ?? ''
+        });
+        this.loadPlotNumbers(mandiId, plotTypeId);
+        this.cdr.detectChanges();
+        onComplete?.();
+      },
+      error: (err: any) => {
+        console.error('Error loading plot types:', err);
+        onComplete?.();
+      }
+    });
+  }
+
+  private loadPlotNumbers(mandiId: any, plotTypeId: any): void {
+    this.service.getAuctionedPlots(mandiId, plotTypeId).subscribe({
+      next: (res: any) => {
+        this.plotNumbers = res?.data || res || [];
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => console.error('Error loading plots:', err)
+    });
   }
 
   onCalculateBalance(): void {
@@ -125,80 +302,168 @@ export class PropertyBalanceCalculate implements OnInit {
       return;
     }
 
-    this.isCalculating = true;
-    const filter = this.balanceForm.value as PropertyBalanceFilter;
+    const mandiId = this.balanceForm.get('mandiId')?.value;
+    const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
+    const plotNo = this.balanceForm.get('plotNo')?.value;
 
-    setTimeout(() => {
-      this.balanceData = this.buildMockBalanceData(filter);
-      this.showResults = true;
-      this.isCalculating = false;
-    }, 300);
+    if (!mandiId || !plotTypeId || !plotNo) {
+      this.toastr.warning('Please select mandi, plot type and plot number.', 'Validation');
+      return;
+    }
+
+    this.isCalculating = true;
+    this.balanceData = null;
+    this.propertyDetails = null;
+    this.showResults = false;
+
+    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo).subscribe({
+      next: (res: any) => {
+        const d = res?.data ?? res ?? null;
+        const apiSuccess = res?.success !== false;
+        const hasValidData = !!d && (
+          (d.id && d.id > 0) ||
+          (d.propertyId && d.propertyId > 0) ||
+          !!d.propertyCode ||
+          (d.plotNo !== null && d.plotNo !== undefined) ||
+          !!d.bidderName ||
+          !!d.plotSize
+        );
+
+        if (apiSuccess && hasValidData) {
+          this.propertyDetails = d;
+          this.balanceData = this.buildBalanceDataFromResponse(d);
+          this.showResults = true;
+          this.toastr.success('Property balance details loaded successfully.', 'Success');
+        } else {
+          this.balanceData = null;
+          this.propertyDetails = null;
+          this.showResults = false;
+          this.toastr.warning('No data found for the selected mandi, plot type and plot number.', 'Not Found');
+        }
+        this.isCalculating = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.isCalculating = false;
+        this.balanceData = null;
+        this.propertyDetails = null;
+        this.showResults = false;
+        this.cdr.detectChanges();
+        console.error('Error fetching property details by mandi plot:', err);
+        this.toastr.warning('No data found for the selected mandi, plot type and plot number.', 'Error');
+      }
+    });
   }
 
-  private buildMockBalanceData(filter: PropertyBalanceFilter): PropertyBalanceResponse {
+  private formatDate(value: any): string {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return String(value);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
+  private buildBalanceDataFromResponse(d: any): PropertyBalanceResponse {
+    if (!d) {
+      return {
+        propertyInfo: {
+          allotteeCode: '',
+          agencyName: '',
+          mandiName: '',
+          nameOfAllottee: '',
+          plotNo: '',
+          address: '',
+          sizeOfPlot: '',
+          plotType: '',
+          allotmentDate: '',
+          allotmentAmount: 0,
+          auctionDate: ''
+        },
+        initialDeposits: [],
+        dueInstallments: [],
+        installmentReceipts: [],
+        futureInstallments: [],
+        otherAmounts: [],
+        summary: {
+          rebate: 0,
+          totalPaymentReceivedTillDate: 0,
+          totalBalanceFromSaleOfPlot: 0,
+          interestOnLateInstallments: 0,
+          penaltyOnLateInstallments: 0,
+          totalRecoverableAmount: 0
+        }
+      };
+    }
+
+    const installments: any[] = Array.isArray(d.installments) ? d.installments : [];
+    const sorted = [...installments].sort((a, b) =>
+      new Date(a.receiptDate).getTime() - new Date(b.receiptDate).getTime()
+    );
+
+    const plotTypeObj = this.plotTypes.find((t: any) =>
+      String(t.plotTypeId ?? t.id) === String(d.plotTypeId)
+    );
+    const plotTypeName = plotTypeObj
+      ? (plotTypeObj.plotType ?? plotTypeObj.plotTypeName ?? plotTypeObj.name ?? '')
+      : (d.plotType ?? d.plotTypeName ?? '');
+
+    const initialDeposit = sorted[0]
+      ? {
+          receiptNo: sorted[0].receiptNo ?? '',
+          receiptDate: this.formatDate(sorted[0].receiptDate),
+          draftChequeRtgsNo: sorted[0].draftNo ?? '',
+          draftChequeRtgsDate: this.formatDate(sorted[0].draftDate),
+          paymentMode: sorted[0].paymentMode ?? '-',
+          bank: sorted[0].draftBank ?? '-',
+          amount: Number(sorted[0].draftAmount) || 0
+        }
+      : null;
+
+    const installmentReceipts = sorted.slice(1).map((r: any) => ({
+      receiptNo: r.receiptNo ?? '',
+      receiptDate: this.formatDate(r.receiptDate),
+      draftNo: r.draftNo ?? '',
+      draftRtgsDate: this.formatDate(r.draftDate),
+      paymentMode: r.paymentMode ?? '-',
+      draftRtgsBank: r.draftBank ?? '-',
+      draftAmount: Number(r.draftAmount) || 0
+    }));
+
+    const totalReceived = sorted.reduce(
+      (sum, r) => sum + (Number(r.draftAmount) || 0),
+      0
+    );
+    const finalBidPrice = Number(d.finalBidPrice) || 0;
+    const totalBalance = Math.max(finalBidPrice - totalReceived, 0);
+
     return {
       propertyInfo: {
-        allotteeCode: filter.allotteeCode || 'LSS9-50880',
-        agencyName: 'Mandi Board After 26-Oct-2016',
-        mandiName: filter.mandi || ' GRAIN MARKET',
-        nameOfAllottee: '1. abc',
-        plotNo: filter.plotNumber || '9',
-        address: 'fgfg',
-        sizeOfPlot: '20 x 80',
-        plotType: filter.propertyType || 'SCF',
-        allotmentDate: '10-08-2026',
-        allotmentAmount: 1370000,
-        auctionDate: '24-12-2024'
+        allotteeCode: d.propertyCode ?? '',
+        agencyName: 'Mandi Board',
+        mandiName: d.mandiName ?? '',
+        nameOfAllottee: d.bidderName ?? '',
+        plotNo: d.plotNo != null ? String(d.plotNo) : '',
+        address: d.address ?? '',
+        sizeOfPlot: d.plotSize ?? '',
+        plotType: plotTypeName,
+        allotmentDate: this.formatDate(d.allotmentDate),
+        allotmentAmount: Number(d.allotmentAmount) || 0,
+        auctionDate: this.formatDate(d.auctionDate)
       },
-      initialDeposits: [
-        {
-          receiptNo: '6383',
-          receiptDate: '13-01-2025',
-          draftChequeRtgsNo: '',
-          draftChequeRtgsDate: '13-01-2025',
-          paymentMode: '(ICICI Bank)',
-          bank: 'Other',
-          amount: 50000
-        },
-        {
-          receiptNo: '6429',
-          receiptDate: '17-01-2025',
-          draftChequeRtgsNo: '257576072',
-          draftChequeRtgsDate: '17-01-2025',
-          paymentMode: 'Online',
-          bank: 'Other',
-          amount: 292500
-        }
-      ],
-      dueInstallments: [
-        { installmentNo: '1st', dueDate: '10-02-2027', dueAmount: 250, interest: 650, totalDueAmount: 200 },
-        { installmentNo: '2nd', dueDate: '10-08-2027', dueAmount: 1750, interest: 515, totalDueAmount: 625 },
-        { installmentNo: '3rd', dueDate: '10-02-2028', dueAmount: 150, interest: 410, totalDueAmount: 350 },
-        { installmentNo: '4th', dueDate: '10-08-2028', dueAmount: 170, interest: 305, totalDueAmount: 275 },
-        { installmentNo: '5th', dueDate: '10-02-2029', dueAmount: 1250, interest: 2550, totalDueAmount: 800 },
-        { installmentNo: '6th', dueDate: '10-08-2029', dueAmount: 1750, interest: 175, totalDueAmount: 525 }
-      ],
-      installmentReceipts: [],
+      initialDeposits: initialDeposit ? [initialDeposit] : [],
+      dueInstallments: [],
+      installmentReceipts,
       futureInstallments: [],
-      otherAmounts: [
-        {
-          paymentType: 'E-Auction Processing Fees',
-          receiptNo: '6365',
-          receiptDate: '13-01-2025',
-          draftNo: '',
-          draftRtgsDate: '13-01-2025',
-          paymentMode: 'E-Tendering (ICICI Bank)',
-          draftRtgsBank: 'Other',
-          draftAmount: 2360
-        }
-      ],
+      otherAmounts: [],
       summary: {
         rebate: 0,
-        totalPaymentReceivedTillDate: 342500,
-        totalBalanceFromSaleOfPlot: 1027500,
+        totalPaymentReceivedTillDate: totalReceived,
+        totalBalanceFromSaleOfPlot: totalBalance,
         interestOnLateInstallments: 0,
         penaltyOnLateInstallments: 0,
-        totalRecoverableAmount: 1027
+        totalRecoverableAmount: totalBalance
       }
     };
   }
