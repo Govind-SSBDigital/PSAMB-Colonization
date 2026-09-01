@@ -1348,7 +1348,7 @@
                           <th scope="col" class="fw-normal px-1">Interest</th>
                           <th scope="col" class="fw-normal px-1">Other</th>
                           <th scope="col" class="fw-normal px-1">Penalty</th>
-                          <th scope="col" class="fw-normal px-1">Type</th>
+                          <!-- <th scope="col" class="fw-normal px-1">Type</th> -->
                           <th scope="col" class="fw-normal px-1">Remarks</th>
                         </tr>
                       </thead>
@@ -1372,8 +1372,8 @@
                               currency:'INR':'symbol':'1.2-2' }}</span></td>
                           <td><span class="text-warning-dark">{{ row.get('penaltyAmount')?.value |
                               currency:'INR':'symbol':'1.2-2' }}</span></td>
-                          <td><span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value
-                              }}</span></td>
+                          <!-- <td><span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value
+                              }}</span></td> -->
                           <td><span class="text-start d-inline-block text-truncate" style="max-width: 120px;"
                               [title]="row.get('remarks')?.value">{{ row.get('remarks')?.value || '—' }}</span></td>
                         </tr>

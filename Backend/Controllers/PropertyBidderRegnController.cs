@@ -208,6 +208,14 @@ namespace Backend.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("GetBiderPropertyDetailsByMandiPlotAsync")]
+        public async Task<IActionResult> GetBiderPropertyDetailsByMandiPlotAsync(int MandiId, int PlotTypeId, string PlotNo)
+        {
+            var response = await _service.GetBiderPropertyDetailsByMandiPlotAsync(MandiId, PlotTypeId, PlotNo);
+
+            return Ok(response);
+        }
         private string GetUserId() =>
            User.FindFirstValue(ClaimTypes.NameIdentifier)
            ?? throw new UnauthorizedAccessException("Invalid token");
