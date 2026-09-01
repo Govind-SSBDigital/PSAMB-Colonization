@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -39,7 +39,10 @@ export interface InstallmentScheduleView {
   templateUrl: './property-bidder-registration.html',
   styleUrl: './property-bidder-registration.scss',
 })
-export class PropertyBidderRegistration implements OnInit, OnDestroy {
+export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges {
+
+  @Input() registrationData: any = null;
+  @Input() mode: 'view' | 'edit' | 'create' = 'create';
 
   registerationForm!: FormGroup;
 
@@ -100,7 +103,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'accumulatedInterest',
   ];
 
-  mode: 'view' | 'edit' | 'create' = 'create';
   readonlyMode = false;
   showPreview = false;
   previewConfirmed = false;
@@ -294,6 +296,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleDistrictDropdown(event: Event) {
+    if (this.mode === 'view') {
+      event.preventDefault();
+      return;
+    }
     event.stopPropagation();
     this.isDistrictDropdownOpen = !this.isDistrictDropdownOpen;
     this.isPlanDropdownOpen = false;
@@ -504,6 +510,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleMandiDropdown(event: Event) {
+    if (this.mode === 'view') {
+      event.preventDefault();
+      return;
+    }
     event.stopPropagation();
     this.isMandiDropdownOpen = !this.isMandiDropdownOpen;
     this.isPlanDropdownOpen = false;
@@ -680,12 +690,19 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const mode = params['mode'] as string;
       const propertyCode = params['propertyCode'] as string;
-      this.setMode(mode);
+      this.setMode(mode || this.mode);
       if (propertyCode) {
         this.registerationForm.patchValue({ propertycode: propertyCode }, { emitEvent: false });
         this.onSearch();
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['registrationData']?.currentValue && this.registerationForm) {
+      this.patchPropertyData(changes['registrationData'].currentValue, false);
+      this.setMode(this.mode);
+    }
   }
 
   loadPropertyDistricts(callback?: () => void) {
@@ -1054,6 +1071,10 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleBranchDropdown(event: Event) {
+    if (this.mode === 'view') {
+      event.preventDefault();
+      return;
+    }
     event.stopPropagation();
     this.isBranchDropdownOpen = !this.isBranchDropdownOpen;
     this.isDistrictDropdownOpen = false;
@@ -1859,6 +1880,12 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
+    // Prevent submission in view-only mode
+    if (this.mode === 'view') {
+      this.toastr.warning('Cannot submit in view-only mode', 'Warning');
+      return;
+    }
+
     debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();

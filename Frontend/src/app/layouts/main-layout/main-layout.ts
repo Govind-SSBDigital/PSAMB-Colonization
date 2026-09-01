@@ -78,6 +78,7 @@ export class MainLayout {
       '/role-management',
       '/online-payment-details',
       '/coming-soon',
+      '/deo-verification-view'
     ];
     return dashboardRoutes.some(
       (route) =>

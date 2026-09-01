@@ -94,6 +94,12 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../../features/comming-soon-pages/comming-soon-pages')
                 .then((m) => m.CommingSoonPages),
+          },
+          {
+            path: 'deo-verification-view',
+            loadComponent: () =>
+              import('../deo-verification-view-component/deo-verification-view-component')
+                .then((m) => m.DeoVerificationViewComponent),
           }
         ]
       }

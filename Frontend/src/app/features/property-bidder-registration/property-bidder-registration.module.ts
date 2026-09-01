@@ -19,6 +19,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         component: PropertyBidderRegistration
       }
     ])
-  ]
+  ],
+  exports: [PropertyBidderRegistration],
 })
 export class PropertyBidderRegistrationModule {}

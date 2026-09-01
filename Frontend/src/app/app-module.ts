@@ -12,6 +12,7 @@ import { Navbar } from './features/navbar/navbar';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { Footer } from './features/footer/footer';
 import { MainLayout } from './layouts/main-layout/main-layout';
+import { PropertyBidderRegistrationModule } from './features/property-bidder-registration/property-bidder-registration.module';
 @NgModule({
   declarations: [App, MainLayout],
   imports: [
@@ -21,6 +22,7 @@ import { MainLayout } from './layouts/main-layout/main-layout';
     SharedModule,
     Navbar,
     Footer,
+    PropertyBidderRegistrationModule,
     ToastrModule.forRoot()
   ],
   providers: [
