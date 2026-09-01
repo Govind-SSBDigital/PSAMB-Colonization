@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -30,7 +30,7 @@ interface ResetPasswordModel {
 @Component({
   selector: 'app-signup-signin',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatCardModule, PersonalDetails, DocumentsAndAddress, BusinessDetails, Procurement],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule, MatButtonModule, MatCardModule, PersonalDetails, DocumentsAndAddress, BusinessDetails, Procurement],
   templateUrl: './signup-signin.html',
   styleUrl: './signup-signin.css',
 })
@@ -201,6 +201,19 @@ export class SignupSignin implements OnInit {
     entityType: '',
     mobile: ''
   };
+
+  forgotPasswordMode = false;
+  forgotPasswordStep: 1 | 2 | 3 = 1;
+  forgotPasswordErrorMessage = '';
+  forgotPasswordForm: FormGroup = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(100)]),
+    otp: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
+    newPassword: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(50)]),
+    confirmNewPassword: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(50)])
+  });
+  forgotPasswordOtpSent = false;
+  forgotPasswordTimerValue = 0;
+  private forgotPasswordTimer: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -1025,5 +1038,233 @@ export class SignupSignin implements OnInit {
   }
    toggleShowPassword(): void {
     this.showPassword = !this.showPassword;
+  }
+//forgot password methods
+  openForgotPassword() {
+    this.forgotPasswordMode = true;
+    this.forgotPasswordStep = 1;
+    this.forgotPasswordErrorMessage = '';
+    this.resetForgotPasswordForm();
+  }
+
+  closeForgotPassword() {
+    this.forgotPasswordMode = false;
+    this.forgotPasswordStep = 1;
+    this.forgotPasswordErrorMessage = '';
+    this.resetForgotPasswordForm();
+    if (this.forgotPasswordTimer) {
+      clearInterval(this.forgotPasswordTimer);
+      this.forgotPasswordTimer = null;
+    }
+  }
+
+  resetForgotPasswordForm() {
+    this.forgotPasswordForm.reset();
+    this.forgotPasswordOtpSent = false;
+    this.forgotPasswordTimerValue = 0;
+    if (this.forgotPasswordTimer) {
+      clearInterval(this.forgotPasswordTimer);
+      this.forgotPasswordTimer = null;
+    }
+  }
+
+  get forgotEmail() {
+    return this.forgotPasswordForm.get('email')?.value;
+  }
+
+  get forgotOtp() {
+    return this.forgotPasswordForm.get('otp')?.value;
+  }
+
+  get forgotNewPassword() {
+    return this.forgotPasswordForm.get('newPassword')?.value;
+  }
+
+  get forgotConfirmNewPassword() {
+    return this.forgotPasswordForm.get('confirmNewPassword')?.value;
+  }
+
+  startForgotPasswordTimer() {
+    if (this.forgotPasswordTimer) {
+      clearInterval(this.forgotPasswordTimer);
+    }
+    this.forgotPasswordTimerValue = 30;
+    this.cdr.detectChanges();
+
+    this.forgotPasswordTimer = setInterval(() => {
+      this.forgotPasswordTimerValue--;
+      this.cdr.detectChanges();
+
+      if (this.forgotPasswordTimerValue <= 0) {
+        clearInterval(this.forgotPasswordTimer);
+        this.forgotPasswordTimer = null;
+        this.cdr.detectChanges();
+      }
+    }, 1000);
+  }
+
+  sendForgotPasswordOtp() {
+    const email = (this.forgotEmail || '').trim();
+
+    if (!email) {
+      this.forgotPasswordErrorMessage = 'Please enter your registered Email / ਰਜਿਸਟਰਡ ਈਮੇਲ ਦਰਜ ਕਰੋ';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.forgotPasswordErrorMessage = 'Please enter a valid Email ID';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.authService.sendEmailOtp(email).subscribe({
+      next: () => {
+        this.forgotPasswordOtpSent = true;
+        this.forgotPasswordStep = 2;
+        this.forgotPasswordErrorMessage = '';
+        this.forgotPasswordForm.get('otp')?.reset();
+        this.startForgotPasswordTimer();
+        this.triggerToast('OTP sent successfully. Please check your email', 'success');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const message = err?.error?.message || 'Unable to send OTP right now. Please try again.';
+        this.forgotPasswordErrorMessage = message;
+        this.triggerToast(message, 'error');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  resendForgotPasswordOtp() {
+    const email = (this.forgotEmail || '').trim();
+
+    if (!email) {
+      this.forgotPasswordErrorMessage = 'Please enter your registered Email';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.authService.resendEmailOtp(email).subscribe({
+      next: () => {
+        this.forgotPasswordForm.get('otp')?.reset();
+        this.startForgotPasswordTimer();
+        this.triggerToast('OTP resent successfully', 'success');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const message = err?.error?.message || 'Unable to resend OTP. Please try again.';
+        this.forgotPasswordErrorMessage = message;
+        this.triggerToast(message, 'error');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  verifyForgotPasswordOtp() {
+    const email = (this.forgotEmail || '').trim();
+    const otp = (this.forgotOtp || '').trim();
+
+    if (!email) {
+      this.forgotPasswordErrorMessage = 'Please enter your registered Email';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!otp) {
+      this.forgotPasswordErrorMessage = 'Please enter OTP';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.authService.verifyEmailOtp(email, otp).subscribe({
+      next: (response) => {
+        const isVerified = response?.verified === true || response?.success === true && response?.verified !== false;
+
+        if (!isVerified) {
+          const message = response?.message || 'Invalid OTP. Please try again.';
+          this.forgotPasswordErrorMessage = message;
+          this.triggerToast(message, 'error');
+          this.forgotPasswordStep = 2;
+          this.cdr.detectChanges();
+          return;
+        }
+
+        this.forgotPasswordErrorMessage = '';
+        this.forgotPasswordStep = 3;
+        if (this.forgotPasswordTimer) {
+          clearInterval(this.forgotPasswordTimer);
+          this.forgotPasswordTimer = null;
+        }
+        this.forgotPasswordTimerValue = 0;
+        this.triggerToast('OTP verified successfully', 'success');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const message = err?.error?.message || 'Invalid OTP. Please try again.';
+        this.forgotPasswordErrorMessage = message;
+        this.triggerToast(message, 'error');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  resetPasswordWithOtp() {
+    const email = (this.forgotEmail || '').trim();
+    const newPassword = this.forgotNewPassword;
+    const confirmNewPassword = this.forgotConfirmNewPassword;
+
+    if (!email) {
+      this.forgotPasswordErrorMessage = 'Please enter your registered Email';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      this.forgotPasswordErrorMessage = 'New password must be at least 6 characters';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      this.forgotPasswordErrorMessage = 'Passwords do not match';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.authService.forgotPassword({
+      email,
+      newPassword,
+      confirmNewPassword: confirmNewPassword
+    }).subscribe({
+      next: () => {
+        this.triggerToast('Password reset successful! Please login with your new password', 'success');
+        this.cdr.detectChanges();
+        this.closeForgotPassword();
+      },
+      error: (err) => {
+        const message = err?.error?.message || 'Password reset failed. Please try again.';
+        this.forgotPasswordErrorMessage = message;
+        this.triggerToast(message, 'error');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onForgotPasswordSubmit() {
+    this.forgotPasswordErrorMessage = '';
+
+    if (this.forgotPasswordStep === 1) {
+      this.sendForgotPasswordOtp();
+      return;
+    }
+
+    if (this.forgotPasswordStep === 2) {
+      this.verifyForgotPasswordOtp();
+      return;
+    }
+
+    this.resetPasswordWithOtp();
   }
 }

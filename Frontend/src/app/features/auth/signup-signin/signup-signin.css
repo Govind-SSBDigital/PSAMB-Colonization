@@ -420,6 +420,35 @@ color: var(--theme-primary) !important;
     /* Reduced gap between form fields */
 }
 
+.forgot-password-form {
+    min-height: 290px;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.forgot-password-form .forgot-password-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* margin-top: 6px; */
+}
+
+.forgot-password-form .login-actions-row-parallel {
+    margin-top: auto;
+}
+
+.forgot-password-form .auth-card-header-screenshot h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--dark-slate);
+}
+
+.forgot-password-email-box {
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+
 /* Input box prefix layout matching screenshot but modernized */
 .form-input-box-screenshot {
     display: flex;
@@ -682,6 +711,7 @@ color: var(--theme-primary) !important;
     align-items: center;
     justify-content: center;
     gap: 6px;
+    min-height: 58px;
 }
 
 .login-role-btn{

@@ -72,4 +72,20 @@ export class AuthService {
   resetPassword(payload: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/change-first-login-password`, payload);
   }
+
+  sendEmailOtp(email: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/EmailVerification/send-otp`, { email });
+  }
+
+  verifyEmailOtp(email: string, otp: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/EmailVerification/verify-otp`, { email, otp });
+  }
+
+  resendEmailOtp(email: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/EmailVerification/resend-otp`, { email });
+  }
+
+  forgotPassword(payload: { email: string; newPassword: string; confirmNewPassword: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, payload);
+  }
 }

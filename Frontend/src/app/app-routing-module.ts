@@ -57,7 +57,8 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '/coming-soon',
+    pathMatch: 'full'
   }
 ];
 
