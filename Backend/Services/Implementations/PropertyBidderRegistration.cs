@@ -153,6 +153,28 @@ namespace Backend.Services.Implementations
 
                 }
 
+                var installmentSchedulesList = dto.InstallmentSchedules;
+                if (installmentSchedulesList != null && installmentSchedulesList.Any())
+                {
+                    var schedules = installmentSchedulesList.Select(s => new Models.Entities.InstallmentSchedule
+                    {
+                        PropertyId = entity.Id,
+                        PropertyCode = entity.PropertyCode,
+                        InstallmentNo = s.InstallmentNo,
+                        CalculatedDueDate = s.CalculatedDueDate,
+                        BasePrincipal = s.BasePrincipal ?? 0,
+                        Interest = s.Interest ?? 0,
+                        TotalEstimatedAmount = s.TotalEstimatedAmount ?? 0,
+                        IsActive = true,
+                        IsDeleted = false,
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = (int?)(dto.CreatedBy ?? dto.ApplicantId ?? 0)
+                    }).ToList();
+
+                    _context.InstallmentSchedule.AddRange(schedules);
+                    await _context.SaveChangesAsync();
+                }
+
                 return ApiResponse<PropertyBidderRegistrationDto>.Ok(dto, "Property registered successfully");
             }
             catch (Exception ex)
@@ -270,6 +292,26 @@ namespace Backend.Services.Implementations
 
                 registration.Installments = installments;
 
+                var schedules = await _context.InstallmentSchedule
+                    .AsNoTracking()
+                    .Where(s => s.PropertyId == id && !s.IsDeleted)
+                    .OrderBy(s => s.InstallmentNo)
+                    .Select(s => new InstallmentScheduleDto
+                    {
+                        Id = s.Id,
+                        PropertyId = s.PropertyId,
+                        PropertyCode = s.PropertyCode,
+                        InstallmentNo = s.InstallmentNo,
+                        CalculatedDueDate = s.CalculatedDueDate,
+                        BasePrincipal = s.BasePrincipal,
+                        Interest = s.Interest,
+                        TotalEstimatedAmount = s.TotalEstimatedAmount,
+                        IsActive = s.IsActive
+                    })
+                    .ToListAsync();
+
+                registration.InstallmentSchedules = schedules;
+
                 return ApiResponse<PropertyBidderRegistrationDto>.Ok(registration, "Registration fetched successfully");
             }
             catch (Exception ex)
@@ -371,6 +413,26 @@ namespace Backend.Services.Implementations
                     })
                     .ToListAsync();
                 registration.Installments = installments;
+
+                var schedules = await _context.InstallmentSchedule
+                    .AsNoTracking()
+                    .Where(s => s.PropertyId == registration.Id && !s.IsDeleted)
+                    .OrderBy(s => s.InstallmentNo)
+                    .Select(s => new InstallmentScheduleDto
+                    {
+                        Id = s.Id,
+                        PropertyId = s.PropertyId,
+                        PropertyCode = s.PropertyCode,
+                        InstallmentNo = s.InstallmentNo,
+                        CalculatedDueDate = s.CalculatedDueDate,
+                        BasePrincipal = s.BasePrincipal,
+                        Interest = s.Interest,
+                        TotalEstimatedAmount = s.TotalEstimatedAmount,
+                        IsActive = s.IsActive
+                    })
+                    .ToListAsync();
+
+                registration.InstallmentSchedules = schedules;
 
                 return ApiResponse<PropertyBidderRegistrationDto>.Ok(registration, "Registration fetched successfully");
             }
@@ -979,6 +1041,31 @@ namespace Backend.Services.Implementations
                     }).ToList();
 
                     _context.InstallmentDetails.AddRange(newInstallments);
+                }
+
+                var oldSchedules = _context.InstallmentSchedule.Where(x => x.PropertyId == entity.Id);
+                _context.InstallmentSchedule.RemoveRange(oldSchedules);
+
+                if (dto.InstallmentSchedules != null && dto.InstallmentSchedules.Any())
+                {
+                    var newSchedules = dto.InstallmentSchedules.Select(s => new Models.Entities.InstallmentSchedule
+                    {
+                        PropertyId = entity.Id,
+                        PropertyCode = entity.PropertyCode,
+                        InstallmentNo = s.InstallmentNo,
+                        CalculatedDueDate = s.CalculatedDueDate,
+                        BasePrincipal = s.BasePrincipal ?? 0,
+                        Interest = s.Interest ?? 0,
+                        TotalEstimatedAmount = s.TotalEstimatedAmount ?? 0,
+                        IsActive = true,
+                        IsDeleted = false,
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = (int?)(dto.CreatedBy ?? dto.ApplicantId ?? 0),
+                        ModifiedDate = DateTime.UtcNow,
+                        ModifiedBy = (int?)(dto.ModifiedBy ?? 0)
+                    }).ToList();
+
+                    _context.InstallmentSchedule.AddRange(newSchedules);
                 }
 
                 await _context.SaveChangesAsync();
@@ -2544,5 +2631,250 @@ namespace Backend.Services.Implementations
                 );
             }
         }
+
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo)
+        {
+            try
+            {
+                var result = new PropertyBidderRegistrationDto
+                {
+                    Installments = new List<InstallmentDetailsDto>(),
+                    InstallmentSchedules = new List<InstallmentScheduleDto>()
+                };
+
+                bool isPropertyFound = false;
+
+                var connection = _context.Database.GetDbConnection();
+
+                await using (connection)
+                {
+                    if (connection.State != ConnectionState.Open)
+                        await connection.OpenAsync();
+
+                    await using var command = connection.CreateCommand();
+
+                    command.CommandText = "SP_GetBiderPropertyDetailsByMandiPlot";
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    var mandiParam = command.CreateParameter();
+                    mandiParam.ParameterName = "@MandiId";
+                    mandiParam.Value = mandiId;
+                    command.Parameters.Add(mandiParam);
+
+                    var plotTypeParam = command.CreateParameter();
+                    plotTypeParam.ParameterName = "@PlotTypeId";
+                    plotTypeParam.Value = plotTypeId;
+                    command.Parameters.Add(plotTypeParam);
+
+                    var plotNoParam = command.CreateParameter();
+                    plotNoParam.ParameterName = "@PlotNo";
+                    plotNoParam.Value = plotNo;
+                    command.Parameters.Add(plotNoParam);
+
+                    await using var reader = await command.ExecuteReaderAsync();
+
+                    // ==========================================
+                    // RESULT SET 1 - PROPERTY DETAILS
+                    // ==========================================
+                    if (await reader.ReadAsync())
+                    {
+                        isPropertyFound = true;
+
+                        result.Id = reader["Id"] != DBNull.Value
+                            ? Convert.ToInt32(reader["Id"])
+                            : 0;
+
+                        result.PropertyCode = reader["PropertyCode"]?.ToString();
+
+                        result.MandiId = reader["MandiId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["MandiId"])
+                            : 0;
+
+                        result.PlotTypeId = reader["PlotTypeId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["PlotTypeId"])
+                            : 0;
+
+                        result.PlotNo = reader["PlotNo"] != DBNull.Value
+                            ? Convert.ToInt32(reader["PlotNo"])
+                            : 0;
+
+                        result.PlotSize = reader["PlotSize"]?.ToString();
+
+                        result.DistrictId = reader["DistrictId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["DistrictId"])
+                            : 0;
+
+                        result.BranchId = reader["BranchId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["BranchId"])
+                            : 0;
+
+                        result.ApplicantId = reader["ApplicantId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["ApplicantId"])
+                            : 0;
+
+                        result.PlanId = reader["PlanId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["PlanId"])
+                            : 0;
+
+                        result.BidderTypeId = reader["BidderTypeId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["BidderTypeId"])
+                            : 0;
+
+                        result.BidderName = reader["BidderName"]?.ToString();
+
+                        result.FatherOrHusbandName = reader["FatherOrHusbandName"]?.ToString();
+
+                        result.MobileNo = reader["MobileNo"]?.ToString();
+
+                        result.Email = reader["Email"]?.ToString();
+
+                        result.PANNo = reader["PANNo"]?.ToString();
+
+                        result.AadhaarNo = reader["AadhaarNo"]?.ToString();
+
+                        result.Address = reader["Address"]?.ToString();
+
+                        result.ReservePrice = reader["ReservePrice"] != DBNull.Value
+                            ? Convert.ToDecimal(reader["ReservePrice"])
+                            : 0;
+
+                        result.FinalBidPrice = reader["FinalBidPrice"] != DBNull.Value
+                            ? Convert.ToDecimal(reader["FinalBidPrice"])
+                            : 0;
+
+                        result.DueAmount = reader["DueAmount"] != DBNull.Value
+                            ? Convert.ToDecimal(reader["DueAmount"])
+                            : 0;
+
+                        result.TotalDueWithInterest = reader["TotalDueWithInterest"] != DBNull.Value
+                            ? Convert.ToDecimal(reader["TotalDueWithInterest"])
+                            : 0;
+                    }
+
+                    if (!isPropertyFound)
+                    {
+                        return ApiResponse<PropertyBidderRegistrationDto>.Fail(
+                            "No property found against the given Mandi, Plot Type and Plot No.");
+                    }
+
+                    // ==========================================
+                    // RESULT SET 2 - INSTALLMENT SCHEDULE
+                    // ==========================================
+                    if (await reader.NextResultAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var schedule = new InstallmentScheduleDto
+                            {
+                                Id = reader["Id"] != DBNull.Value
+                                    ? Convert.ToInt32(reader["Id"])
+                                    : 0,
+
+                                PropertyId = reader["PropertyId"] != DBNull.Value
+                                    ? Convert.ToInt32(reader["PropertyId"])
+                                    : 0,
+
+                                PropertyCode = reader["PropertyCode"]?.ToString(),
+
+                                InstallmentNo = reader["InstallmentNo"] != DBNull.Value
+                                    ? Convert.ToInt32(reader["InstallmentNo"])
+                                    : 0,
+
+                                CalculatedDueDate = reader["CalculatedDueDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["CalculatedDueDate"])
+                                    : null,
+
+                                BasePrincipal = reader["BasePrincipal"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["BasePrincipal"])
+                                    : 0,
+
+                                Interest = reader["Interest"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["Interest"])
+                                    : 0,
+
+                                TotalEstimatedAmount = reader["TotalEstimatedAmount"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["TotalEstimatedAmount"])
+                                    : 0
+                            };
+
+                            result.InstallmentSchedules.Add(schedule);
+                        }
+                    }
+
+                    // ==========================================
+                    // RESULT SET 3 - INSTALLMENT DETAILS (RECEIPTS)
+                    // ==========================================
+                    if (await reader.NextResultAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var installment = new InstallmentDetailsDto
+                            {
+                                Id = reader["Id"] != DBNull.Value
+                                    ? Convert.ToInt32(reader["Id"])
+                                    : 0,
+
+                                ReceiptNo = reader["ReceiptNo"]?.ToString(),
+
+                                ReceiptDate = reader["ReceiptDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["ReceiptDate"])
+                                    : null,
+
+                                DraftNo = reader["DraftNo"]?.ToString(),
+
+                                DraftAmount = reader["DraftAmount"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["DraftAmount"])
+                                    : 0,
+
+                                DraftDate = reader["DraftDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["DraftDate"])
+                                    : null,
+
+                                DraftBank = reader["DraftBank"]?.ToString(),
+
+                                PrincipalAmount = reader["Principal"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["Principal"])
+                                    : 0,
+
+                                InterestAmount = reader["Interest"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["Interest"])
+                                    : 0,
+
+                                OtherAmount = reader["OtherAmount"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["OtherAmount"])
+                                    : 0,
+
+                                PenaltyAmount = reader["PenaltyAmount"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["PenaltyAmount"])
+                                    : 0,
+
+                                PenaltyType = reader["Type"]?.ToString(),
+
+                                Remarks = reader["Remarks"]?.ToString(),
+
+                                IsVerified = reader["IsVerified"] != DBNull.Value &&
+                                             Convert.ToBoolean(reader["IsVerified"])
+                            };
+
+                            result.Installments.Add(installment);
+                        }
+                    }
+                }
+
+                return ApiResponse<PropertyBidderRegistrationDto>.Ok(result,"Property details fetched successfully.");
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message += " | Inner: " + ex.InnerException.Message;
+                }
+
+                return ApiResponse<PropertyBidderRegistrationDto>.Fail(message);
+            }
+        }
+
     }
 }

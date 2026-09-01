@@ -23,5 +23,6 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId,int PlotTypeId,string PlotNo);
         Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v);
         Task<ApiResponse<List<PropertyBidderRegistration>>> GetAllRegisterPropertyById(string v);
+        Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo);
     }
 }
