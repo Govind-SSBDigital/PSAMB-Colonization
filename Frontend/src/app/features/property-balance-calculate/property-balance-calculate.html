@@ -86,8 +86,10 @@
           <label for="plotType" class="form-label small text-dark fw-semibold text-uppercase">
             Plot Type <span class="text-danger">*</span>
           </label>
-<select id="plotType" class="form-select bg-light rounded-3 custom-input-color"
-            formControlName="plotTypeId" [class.is-invalid]="isInvalid('plotTypeId')">
+          <select id="plotType" class="form-select bg-light rounded-3 custom-input-color"
+            formControlName="plotTypeId" [class.is-invalid]="isInvalid('plotTypeId')"
+            [disabled]="!plotTypes.length"
+            (change)="onPlotTypeChange()">
             <option value="" disabled>Select plot type</option>
             @for (type of plotTypes; track type.plotTypeId ?? type.id) {
             <option [value]="type.plotTypeId ?? type.id">
@@ -114,7 +116,7 @@
         </div>
 
         <div class="col-md-6 col-xl-3 d-flex align-items-end">
-          <button type="submit" class="btn bg-success text-white rounded-3 w-50">Calculate
+          <button type="submit" class="btn bg-success text-white rounded-3 w-50">Submit
           </button>
         </div>
       </div>

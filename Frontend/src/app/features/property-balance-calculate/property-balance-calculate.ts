@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { Common } from '../../core/service/CommonService/common';
 import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 import { PropertyBalanceResponse } from '../../models/property-balance-calculatation.model';
 
@@ -29,11 +30,14 @@ export class PropertyBalanceCalculate implements OnInit {
   showResults = false;
   balanceData: PropertyBalanceResponse | null = null;
   propertyDetails: any = null;
+  private readonly defaultStateId = 1;
 
   constructor(
     private fb: FormBuilder,
     private service: Propertybidderregn,
-    private toastr: ToastrService) {}
+    private commonService: Common,
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.buildForm();
@@ -52,9 +56,10 @@ export class PropertyBalanceCalculate implements OnInit {
   }
 
   private loadMasterData(): void {
-    this.service.getPropertyDistricts().subscribe({
+    this.commonService.getAllDistrict(this.defaultStateId).subscribe({
       next: (res: any) => {
         this.districts = res?.data || res || [];
+        this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error loading districts:', err)
     });
@@ -65,17 +70,20 @@ export class PropertyBalanceCalculate implements OnInit {
     this.balanceForm.patchValue({
       branchId: '',
       mandiId: '',
-      plotNo: ''
+      plotNo: '',
+      plotTypeId: ''
     });
     this.marketCommittees = [];
     this.propertyTypes = [];
     this.mandis = [];
     this.plotNumbers = [];
+    this.plotTypes = [];
 
     if (districtId) {
-      this.service.getPropertyBranches(districtId).subscribe({
+      this.commonService.getMarketCommittees(districtId).subscribe({
         next: (res: any) => {
           this.marketCommittees = res?.data || res || [];
+          this.cdr.detectChanges();
         },
         error: (err: any) => console.error('Error loading market committees:', err)
       });
@@ -86,42 +94,51 @@ export class PropertyBalanceCalculate implements OnInit {
     const branchId = this.balanceForm.get('branchId')?.value;
     this.balanceForm.patchValue({
       mandiId: '',
+      plotTypeId: '',
       plotNo: ''
     });
     this.propertyTypes = [];
     this.mandis = [];
     this.plotNumbers = [];
+    this.plotTypes = [];
 
     if (branchId) {
-      this.loadPropertyCategories(branchId);
+      this.service.getPropertyMandis(branchId).subscribe({
+        next: (res: any) => {
+          this.mandis = res?.data || res || [];
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => console.error('Error loading mandis:', err)
+      });
     }
-  }
-
-  private loadPropertyCategories(branchId: any): void {
-    this.service.getPropertyDistricts().subscribe({
-      next: (res: any) => {
-        const all = res?.data || res || [];
-        const filtered = all.filter((p: any) =>
-          !branchId || String(p.branchId ?? p.marketCommitteeId ?? '') === String(branchId) || String(p.parentId ?? '') === String(branchId)
-        );
-        this.propertyTypes = filtered;
-      },
-      error: (err: any) => console.error('Error loading categories:', err)
-    });
   }
 
   onMandiChange(): void {
     const mandiId = this.balanceForm.get('mandiId')?.value;
-    this.balanceForm.patchValue({ plotNo: '' });
+    this.balanceForm.patchValue({ plotNo: '', plotTypeId: '' });
     this.plotNumbers = [];
+    this.plotTypes = [];
 
     if (mandiId) {
       this.service.getPropertyPlotTypes(mandiId).subscribe({
         next: (res: any) => {
           this.plotTypes = res?.data || res || [];
+          this.cdr.detectChanges();
         },
         error: (err: any) => console.error('Error loading plot types:', err)
       });
+    }
+  }
+
+  onPlotTypeChange(): void {
+    const mandiId = this.balanceForm.get('mandiId')?.value;
+    const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
+
+    this.balanceForm.patchValue({ plotNo: '' });
+    this.plotNumbers = [];
+
+    if (mandiId && plotTypeId) {
+      this.loadPlotNumbers(mandiId, plotTypeId);
     }
   }
 
@@ -167,6 +184,7 @@ export class PropertyBalanceCalculate implements OnInit {
           this.bindPropertyDetails(d, () => {
             this.balanceData = this.buildBalanceDataFromResponse(d);
             this.showResults = true;
+            this.cdr.detectChanges();
           });
           this.toastr.success('Property details loaded successfully.', 'Success');
         } else {
@@ -196,11 +214,11 @@ export class PropertyBalanceCalculate implements OnInit {
       next: (res: any) => {
         this.marketCommittees = res?.data || res || [];
         if (branchId) {
-          this.loadPropertyCategories(branchId);
           this.service.getPropertyMandis(branchId).subscribe({
             next: (mres: any) => {
               this.mandis = mres?.data || mres || [];
               this.patchFormAndLoadDependents(districtId, branchId, plotTypeId, mandiId, d, onComplete);
+              this.cdr.detectChanges();
             },
             error: (err: any) => {
               console.error('Error loading mandis:', err);
@@ -209,6 +227,7 @@ export class PropertyBalanceCalculate implements OnInit {
           });
         } else {
           this.patchFormDistrict(districtId);
+          this.cdr.detectChanges();
           onComplete?.();
         }
       },
@@ -255,6 +274,7 @@ export class PropertyBalanceCalculate implements OnInit {
           plotNo: d.plotNo ?? ''
         });
         this.loadPlotNumbers(mandiId, plotTypeId);
+        this.cdr.detectChanges();
         onComplete?.();
       },
       error: (err: any) => {
@@ -268,6 +288,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.service.getAuctionedPlots(mandiId, plotTypeId).subscribe({
       next: (res: any) => {
         this.plotNumbers = res?.data || res || [];
+        this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error loading plots:', err)
     });
@@ -281,10 +302,57 @@ export class PropertyBalanceCalculate implements OnInit {
       return;
     }
 
+    const mandiId = this.balanceForm.get('mandiId')?.value;
+    const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
+    const plotNo = this.balanceForm.get('plotNo')?.value;
+
+    if (!mandiId || !plotTypeId || !plotNo) {
+      this.toastr.warning('Please select mandi, plot type and plot number.', 'Validation');
+      return;
+    }
+
     this.isCalculating = true;
-    this.balanceData = this.buildBalanceDataFromResponse(this.propertyDetails);
-    this.showResults = true;
-    this.isCalculating = false;
+    this.balanceData = null;
+    this.propertyDetails = null;
+    this.showResults = false;
+
+    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo).subscribe({
+      next: (res: any) => {
+        const d = res?.data ?? res ?? null;
+        const apiSuccess = res?.success !== false;
+        const hasValidData = !!d && (
+          (d.id && d.id > 0) ||
+          (d.propertyId && d.propertyId > 0) ||
+          !!d.propertyCode ||
+          (d.plotNo !== null && d.plotNo !== undefined) ||
+          !!d.bidderName ||
+          !!d.plotSize
+        );
+
+        if (apiSuccess && hasValidData) {
+          this.propertyDetails = d;
+          this.balanceData = this.buildBalanceDataFromResponse(d);
+          this.showResults = true;
+          this.toastr.success('Property balance details loaded successfully.', 'Success');
+        } else {
+          this.balanceData = null;
+          this.propertyDetails = null;
+          this.showResults = false;
+          this.toastr.warning('No data found for the selected mandi, plot type and plot number.', 'Not Found');
+        }
+        this.isCalculating = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.isCalculating = false;
+        this.balanceData = null;
+        this.propertyDetails = null;
+        this.showResults = false;
+        this.cdr.detectChanges();
+        console.error('Error fetching property details by mandi plot:', err);
+        this.toastr.warning('No data found for the selected mandi, plot type and plot number.', 'Error');
+      }
+    });
   }
 
   private formatDate(value: any): string {
@@ -298,6 +366,37 @@ export class PropertyBalanceCalculate implements OnInit {
   }
 
   private buildBalanceDataFromResponse(d: any): PropertyBalanceResponse {
+    if (!d) {
+      return {
+        propertyInfo: {
+          allotteeCode: '',
+          agencyName: '',
+          mandiName: '',
+          nameOfAllottee: '',
+          plotNo: '',
+          address: '',
+          sizeOfPlot: '',
+          plotType: '',
+          allotmentDate: '',
+          allotmentAmount: 0,
+          auctionDate: ''
+        },
+        initialDeposits: [],
+        dueInstallments: [],
+        installmentReceipts: [],
+        futureInstallments: [],
+        otherAmounts: [],
+        summary: {
+          rebate: 0,
+          totalPaymentReceivedTillDate: 0,
+          totalBalanceFromSaleOfPlot: 0,
+          interestOnLateInstallments: 0,
+          penaltyOnLateInstallments: 0,
+          totalRecoverableAmount: 0
+        }
+      };
+    }
+
     const installments: any[] = Array.isArray(d.installments) ? d.installments : [];
     const sorted = [...installments].sort((a, b) =>
       new Date(a.receiptDate).getTime() - new Date(b.receiptDate).getTime()
