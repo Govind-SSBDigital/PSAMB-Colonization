@@ -166,7 +166,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.balanceData = null;
     this.propertyDetails = null;
 
-    this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode).subscribe({
+    this.service.getPropertyByCode(propertyCode).subscribe({
       next: (res: any) => {
         this.isSearching = false;
         const d = res?.data;
@@ -365,6 +365,11 @@ export class PropertyBalanceCalculate implements OnInit {
     return `${dd}-${mm}-${yyyy}`;
   }
 
+  private coerceNumber(value: any): number {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  }
+
   private buildBalanceDataFromResponse(d: any): PropertyBalanceResponse {
     if (!d) {
       return {
@@ -401,6 +406,36 @@ export class PropertyBalanceCalculate implements OnInit {
     const sorted = [...installments].sort((a, b) =>
       new Date(a.receiptDate).getTime() - new Date(b.receiptDate).getTime()
     );
+
+    const scheduleRows: any[] = Array.isArray(d.installmentSchedules)
+      ? d.installmentSchedules
+      : Array.isArray(d.installments)
+        ? d.installments.filter((item: any) =>
+            item && (
+              item.installmentNo !== undefined ||
+              item.installmentLabel !== undefined ||
+              item.calculatedDueDate !== undefined ||
+              item.dueDate !== undefined ||
+              item.basePrincipal !== undefined ||
+              item.dueAmount !== undefined ||
+              item.interest !== undefined ||
+              item.totalEstimatedAmount !== undefined ||
+              item.totalDueAmount !== undefined
+            )
+          )
+        : [];
+
+    const dueInstallments = scheduleRows.map((item: any, index: number) => ({
+      installmentNo: item.installmentNo ?? item.installmentLabel ?? `Installment ${index + 1}`,
+      dueDate: this.formatDate(item.calculatedDueDate ?? item.dueDate ?? item.due_date),
+      dueAmount: this.coerceNumber(item.basePrincipal ?? item.baseAmount ?? item.dueAmount ?? item.principalAmount ?? 0),
+      interest: this.coerceNumber(item.interest ?? item.interestAmount ?? item.accumulatedInterest ?? 0),
+      totalDueAmount: this.coerceNumber(
+        item.totalEstimatedAmount ?? item.totalDueAmount ?? item.totalWithInterest ??
+        (this.coerceNumber(item.basePrincipal ?? item.baseAmount ?? item.dueAmount ?? item.principalAmount ?? 0) +
+          this.coerceNumber(item.interest ?? item.interestAmount ?? item.accumulatedInterest ?? 0))
+      )
+    }));
 
     const plotTypeObj = this.plotTypes.find((t: any) =>
       String(t.plotTypeId ?? t.id) === String(d.plotTypeId)
@@ -453,10 +488,10 @@ export class PropertyBalanceCalculate implements OnInit {
         auctionDate: this.formatDate(d.auctionDate)
       },
       initialDeposits: initialDeposit ? [initialDeposit] : [],
-      dueInstallments: [],
+      dueInstallments,
       installmentReceipts,
-      futureInstallments: [],
-      otherAmounts: [],
+      futureInstallments: Array.isArray(d.futureInstallments) ? d.futureInstallments : [],
+      otherAmounts: Array.isArray(d.otherAmounts) ? d.otherAmounts : [],
       summary: {
         rebate: 0,
         totalPaymentReceivedTillDate: totalReceived,
@@ -473,7 +508,34 @@ export class PropertyBalanceCalculate implements OnInit {
   }
 
   // Sums a numeric field across a list of row objects for table footer totals.
-  getTotal<T extends Record<string, unknown>>(rows: T[], field: keyof T): number {
-    return rows.reduce((sum, row) => sum + (Number(row[field]) || 0), 0);
+  getTotal(rows: Array<Record<string, any>> | null | undefined, field: string): number {
+    const safeRows = rows ?? [];
+    return safeRows.reduce((sum, row) => sum + (Number(row?.[field]) || 0), 0);
   }
+
+ getRateOfInterest(): number {
+  const propertyDate =
+    this.balanceData?.propertyInfo?.allotmentDate ||
+    this.balanceData?.propertyInfo?.auctionDate ||
+    '';
+
+  if (!propertyDate) {
+    return 0;
+  }
+
+  // Date format: DD-MM-YYYY
+  const dateParts = propertyDate.split('-');
+
+  if (dateParts.length !== 3) {
+    return 0;
+  }
+
+  const year = Number(dateParts[2]);
+
+  if (isNaN(year)) {
+    return 0;
+  }
+
+  return year < 1972 ? 6 : 12;
+}
 }

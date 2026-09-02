@@ -54,7 +54,7 @@ export class PropertyVerification implements OnInit {
 
   mapStatus(statusId: number | null | undefined, roleName: string | null | undefined
   ): string {
-    debugger
+    // debugger
     const role = (roleName || '').trim().toLowerCase();
 
     // Objection
@@ -121,7 +121,7 @@ export class PropertyVerification implements OnInit {
   }
   getUserRole(): string {
     try {
-      debugger
+      // debugger
       const cpMenus = sessionStorage.getItem('cp_menus');
 
       if (!cpMenus) {
