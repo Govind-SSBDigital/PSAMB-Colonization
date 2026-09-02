@@ -8,10 +8,34 @@
         </div>
 
         <div class="deo-status-summary d-flex align-items-center gap-2 flex-wrap">
-          <span class="summary-chip summary-chip-total rounded-3">{{ filteredList.length }} Records</span>
-          <span class="summary-chip summary-chip-approved rounded-3">{{ getApprovedCount() }} Approved</span>
-          <span class="summary-chip summary-chip-pending rounded-3">{{ getPendingCount() }} Pending</span>
-          <span class="summary-chip summary-chip-objection rounded-3">{{ getObjectionCount() }} Objection</span>
+          <button type="button"
+            class="summary-chip summary-chip-pending rounded-3"
+            [class.active]="selectedFilter.toLowerCase() === 'pending'"
+            (click)="setStatusFilter('Pending')"
+            title="Filter by Pending">
+            {{ getPendingCount() }} Pending
+          </button>
+          <button type="button"
+            class="summary-chip summary-chip-approved rounded-3"
+            [class.active]="selectedFilter.toLowerCase() === 'approved'"
+            (click)="setStatusFilter('Approved')"
+            title="Filter by Approved">
+            {{ getApprovedCount() }} Approved
+          </button>
+          <button type="button"
+            class="summary-chip summary-chip-objection rounded-3"
+            [class.active]="selectedFilter.toLowerCase() === 'objection'"
+            (click)="setStatusFilter('Objection')"
+            title="Filter by Objection">
+            {{ getObjectionCount() }} Objection
+          </button>
+          <button type="button"
+            class="summary-chip summary-chip-total rounded-3"
+            [class.active]="selectedFilter === ''"
+            (click)="setStatusFilter('')"
+            title="Show All Records">
+            {{ getTotalCount() }} Records
+          </button>
         </div>
       </div>
     </div>
@@ -29,7 +53,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of filteredList">
+            <tr *ngFor="let item of pagedPropertyList">
               <td>
                 <span class="fw-bold text-dark">{{ item.allotteeCode }}</span>
               </td>
@@ -37,13 +61,8 @@
               <td class="fw-semibold text-secondary">{{ item.allotteeName }}</td>
 
               <td>
-                <span class="badge badge-status" [ngClass]="{
-                  'status-approved': item.approvalStatus === 'Approved',
-                  'status-rejected': item.approvalStatus === 'Rejected',
-                  'status-pending': item.approvalStatus === 'Pending',
-                  'status-objection': item.approvalStatus === 'Objection'
-                }">
-                  {{ item.approvalStatus }}
+                <span class="badge badge-status" [ngClass]="getStatusClass(item.approvalStatus)">
+                  {{ item.approvalStatus || '—' }}
                 </span>
               </td>
 
@@ -57,26 +76,28 @@
                   <button type="button" class="btn btn-action-icon" (click)="onView(item)" title="View Form Details">
                     <i class="fa-solid fa-eye"></i>
                   </button>
-                  <button type="button" class="btn btn-action-icon btn-action-edit" [disabled]="item.approvalStatus !== 'Objection'" (click)="onEdit(item)" [attr.title]="item.approvalStatus === 'Objection' ? 'Edit Form Details' : 'Edit disabled for this status'">
+                  <button type="button" class="btn btn-action-icon btn-action-edit"
+                    [disabled]="item.approvalStatus !== 'Objection'" (click)="onEdit(item)"
+                    [attr.title]="item.approvalStatus === 'Objection' ? 'Edit Form Details' : 'Edit disabled for this status'">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                 </div>
               </td>
             </tr>
 
-            <tr *ngIf="filteredList.length === 0">
-              <td colspan="6" class="text-center py-4 text-muted">
+            <tr *ngIf="pagedPropertyList.length === 0">
+              <td colspan="5" class="text-center py-4 text-muted">
                 No matching records found.
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>    
+    </div>
   </div>
 </section>
-    <div class="mt-3 border-0 rounded-3 bg-white shadow-sm" *ngIf="registrationList.length > 0">
-    <mat-paginator [length]="registrationList.length" [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 50, 100]"
-        [pageIndex]="pageIndex" (page)="onPageChange($event)">
-    </mat-paginator>
-    </div>
+<div class="mt-3 border-0 rounded-3 bg-white shadow-sm" *ngIf="filteredList.length > 0">
+  <mat-paginator [length]="filteredList.length" [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 50, 100]"
+    [pageIndex]="pageIndex" (page)="onPageChange($event)">
+  </mat-paginator>
+</div>

@@ -1,3 +1,4 @@
+using Azure;
 using Backend.Data;
 using Backend.Helpers;
 using Backend.Models.Dtos;
@@ -830,6 +831,15 @@ namespace Backend.Services.Implementations
                             ? Convert.ToDecimal(row["DraftAmount"])
                             : null;
                 }
+                var existingRegistration = await _context.PropertyBidderRegistration
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.PropertyCode == propertyCode && x.IsActive && !x.IsDeleted);
+
+                if (existingRegistration != null)
+                {
+                    response.Id = existingRegistration.Id;
+                }
+
                 return ApiResponse<PropertyBidderRegistrationDto>.Ok(response, "Registration fetched successfully");
 
             }
@@ -952,6 +962,8 @@ namespace Backend.Services.Implementations
                 if (entity == null)
                     return ApiResponse<PropertyBidderRegistrationDto>.Fail("Record not found");
 
+                dto.Id = entity.Id;
+
 
                 entity.MandiId = dto.MandiId;
                 entity.BranchId = dto.BranchId;
@@ -961,7 +973,6 @@ namespace Backend.Services.Implementations
                 entity.PlanId = dto.PlanId;
                 entity.PlotSize = dto.PlotSize;
                 entity.PlotNo = dto.PlotNo;
-
                 entity.AssetResumed = dto.AssetResumed ?? false;
                 entity.AssetSurrendered = dto.AssetSurrendered ?? false;
                 entity.IsAssetLocked = dto.IsAssetLocked ?? false;
@@ -982,28 +993,21 @@ namespace Backend.Services.Implementations
                 entity.PANNo = dto.PANNo;
                 entity.AadhaarNo = dto.AadhaarNo;
                 entity.MobileNo = dto.MobileNo;
-
                 entity.PropertyTypeId = dto.PropertyTypeId;
                 entity.Address = dto.Address;
-
                 entity.ReservePrice = dto.ReservePrice;
                 entity.FinalBidPrice = dto.FinalBidPrice;
-
                 entity.FormTransactionId = dto.FormTransactionId;
                 entity.FormTxnDate = dto.FormTxnDate;
                 entity.FormPaidAmount = dto.FormPaidAmount;
-
                 entity.EmdTxnId = dto.EmdTxnId;
                 entity.EmdDate = dto.EmdDate;
                 entity.EmdAmount = dto.EmdAmount;
-
                 entity.AllotmentTxnId = dto.AllotmentTxnId;
                 entity.AllotmentDate = dto.AllotmentDate;
                 entity.AllotmentAmount = dto.AllotmentAmount;
-
                 entity.DueAmount = dto.DueAmount;
                 entity.TotalDueWithInterest = dto.TotalDueWithInterest;
-
                 entity.ApplicationStatusId = 1;
                 entity.PlotStatus = dto.PlotStatus;
                 entity.PropertyCategoryId = dto.PropertyCategoryId ?? 0;
@@ -1012,6 +1016,7 @@ namespace Backend.Services.Implementations
                 entity.OwnerCityID = dto.OwnerCityID;
                 entity.ModifiedDate = DateTime.UtcNow;
                 entity.ModifiedBy = dto.ModifiedBy;
+                entity.AllotmentTransactionDate = dto.AllotmentTransactionDate;
 
                 await _context.SaveChangesAsync();
 
@@ -1281,6 +1286,7 @@ namespace Backend.Services.Implementations
 
                         Label =
                             GetString(reader, "Label"),
+                        ModifyByName = GetString(reader, "ModifiedUserName"),
 
                         // Initialize
                         Installments = new List<InstallmentDetailsDto>()
@@ -2244,7 +2250,7 @@ namespace Backend.Services.Implementations
                     response.MandiId = row["MandiId"] != DBNull.Value
                         ? Convert.ToInt32(row["MandiId"])
                         : 0;
-
+                    
                     response.BranchId = row["BranchId"] != DBNull.Value
                         ? Convert.ToInt32(row["BranchId"])
                         : 0;
@@ -2689,7 +2695,9 @@ namespace Backend.Services.Implementations
                         result.MandiId = reader["MandiId"] != DBNull.Value
                             ? Convert.ToInt32(reader["MandiId"])
                             : 0;
-
+                        result.MandiName = reader["MandiName"] != DBNull.Value
+                            ? reader["MandiName"]?.ToString()
+                           : null;
                         result.PlotTypeId = reader["PlotTypeId"] != DBNull.Value
                             ? Convert.ToInt32(reader["PlotTypeId"])
                             : 0;
@@ -2876,5 +2884,206 @@ namespace Backend.Services.Implementations
             }
         }
 
+
+        public async Task<ApiResponse<List<BranchDto>>> GetPropertyMandiBrancheByDistrictIdAsync(int districtId)
+        {
+            try
+            {
+                var branches = new List<BranchDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetMandiBranchByDistrictId";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var districtParam = command.CreateParameter();
+                districtParam.ParameterName = "@DistrictId";
+                districtParam.Value = districtId;
+                districtParam.DbType = DbType.Int32;
+
+                command.Parameters.Add(districtParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    branches.Add(new BranchDto
+                    {
+                        BranchId = reader["BranchId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["BranchId"])
+                            : 0,
+
+                        BranchName = reader["BranchName"] != DBNull.Value
+                            ? reader["BranchName"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<BranchDto>>.Ok(
+                    branches,
+                    "Branches fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<BranchDto>>.Fail(
+                    $"Error while fetching branches: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<ApiResponse<List<MandiDto>>> GetPropertyMandisByBranchIdAsync(int branchId)
+        {
+            try
+            {
+                var mandis = new List<MandiDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetMandiByBranchId";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var branchParam = command.CreateParameter();
+                branchParam.ParameterName = "@BranchId";
+                branchParam.Value = branchId;
+                branchParam.DbType = DbType.Int32;
+
+                command.Parameters.Add(branchParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    mandis.Add(new MandiDto
+                    {
+                        MandiId = reader["MandiId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["MandiId"])
+                            : 0,
+
+                        MandiName = reader["MandiName"] != DBNull.Value
+                            ? reader["MandiName"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<MandiDto>>.Ok(
+                    mandis,
+                    "Mandis fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<MandiDto>>.Fail(
+                    $"Error while fetching mandis: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<ApiResponse<List<PlotTypeDto>>> GetPropertyMandiPlotTypesAsync(int mandiId)
+        {
+            try
+            {
+                var plotTypes = new List<PlotTypeDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetMandiPlotTypeByMandiId";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var mandiParam = command.CreateParameter();
+                mandiParam.ParameterName = "@MandiId";
+                mandiParam.Value = mandiId;
+                mandiParam.DbType = DbType.Int32;
+
+                command.Parameters.Add(mandiParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    plotTypes.Add(new PlotTypeDto
+                    {
+                        PlotTypeId = reader["PlotTypeId"] != DBNull.Value
+                            ? Convert.ToInt32(reader["PlotTypeId"])
+                            : 0,
+
+                        PlotType = reader["PlotType"] != DBNull.Value
+                            ? reader["PlotType"].ToString()
+                            : null
+                    });
+                }
+
+                return ApiResponse<List<PlotTypeDto>>.Ok(
+                    plotTypes,
+                    "Plot types fetched successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<PlotTypeDto>>.Fail(
+                    $"Error while fetching plot types: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<List<AuctionedPlotDto>> GetPlotsByPlotTypeAsync(int mandiId, int plotTypeId)
+        {
+            var result = new List<AuctionedPlotDto>();
+
+            await using var connection = _context.Database.GetDbConnection();
+
+            if (connection.State != ConnectionState.Open)
+                await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+
+            command.CommandText = "sp_GetMandiPlotsbyPlottype";
+            command.CommandType = CommandType.StoredProcedure;
+
+            var mandiParameter = command.CreateParameter();
+            mandiParameter.ParameterName = "@MandiId";
+            mandiParameter.Value = mandiId;
+            command.Parameters.Add(mandiParameter);
+
+            var plotTypeParameter = command.CreateParameter();
+            plotTypeParameter.ParameterName = "@PlotTypeId";
+            plotTypeParameter.Value = plotTypeId;
+            command.Parameters.Add(plotTypeParameter);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                columns.Add(reader.GetName(i));
+            }
+
+            while (await reader.ReadAsync())
+            {
+                var dto = new AuctionedPlotDto();
+                if (columns.Contains("PlotNo") && reader["PlotNo"] != DBNull.Value)
+                {
+                    dto.PlotNo = Convert.ToInt32(reader["PlotNo"]);
+                }
+                result.Add(dto);
+            }
+
+            return result;
+        }
     }
 }

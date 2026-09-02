@@ -497,11 +497,11 @@ tbody td {
   --bs-gutter-y: 0.6rem;
 }
 
-.preview-modal-body > .row:first-child {
+.preview-modal-body>.row:first-child {
   align-items: stretch;
 }
 
-.preview-modal-body > .row:first-child .registration-card {
+.preview-modal-body>.row:first-child .registration-card {
   margin-bottom: 0 !important;
 }
 
@@ -510,7 +510,7 @@ tbody td {
   --bs-gutter-y: 0.45rem;
 }
 
-.preview-modal-body .compliance-card .row > [class*='col-'] {
+.preview-modal-body .compliance-card .row>[class*='col-'] {
   flex: 0 0 auto;
   width: 100%;
   max-width: 100%;
@@ -583,6 +583,7 @@ tbody td {
     padding: 0.75rem;
   }
 }
-.custom-switch-border{
+
+.custom-switch-border {
   border: 1px solid var(--theme-primary) !important;
 }

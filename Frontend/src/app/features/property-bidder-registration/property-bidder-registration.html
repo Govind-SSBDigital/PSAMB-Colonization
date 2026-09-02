@@ -16,9 +16,10 @@
                     class="form-label small text-dark fw-semibold text-uppercase">Search/Property Code </label>
                   <div class="input-group">
                     <input id="propertycode" type="search" class="form-control bg-light custom-input-color"
-                      placeholder="Enter Allottee Code" formControlName="propertycode"
+                      placeholder="Enter Allottee Code" formControlName="propertycode" [readonly]="readonlyMode"
                       [class.is-invalid]="isInvalid('propertycode')" />
-                    <button class="btn btn-success rounded-end-3" type="button" (click)="onSearch()">Search</button>
+                    <button class="btn btn-success rounded-end-3" type="button" (click)="onSearch()"
+                      [disabled]="readonlyMode">Search</button>
                   </div>
                   @if (isInvalid('propertycode')) { <div class="invalid-feedback d-block">Allottee code is required.
                   </div> }
@@ -30,8 +31,8 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('districtId')" [class.open]="isDistrictDropdownOpen"
-                      [value]="districtSearchText || getSelectedDistrictName() || ''"
-                      (focus)="isDistrictDropdownOpen = true"
+                      [value]="districtSearchText || getSelectedDistrictName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isDistrictDropdownOpen = true)"
                       (input)="onDropdownInput('districtId', 'districtSearchText', $event, 'isDistrictDropdownOpen')"
                       (blur)="onDistrictBlur()" placeholder="Select District" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isDistrictDropdownOpen">
@@ -56,7 +57,8 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('branchId')" [class.open]="isBranchDropdownOpen"
-                      [value]="branchSearchText || getSelectedBranchName() || ''" (focus)="isBranchDropdownOpen = true"
+                      [value]="branchSearchText || getSelectedBranchName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isBranchDropdownOpen = true)"
                       (input)="onDropdownInput('branchId', 'branchSearchText', $event, 'isBranchDropdownOpen')"
                       (blur)="onBranchBlur()" placeholder="Select Market Committee" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBranchDropdownOpen">
@@ -82,7 +84,8 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('mandiId')" [class.open]="isMandiDropdownOpen"
-                      [value]="mandiSearchText || getSelectedMandiName() || ''" (focus)="isMandiDropdownOpen = true"
+                      [value]="mandiSearchText || getSelectedMandiName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isMandiDropdownOpen = true)"
                       (input)="onDropdownInput('mandiId', 'mandiSearchText', $event, 'isMandiDropdownOpen')"
                       (blur)="onMandiBlur()" placeholder="Select Mandi" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isMandiDropdownOpen">
@@ -108,8 +111,8 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('plotTypeId')" [class.open]="isPlotTypeDropdownOpen"
-                      [value]="plotTypeSearchText || getSelectedPlotTypeName() || ''"
-                      (focus)="isPlotTypeDropdownOpen = true"
+                      [value]="plotTypeSearchText || getSelectedPlotTypeName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlotTypeDropdownOpen = true)"
                       (input)="onDropdownInput('plotTypeId', 'plotTypeSearchText', $event, 'isPlotTypeDropdownOpen')"
                       (blur)="onPlotTypeBlur()" placeholder="Select Plot Type" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotTypeDropdownOpen">
@@ -133,7 +136,8 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('plotNo')" [class.open]="isPlotNoDropdownOpen"
-                      [value]="plotNoSearchText || getSelectedPlotNoName() || ''" (focus)="isPlotNoDropdownOpen = true"
+                      [value]="plotNoSearchText || getSelectedPlotNoName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlotNoDropdownOpen = true)"
                       (input)="onDropdownInput('plotNo', 'plotNoSearchText', $event, 'isPlotNoDropdownOpen')"
                       (blur)="onPlotNoBlur()" placeholder="Select or Type Plot No." autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotNoDropdownOpen">
@@ -182,7 +186,8 @@
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('planId')" [class.open]="isPlanDropdownOpen"
-                      [value]="planSearchText || getSelectedPlanName() || ''" (focus)="isPlanDropdownOpen = true"
+                      [value]="planSearchText || getSelectedPlanName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlanDropdownOpen = true)"
                       (input)="onDropdownInput('planId', 'planSearchText', $event, 'isPlanDropdownOpen')"
                       (blur)="onPlanBlur()" placeholder="Select Plan" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlanDropdownOpen">
@@ -201,13 +206,14 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="propertyCategoryId" class="form-label small text-dark fw-semibold text-uppercase">Property
+                  <label for="propertyCategoryId" class="form-label small text-dark fw-semibold text-uppercase">Mandi
                     Category <span class="text-danger">*</span></label>
                   <div class="custom-select-wrapper position-relative">
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('propertyCategoryId')" [class.open]="isPropertyCategoryDropdownOpen"
                       [value]="propertyCategorySearchText || getSelectedPropertyCategoryName() || ''"
-                      (focus)="isPropertyCategoryDropdownOpen = true"
+                      [disabled]="readonlyMode" [readonly]="readonlyMode"
+                      (focus)="!readonlyMode && (isPropertyCategoryDropdownOpen = true)"
                       (input)="onDropdownInput('propertyCategoryId', 'propertyCategorySearchText', $event, 'isPropertyCategoryDropdownOpen')"
                       (blur)="onPropertyCategoryBlur()" placeholder="Select Category" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropertyCategoryDropdownOpen">
@@ -224,7 +230,7 @@
                       }
                     </div>
                   </div>
-                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback d-block">Property category is
+                  @if (isInvalid('propertyCategoryId')) { <div class="invalid-feedback d-block">Mandi category is
                     required.
                   </div> }
                 </div>
@@ -301,8 +307,8 @@
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('bidderTypeId')" [class.open]="isBidderTypeDropdownOpen"
-                    [value]="bidderTypeSearchText || getSelectedBidderTypeName() || ''"
-                    (focus)="isBidderTypeDropdownOpen = true"
+                    [value]="bidderTypeSearchText || getSelectedBidderTypeName() || ''" [disabled]="readonlyMode"
+                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isBidderTypeDropdownOpen = true)"
                     (input)="onDropdownInput('bidderTypeId', 'bidderTypeSearchText', $event, 'isBidderTypeDropdownOpen')"
                     (blur)="onBidderTypeBlur()" placeholder="Select Bidder Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderTypeDropdownOpen">
@@ -333,7 +339,7 @@
                   <input id="bidderName" type="text" class="form-control bg-light rounded-start-3 custom-input-color"
                     placeholder="Enter full name of highest bidder" formControlName="bidderName"
                     [class.is-invalid]="isInvalid('bidderName')" />
-                  @if (registerationForm.get('isTransferred')?.value) {
+                  @if (registerationForm.get('isTransferred')?.value && !readonlyMode) {
                   <button type="button" class="btn btn-outline-secondary rounded-end-3" (click)="addBidderName()">+
                     Add</button>
                   }
@@ -366,9 +372,11 @@
                   @for (bidder of bidderNamesFormArray.controls; track bidder) {
                   <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
                     <span>{{ bidder.value }}</span>
+                    @if (!readonlyMode) {
                     <button type="button" class="btn btn-sm btn-outline-danger"
                       (click)="removeBidderName(bidderNamesFormArray.controls.indexOf(bidder))"><i
                         class="fa-solid fa-trash"></i></button>
+                    }
                   </li>
                   }
                 </ul>
@@ -425,8 +433,8 @@
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('auctionPropertyType')" [class.open]="isPropTypeDropdownOpen"
-                    [value]="propTypeSearchText || getSelectedPropTypeName() || ''"
-                    (focus)="isPropTypeDropdownOpen = true"
+                    [value]="propTypeSearchText || getSelectedPropTypeName() || ''" [disabled]="readonlyMode"
+                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isPropTypeDropdownOpen = true)"
                     (input)="onDropdownInput('auctionPropertyType', 'propTypeSearchText', $event, 'isPropTypeDropdownOpen')"
                     (blur)="onPropTypeBlur()" placeholder="Select Property Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropTypeDropdownOpen">
@@ -450,7 +458,8 @@
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerStateID')" [class.open]="isStateDropdownOpen"
-                    [value]="stateSearchText || getSelectedStateName() || ''" (focus)="isStateDropdownOpen = true"
+                    [value]="stateSearchText || getSelectedStateName() || ''" [disabled]="readonlyMode"
+                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isStateDropdownOpen = true)"
                     (input)="onDropdownInput('ownerStateID', 'stateSearchText', $event, 'isStateDropdownOpen')"
                     (blur)="onStateBlur()" placeholder="Select State" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isStateDropdownOpen">
@@ -475,7 +484,8 @@
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerDistrtictID')" [class.open]="isBidderDistrictDropdownOpen"
                     [value]="bidderDistrictSearchText || getSelectedBidderDistrictName() || ''"
-                    (focus)="isBidderDistrictDropdownOpen = true"
+                    [disabled]="readonlyMode" [readonly]="readonlyMode"
+                    (focus)="!readonlyMode && (isBidderDistrictDropdownOpen = true)"
                     (input)="onDropdownInput('ownerDistrtictID', 'bidderDistrictSearchText', $event, 'isBidderDistrictDropdownOpen')"
                     (blur)="onBidderDistrictBlur()" placeholder="Select District" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderDistrictDropdownOpen">
@@ -499,7 +509,8 @@
                 <div class="custom-select-wrapper position-relative">
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerCityID')" [class.open]="isCityDropdownOpen"
-                    [value]="citySearchText || getSelectedCityName() || ''" (focus)="isCityDropdownOpen = true"
+                    [value]="citySearchText || getSelectedCityName() || ''" [disabled]="readonlyMode"
+                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isCityDropdownOpen = true)"
                     (input)="onDropdownInput('ownerCityID', 'citySearchText', $event, 'isCityDropdownOpen')"
                     (blur)="onCityBlur()" placeholder="Select City" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isCityDropdownOpen">
@@ -768,8 +779,8 @@
             <div class="financial-panel bg-light border rounded-4 p-3 mt-3" [formGroup]="registerationForm">
               <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
                 <h3 class="small fw-bold text-secondary text-uppercase mb-0">Receipt Allocations</h3>
-                <button type="button" class="btn btn-sm btn-success px-3 rounded-pill" (click)="addNewReceiptRow()"
-                  [disabled]="hasActiveReceiptRowEditing">
+                <button *ngIf="!readonlyMode" type="button" class="btn btn-sm btn-success px-3 rounded-pill"
+                  (click)="addNewReceiptRow()" [disabled]="hasActiveReceiptRowEditing">
                   <i class="fa-solid fa-plus me-1"></i> Add Record
                 </button>
               </div>
@@ -789,9 +800,9 @@
                         <th scope="col" class="fw-normal px-1">Interest</th>
                         <th scope="col" class="fw-normal px-1">Other</th>
                         <th scope="col" class="fw-normal px-1">Penalty</th>
-                        <th scope="col" class="fw-normal px-1">Type</th>
+                        <!-- <th scope="col" class="fw-normal px-1">Type</th> -->
                         <th scope="col" class="fw-normal px-1">Remarks</th>
-                        <th scope="col" class="fw-normal px-1 text-end">Actions</th>
+                        <th *ngIf="!readonlyMode" scope="col" class="fw-normal px-1 text-end">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -886,13 +897,13 @@
                             currency:'INR':'symbol':'1.2-2' }}</span>
                           }
                         </td>
-                        <td>
+                        <!-- <td>
                           @if (row.get('isEditing')?.value) {
                           <input type="text" class="form-control form-control-sm" formControlName="penaltyType" />
                           } @else {
                           <span class="badge bg-light text-secondary border">{{ row.get('penaltyType')?.value }}</span>
                           }
-                        </td>
+                        </td> -->
                         <td>
                           @if (row.get('isEditing')?.value) {
                           <input type="text" class="form-control form-control-sm" formControlName="remarks"
@@ -904,7 +915,7 @@
                           </span>
                           }
                         </td>
-                        <td class="text-end pe-3">
+                        <td *ngIf="!readonlyMode" class="text-end pe-3">
                           <div class="btn-group btn-group-sm">
                             @if (row.get('isEditing')?.value) {
                             <button type="button" class="btn btn-outline-success border-0 px-2"
@@ -953,9 +964,10 @@
       </div>
       }
       <div class="form-actions d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
-        <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold"
-          (click)="resetForm()">Cancel</button>
-        <button type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
+        <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold" (click)="goBack()">{{
+          readonlyMode ? 'Back' : 'Cancel' }}</button>
+        <button *ngIf="!readonlyMode" type="button"
+          class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
           style="background: var(--theme-primary-alpha);" (click)="letshowPreview()"
           [disabled]="registerationForm.invalid">Preview</button>
       </div>
@@ -966,7 +978,8 @@
       <div id="preview-section" class="preview-modal-dialog" role="dialog" aria-modal="true"
         aria-labelledby="preview-modal-title" (click)="$event.stopPropagation()">
         <div class="preview-modal-header d-flex justify-content-between align-items-center">
-          <h2 id="preview-modal-title" class="h5 mb-0">Preview Property Registration</h2>
+          <h2 id="preview-modal-title" class="h5 mb-0">{{ mode === 'edit' ? 'Preview Update Property Registration' :
+            'Preview Property Registration' }}</h2>
           <button type="button" class="btn-close" aria-label="Close preview" (click)="closePreviewModal()"></button>
         </div>
         <div class="preview-modal-body">
@@ -1017,7 +1030,7 @@
                       <p class="mb-0 text-dark fw-medium">{{ getSelectedPlanName() || '—' }}</p>
                     </div>
                     <div class="col-sm-6">
-                      <label class="form-label small text-dark fw-semibold text-uppercase">Property Category</label>
+                      <label class="form-label small text-dark fw-semibold text-uppercase">Mandi Category</label>
                       <p class="mb-0 text-dark fw-medium">{{ getSelectedPropertyCategoryName() || '—' }}</p>
                     </div>
                   </div>
@@ -1141,10 +1154,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
-              <label class="form-label small text-dark fw-semibold text-uppercase">Allotment Date</label>
-              <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
-            </div>
+
           </div>
           }
           @if (registerationForm.get('isAuctioned')?.value) {
@@ -1164,6 +1174,10 @@
                     Amount</label>
                   <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('finalBidPrice')?.value ? ('Rs. ' +
                     (registerationForm.get('finalBidPrice')?.value | number:'1.2-2')) : '—' }}</p>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Allotment Date</label>
+                  <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentDate')?.value || '—' }}</p>
                 </div>
               </div>
               <div class="row g-3 mb-3">
@@ -1400,8 +1414,9 @@
                   correct</label>
               </div>
               <button type="button" class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
-                [disabled]="!previewConfirmed" style="background: var(--theme-primary-alpha);" (click)="onSubmit()">Save
-                &amp; Register Asset</button>
+                [disabled]="!previewConfirmed" style="background: var(--theme-primary-alpha);" (click)="onSubmit()">
+                {{ mode === 'edit' ? 'Update Property Registration' : 'Save & Register Asset' }}
+              </button>
             </div>
           </div>
         </div>
