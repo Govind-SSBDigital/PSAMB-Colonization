@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -113,7 +113,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     private service: Propertybidderregn,
     private commonService: Common,
     private toastr: ToastrService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.registerationForm = this.fb.group({
 
@@ -243,6 +244,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   plotSizes: any[] = [];
 
   togglePlanDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isPlanDropdownOpen = !this.isPlanDropdownOpen;
     this.isDistrictDropdownOpen = false;
@@ -293,6 +295,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleDistrictDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isDistrictDropdownOpen = !this.isDistrictDropdownOpen;
     this.isPlanDropdownOpen = false;
@@ -322,6 +325,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   togglePlotNoDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isPlotNoDropdownOpen = !this.isPlotNoDropdownOpen;
     this.isDistrictDropdownOpen = false;
@@ -383,6 +387,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   togglePlotTypeDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isPlotTypeDropdownOpen = !this.isPlotTypeDropdownOpen;
     this.isPlotNoDropdownOpen = false;
@@ -425,6 +430,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   togglePlotSizeDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isPlotSizeDropdownOpen = !this.isPlotSizeDropdownOpen;
     this.isPlotNoDropdownOpen = false;
@@ -469,6 +475,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   togglePropTypeDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isPropTypeDropdownOpen = !this.isPropTypeDropdownOpen;
     this.isPlanDropdownOpen = false;
@@ -503,6 +510,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleMandiDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isMandiDropdownOpen = !this.isMandiDropdownOpen;
     this.isPlanDropdownOpen = false;
@@ -707,13 +715,17 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         // console.log('API Market Committees:', res);
         this.marketCommittees = res.data || res || [];
         this.isLoadingCommittees = false;
-        this.registerationForm.get('branchId')?.enable({ emitEvent: false });
+        if (!this.readonlyMode) {
+          this.registerationForm.get('branchId')?.enable({ emitEvent: false });
+        }
         if (callback) callback();
       },
       error: (err: any) => {
         // console.error('Error fetching market committees:', err);
         this.isLoadingCommittees = false;
-        this.registerationForm.get('branchId')?.enable({ emitEvent: false });
+        if (!this.readonlyMode) {
+          this.registerationForm.get('branchId')?.enable({ emitEvent: false });
+        }
       }
     });
   }
@@ -726,13 +738,17 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         // console.log('API Mandis:', res);
         this.mandis = res.data || res || [];
         this.isLoadingMandis = false;
-        this.registerationForm.get('mandiId')?.enable({ emitEvent: false });
+        if (!this.readonlyMode) {
+          this.registerationForm.get('mandiId')?.enable({ emitEvent: false });
+        }
         if (callback) callback();
       },
       error: (err: any) => {
         // console.error('Error fetching mandis:', err);
         this.isLoadingMandis = false;
-        this.registerationForm.get('mandiId')?.enable({ emitEvent: false });
+        if (!this.readonlyMode) {
+          this.registerationForm.get('mandiId')?.enable({ emitEvent: false });
+        }
       }
     });
   }
@@ -783,13 +799,17 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         // console.log('API Plot Types:', res);
         this.plotTypes = Array.isArray(res.data || res) ? (res.data || res) : [];
         this.isLoadingPlotTypes = false;
-        this.registerationForm.get('plotTypeId')?.enable({ emitEvent: false });
+        if (!this.readonlyMode) {
+          this.registerationForm.get('plotTypeId')?.enable({ emitEvent: false });
+        }
         if (callback) callback();
       },
       error: (err: any) => {
         console.error('Error fetching plot types:', err);
         this.isLoadingPlotTypes = false;
-        this.registerationForm.get('plotTypeId')?.enable({ emitEvent: false });
+        if (!this.readonlyMode) {
+          this.registerationForm.get('plotTypeId')?.enable({ emitEvent: false });
+        }
       }
     });
   }
@@ -957,6 +977,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleStateDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isStateDropdownOpen = !this.isStateDropdownOpen;
     this.isBidderDistrictDropdownOpen = false;
@@ -989,6 +1010,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleBidderDistrictDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isBidderDistrictDropdownOpen = !this.isBidderDistrictDropdownOpen;
     this.isStateDropdownOpen = false;
@@ -1021,6 +1043,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleCityDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isCityDropdownOpen = !this.isCityDropdownOpen;
     this.isStateDropdownOpen = false;
@@ -1053,6 +1076,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleBranchDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isBranchDropdownOpen = !this.isBranchDropdownOpen;
     this.isDistrictDropdownOpen = false;
@@ -1093,6 +1117,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   togglePropertyCategoryDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isPropertyCategoryDropdownOpen = !this.isPropertyCategoryDropdownOpen;
     this.isDistrictDropdownOpen = false;
@@ -1122,6 +1147,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   toggleBidderTypeDropdown(event: Event) {
+    if (this.readonlyMode) return;
     event.stopPropagation();
     this.isBidderTypeDropdownOpen = !this.isBidderTypeDropdownOpen;
     this.isDistrictDropdownOpen = false;
@@ -1251,26 +1277,47 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     }
     const propertyCode = propertycodeControl.value;
 
-    this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode).subscribe({
-      next: (res: any) => {
-        const d = res.data;
-        const hasValidData = !!res.success && !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName);
-        if (hasValidData) {
-          this.patchPropertyData(d, false);
-        } else {
+    const fetchFromEAuction = () => {
+      this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode).subscribe({
+        next: (res: any) => {
+          const d = res.data;
+          const hasValidData = !!res.success && !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName);
+          if (hasValidData) {
+            this.patchPropertyData(d, false);
+          } else {
+            this.toastr.warning('No records found related to this Allottee Code', 'Error');
+            this.propertyData = null;
+            this.resetForm();
+            this.registerationForm.patchValue({ propertycode: propertyCode });
+          }
+        },
+        error: (err: any) => {
           this.toastr.warning('No records found related to this Allottee Code', 'Error');
           this.propertyData = null;
           this.resetForm();
           this.registerationForm.patchValue({ propertycode: propertyCode });
         }
-      },
-      error: (err: any) => {
-        this.toastr.warning('No records found related to this Allottee Code', 'Error');
-        this.propertyData = null;
-        this.resetForm();
-        this.registerationForm.patchValue({ propertycode: propertyCode });
-      }
-    });
+      });
+    };
+
+    if (this.mode === 'edit' || this.mode === 'view') {
+      this.service.getPropertyByCode(propertyCode).subscribe({
+        next: (res: any) => {
+          const d = res?.data;
+          const hasValidData = !!res?.success && !!d && ((d.id && d.id > 0) || !!d.propertyCode);
+          if (hasValidData) {
+            this.patchPropertyData(d, false);
+          } else {
+            fetchFromEAuction();
+          }
+        },
+        error: () => {
+          fetchFromEAuction();
+        }
+      });
+    } else {
+      fetchFromEAuction();
+    }
   }
 
   fetchAndPatchPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any) {
@@ -1502,6 +1549,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         this.calculateUIInstallments();
       }
       this.updateBidderNameValidators();
+      this.setMode(this.mode);
       this.toastr.success('Record found and loaded successfully.', 'Success');
     };
 
@@ -1685,6 +1733,14 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     }
   }
 
+  goBack(): void {
+    if (this.readonlyMode || this.mode === 'edit') {
+      window.history.back();
+    } else {
+      this.resetForm();
+    }
+  }
+
   private disableReceiptRows(): void {
     this.receiptsFormArray.controls.forEach(row => row.disable({ emitEvent: false }));
   }
@@ -1858,7 +1914,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    // debugger
+    debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];
@@ -2069,7 +2125,20 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
 
     };
 
+    const propertyRecordId = Number(
+      this.propertyData?.id ||
+      this.propertyData?.Id ||
+      this.propertyData?.propertyId ||
+      this.propertyData?.PropertyId
+    ) || 0;
+
+    if (propertyRecordId > 0) {
+      payload['id'] = propertyRecordId;
+      payload['Id'] = propertyRecordId;
+    }
+
     const numericFields = [
+      'id', 'Id', 'propertyId', 'PropertyId',
       'districtId', 'mandiId', 'branchId', 'propertyCategoryId', 'bidderTypeId', 'plotTypeId', 'planId', 'propertyTypeId',
       'reservePrice', 'finalBidPrice', 'formPaidAmount', 'emdAmount', 'allotmentAmount',
       'dueAmount', 'totalDueWithInterest', 'accumulatedInterest', 'applicantId', 'ApplicantId',
@@ -2087,13 +2156,23 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       }
     });
 
+    if (propertyRecordId > 0) {
+      cleanedPayload['id'] = propertyRecordId;
+      cleanedPayload['Id'] = propertyRecordId;
+    }
+
     // console.log('Submission Payload:', cleanedPayload);
 
-    const hasId = this.propertyData && (this.propertyData.id || this.propertyData.propertyId);
-    const saveObservable = this.service.registerProperty(cleanedPayload);
-    // const saveObservable = hasId
-    //   ? this.service.UpdateRegisterPropertyAsync(cleanedPayload)
-    //   : this.service.registerProperty(cleanedPayload);
+    const isEditMode = this.mode === 'edit';
+
+    if (isEditMode && propertyRecordId <= 0) {
+      this.toastr.error('Unable to update: Valid Property ID not found.', 'Error');
+      return;
+    }
+
+    const saveObservable = isEditMode
+      ? this.service.UpdateRegisterPropertyAsync(cleanedPayload)
+      : this.service.registerProperty(cleanedPayload);
 
     saveObservable.subscribe({
       next: (res: any) => {
@@ -2104,16 +2183,26 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         if (isAlreadyExists) {
           this.toastr.warning(msg, 'Warning');
         } else if (isSuccess) {
-          this.toastr.success(msg || 'Property bidder registration saved successfully.', 'Success');
-          this.resetForm();
+          const successMsg = isEditMode
+            ? (msg || 'Property bidder registration updated successfully.')
+            : (msg || 'Property bidder registration saved successfully.');
+          this.toastr.success(successMsg, 'Success');
           this.closePreviewModal();
+          if (isEditMode) {
+            this.router.navigate(['/registration-status']);
+          } else {
+            this.resetForm();
+          }
         } else {
-          this.toastr.error(msg || 'Failed to save property registration.', 'Error');
+          const failMsg = isEditMode
+            ? (msg || 'Failed to update property registration.')
+            : (msg || 'Failed to save property registration.');
+          this.toastr.error(failMsg, 'Error');
         }
       },
       error: (err: any) => {
         // console.error('Submit error:', err);
-        const errMsg = err.error?.message || err.error?.Message || err.message || 'Error occurred while saving.';
+        const errMsg = err.error?.message || err.error?.Message || err.message || (isEditMode ? 'Error occurred while updating.' : 'Error occurred while saving.');
         if (errMsg.toLowerCase().includes('already exists')) {
           this.toastr.warning(errMsg, 'Warning');
         } else {

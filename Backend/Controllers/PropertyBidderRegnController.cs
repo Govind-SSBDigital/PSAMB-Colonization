@@ -10,7 +10,7 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class PropertyBidderRegnController : ControllerBase
     {
         private readonly IPropertyBidderRegistration _service;
@@ -219,5 +219,36 @@ namespace Backend.Controllers
         private string GetUserId() =>
            User.FindFirstValue(ClaimTypes.NameIdentifier)
            ?? throw new UnauthorizedAccessException("Invalid token");
+
+        [HttpGet("GetPropertyMandiBrancheByDistrictIdAsync/{districtId}")]
+        public async Task<IActionResult> GetPropertyMandiBrancheByDistrictIdAsync(int districtId)
+        {
+            var response = await _service.GetPropertyMandiBrancheByDistrictIdAsync(districtId);
+
+            return Ok(response);
+        }
+
+        [HttpGet("GetPropertyMandisByBranchIdAsync/{branchId}")]
+        public async Task<IActionResult> GetPropertyMandisByBranchIdAsync(int branchId)
+        {
+            var response = await _service.GetPropertyMandisByBranchIdAsync(branchId);
+
+            return Ok(response);
+        }
+
+        [HttpGet("GetPropertyMandiPlotTypesAsync/{mandiId}")]
+        public async Task<IActionResult> GetPropertyMandiPlotTypesAsync(int mandiId)
+        {
+            var response = await _service.GetPropertyMandiPlotTypesAsync(mandiId);
+
+            return Ok(response);
+        }
+
+        [HttpGet("GetPlotsByPlotTypeAsync")]
+        public async Task<IActionResult> GetPlotsByPlotTypeAsync(int mandiId, int plotTypeId)
+        {
+            var response = await _service.GetPlotsByPlotTypeAsync(mandiId, plotTypeId);
+            return Ok(response);
+        }
     }
 }

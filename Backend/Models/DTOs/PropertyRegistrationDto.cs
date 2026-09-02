@@ -155,6 +155,8 @@ namespace Backend.Models.Dtos
         public int? OwnerDistrtictID { get; set; }
 
         public int? OwnerCityID { get; set; }
+        public string? ModifyByName { get; set; }
+
     }
 
     public class InstallmentScheduleDto

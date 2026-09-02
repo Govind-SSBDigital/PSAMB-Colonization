@@ -18,6 +18,21 @@ export interface VerificationHistoryEntry {
   date: string;
 }
 
+export interface ReceiptView {
+  receiptNo: string;
+  receiptDate: string;
+  draftNo: string;
+  draftAmount: number;
+  draftDate: string;
+  draftBank: string;
+  principalAmount: number;
+  interestAmount: number;
+  otherAmount: number;
+  penaltyAmount: number;
+  penaltyType: string;
+  remarks: string;
+}
+
 /** Local-only, UI-side concern — not part of the backend model. */
 export interface ClerkHistoryEntry {
   id: string;
@@ -29,13 +44,8 @@ export interface ClerkHistoryEntry {
   status: 'PENDING' | 'EDITED' | 'APPROVED' | 'REJECTED';
 }
 
-// const PLOT_TYPE_OPTIONS = ['Commercial', 'Residential', 'Industrial', 'Institutional'];
 const PLOT_STATUS_OPTIONS = ['Sold', 'Unsold'];
-// const PROPERTY_CATEGORY_OPTIONS = ['General', 'Reserved', 'Corner Plot', 'Prime Location'];
-// const BIDDER_TYPE_OPTIONS = ['Individual', 'Company', 'Partnership Firm', 'Trust'];
 const RELATION_OPTIONS = ['Son of (S/o)', 'Daughter of (D/o)', 'Wife of (W/o)'];
-// const AUCTION_PROPERTY_TYPE_OPTIONS = ['Commercial Plots', 'Residential Plots', 'Booth', 'SCO'];
-// const PAID_STATUS_OPTIONS = ['Paid', 'Unpaid', 'Partially Paid', 'Overdue'];
 
 @Component({
   selector: 'app-deo-verification',
@@ -64,11 +74,8 @@ export class DeoVerification implements OnInit, OnChanges {
     data: PropertyBidderRegistrationModel;
   }>();
 
-  // readonly plotTypeOptions = PLOT_TYPE_OPTIONS;
-  // readonly propertyCategoryOptions = PROPERTY_CATEGORY_OPTIONS;
-  // readonly bidderTypeOptions = BIDDER_TYPE_OPTIONS;
-  // readonly auctionPropertyTypeOptions = AUCTION_PROPERTY_TYPE_OPTIONS;
-  // readonly paidStatusOptions = PAID_STATUS_OPTIONS;
+  receiptsList: ReceiptView[] = [];
+  bidderNamesList: string[] = [];
 
   readonly relationOptions = RELATION_OPTIONS;
 
@@ -189,10 +196,7 @@ export class DeoVerification implements OnInit, OnChanges {
         this.service.getRegistrationById(id).subscribe({
           next: (res: any) => {
             if (res && res.data) {
-              // console.log('data', res);
-
               this.originalRegistrationDto = res.data;
-              // this.registration = this.mapDtoToModel(res.data);
               this.patchForm(res.data);
 
               this.checkVerificationStatus(res.data.applicationStatusId);
@@ -200,11 +204,8 @@ export class DeoVerification implements OnInit, OnChanges {
           },
           error: (err: any) => {
             console.error('Error fetching registration by id:', err);
-            // this.patchForm(this.getDemoData());
           }
         });
-      } else {
-        // this.patchForm(this.getDemoData());
       }
     } catch (e) {
       console.error('Error decrypting id:', e);
@@ -226,12 +227,10 @@ export class DeoVerification implements OnInit, OnChanges {
   }
 
   loadPlotTypes(): void {
-    // debugger
     this.commonService.getPlotTypes().subscribe({
       next: (res: any) => {
         setTimeout(() => {
           this.plotTypes = res.data || res || [];
-          // console.log('pt', this.plotTypes);
           if (this.originalRegistrationDto || this.registration) {
             this.patchForm(this.originalRegistrationDto || this.registration);
           }
@@ -246,7 +245,6 @@ export class DeoVerification implements OnInit, OnChanges {
       next: (res: any) => {
         setTimeout(() => {
           this.plans = res.data || res || [];
-          // console.log('plns', this.plans);
 
           if (this.originalRegistrationDto || this.registration) {
             this.patchForm(this.originalRegistrationDto || this.registration);
@@ -616,6 +614,46 @@ export class DeoVerification implements OnInit, OnChanges {
     };
   }
 
+  /** Populates the read-only Receipt Allocations table from the raw registration payload. */
+  private deriveReceiptsList(data: any): ReceiptView[] {
+    const raw = data?.installments || data?.Installments || data?.receipts ||
+      data?.receiptList || data?.receiptsFormArray || data?.receiptAllocations ||
+      data?.propertyBidderReceipts;
+    if (!Array.isArray(raw)) return [];
+
+    return raw.map((rec: any) => ({
+      receiptNo: rec.receiptNo || rec.ReceiptNo || '',
+      receiptDate: this.splitDatePart(rec.receiptDate || rec.ReceiptDate),
+      draftNo: rec.draftNo || rec.DraftNo || '',
+      draftAmount: rec.draftAmount ?? rec.DraftAmount ?? 0,
+      draftDate: this.splitDatePart(rec.draftDate || rec.DraftDate),
+      draftBank: rec.draftBank || rec.DraftBank || '',
+      principalAmount: rec.principalAmount ?? rec.PrincipalAmount ?? 0,
+      interestAmount: rec.interestAmount ?? rec.InterestAmount ?? 0,
+      otherAmount: rec.otherAmount ?? rec.OtherAmount ?? 0,
+      penaltyAmount: rec.penaltyAmount ?? rec.PenaltyAmount ?? 0,
+      penaltyType: rec.penaltyType || rec.PenaltyType || 'N/A',
+      remarks: rec.remarks || rec.Remarks || ''
+    }));
+  }
+
+  /** Populates the read-only Allotee Names list when the property has been transferred. */
+  private deriveBidderNamesList(data: any): string[] {
+    const isTransferred = this.getBooleanValue(data, 'isTransferred', 'transfered', 'Transfered');
+    const bidderName = data?.bidderName || data?.h1BidderName || '';
+    if (isTransferred && bidderName) {
+      return String(bidderName)
+        .split(',')
+        .map((n: string) => n.trim())
+        .filter((n: string) => !!n);
+    }
+    return [];
+  }
+
+  private splitDatePart(value: any): string {
+    return value ? String(value).split('T')[0] : '';
+  }
+
   private patchForm(data: PropertyBidderRegistrationModel | Record<string, unknown>): void {
     setTimeout(() => {
       const dto = this.normalizeToDto(data);
@@ -625,6 +663,10 @@ export class DeoVerification implements OnInit, OnChanges {
         'Isauctioned',
         'IsAuctioned',
       );
+
+      // Populate read-only display lists (receipts + allotee names)
+      this.receiptsList = this.deriveReceiptsList(data);
+      this.bidderNamesList = this.deriveBidderNamesList(data);
 
       const proceedToPatch = () => {
         this.form.patchValue({ ...dto, isAuctioned: auctionValue }, { emitEvent: false });
@@ -986,7 +1028,6 @@ export class DeoVerification implements OnInit, OnChanges {
     if (token) {
       try {
         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-        // console.log('Verification Page Token Payload:', tokenPayload);
         const rawRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
           || tokenPayload.role
           || tokenPayload.Role
@@ -1004,8 +1045,6 @@ export class DeoVerification implements OnInit, OnChanges {
     this.setVerificationStatus(statusId);
     const role = this.userRole?.toLowerCase() || 'clerk';
     let canAction = false;
-
-    // console.log('Checking verification status:', { role, statusId });
 
     if (role.includes('clerk')) {
       canAction = (statusId === 1 || !statusId);
