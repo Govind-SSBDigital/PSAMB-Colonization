@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { PageEvent } from '@angular/material/paginator';
 import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
+
 interface RegistrationRecord {
   allotteeCode: string;
   allotteeName: string;
@@ -21,56 +22,34 @@ interface RegistrationRecord {
 export class DeoRegistrationStatus implements OnInit {
 
   searchText: string = '';
-  selectedFilter: string = '';
+  selectedFilter: string = 'Pending';
   pageIndex = 0;
   pageSize = 10;
   pagedPropertyList: RegistrationRecord[] = [];
-  registrationList: RegistrationRecord[] = [
-    {
-      allotteeCode: 'ALL-2026-001',
-      allotteeName: 'VIKAS KUMAR',
-      approvalStatus: 'Approved',
-      remarks: 'All documents verified and payment confirmed.'
-    },
-    {
-      allotteeCode: 'ALL-2026-002',
-      allotteeName: 'HARPREET SINGH',
-      approvalStatus: 'Rejected',
-      remarks: 'Invalid PAN card document uploaded.'
-    },
-    {
-      allotteeCode: 'ALL-2026-003',
-      allotteeName: 'RAJESH SHARMA',
-      approvalStatus: 'Pending',
-      remarks: 'Awaiting senior officer approval.'
-    },
-    {
-      allotteeCode: 'ALL-2026-004',
-      allotteeName: 'SURESH KUMAR',
-      approvalStatus: 'Objection',
-      remarks: 'Documents returned for clarification.'
-    }
-  ];
-
+  registrationList: RegistrationRecord[] = [];
   filteredList: RegistrationRecord[] = [];
 
-  constructor(private router: Router,private _service: Propertybidderregn) { }
+  constructor(
+    private router: Router,
+    private _service: Propertybidderregn,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-        this.getRegistrationList();
-   // this.filteredList = [...this.registrationList];
+    this.getRegistrationList();
   }
 
   onSearch(): void {
-
-   // this.applyFilters();
+    this.pageIndex = 0;
+    this.applyFilters();
+    this.updatePagedList();
+    this.cdr.detectChanges();
   }
+
   getRegistrationList(): void {
-    debugger
     this._service.GetAllRegisterPropertyById().subscribe({
       next: (res: any) => {
-
-        if (res?.data) {
+        if (res?.data && Array.isArray(res.data)) {
           this.registrationList = res.data.map((item: any) => ({
             allotteeCode: item.allotteeCode,
             allotteeName: item.allotteeName,
@@ -83,43 +62,81 @@ export class DeoRegistrationStatus implements OnInit {
 
         this.applyFilters();
         this.updatePagedList();
+        this.cdr.detectChanges();
       },
 
       error: (err) => {
         console.error('Error loading registration list:', err);
-
         this.registrationList = [];
         this.filteredList = [];
         this.pagedPropertyList = [];
+        this.cdr.detectChanges();
       }
     });
   }
+
   onFilterChange(): void {
+    this.pageIndex = 0;
     this.applyFilters();
+    this.updatePagedList();
+    this.cdr.detectChanges();
+  }
+
+  setStatusFilter(status: string): void {
+    if (status === '') {
+      this.selectedFilter = '';
+    } else if (this.selectedFilter.trim().toLowerCase() === status.trim().toLowerCase()) {
+      this.selectedFilter = '';
+    } else {
+      this.selectedFilter = status;
+    }
+    this.pageIndex = 0;
+    this.applyFilters();
+    this.updatePagedList();
+    this.cdr.detectChanges();
   }
 
   private applyFilters(): void {
+    const term = (this.searchText || '').trim().toLowerCase();
+    const filterStatus = (this.selectedFilter || '').trim().toLowerCase();
+
     this.filteredList = this.registrationList.filter(item => {
       const matchesSearch =
-        item.allotteeCode.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        item.allotteeName.toLowerCase().includes(this.searchText.toLowerCase());
+        term === '' ||
+        (item.allotteeCode || '').toLowerCase().includes(term) ||
+        (item.allotteeName || '').toLowerCase().includes(term);
 
-      const matchesStatus = this.selectedFilter === '' || item.approvalStatus === this.selectedFilter;
+      const itemStatus = (item.approvalStatus || '').trim().toLowerCase();
+      const matchesStatus = filterStatus === '' || itemStatus === filterStatus;
 
       return matchesSearch && matchesStatus;
     });
   }
 
+  getTotalCount(): number {
+    return this.registrationList.length;
+  }
+
   getApprovedCount(): number {
-    return this.filteredList.filter(item => item.approvalStatus === 'Approved').length;
+    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase() === 'approved').length;
   }
 
   getPendingCount(): number {
-    return this.filteredList.filter(item => item.approvalStatus === 'Pending').length;
+    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase() === 'pending').length;
   }
 
   getObjectionCount(): number {
-    return this.filteredList.filter(item => item.approvalStatus === 'Objection').length;
+    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase() === 'objection').length;
+  }
+
+  getStatusClass(status: string | null | undefined): string {
+    const s = (status || '').toLowerCase().trim();
+    if (s.includes('objection')) return 'status-objection';
+    if (s.includes('reject')) return 'status-rejected';
+    if (s.includes('verified') || s.includes('clerk')) return 'status-verified';
+    if (s.includes('approved')) return 'status-approved';
+    if (s.includes('pending')) return 'status-pending';
+    return 'status-default';
   }
 
   onView(item: RegistrationRecord): void {
@@ -132,6 +149,7 @@ export class DeoRegistrationStatus implements OnInit {
   }
 
   onEdit(item: RegistrationRecord): void {
+    debugger
     this.router.navigate(['/property-bidder-registration'], {
       queryParams: {
         mode: 'edit',
@@ -139,11 +157,14 @@ export class DeoRegistrationStatus implements OnInit {
       }
     });
   }
+
   onPageChange(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.pageIndex = event.pageIndex;
     this.updatePagedList();
+    this.cdr.detectChanges();
   }
+
   updatePagedList(): void {
     const startIndex = this.pageIndex * this.pageSize;
     this.pagedPropertyList = this.filteredList.slice(startIndex, startIndex + this.pageSize);
