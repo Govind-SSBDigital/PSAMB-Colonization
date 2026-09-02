@@ -205,9 +205,9 @@
                     <tfoot>
                         <tr>
                             <td colspan="6" class="text-end fw-semibold">Total(Rs.):</td>
-                            <!-- <td class="text-end fw-semibold">
+                            <td class="text-end fw-semibold">
                 ₹{{ getTotal(balanceData.initialDeposits, 'amount') | number:'1.2-2' }}
-              </td> -->
+              </td>
                         </tr>
                     </tfoot>
                 </table>
@@ -217,7 +217,7 @@
         <!-- Due Installments -->
         <div class="table-section mb-4">
             <div class="table-section-header bg-success text-white rounded-top-2">
-                Details of Due Installments : (Rate of Interest(12%))
+                Details of Due Installments : (Rate of Interest({{ getRateOfInterest() }}%)
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered mb-0 align-middle">
@@ -231,6 +231,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr *ngIf="!balanceData.dueInstallments.length">
+                            <td colspan="5" class="text-center text-muted">No records found</td>
+                        </tr>
                         <tr *ngFor="let installment of balanceData.dueInstallments">
                             <td>{{ installment.installmentNo }}</td>
                             <td>{{ installment.dueDate }}</td>
@@ -242,9 +245,9 @@
                     <tfoot>
                         <tr>
                             <td colspan="2" class="text-end fw-semibold">Total(Rs.) :</td>
-                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'dueAmount') | number:'1.2-2' }}</td> -->
-                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'interest') | number:'1.2-2' }}</td> -->
-                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'totalDueAmount') | number:'1.2-2' }}</td> -->
+                            <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'dueAmount') | number:'1.2-2' }}</td>
+                            <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'interest') | number:'1.2-2' }}</td>
+                            <td class="text-end fw-semibold">₹{{ getTotal(balanceData.dueInstallments, 'totalDueAmount') | number:'1.2-2' }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -286,9 +289,7 @@
                     <tfoot>
                         <tr>
                             <td colspan="6" class="text-end fw-semibold">Total(Rs.):</td>
-                            <!-- <td class="text-end fw-semibold">
-                ₹{{ getTotal(balanceData.installmentReceipts, 'draftAmount') | number }}
-              </td> -->
+                            <td class="text-end fw-semibold">₹{{ getTotal(balanceData.installmentReceipts, 'draftAmount') | number:'1.2-2' }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -324,9 +325,9 @@
                     <tfoot>
                         <tr>
                             <td colspan="2" class="text-end fw-semibold">Total(Rs.) :</td>
-                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'dueAmount') | number }}</td>
+                            <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'dueAmount') | number }}</td>
               <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'interest') | number }}</td>
-              <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'totalDueAmount') | number }}</td> -->
+              <td class="text-end fw-semibold">₹{{ getTotal(balanceData.futureInstallments, 'totalDueAmount') | number }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -370,7 +371,7 @@
                     <tfoot>
                         <tr>
                             <td colspan="7" class="text-end fw-semibold">Total(Rs.):</td>
-                            <!-- <td class="text-end fw-semibold">₹{{ getTotal(balanceData.otherAmounts, 'draftAmount') | number:'1.2-2' }}</td> -->
+                            <td class="text-end fw-semibold">₹{{ getTotal(balanceData.otherAmounts, 'draftAmount') | number:'1.2-2' }}</td>
                         </tr>
                     </tfoot>
                 </table>

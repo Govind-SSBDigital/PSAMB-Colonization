@@ -232,3 +232,45 @@ table select.form-select-sm {
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(11, 61, 46, 0.06);
 }
+.custom-input-color {
+  background-color: #ffffff;
+}
+
+.flag-row {
+  min-height: 46px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkbox-border {
+  border: 1px solid #dbe4e0;
+}
+
+.financial-tile {
+  background: #ffffff;
+  border: 1px solid #dbe4e0;
+  box-shadow: 0 8px 18px -16px rgba(11, 61, 46, 0.6);
+}
+
+.dot-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dbe4e0;
+
+  &.active {
+    background: var(--brand-dark);
+  }
+}
+
+.table-responsive-scroll {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  .table {
+    min-width: 720px;
+    margin-bottom: 0;
+  }
+}
