@@ -56,7 +56,7 @@ export class PropertyBalanceCalculate implements OnInit {
   }
 
   private loadMasterData(): void {
-    this.commonService.getAllDistrict(this.defaultStateId).subscribe({
+    this.service.getPropertyDistricts().subscribe({
       next: (res: any) => {
         this.districts = res?.data || res || [];
         this.cdr.detectChanges();
@@ -80,7 +80,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.plotTypes = [];
 
     if (districtId) {
-      this.commonService.getMarketCommittees(districtId).subscribe({
+      this.service.getPropertyMandiBranchesByDistrict(districtId).subscribe({
         next: (res: any) => {
           this.marketCommittees = res?.data || res || [];
           this.cdr.detectChanges();
@@ -103,7 +103,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.plotTypes = [];
 
     if (branchId) {
-      this.service.getPropertyMandis(branchId).subscribe({
+      this.service.getPropertyMandiBranchesByBranchId(branchId).subscribe({
         next: (res: any) => {
           this.mandis = res?.data || res || [];
           this.cdr.detectChanges();
@@ -120,7 +120,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.plotTypes = [];
 
     if (mandiId) {
-      this.service.getPropertyPlotTypes(mandiId).subscribe({
+      this.service.getPropertyPlotTypesAsync(mandiId).subscribe({
         next: (res: any) => {
           this.plotTypes = res?.data || res || [];
           this.cdr.detectChanges();
@@ -285,7 +285,7 @@ export class PropertyBalanceCalculate implements OnInit {
   }
 
   private loadPlotNumbers(mandiId: any, plotTypeId: any): void {
-    this.service.getAuctionedPlots(mandiId, plotTypeId).subscribe({
+    this.service.getPlotsByPlotTypesAsync(mandiId, plotTypeId).subscribe({
       next: (res: any) => {
         this.plotNumbers = res?.data || res || [];
         this.cdr.detectChanges();
