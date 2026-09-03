@@ -16,6 +16,7 @@ interface PropertyVerificationModel {
   label: 'User' | 'DEO';
   firstName?: string;
   applicationStatusId?: number;
+  registrationData?: Record<string, unknown>;
 }
 
 @Component({
@@ -108,7 +109,8 @@ export class PropertyVerification implements OnInit {
           label: d.label || 'User',
           firstName: d.firstName,
           applicationStatusId: d.applicationStatusId,
-          roleName: roleName
+          roleName: roleName,
+          registrationData: d,
         }));
         this.buildFilterOptions();
         this.applyFilter();
@@ -265,7 +267,10 @@ export class PropertyVerification implements OnInit {
   viewDetails(property: PropertyVerificationModel): void {
     const targetRoute = property.label === 'DEO' ? '/verification' : '/verification-view';
     const encryptedId = btoa(property.id.toString());
-    this.router.navigate([targetRoute], { queryParams: { id: encryptedId } });
+    this.router.navigate([targetRoute], {
+      queryParams: { id: encryptedId },
+      state: { registrationData: property.registrationData },
+    });
   }
   viewHistory(property: PropertyVerificationModel): void {
   }
