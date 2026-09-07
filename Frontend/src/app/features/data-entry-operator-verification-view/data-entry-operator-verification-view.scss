@@ -1,0 +1,43 @@
+:host {
+  --brand-dark: #0b4d3c;
+  --brand-darker: #08382b;
+  --brand-gold: #d4af37;
+  display: block;
+  background: #f2f4f3;
+}
+.section-card {
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.bg-brand {
+  background: var(--brand-dark) !important;
+}
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.verification-status-badge {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.65rem;
+}
+
+.status-verified {
+  background: #ffffff;
+  color: #0f5132;
+  border-radius: 12px;
+}
+
+.status-objection {
+  background: #ffffff;
+  color: rgb(223, 3, 3);
+  border-radius: 12px;
+}
+
+.status-pending {
+  background: #ffffff;
+  color: rgb(165, 149, 5);
+  border-radius: 12px;
+}

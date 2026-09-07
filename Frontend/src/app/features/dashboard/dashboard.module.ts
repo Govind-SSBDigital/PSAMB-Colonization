@@ -90,6 +90,12 @@ import { Footer } from './footer/footer';
                 .then((m) => m.OnlinePaymentDetail),
           },
           {
+            path : 'deo-verification-view',
+            loadComponent: () =>
+              import('../../features/data-entry-operator-verification-view/data-entry-operator-verification-view')
+                .then((m) => m.DataEntryOperatorVerificationView),
+          },
+          {
             path: 'coming-soon',
             loadComponent: () =>
               import('../../features/comming-soon-pages/comming-soon-pages')
