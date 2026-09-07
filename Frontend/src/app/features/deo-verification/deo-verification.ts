@@ -180,7 +180,16 @@ export class DeoVerification implements OnInit, OnChanges {
       this.currentStage = this.userRole;
 
       if (encryptedId) {
-        this.loadRegistrationDetails(encryptedId);
+        const navigationState = history.state as { registrationData?: Record<string, unknown> };
+        if (navigationState.registrationData) {
+          this.originalRegistrationDto = navigationState.registrationData;
+          this.patchForm(navigationState.registrationData);
+          this.checkVerificationStatus(
+            navigationState.registrationData['applicationStatusId'] as number | undefined,
+          );
+        } else {
+          this.loadRegistrationDetails(encryptedId);
+        }
       } else {
         // this.patchForm(this.registration ?? this.getDemoData());
       }
@@ -604,7 +613,7 @@ export class DeoVerification implements OnInit, OnChanges {
 
       allotmentTxnId: data.allotmentTxnId ?? data.allotmentTransactionId ?? '',
       allotmentDate: this.formatToInputDate(data.allotmentDate ?? ''),
-      allotmentTransactionDate: this.formatToInputDate(data.allotmentTransactionDate ?? data.allotmentTxnDate ?? data.allotmentDate ?? ''),
+      allotmentTransactionDate: this.formatToInputDate(data.allotmentTransactionDate),
       allotmentAmount: data.allotmentAmount ?? data.allotmentPaidAmount ?? 0,
 
       installmentNo: data.installmentNo ?? '',
@@ -671,7 +680,14 @@ export class DeoVerification implements OnInit, OnChanges {
       this.bidderNamesList = this.deriveBidderNamesList(data);
 
       const proceedToPatch = () => {
-        this.form.patchValue({ ...dto, isAuctioned: auctionValue }, { emitEvent: false });
+        const milestoneTransactionDate = data?.['allotmentTransactionDate'];
+        this.form.patchValue({
+          ...dto,
+          isAuctioned: auctionValue,
+          allotmentTransactionDate: milestoneTransactionDate == null
+            ? ''
+            : this.formatToInputDate(milestoneTransactionDate),
+        }, { emitEvent: false });
         this.setAuctionValidators(auctionValue);
         this.calculateUIInstallments();
         this.cdr.detectChanges();
@@ -1140,7 +1156,7 @@ export class DeoVerification implements OnInit, OnChanges {
       emdPaidAmount: d.emdAmount || 0,
 
       allotmentTransactionId: d.allotmentTxnId || '',
-      allotmentTransactionDate: d.allotmentDate ? d.allotmentDate.substring(0, 10) : '',
+      allotmentTransactionDate: d.allotmentTransactionDate ? d.allotmentTransactionDate.substring(0, 10) : '',
       allotmentPaidAmount: d.allotmentAmount || 0,
 
       installmentNo: d.installmentNo || '1',
