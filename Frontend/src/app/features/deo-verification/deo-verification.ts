@@ -420,7 +420,7 @@ export class DeoVerification implements OnInit, OnChanges {
       // 25% Allotment Details
       allotmentTxnId: this.fb.nonNullable.control('', Validators.required),
       allotmentDate: this.fb.nonNullable.control('', Validators.required),
-      allotmentTransactionDate: this.fb.nonNullable.control('', Validators.required),
+      allotmentTransactionDate: this.fb.nonNullable.control(''),
       allotmentAmount: this.fb.nonNullable.control(0, [Validators.required, Validators.min(1)]),
 
       // Outstanding Dues
@@ -718,7 +718,7 @@ export class DeoVerification implements OnInit, OnChanges {
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.form.get('finalBidPrice')?.value) || 0;
     const allotmentPaid_25_percentage = Number(this.form.get('allotmentAmount')?.value) || 0;
-    const milestoneDateStr = this.form.get('allotmentDate')?.value;
+    const milestoneDateStr = this.form.get('allotmentDate')?.value || this.form.get('allotmentTransactionDate')?.value;
     const selectedInstallmentString = this.form.get('installmentNo')?.value || 'Installment 1';
 
     // 2. Calculate TOTAL Outstanding Principal Balance

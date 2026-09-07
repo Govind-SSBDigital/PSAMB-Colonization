@@ -1194,6 +1194,7 @@ namespace Backend.Services.Implementations
                         ReservePrice = GetDecimal(reader, "ReservePrice"),
 
                         FinalBidPrice = GetDecimal(reader, "FinalBidPrice"),
+                        AllotmentDate = GetDateTime(reader, "AllotmentDate"),
 
                         // Form
                         FormTransactionId =
@@ -1219,8 +1220,8 @@ namespace Backend.Services.Implementations
                         AllotmentTxnId =
                             GetString(reader, "AllotmentTxnId"),
 
-                        AllotmentDate =
-                            GetDateTime(reader, "AllotmentDate"),
+                        
+                        AllotmentTransactionDate = GetDateTime(reader, "AllotmentTransactionDate"),
 
                         AllotmentAmount =
                             GetDecimal(reader, "AllotmentAmount"),
