@@ -74,5 +74,21 @@ export class Propertybidderregn {
   getPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyDetailsByMandiPlot?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
   }
+
+  getPropertyMandiBranchesByDistrict(districtId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyMandiBrancheByDistrictIdAsync/${districtId}`);
+  }
+
+  getPropertyMandiBranchesByBranchId(branchId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyMandisByBranchIdAsync/${branchId}`);
+  }
+
+   getPropertyPlotTypesAsync(mandiId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyMandiPlotTypesAsync/${mandiId}`);
+  }
+
+  getPlotsByPlotTypesAsync(mandiId: any, plotTypeId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPlotsByPlotTypeAsync?mandiId=${mandiId}&plotTypeId=${plotTypeId}`);
+  }
 }
 
