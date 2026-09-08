@@ -690,7 +690,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const mode = (params['mode'] as string) || this.mode;
-      const propertyCode = (params['propertyCode'] as string) || this.propertyCode;
+      const propertyCode = params['propertyCode'] as string;
       this.setMode(mode);
       if (propertyCode) {
         this.registerationForm.patchValue({ propertycode: propertyCode }, { emitEvent: false });

@@ -30,7 +30,19 @@
 <!-- approve and reject section -->
 <div class="verification-container container-xxl pb-4">
   <form class="mt-2">
-    <div *ngIf="!isAlreadyVerified">
+
+    <!-- Read-only remarks: shown when status is Objection (7) -->
+    <div class="mb-3" *ngIf="showRemarksReadOnly">
+      <label class="form-label fw-bold text-uppercase text-success small mb-1">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i> Remarks
+      </label>
+      <div class="form-control form-control-sm rounded-3 bg-light text-danger" style="min-height: 72px; white-space: pre-wrap;">
+        {{ remarksReadOnly || 'No remarks provided.' }}
+      </div>
+    </div>
+
+    <!-- Action buttons: shown only when status is Pending (1) and not yet acted upon -->
+    <div *ngIf="showActionButtons && !isAlreadyVerified">
 
       <div class="mb-3" *ngIf="activeDecision === 'sendback'">
         <label class="form-label fw-bold text-uppercase text-success small mb-1">

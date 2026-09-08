@@ -24,13 +24,17 @@ export interface VerificationHistoryEntry {
   styleUrl: './data-entry-operator-verification-view.scss',
 })
 export class DataEntryOperatorVerificationView implements OnInit {
-  propertyCode = 'BBB132-8391';
+  propertyCode = '';
   originalRegistrationDto: any = null;
   history: VerificationHistoryEntry[] = [];
   verificationStatusClass = 'status-pending';
   verificationStatus = 'Pending';
   submitting = false;
   activeDecision: 'approve' | 'sendback' | null = null;
+  applicationStatusId: number | null = null;
+  showActionButtons = true;
+  showRemarksReadOnly = false;
+  remarksReadOnly: string | null = null;
   private readonly fb = inject(FormBuilder);
   private readonly toastr = inject(ToastrService);
   private readonly route = inject(ActivatedRoute);
@@ -112,20 +116,53 @@ export class DataEntryOperatorVerificationView implements OnInit {
       this.propertyCode = data.propertyCode || data.allotteeCode;
     }
     const statusId = data.applicationStatusId ?? data.statusId;
+    // Use ?? so null from API is captured; falls back to other field names if undefined
+    this.remarksReadOnly =
+      data.remarks ??
+      data.Remarks ??
+      data.remark ??
+      data.Remark ??
+      data.sendBackRemarks ??
+      data.objectionRemarks ??
+      data.comment ??
+      data.Comment ??
+      null;
     this.setVerificationStatus(statusId);
   }
 
   private setVerificationStatus(statusId: number | null | undefined): void {
-    if (statusId === 2 || statusId === 3 || statusId === 4) {
-      this.verificationStatus = 'Verified';
+    this.applicationStatusId = statusId ?? null;
+
+    // label & badge class
+    if (statusId === 6) {
+      this.verificationStatus = 'Approved by Director';
+      this.verificationStatusClass = 'status-verified';
+    } else if (statusId === 5) {
+      this.verificationStatus = 'Verified by Deputy Director';
+      this.verificationStatusClass = 'status-verified';
+    } else if (statusId === 4) {
+      this.verificationStatus = 'Verified by Superitendent';
+      this.verificationStatusClass = 'status-verified';
+    } else if (statusId === 3) {
+      this.verificationStatus = 'Verified by Senior Assistant';
+      this.verificationStatusClass = 'status-verified';
+    } else if (statusId === 2) {
+      this.verificationStatus = 'Verified by Clerk';
       this.verificationStatusClass = 'status-verified';
     } else if (statusId === 7) {
       this.verificationStatus = 'Objection';
       this.verificationStatusClass = 'status-objection';
     } else {
+      // statusId === 1 or unknown → Pending
       this.verificationStatus = 'Pending';
       this.verificationStatusClass = 'status-pending';
     }
+
+    // Show buttons only when Pending (1)
+    this.showActionButtons = (statusId === 1 || statusId == null);
+
+    // Show read-only remarks when Objection (7)
+    this.showRemarksReadOnly = (statusId === 7);
   }
 
  submitDecision(): void {
