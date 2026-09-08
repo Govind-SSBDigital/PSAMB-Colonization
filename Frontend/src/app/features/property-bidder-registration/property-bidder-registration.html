@@ -964,8 +964,10 @@
       </div>
       }
       <div class="form-actions d-flex flex-column flex-sm-row justify-content-end gap-3 pt-4 border-top">
+        @if (mode !== 'view') {
         <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2 fw-semibold" (click)="goBack()">{{
           readonlyMode ? 'Back' : 'Cancel' }}</button>
+        }
         <button *ngIf="!readonlyMode" type="button"
           class="btn text-white rounded-3 px-4 py-2 fw-semibold shadow-sm border-0"
           style="background: var(--theme-primary-alpha);" (click)="letshowPreview()"
@@ -973,7 +975,7 @@
       </div>
     </form>
     <!-- preview  section  -->
-    @if (showPreview) {
+    @if (showPreview && !readonlyMode && mode !== 'view') {
     <div class="preview-modal-backdrop mt-2" (click)="closePreviewModal()">
       <div id="preview-section" class="preview-modal-dialog" role="dialog" aria-modal="true"
         aria-labelledby="preview-modal-title" (click)="$event.stopPropagation()">

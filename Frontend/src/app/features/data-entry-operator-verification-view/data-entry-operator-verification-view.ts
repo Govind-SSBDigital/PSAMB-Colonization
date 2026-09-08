@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { PropertyBidderRegistrationModule } from '../property-bidder-registration/property-bidder-registration.module';
-import { FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators,FormControl} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Common } from '../../core/service/CommonService/common';
 import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,42 +19,101 @@ export interface VerificationHistoryEntry {
 @Component({
   selector: 'app-data-entry-operator-verification-view',
   standalone: true,
-  imports:[PropertyBidderRegistrationModule, CommonModule],
+  imports:[PropertyBidderRegistrationModule, CommonModule, ReactiveFormsModule],
   templateUrl: './data-entry-operator-verification-view.html',
   styleUrl: './data-entry-operator-verification-view.scss',
 })
-export class DataEntryOperatorVerificationView {
-
-   history: VerificationHistoryEntry[] = [
-      {
-        role: 'Clerk',
-        actorName: 'Test',
-        action: 'Submitted',
-        remarks: 'Forwarded after initial document check.',
-        date: '25 Jul 2026, 11:42 AM',
-      },
-    ];
+export class DataEntryOperatorVerificationView implements OnInit {
+  propertyCode = 'BBB132-8391';
+  originalRegistrationDto: any = null;
+  history: VerificationHistoryEntry[] = [];
   verificationStatusClass = 'status-pending';
   verificationStatus = 'Pending';
   submitting = false;
   activeDecision: 'approve' | 'sendback' | null = null;
   private readonly fb = inject(FormBuilder);
   private readonly toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly service = inject(Propertybidderregn);
+  private readonly commonService = inject(Common);
+
   showValidationHint = false;
   currentStage = 'Clerk';
-  form!: FormGroup;
   remarksControl = this.fb.nonNullable.control('', [
     Validators.maxLength(500),
   ]);
-  originalRegistrationDto: any;
   userRole = '';
   isAlreadyVerified = false;
 
-constructor(
-  private commonService: Common,
-  private service: Propertybidderregn,
-  private router: Router,
-) { }
+  getCurrentUserRole(): string {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        const rawRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+          || tokenPayload.role
+          || tokenPayload.Role
+          || tokenPayload.roles
+          || tokenPayload.Roles;
+        if (rawRole) return String(rawRole).trim();
+      } catch (e) {
+        console.error('Error parsing token for role:', e);
+      }
+    }
+    return sessionStorage.getItem('role') || 'Clerk';
+  }
+
+  ngOnInit(): void {
+    const role = this.getCurrentUserRole();
+    this.userRole = role;
+    this.currentStage = role;
+
+    this.route.queryParams.subscribe(params => {
+      const codeFromQuery = params['propertyCode'];
+      if (codeFromQuery) {
+        this.propertyCode = codeFromQuery;
+      }
+      const roleFromQuery = params['role'];
+      if (roleFromQuery) {
+        this.userRole = roleFromQuery;
+        this.currentStage = roleFromQuery;
+      }
+      const encryptedId = params['id'];
+      if (encryptedId) {
+        try {
+          const id = Number(atob(encryptedId));
+          if (!isNaN(id) && id > 0) {
+            this.service.getRegistrationById(id).subscribe({
+              next: (res: any) => {
+                if (res && res.data) {
+                  this.onPropertyLoaded(res.data);
+                }
+              },
+              error: (err: any) => console.error('Error fetching registration by id:', err)
+            });
+          }
+        } catch (e) {
+          console.error('Error decoding id', e);
+        }
+      }
+    });
+
+    const navState = history.state as { registrationData?: any };
+    if (navState?.registrationData) {
+      this.onPropertyLoaded(navState.registrationData);
+    }
+  }
+
+  onPropertyLoaded(data: any): void {
+    if (!data) return;
+    this.originalRegistrationDto = data;
+    if (data.propertyCode || data.allotteeCode) {
+      this.propertyCode = data.propertyCode || data.allotteeCode;
+    }
+    const statusId = data.applicationStatusId ?? data.statusId;
+    this.setVerificationStatus(statusId);
+  }
 
   private setVerificationStatus(statusId: number | null | undefined): void {
     if (statusId === 2 || statusId === 3 || statusId === 4) {
