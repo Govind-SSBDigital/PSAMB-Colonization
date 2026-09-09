@@ -976,7 +976,7 @@
     </form>
     <!-- preview  section  -->
     @if (showPreview && !readonlyMode && mode !== 'view') {
-    <div class="preview-modal-backdrop mt-2" (click)="closePreviewModal()">
+    <div class="preview-modal-backdrop" (click)="closePreviewModal()">
       <div id="preview-section" class="preview-modal-dialog" role="dialog" aria-modal="true"
         aria-labelledby="preview-modal-title" (click)="$event.stopPropagation()">
         <div class="preview-modal-header d-flex justify-content-between align-items-center">

@@ -413,11 +413,11 @@ tbody td {
   top: var(--dashboard-header-height, 64px);
   right: 0;
   bottom: var(--dashboard-footer-height, 72px);
-  left: 280px;
+  left: 0;
   z-index: 1025;
   background: rgba(15, 23, 42, 0.56);
   backdrop-filter: blur(3px);
-  padding: 0.85rem 1.25rem;
+  padding: 1.25rem 1.25rem 0.85rem;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -561,7 +561,7 @@ tbody td {
     top: var(--dashboard-header-height, 64px);
     left: 0;
     bottom: var(--dashboard-footer-height, 72px);
-    padding: 0.5rem;
+    padding: 0.75rem 0.5rem 0.5rem;
   }
 
   .preview-modal-dialog {
