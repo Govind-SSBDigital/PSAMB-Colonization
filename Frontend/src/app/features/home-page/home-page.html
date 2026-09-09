@@ -204,15 +204,9 @@
     <div class="photo-thumbnail-card flex-shrink-0 bg-white border rounded-3 shadow-sm overflow-hidden"
          *ngFor="let photo of photos; let i = index">
       <div class="photo-image-wrap position-relative overflow-hidden"
-           [class.skeleton]="!photo.loaded">
-        <img [src]="photo.image"
-             [alt]="photo.title"
-             width="400" height="200"
-             [loading]="i < 4 ? 'eager' : 'lazy'"
-             [attr.fetchpriority]="i < 2 ? 'high' : 'auto'"
-             decoding="async"
-             (load)="photo.loaded = true"
-             class="w-100 h-100 object-fit-cover">
+        [class.skeleton]="!photo.loaded">
+<img [ngSrc]="photo.image" [alt]="photo.title" width="400" height="200" [priority]="i === 0" decoding="async"
+    (load)="photo.loaded = true" class="w-100 h-100 object-fit-cover">
       </div>
     </div>
   </div>
