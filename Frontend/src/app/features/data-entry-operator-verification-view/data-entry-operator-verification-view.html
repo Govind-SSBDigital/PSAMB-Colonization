@@ -1,0 +1,87 @@
+<!-- header with staus section -->
+<div class="verification-container container-xxl pt-3">
+  <div class="card section-card bg-brand text-white">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+          <h5 class="mb-0 text-white">Property Registration Verification</h5>
+          <span class="badge verification-status-badge" [ngClass]="verificationStatusClass">
+            {{ verificationStatus }}
+          </span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-white-50 small">Property Code:</span>
+          <span class="text-white fw-semibold">{{ propertyCode || '—' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- deo component reuse section  -->
+
+<app-property-bidder-registration
+  [mode]="'view'"
+  [propertyCode]="propertyCode"
+  [hideActionButtons]="true"
+  (dataLoaded)="onPropertyLoaded($event)">
+</app-property-bidder-registration>
+
+<!-- approve and reject section -->
+<div class="verification-container container-xxl pb-4">
+  <form class="mt-2">
+
+    <!-- Read-only remarks: shown when status is Objection (7) -->
+    <div class="mb-3" *ngIf="showRemarksReadOnly">
+      <label class="form-label fw-bold text-uppercase text-success small mb-1">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i> Remarks
+      </label>
+      <div class="form-control form-control-sm rounded-3 bg-light text-danger" style="min-height: 72px; white-space: pre-wrap;">
+        {{ remarksReadOnly || 'No remarks provided.' }}
+      </div>
+    </div>
+
+    <!-- Action buttons: shown only when status is Pending (1) and not yet acted upon -->
+    <div *ngIf="showActionButtons && !isAlreadyVerified">
+
+      <div class="mb-3" *ngIf="activeDecision === 'sendback'">
+        <label class="form-label fw-bold text-uppercase text-success small mb-1">
+          Remarks <span class="text-danger">*</span>
+        </label>
+        <textarea
+          class="form-control form-control-sm rounded-3 custom-input-color"
+          rows="3"
+          [value]="remarksControl.value"
+          (input)="remarksControl.setValue($any($event.target).value)"
+          placeholder="Explain what needs to be corrected...">
+        </textarea>
+        <div class="text-danger small mt-1" *ngIf="showValidationHint && remarksControl.invalid">
+          Please add at least 10 characters explaining the required changes.
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center gap-2">
+        <button
+          type="button"
+          class="btn btn-danger btn-md px-4"
+          [disabled]="submitting"
+          (click)="handleSendBack()">
+          <span class="spinner-border spinner-border-sm me-1" *ngIf="submitting && activeDecision === 'sendback'"></span>
+          <i class="bi bi-arrow-counterclockwise me-1" *ngIf="!submitting || activeDecision !== 'sendback'"></i>
+          <span>Send Back</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-success btn-md px-4"
+          [disabled]="submitting"
+          (click)="handleApprove()">
+          <span class="spinner-border spinner-border-sm me-1" *ngIf="submitting && activeDecision === 'approve'"></span>
+          <i class="bi bi-check-circle-fill me-1" *ngIf="!submitting || activeDecision !== 'approve'"></i>
+          <span>Approve</span>
+        </button>
+      </div>
+
+    </div>
+  </form>
+</div>

@@ -316,7 +316,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.propertyDetails = null;
     this.showResults = false;
 
-    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo).subscribe({
+    this.service.GetBiderPropertyDetailsByMandiPlotAsync(mandiId, plotTypeId, plotNo).subscribe({
       next: (res: any) => {
         const d = res?.data ?? res ?? null;
         const apiSuccess = res?.success !== false;
@@ -369,6 +369,19 @@ export class PropertyBalanceCalculate implements OnInit {
     const num = Number(value);
     return Number.isFinite(num) ? num : 0;
   }
+
+  // private getMandiName(property: any): string {
+  //   const responseMandiName = property?.mandiName ?? property?.MandiName;
+  //   if (typeof responseMandiName === 'string' && responseMandiName.trim()) {
+  //     return responseMandiName;
+  //   }
+
+  //   const selectedMandi = this.mandis.find((mandi: any) =>
+  //     String(mandi.mandiId ?? mandi.id) === String(property?.mandiId)
+  //   );
+
+  //   return selectedMandi?.mandiName ?? selectedMandi?.name ?? '';
+  // }
 
   private buildBalanceDataFromResponse(d: any): PropertyBalanceResponse {
     if (!d) {
@@ -478,6 +491,7 @@ export class PropertyBalanceCalculate implements OnInit {
         allotteeCode: d.propertyCode ?? '',
         agencyName: 'Mandi Board',
         mandiName: d.mandiName ?? '',
+        // mandiName: this.getMandiName(d),
         nameOfAllottee: d.bidderName ?? '',
         plotNo: d.plotNo != null ? String(d.plotNo) : '',
         address: d.address ?? '',

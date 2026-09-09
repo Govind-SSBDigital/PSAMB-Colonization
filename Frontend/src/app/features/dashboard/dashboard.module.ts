@@ -53,12 +53,12 @@ import { Footer } from './footer/footer';
               import('../verification-view/verification-view.module')
                 .then((m) => m.VerificationViewModule),
           },
-          {
-            path: 'verification',
-            loadComponent: () =>
-              import('../deo-verification/deo-verification')
-                .then((m) => m.DeoVerification),
-          },
+          // {
+          //   path: 'verification',
+          //   loadComponent: () =>
+          //     import('../deo-verification/deo-verification')
+          //       .then((m) => m.DeoVerification),
+          // },
           {
             path: 'registration-status',
             loadComponent: () =>
@@ -88,6 +88,13 @@ import { Footer } from './footer/footer';
             loadComponent: () =>
               import('../../features/online-payment-detail/online-payment-detail')
                 .then((m) => m.OnlinePaymentDetail),
+          },
+          // deo verification view route 
+          {
+            path : 'verification',
+            loadComponent: () =>
+              import('../../features/data-entry-operator-verification-view/data-entry-operator-verification-view')
+                .then((m) => m.DataEntryOperatorVerificationView),
           },
           {
             path: 'coming-soon',
