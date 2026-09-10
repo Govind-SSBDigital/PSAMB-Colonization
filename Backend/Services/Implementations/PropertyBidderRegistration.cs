@@ -325,65 +325,95 @@ namespace Backend.Services.Implementations
         {
             try
             {
-                var registration = await _context.PropertyBidderRegistration
-                    .AsNoTracking()
-                    .Where(x => x.PropertyCode == propertyCode && x.IsActive && !x.IsDeleted)
-                    .Select(x => new PropertyBidderRegistrationDto
-                    {
-                        Id = x.Id,
-                        MandiId = x.MandiId,
-                        BranchId = x.BranchId,
-                        DistrictId = x.DistrictId,
-                        PropertyCode = x.PropertyCode,
-                        ApplicantId = x.ApplicantId,
-                        PlotTypeId = x.PlotTypeId,
-                        PlanId = x.PlanId,
-                        PlotSize = x.PlotSize,
-                        PlotNo = x.PlotNo,
-                        AssetResumed = x.AssetResumed,
-                        AssetSurrendered = x.AssetSurrendered,
-                        IsAssetLocked = x.IsAssetLocked,
-                        IsDefaulter = x.IsDefaulter,
-                        AnyComplaint = x.AnyComplaint,
-                        NdcGenerated = x.NdcGenerated,
-                        NdcIssued = x.NdcIssued,
-                        AssetVerified = x.AssetVerified,
-                        IsCourtCase = x.IsCourtCase,
-                        IsAuctioned = x.IsAuctioned,
-                        AuctionDate = x.AuctionDate,
-                        BidderTypeId = x.BidderTypeId,
-                        BidderName = x.BidderName,
-                        Email = x.Email,
-                        IsTransferred = x.IsTransferred,
-                        Relation = x.Relation,
-                        FatherOrHusbandName = x.FatherOrHusbandName,
-                        PANNo = x.PANNo,
-                        AadhaarNo = x.AadhaarNo,
-                        MobileNo = x.MobileNo,
-                        PropertyTypeId = x.PropertyTypeId,
-                        Address = x.Address,
-                        ReservePrice = x.ReservePrice,
-                        FinalBidPrice = x.FinalBidPrice,
-                        FormTransactionId = x.FormTransactionId,
-                        FormTxnDate = x.FormTxnDate,
-                        FormPaidAmount = x.FormPaidAmount,
-                        EmdTxnId = x.EmdTxnId,
-                        EmdDate = x.EmdDate,
-                        EmdAmount = x.EmdAmount,
-                        AllotmentTxnId = x.AllotmentTxnId,
-                        AllotmentDate = x.AllotmentDate,
-                        AllotmentTransactionDate= x.AllotmentTransactionDate,
-                        AllotmentAmount = x.AllotmentAmount,
-                        DueAmount = x.DueAmount,
-                        TotalDueWithInterest = x.TotalDueWithInterest,
-                        ApplicationStatusId = x.ApplicationStatusId,
-                        PlotStatus = x.PlotStatus,
-                        PropertyCategoryId = x.PropertyCategoryId,
-                        OwnerStateID=x.OwnerStateID,
-                        OwnerDistrtictID=x.OwnerDistrtictID,
-                        OwnerCityID=x.OwnerCityID
-                    })
-                    .FirstOrDefaultAsync();
+                var registration = await (
+                       from x in _context.PropertyBidderRegistration.AsNoTracking()
+                     
+                       join mandi in _context.MandiMaster.AsNoTracking()
+                           on x.MandiId equals mandi.MandiId
+                     
+                       join branch in _context.BranchMaster.AsNoTracking()
+                           on x.BranchId equals branch.BranchId
+                     
+                       where x.PropertyCode == propertyCode
+                             && x.IsActive
+                             && !x.IsDeleted
+                     
+                       select new PropertyBidderRegistrationDto
+                       {
+                           Id = x.Id,
+                     
+                           MandiId = x.MandiId,
+                           MandiName = mandi.MandiName,
+                     
+                           BranchId = x.BranchId,
+                           BranchName = branch.BranchName,
+                     
+                           DistrictId = x.DistrictId,
+                     
+                           PropertyCode = x.PropertyCode,
+                           ApplicantId = x.ApplicantId,
+                     
+                           PlotTypeId = x.PlotTypeId,
+                           PlanId = x.PlanId,
+                           PlotSize = x.PlotSize,
+                           PlotNo = x.PlotNo,
+                     
+                           AssetResumed = x.AssetResumed,
+                           AssetSurrendered = x.AssetSurrendered,
+                           IsAssetLocked = x.IsAssetLocked,
+                           IsDefaulter = x.IsDefaulter,
+                           AnyComplaint = x.AnyComplaint,
+                           NdcGenerated = x.NdcGenerated,
+                           NdcIssued = x.NdcIssued,
+                           AssetVerified = x.AssetVerified,
+                           IsCourtCase = x.IsCourtCase,
+                     
+                           IsAuctioned = x.IsAuctioned,
+                           AuctionDate = x.AuctionDate,
+                     
+                           BidderTypeId = x.BidderTypeId,
+                           BidderName = x.BidderName,
+                           Email = x.Email,
+                           IsTransferred = x.IsTransferred,
+                     
+                           Relation = x.Relation,
+                           FatherOrHusbandName = x.FatherOrHusbandName,
+                           PANNo = x.PANNo,
+                           AadhaarNo = x.AadhaarNo,
+                           MobileNo = x.MobileNo,
+                     
+                           PropertyTypeId = x.PropertyTypeId,
+                           Address = x.Address,
+                     
+                           ReservePrice = x.ReservePrice,
+                           FinalBidPrice = x.FinalBidPrice,
+                     
+                           FormTransactionId = x.FormTransactionId,
+                           FormTxnDate = x.FormTxnDate,
+                           FormPaidAmount = x.FormPaidAmount,
+                     
+                           EmdTxnId = x.EmdTxnId,
+                           EmdDate = x.EmdDate,
+                           EmdAmount = x.EmdAmount,
+                     
+                           AllotmentTxnId = x.AllotmentTxnId,
+                           AllotmentDate = x.AllotmentDate,
+                           AllotmentTransactionDate = x.AllotmentTransactionDate,
+                           AllotmentAmount = x.AllotmentAmount,
+                     
+                           DueAmount = x.DueAmount,
+                           TotalDueWithInterest = x.TotalDueWithInterest,
+                     
+                           ApplicationStatusId = x.ApplicationStatusId,
+                           PlotStatus = x.PlotStatus,
+                           PropertyCategoryId = x.PropertyCategoryId,
+                     
+                           OwnerStateID = x.OwnerStateID,
+                           OwnerDistrtictID = x.OwnerDistrtictID,
+                           OwnerCityID = x.OwnerCityID,
+                           Remarks=x.Remarks
+                       }
+                       ).FirstOrDefaultAsync();
 
                 if (registration == null)
                 {
@@ -2758,6 +2788,12 @@ namespace Backend.Services.Implementations
                         result.TotalDueWithInterest = reader["TotalDueWithInterest"] != DBNull.Value
                             ? Convert.ToDecimal(reader["TotalDueWithInterest"])
                             : 0;
+                        result.AllotmentDate = reader["AllotmentDate"] != DBNull.Value
+                           ? Convert.ToDateTime(reader["AllotmentDate"])
+                           : null;
+                        result.AuctionDate = reader["AuctionDate"] != DBNull.Value
+                                      ? Convert.ToDateTime(reader["AuctionDate"])
+                                      : null;
                     }
 
                     if (!isPropertyFound)

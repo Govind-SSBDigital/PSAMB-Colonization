@@ -1,4 +1,4 @@
-﻿using Backend.Services.Interfaces;
+using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -170,6 +170,46 @@ namespace Backend.Controllers
             {
                 return BadRequest(response);
             }
+            return Ok(response);
+        }
+
+        [HttpGet("GetPlotTypesByMandiId")]
+        public async Task<IActionResult> GetPlotTypesByMandiId(int mandiId)
+        {
+            var response = await _common.GetPlotTypesByMandiIdAsync(mandiId);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet("GetPlotNoByPlotTypeID")]
+        public async Task<IActionResult> GetPlotNoByPlotTypeID(int ploytypeid)
+        {
+            var response = await _common.GetPlotNoByPlotTypeID(ploytypeid);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet("GetPlotSizeByPlotNo")]
+        public async Task<IActionResult> GetPlotSizeByPlotNo(int plotNo)
+        {
+            var response = await _common.GetPlotSizeByPlotNo(plotNo);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet("GetPropertyDetailsByPlot")]
+        public async Task<IActionResult> GetPropertyDetailsByPlot(int? mandiId, int? plotTypeId, int? plotNo, string? plotSize)
+        {
+            var response = await _common.GetPropertyDetailsByPlot(mandiId, plotTypeId, plotNo, plotSize);
             return Ok(response);
         }
     }

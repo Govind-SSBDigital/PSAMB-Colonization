@@ -230,4 +230,35 @@ namespace Backend.Models.Dtos
     }
 
 
+    public class PlotNoDto
+    {
+        public int PlotTypeId { get; set; }
+        public int? PlotNo { get; set; }
+    }
+
+    public class PropertyOwnerDetailsDto
+    {
+        public int Id { get; set; }
+        public string? PropertyCode { get; set; }
+        public int MandiId { get; set; }
+        public int BranchId { get; set; }
+        public int DistrictId { get; set; }
+        public int? PlotTypeId { get; set; }
+        public int? PlotNo { get; set; }
+        public string? PlotSize { get; set; }
+        public string? CurrentOwnerName { get; set; }
+        public string? GuardianName { get; set; }
+        public string? MobileNumber { get; set; }
+        public string? Email { get; set; }
+        public int? State { get; set; }
+        public int? OwnerDistrict { get; set; }
+        public int? City { get; set; }
+        public string? Address { get; set; }
+        public string? AadhaarNumber { get; set; }
+        public string? PanNo { get; set; }
+        public string? AadhaarDocPath { get; set; }
+        public string? PanDocPath { get; set; }
+        public string? AddrDocPath { get; set; }
+        public string? PhotoPath { get; set; }
+    }
 }
