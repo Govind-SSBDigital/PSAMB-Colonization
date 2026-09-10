@@ -127,7 +127,60 @@ export class DataEntryOperatorVerificationView implements OnInit {
       data.comment ??
       data.Comment ??
       null;
+    this.checkVerificationStatus(statusId);
+  }
+
+  private canCurrentRoleAct(statusId: number | null | undefined): boolean {
+    const role = this.userRole.trim().toLowerCase();
+
+    if (role.includes('senior assistant')) {
+      return statusId === 2;
+    }
+    if (role.includes('superintendent')) {
+      return statusId === 3;
+    }
+    if (role.includes('deputy director')) {
+      return statusId === 4;
+    }
+    if (role.includes('director')) {
+      return statusId === 5;
+    }
+
+    // Clerk is the first approval stage and also handles an uninitialised status.
+    return role.includes('clerk') || role.includes('data entry operator')
+      ? statusId === 1 || statusId == null
+      : statusId === 1 || statusId == null;
+  }
+
+  private getApprovedStatusForCurrentRole(): number {
+    const role = this.userRole.trim().toLowerCase();
+
+    if (role.includes('senior assistant')) return 3;
+    if (role.includes('superintendent')) return 4;
+    if (role.includes('deputy director')) return 5;
+    if (role.includes('director')) return 6;
+    return 2;
+  }
+
+  private checkVerificationStatus(statusId: number | null | undefined): void {
     this.setVerificationStatus(statusId);
+    this.isAlreadyVerified = !this.canCurrentRoleAct(statusId);
+
+    if (this.isAlreadyVerified) {
+      const existingRemarks = this.remarksReadOnly ||
+        this.originalRegistrationDto?.clerkRemarks || '';
+      this.remarksReadOnly = existingRemarks || null;
+      this.remarksControl.setValue(existingRemarks);
+      this.remarksControl.disable({ emitEvent: false });
+      return;
+    }
+
+    this.activeDecision = null;
+    this.showValidationHint = false;
+    this.remarksControl.enable({ emitEvent: false });
+    this.remarksControl.clearValidators();
+    this.remarksControl.addValidators(Validators.maxLength(500));
+    this.remarksControl.updateValueAndValidity({ emitEvent: false });
   }
 
   private setVerificationStatus(statusId: number | null | undefined): void {
@@ -158,8 +211,8 @@ export class DataEntryOperatorVerificationView implements OnInit {
       this.verificationStatusClass = 'status-pending';
     }
 
-    // Show buttons only when Pending (1)
-    this.showActionButtons = (statusId === 1 || statusId == null);
+    // The action area is shared by all approval roles; eligibility is role-based.
+    this.showActionButtons = true;
 
     // Show read-only remarks when Objection (7)
     this.showRemarksReadOnly = (statusId === 7);
@@ -208,7 +261,10 @@ export class DataEntryOperatorVerificationView implements OnInit {
         this.toastr.success(`Application has been successfully ${actionText}!`, 'Success');
 
         this.isAlreadyVerified = true;
-        this.setVerificationStatus(this.activeDecision === 'approve' ? 2 : 7);
+        const nextStatus = this.activeDecision === 'approve'
+          ? this.getApprovedStatusForCurrentRole()
+          : 7;
+        this.setVerificationStatus(nextStatus);
         this.remarksControl.disable({ emitEvent: false });
 
         const entry: VerificationHistoryEntry = {
@@ -241,14 +297,24 @@ export class DataEntryOperatorVerificationView implements OnInit {
   }
 
   handleApprove(): void {
-  this.activeDecision = 'approve';
-  this.submitDecision();
-}
-handleSendBack(): void {
-  if (this.activeDecision !== 'sendback') {
-    this.activeDecision = 'sendback';
-  } else {
+    this.activeDecision = 'approve';
+    this.remarksControl.setValidators([Validators.maxLength(500)]);
+    this.remarksControl.updateValueAndValidity({ emitEvent: false });
     this.submitDecision();
   }
-}
+
+  handleSendBack(): void {
+    if (this.activeDecision !== 'sendback') {
+      this.activeDecision = 'sendback';
+      this.showValidationHint = false;
+      this.remarksControl.setValidators([
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(500),
+      ]);
+      this.remarksControl.updateValueAndValidity({ emitEvent: false });
+    } else {
+      this.submitDecision();
+    }
+  }
 }
