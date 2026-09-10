@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260909052321_addnewtableforuserregn")]
+    partial class addnewtableforuserregn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1364,14 +1367,14 @@ namespace Backend.Migrations
                     b.Property<string>("AllotteeAddress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AllotteeCityId")
-                        .HasColumnType("int");
+                    b.Property<long?>("AllotteeCityId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("AllotteeCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AllotteeDistrictId")
-                        .HasColumnType("int");
+                    b.Property<long?>("AllotteeDistrictId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("AllotteeEmail")
                         .HasColumnType("nvarchar(max)");
@@ -1385,14 +1388,14 @@ namespace Backend.Migrations
                     b.Property<int?>("AllotteeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("AllotteeMobileNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long?>("AllotteeMobileNo")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("AllotteeName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AllotteeStateId")
-                        .HasColumnType("int");
+                    b.Property<long?>("AllotteeStateId")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("AssetID")
                         .HasColumnType("int");
@@ -1465,12 +1468,6 @@ namespace Backend.Migrations
 
                     b.Property<int?>("PaymentModeId")
                         .HasColumnType("int");
-
-                    b.Property<int?>("PlotNo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlotSize")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PlotTypeId")
                         .HasColumnType("int");
