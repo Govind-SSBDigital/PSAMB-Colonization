@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +32,7 @@ interface PhotoItem {
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, NgOptimizedImage, MatIconModule, MatButtonModule],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
@@ -64,12 +64,16 @@ export class HomePage {
   ];
 
   photos: PhotoItem[] = [
-    { id: 1, title: 'Mandi Image', image: 'assets/Mandi1.webp' },
-    { id: 2, title: 'Mandi Image', image: 'assets/Mandi2.webp' },
-    { id: 3, title: 'Mandi Image', image: 'assets/Mandi3.webp' },
-    { id: 4, title: 'Mandi Image', image: 'assets/Mandi6.webp' },
-    { id: 5, title: 'Mandi Image', image: 'assets/Mandi7.webp' },
-    { id: 6, title: 'Mandi Image', image: 'assets/Mandi8.webp' },
+    { id: 1, title: 'Mandi Image', image: 'assets/Mandi1.JPG' },
+    { id: 2, title: 'Mandi Image', image: 'assets/Mandi2.JPG' },
+    { id: 3, title: 'Mandi Image', image: 'assets/Mandi3.JPG' },
+    { id: 4, title: 'Mandi Image', image: 'assets/Mandi4.JPG' },
+    { id: 5, title: 'Mandi Image', image: 'assets/Mandi5.JPG' },
+    { id: 6, title: 'Mandi Image', image: 'assets/Mandi6.JPG' },
+    { id: 7, title: 'Mandi Image', image: 'assets/Mandi7.JPG' },
+    { id: 8, title: 'Mandi Image', image: 'assets/Mandi8.jpg' },
+    { id: 9, title: 'Mandi Image', image: 'assets/Mandi9.jpg' },
+    { id: 10, title: 'Mandi Image', image: 'assets/Mandi10.webp' },
   ];
 
   leadershipShortlist = [

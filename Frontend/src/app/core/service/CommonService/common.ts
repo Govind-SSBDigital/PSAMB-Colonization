@@ -62,4 +62,19 @@ export class Common {
   getMenuItemsByRole(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Auth/profile`);
   }
+  GetPlotTypesByMandiId(mandiId: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/GetPlotTypesByMandiId`, { params: { mandiId } });
+  }
+
+  GetPlotNoByPlotTypeID(ploytypeid: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/GetPlotNoByPlotTypeID`, { params: { ploytypeid } });
+  }
+
+  GetPlotSizeByPlotNo(plotNo: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/GetPlotSizeByPlotNo`, { params: { plotNo } });
+  }
+
+  GetPropertyDetailsByPlot(mandiId: any, plotTypeId: any, plotNo: any, plotSize: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/GetPropertyDetailsByPlot`, { params: { mandiId, plotTypeId, plotNo, plotSize } });
+  }
 }

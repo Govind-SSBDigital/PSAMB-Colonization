@@ -48,41 +48,39 @@ namespace Backend.Services.Implementations
         {
             try
             {
-                if (string.IsNullOrEmpty(dto.PropertyCode))
-                {
-                    dto.PropertyCode = await GeneratePropertyCode(dto.DistrictId, dto.BranchId, dto.MandiId, dto.PlotNo);
-                }
-                //var data = _context.PropertyBidderRegistration.Where(x => x.PropertyCode == dto.PropertyCode).FirstOrDefault();
-                //if (data != null)
+                //if (string.IsNullOrEmpty(dto.PropertyCode))
                 //{
-                //    return ApiResponse<UserPropertyRegistrationDto>.Fail("Data already exists for this allottee code.");
+                //    dto.PropertyCode = await GeneratePropertyCode(dto.DistrictId, dto.BranchId, dto.MandiId, dto.PlotNo);
                 //}
+                var data = _context.PropertyBidderRegistration.Where(x => x.PropertyCode == dto.PropertyCode).FirstOrDefault();
+                if (data != null)
+                {
+                    return ApiResponse<UserPropertyRegistrationDto>.Fail("Data already exists for this allottee code.");
+                }
 
-                var entity = new Models.Entities.PropertyBidderRegistration
+                var entity = new Models.Entities.UserPropertyRegistration
                 {
                     MandiId = dto.MandiId,
                     BranchId = dto.BranchId,
                     DistrictId = dto.DistrictId,
-                    PropertyCode = dto.PropertyCode,
+                    AllotteeCode = dto.PropertyCode,
                     PlotTypeId = dto.PlotTypeId,
-                    ApplicantId = dto.ApplicantId ?? 0,
-                    PlanId = dto.PlanId,
+                    CreatedBy = dto.ApplicantId ?? 0,
                     PlotSize = dto.PlotSize,
                     PlotNo = dto.PlotNo,
-                    BidderName = dto.CurrentOwnerName,
-                    Email = dto.Email,
-                    FatherOrHusbandName = dto.FatherHusbandName,
-                    PANNo = dto.PanNumber,
-                    AadhaarNo = dto.AadhaarNumber,
-                    MobileNo = dto.MobileNumber,
-                    OwnerStateID = dto.OwnerStateID,
-                    OwnerDistrtictID = dto.OwnerDistrtictID,
-                    OwnerCityID = dto.OwnerCityID,
-                    Address = dto.Address,
-                    IsUser = true
+                    AllotteeName = dto.CurrentOwnerName,
+                    AllotteeEmail = dto.Email,
+                    AllotteeFatherName = dto.FatherHusbandName,
+                    PanNumber = dto.PanNumber,
+                    AadharNumber = dto.AadhaarNumber,
+                    AllotteeMobileNo = dto.MobileNumber,
+                    AllotteeStateId = dto.OwnerStateID,
+                    AllotteeDistrictId = dto.OwnerDistrtictID,
+                    AllotteeCityId = dto.OwnerCityID,
+                    AllotteeAddress = dto.Address,
                 };
 
-                _context.PropertyBidderRegistration.Add(entity);
+                _context.UserPropertyRegistration.Add(entity);
                 await _context.SaveChangesAsync();
 
                 return ApiResponse<UserPropertyRegistrationDto>.Ok(dto, "Property registered successfully");

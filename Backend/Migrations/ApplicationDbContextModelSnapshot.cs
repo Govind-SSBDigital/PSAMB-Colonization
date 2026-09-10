@@ -1350,6 +1350,184 @@ namespace Backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Backend.Models.Entities.UserPropertyRegistration", b =>
+                {
+                    b.Property<int>("KnowyourPropertyAllotteeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KnowyourPropertyAllotteeId"));
+
+                    b.Property<string>("AadharNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllotteeAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AllotteeCityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AllotteeCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AllotteeDistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AllotteeEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllotteeFatherName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllotteeIDProof")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AllotteeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AllotteeMobileNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllotteeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AllotteeStateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssetID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssetSizeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BForm")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConveyanceDeed")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdProofDoc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LevelId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("MandiCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MandiId")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("ModifiedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("NOC")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PanDocument")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PanNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportDocument")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentChallanId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentMode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentModeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PlotNo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlotSize")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlotTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PropertyCategory")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PropertySubCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PropertyType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReceiptDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReceiptDocument")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SaleDeed")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Share")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TotalPaidAmount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransferOrder")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UploadAllotmentLetter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UploadNoDuesCertificate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("upload1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("upload2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("KnowyourPropertyAllotteeId");
+
+                    b.ToTable("UserPropertyRegistration");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")

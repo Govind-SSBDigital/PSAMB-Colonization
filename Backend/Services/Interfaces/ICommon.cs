@@ -1,4 +1,4 @@
-﻿using Backend.Helpers;
+using Backend.Helpers;
 using Backend.Models.Dtos;
 using Backend.Models.DTOs;
 using static Backend.Models.Dtos.DistrictMasterDto;
@@ -19,5 +19,9 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<List<BidderTypeDto>>> GetBidderTypesAsync();
         Task<ApiResponse<List<ApplicationStatusDto>>> GetApplicationStatusesAsync();
         Task<ApiResponse<List<PropertyCategoryDto>>> GetPropertyCategoriesAsync();
+        Task<ApiResponse<List<PlotTypeDto>>> GetPlotTypesByMandiIdAsync(int mandiId);
+        Task<ApiResponse<List<PlotNoDto>>> GetPlotNoByPlotTypeID(int ploytypeid);
+        Task<ApiResponse<List<PlotSizeDto>>> GetPlotSizeByPlotNo(int plotNo);
+        Task<ApiResponse<PropertyOwnerDetailsDto>> GetPropertyDetailsByPlot(int? mandiId, int? plotTypeId, int? plotNo, string? plotSize);
     }
 }

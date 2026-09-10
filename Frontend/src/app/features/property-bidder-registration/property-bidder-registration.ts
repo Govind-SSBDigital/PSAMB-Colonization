@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -39,7 +39,7 @@ export interface InstallmentScheduleView {
   templateUrl: './property-bidder-registration.html',
   styleUrl: './property-bidder-registration.scss',
 })
-export class PropertyBidderRegistration implements OnInit, OnDestroy {
+export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges {
 
   registerationForm!: FormGroup;
 
@@ -100,7 +100,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     'accumulatedInterest',
   ];
 
-  mode: 'view' | 'edit' | 'create' = 'create';
+  @Input() mode: 'view' | 'edit' | 'create' = 'create';
+  @Input() propertyCode: string = '';
+  @Input() hideActionButtons: boolean = false;
+  @Output() dataLoaded = new EventEmitter<any>();
+
   readonlyMode = false;
   showPreview = false;
   previewConfirmed = false;
@@ -685,7 +689,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
     });
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      const mode = params['mode'] as string;
+      const mode = (params['mode'] as string) || this.mode;
       const propertyCode = params['propertyCode'] as string;
       this.setMode(mode);
       if (propertyCode) {
@@ -693,6 +697,23 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
         this.onSearch();
       }
     });
+
+    if (this.propertyCode && !this.route.snapshot.queryParams['propertyCode']) {
+      this.setMode(this.mode);
+      this.registerationForm.patchValue({ propertycode: this.propertyCode }, { emitEvent: false });
+      this.onSearch();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['mode'] && this.mode) {
+      this.setMode(this.mode);
+    }
+    if (changes['propertyCode'] && this.propertyCode && !changes['propertyCode'].firstChange) {
+      this.registerationForm.patchValue({ propertycode: this.propertyCode }, { emitEvent: false });
+      this.setMode(this.mode);
+      this.onSearch();
+    }
   }
 
   loadPropertyDistricts(callback?: () => void) {
@@ -1550,6 +1571,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
       }
       this.updateBidderNameValidators();
       this.setMode(this.mode);
+      this.dataLoaded.emit(d);
       this.toastr.success('Record found and loaded successfully.', 'Success');
     };
 
@@ -2294,6 +2316,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy {
   }
 
   letshowPreview(): void {
+    if (this.readonlyMode || this.mode === 'view') {
+      return;
+    }
     this.updateAuctionValidators(!!this.registerationForm.get('isAuctioned')?.value);
     this.registerationForm.markAllAsTouched();
 

@@ -16,6 +16,7 @@ interface PropertyVerificationModel {
   label: 'User' | 'DEO';
   firstName?: string;
   applicationStatusId?: number;
+  registrationData?: Record<string, unknown>;
 }
 
 @Component({
@@ -90,10 +91,8 @@ export class PropertyVerification implements OnInit {
   GetPendingForClerk(searchCode?: string) {
 
     const roleName = this.getUserRole();
-    console.log('Current Role:', roleName);
     this.service.GetPendingForClerk(searchCode).subscribe({
       next: (res: any) => {
-        // console.log('API prop Types:', res);
         const rawData = res.data || res || [];
         this.propertyList = rawData.map((d: any) => ({
           id: d.id,
@@ -108,7 +107,8 @@ export class PropertyVerification implements OnInit {
           label: d.label || 'User',
           firstName: d.firstName,
           applicationStatusId: d.applicationStatusId,
-          roleName: roleName
+          roleName: roleName,
+          registrationData: d,
         }));
         this.buildFilterOptions();
         this.applyFilter();
@@ -129,11 +129,6 @@ export class PropertyVerification implements OnInit {
       }
 
       const user = JSON.parse(cpMenus);
-
-      console.log('cp_menus:', user);
-      console.log('profile:', user?.profile);
-      console.log('roles:', user?.profile?.roles);
-
       return user?.profile?.roles?.[0] || '';
 
     } catch (error) {
@@ -265,7 +260,10 @@ export class PropertyVerification implements OnInit {
   viewDetails(property: PropertyVerificationModel): void {
     const targetRoute = property.label === 'DEO' ? '/verification' : '/verification-view';
     const encryptedId = btoa(property.id.toString());
-    this.router.navigate([targetRoute], { queryParams: { id: encryptedId } });
+    this.router.navigate([targetRoute], {
+      queryParams: { id: encryptedId },
+      state: { registrationData: property.registrationData },
+    });
   }
   viewHistory(property: PropertyVerificationModel): void {
   }
