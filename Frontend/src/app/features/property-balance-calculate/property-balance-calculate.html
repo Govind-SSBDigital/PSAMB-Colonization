@@ -141,36 +141,37 @@
                     {{ balanceData.propertyInfo.allotteeCode }}
                 </p>
                 <p class="mb-2">
-                    <span class="fw-semibold">Mandi Name :</span> {{ balanceData.propertyInfo.mandiName }}
-                </p>
-                <p class="mb-2">
-                    <span class="fw-semibold">Size of Plot :</span> {{ balanceData.propertyInfo.sizeOfPlot }}
-                </p>
-                <p class="mb-0">
-                    <span class="fw-semibold">Allotment Date :</span>
-                    {{ balanceData.propertyInfo.allotmentDate }}
+                    <span class="fw-semibold">Name of Allottee :</span>
+                    {{ balanceData.propertyInfo.nameOfAllottee }}
                 </p>
                 <p class="mb-0 mt-2">
                     <span class="fw-semibold">Auction Date :</span> {{ balanceData.propertyInfo.auctionDate }}
                 </p>
-            </div>
-            <div class="col-md-6">
-                <p class="mb-2">
-                    <span class="fw-semibold">Agency Name :</span> {{ balanceData.propertyInfo.agencyName }}
-                </p>
-                <p class="mb-2">
-                    <span class="fw-semibold">Name of Allottee :</span>
-                    {{ balanceData.propertyInfo.nameOfAllottee }}
-                </p>
-                <p class="mb-2">
-                    <span class="fw-semibold">Address :</span> {{ balanceData.propertyInfo.address }}
-                </p>
-                <p class="mb-0">
-                    <span class="fw-semibold">Plot Type :</span> {{ balanceData.propertyInfo.plotType }}
+                <p class="mb-0 mt-2">
+                    <span class="fw-semibold">Allotment Date :</span>
+                    {{ balanceData.propertyInfo.allotmentDate }}
                 </p>
                 <p class="mb-0 mt-2">
                     <span class="fw-semibold">Allotment Amount(Rs.) :</span>
                     ₹{{ balanceData.propertyInfo.allotmentAmount | number }}
+                </p>
+            </div>
+            <div class="col-md-6">
+                 <p class="mb-2">
+                    <span class="fw-semibold">Mandi Name :</span> {{ balanceData.propertyInfo.mandiName }}
+                </p>
+                 <p class="mb-2">
+                    <span class="fw-semibold">Plot Type :</span> {{ balanceData.propertyInfo.plotType }}
+                </p>
+                <p class="mb-2">
+                    <span class="fw-semibold">Plot Number :</span> {{ balanceData.propertyInfo.plotNo }}
+                </p>
+                <p class="mb-2">
+                    <span class="fw-semibold">Size of Plot :</span> {{ balanceData.propertyInfo.sizeOfPlot }}
+                </p>
+                
+                <p class="mb-0">
+                    <span class="fw-semibold">Address :</span> {{ balanceData.propertyInfo.address }}
                 </p>
             </div>
         </div>

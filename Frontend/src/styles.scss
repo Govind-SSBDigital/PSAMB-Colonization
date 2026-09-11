@@ -105,3 +105,12 @@ body {
   border-color: var(--theme-primary-alpha) !important;
   box-shadow: none !important;
 }
+.p-confirmdialog .p-confirmdialog-accept-button {
+  background: var(--theme-forest-dark);
+  border-color: var(--theme-forest-dark);
+}
+
+.p-confirmdialog .p-confirmdialog-accept-button:hover {
+  background: var(--theme-forest-dark);
+  border-color: var(--theme-forest-dark);
+}

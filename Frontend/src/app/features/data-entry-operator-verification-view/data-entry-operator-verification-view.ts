@@ -6,6 +6,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Common } from '../../core/service/CommonService/common';
 import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 export interface VerificationHistoryEntry {
   role: string;
@@ -19,7 +21,8 @@ export interface VerificationHistoryEntry {
 @Component({
   selector: 'app-data-entry-operator-verification-view',
   standalone: true,
-  imports:[PropertyBidderRegistrationModule, CommonModule, ReactiveFormsModule],
+  imports: [PropertyBidderRegistrationModule, CommonModule, ReactiveFormsModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   templateUrl: './data-entry-operator-verification-view.html',
   styleUrl: './data-entry-operator-verification-view.scss',
 })
@@ -41,6 +44,7 @@ export class DataEntryOperatorVerificationView implements OnInit {
   private readonly router = inject(Router);
   private readonly service = inject(Propertybidderregn);
   private readonly commonService = inject(Common);
+  private readonly confirmationService = inject(ConfirmationService);
 
   showValidationHint = false;
   currentStage = 'Clerk';
@@ -297,10 +301,26 @@ export class DataEntryOperatorVerificationView implements OnInit {
   }
 
   handleApprove(): void {
-    this.activeDecision = 'approve';
-    this.remarksControl.setValidators([Validators.maxLength(500)]);
-    this.remarksControl.updateValueAndValidity({ emitEvent: false });
-    this.submitDecision();
+    this.confirmationService.confirm({
+      header: 'Confirm Approval',
+      message: 'Are you sure you want to approve this property registration?',
+      icon: 'fa-solid fa-circle-question text-success fs-4 me-2',
+      acceptLabel: 'Approve',
+      rejectLabel: 'Cancel',
+      acceptButtonProps: {
+        severity: 'primary',
+      },
+      rejectButtonProps: {
+        severity: 'secondary',
+        outlined: true
+      },
+      accept: () => {
+        this.activeDecision = 'approve';
+        this.remarksControl.setValidators([Validators.maxLength(500)]);
+        this.remarksControl.updateValueAndValidity({ emitEvent: false });
+        this.submitDecision();
+      }
+    });
   }
 
   handleSendBack(): void {
