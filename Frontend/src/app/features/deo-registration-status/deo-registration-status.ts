@@ -8,7 +8,7 @@ import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnServi
 interface RegistrationRecord {
   allotteeCode: string;
   allotteeName: string;
-  approvalStatus: 'Approved' | 'Rejected' | 'Pending' | 'Objection';
+  approvalStatus: 'Approved' | 'Rejected' | 'Pending' | 'Objection' | 'Verified' | string;
   remarks: string;
 }
 
@@ -83,13 +83,8 @@ export class DeoRegistrationStatus implements OnInit {
   }
 
   setStatusFilter(status: string): void {
-    if (status === '') {
-      this.selectedFilter = '';
-    } else if (this.selectedFilter.trim().toLowerCase() === status.trim().toLowerCase()) {
-      this.selectedFilter = '';
-    } else {
+    // Always apply the selected status; only the 'Records' (empty) button clears the filter
       this.selectedFilter = status;
-    }
     this.pageIndex = 0;
     this.applyFilters();
     this.updatePagedList();
@@ -107,7 +102,16 @@ export class DeoRegistrationStatus implements OnInit {
         (item.allotteeName || '').toLowerCase().includes(term);
 
       const itemStatus = (item.approvalStatus || '').trim().toLowerCase();
-      const matchesStatus = filterStatus === '' || itemStatus === filterStatus;
+
+      let matchesStatus: boolean;
+      if (filterStatus === '') {
+        matchesStatus = true;
+      } else if (filterStatus === 'approved/verified') {
+        // Combined filter: matches any status containing 'approved' OR 'verified'
+        matchesStatus = itemStatus.includes('approved') || itemStatus.includes('verified');
+      } else {
+        matchesStatus = itemStatus.includes(filterStatus);
+      }
 
       return matchesSearch && matchesStatus;
     });
@@ -117,16 +121,19 @@ export class DeoRegistrationStatus implements OnInit {
     return this.registrationList.length;
   }
 
-  getApprovedCount(): number {
-    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase() === 'approved').length;
-  }
-
   getPendingCount(): number {
-    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase() === 'pending').length;
+    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase().includes('pending')).length;
   }
 
   getObjectionCount(): number {
-    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase() === 'objection').length;
+    return this.registrationList.filter(item => (item.approvalStatus || '').trim().toLowerCase().includes('objection')).length;
+  }
+
+  getApprovedOrVerifiedCount(): number {
+    return this.registrationList.filter(item => {
+      const s = (item.approvalStatus || '').trim().toLowerCase();
+      return s.includes('approved') || s.includes('verified');
+    }).length;
   }
 
   getStatusClass(status: string | null | undefined): string {

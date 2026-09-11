@@ -17,10 +17,10 @@
           </button>
           <button type="button"
             class="summary-chip summary-chip-approved rounded-3"
-            [class.active]="selectedFilter.toLowerCase() === 'approved'"
-            (click)="setStatusFilter('Approved')"
-            title="Filter by Approved">
-            {{ getApprovedCount() }} Approved
+            [class.active]="selectedFilter.toLowerCase() === 'approved/verified'"
+            (click)="setStatusFilter('Approved/Verified')"
+            title="Filter by Verified">
+            {{ getApprovedOrVerifiedCount() }} Verified
           </button>
           <button type="button"
             class="summary-chip summary-chip-objection rounded-3"
