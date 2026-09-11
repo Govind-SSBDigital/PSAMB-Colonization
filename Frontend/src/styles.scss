@@ -96,7 +96,10 @@ body {
   box-shadow: none !important;
   border-color: var(--theme-primary-alpha) !important;
 }
-.custom-checkbox-color:focus,
+.custom-checkbox-color:focus {
+  box-shadow: none !important;
+  border-color: var(--theme-primary-alpha) !important;
+}
 .custom-checkbox-color:checked {
   background-color: var(--theme-primary-alpha) !important;
   border-color: var(--theme-primary-alpha) !important;

@@ -642,7 +642,7 @@ export class SignupSignin implements OnInit {
     }
   }
   completeRegistration() {
-    debugger;
+    // debugger;
     this.closeOtpModal();
 
     // Backend ke hisaab se request banao
