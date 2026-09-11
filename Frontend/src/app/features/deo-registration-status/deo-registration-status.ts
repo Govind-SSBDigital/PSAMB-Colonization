@@ -143,7 +143,9 @@ export class DeoRegistrationStatus implements OnInit {
     this.router.navigate(['/property-bidder-registration'], {
       queryParams: {
         mode: 'view',
-        propertyCode: item.allotteeCode
+        propertyCode: item.allotteeCode,
+        approvalStatus: item.approvalStatus || '',
+        remarks: item.remarks || ''
       }
     });
   }
