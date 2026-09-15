@@ -11,6 +11,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { Navbar } from './features/navbar/navbar';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { Footer } from './features/footer/footer';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 import { MainLayout } from './layouts/main-layout/main-layout';
 @NgModule({
   declarations: [App, MainLayout],
@@ -26,6 +28,11 @@ import { MainLayout } from './layouts/main-layout/main-layout';
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: Aura
+      }
+    }),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

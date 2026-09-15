@@ -78,6 +78,12 @@
       color: #075985;
       border-color: #bae6fd;
     }
+
+    &.summary-chip-verified {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #6ee7b7;
+    }
   }
 }
 
@@ -95,6 +101,10 @@
 
 .summary-chip-total {
   color: #e0f2fe;
+}
+
+.summary-chip-verified {
+  color: #d1fae5;
 }
 
 .table-deo-status thead th {

@@ -269,8 +269,8 @@
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
             <div>
               <h3 class="h5 mb-1">Has this asset been Auctioned?</h3>
-              <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment
-                Milestone panels.</p>
+              <!-- <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment
+                Milestone panels.</p> -->
             </div>
             <div
               class="form-check form-check-reverse form-switch d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 px-3 py-2 m-0">
@@ -974,6 +974,16 @@
           [disabled]="registerationForm.invalid">Preview</button>
       </div>
     </form>
+
+ <div class="mb-3" *ngIf="showRemarksReadOnly">
+      <label class="form-label fw-bold text-uppercase text-success small mb-1">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i> Remarks
+      </label>
+      <div class="form-control form-control-sm rounded-3 bg-light text-danger" style="min-height: 72px; white-space: pre-wrap;">
+        {{ remarksReadOnly || 'No remarks provided.' }}
+      </div>
+    </div>
+
     <!-- preview  section  -->
     @if (showPreview && !readonlyMode && mode !== 'view') {
     <div class="preview-modal-backdrop" (click)="closePreviewModal()">
@@ -1069,8 +1079,8 @@
               <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                 <div>
                   <h3 class="h5 mb-1">Has this asset been Auctioned?</h3>
-                  <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment
-                    Milestone panels.</p>
+                  <!-- <p class="small text-white-50 mb-0">Enabling this will expand the Bidder Registration &amp; Payment
+                    Milestone panels.</p> -->
                 </div>
                 <div
                   class="form-check form-check-reverse form-switch d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 px-3 py-2 m-0">
