@@ -49,16 +49,19 @@ export interface PropertyBidderRegistrationModel {
   formFeeTransactionId: string;
   formFeeTransactionDate: string;
   formFeePaidAmount: number;
+  formFees?: FormFeeDetail[];
 
   // EMD Details
   emdTransactionId: string;
   emdTransactionDate: string;
   emdPaidAmount: number;
+  emdFees?: EmdFeeDetail[];
 
   // 25% Allotment Details
   allotmentTransactionId: string;
   allotmentTransactionDate: string;
   allotmentPaidAmount: number;
+  allotmentFees?: AllotmentFeeDetail[];
 
   // Outstanding Dues
   installmentNo: string;
@@ -137,16 +140,19 @@ export interface PropertyBidderRegistrationModel {
   formFeeTransactionId: string;
   formFeeTransactionDate: string;
   formFeePaidAmount: number;
+  formFees?: FormFeeDetail[];
 
   // EMD Details
   emdTransactionId: string;
   emdTransactionDate: string;
   emdPaidAmount: number;
+  emdFees?: EmdFeeDetail[];
 
   // 25% Allotment Details
   allotmentTransactionId: string;
   allotmentTransactionDate: string;
   allotmentPaidAmount: number;
+  allotmentFees?: AllotmentFeeDetail[];
 
   // Outstanding Dues
   installmentNo: string;
@@ -157,6 +163,26 @@ export interface PropertyBidderRegistrationModel {
   totalDueAmount: number;
 
   installmentSchedules?: InstallmentScheduleView[];
+}
+
+export interface FormFeeDetail {
+  formTransactionId?: string;
+  formTxnDate?: string;
+  formPaidAmount?: number | string;
+}
+
+export interface EmdFeeDetail {
+  emdTxnId?: string;
+  emdDate?: string;
+  emdAmount?: number | string;
+}
+
+export interface AllotmentFeeDetail {
+  allotmentTxnId?: string;
+  allotmentDate?: string;
+  allotmentTransactionDate?: string;
+  allotmentAmount?: number | string;
+  allotmentPaidAmount?: number | string;
 }
 
 export interface PropertySearchRequest {

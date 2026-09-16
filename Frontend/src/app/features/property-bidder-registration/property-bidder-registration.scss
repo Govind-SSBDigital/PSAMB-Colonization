@@ -239,6 +239,20 @@ textarea.form-control {
   border-color: rgba(var(--theme-primary-rgb), 0.2) !important;
 }
 
+.financial-panel .btn-outline-success {
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--theme-primary);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+}
+
 .input-group .btn,
 .form-actions .btn {
   min-height: 44px;

@@ -32,6 +32,23 @@ export interface InstallmentScheduleView {
   interestAmount: number;
   totalWithInterest: number;
 }
+export interface FormFeeItem {
+  formTransactionId?: string;
+  formTxnDate?: string;
+  formPaidAmount?: number | string;
+}
+
+export interface EmdFeeItem {
+  emdTxnId?: string;
+  emdDate?: string;
+  emdAmount?: number | string;
+}
+
+export interface AllotmentFeeItem {
+  allotmentTxnId?: string;
+  allotmentTransactionDate?: string;
+  allotmentAmount?: number | string;
+}
 
 @Component({
   selector: 'app-property-bidder-registration',
@@ -198,6 +215,180 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
   }
 
   receiptList: Receipt[] = [];
+
+  formFeeList: FormFeeItem[] = [
+    { formTransactionId: '', formTxnDate: '', formPaidAmount: '' }
+  ];
+  isFormFeesExpanded: boolean = false;
+
+  get visibleFormFees(): FormFeeItem[] {
+    if (!this.formFeeList || this.formFeeList.length === 0) {
+      this.formFeeList = [{
+        formTransactionId: this.registerationForm.get('formTransactionId')?.value || '',
+        formTxnDate: this.registerationForm.get('formTxnDate')?.value || '',
+        formPaidAmount: this.registerationForm.get('formPaidAmount')?.value || ''
+      }];
+    }
+    return this.isFormFeesExpanded ? this.formFeeList : this.formFeeList.slice(0, 1);
+  }
+
+  toggleFormFeesExpansion(): void {
+    this.isFormFeesExpanded = !this.isFormFeesExpanded;
+  }
+
+  addFormFeeRow(): void {
+    this.formFeeList.push({
+      formTransactionId: '',
+      formTxnDate: '',
+      formPaidAmount: ''
+    });
+    this.isFormFeesExpanded = true;
+  }
+
+  removeFormFeeRow(index: number): void {
+    if (this.formFeeList.length > 1) {
+      this.formFeeList.splice(index, 1);
+      if (this.formFeeList.length <= 1) {
+        this.isFormFeesExpanded = false;
+      }
+      this.onFormFeeChange();
+    }
+  }
+
+  onFormFeeChange(): void {
+    if (this.formFeeList && this.formFeeList.length > 0) {
+      this.registerationForm.patchValue({
+        formTransactionId: this.formFeeList[0].formTransactionId || '',
+        formTxnDate: this.formFeeList[0].formTxnDate || '',
+        formPaidAmount: this.formFeeList[0].formPaidAmount || ''
+      }, { emitEvent: false });
+    }
+  }
+
+  getTotalFormFeesPaid(): number {
+    if (!this.formFeeList || this.formFeeList.length === 0) {
+      return Number(this.registerationForm.get('formPaidAmount')?.value) || 0;
+    }
+    return this.formFeeList.reduce((sum, item) => sum + (Number(item.formPaidAmount) || 0), 0);
+  }
+
+  // --- EMD Fees Management ---
+  emdFeeList: EmdFeeItem[] = [
+    { emdTxnId: '', emdDate: '', emdAmount: '' }
+  ];
+  isEmdFeesExpanded: boolean = false;
+
+  get visibleEmdFees(): EmdFeeItem[] {
+    if (!this.emdFeeList || this.emdFeeList.length === 0) {
+      this.emdFeeList = [{
+        emdTxnId: this.registerationForm.get('emdTxnId')?.value || '',
+        emdDate: this.registerationForm.get('emdDate')?.value || '',
+        emdAmount: this.registerationForm.get('emdAmount')?.value || ''
+      }];
+    }
+    return this.isEmdFeesExpanded ? this.emdFeeList : this.emdFeeList.slice(0, 1);
+  }
+
+  toggleEmdFeesExpansion(): void {
+    this.isEmdFeesExpanded = !this.isEmdFeesExpanded;
+  }
+
+  addEmdFeeRow(): void {
+    this.emdFeeList.push({
+      emdTxnId: '',
+      emdDate: '',
+      emdAmount: ''
+    });
+    this.isEmdFeesExpanded = true;
+  }
+
+  removeEmdFeeRow(index: number): void {
+    if (this.emdFeeList.length > 1) {
+      this.emdFeeList.splice(index, 1);
+      if (this.emdFeeList.length <= 1) {
+        this.isEmdFeesExpanded = false;
+      }
+      this.onEmdFeeChange();
+    }
+  }
+
+  onEmdFeeChange(): void {
+    if (this.emdFeeList && this.emdFeeList.length > 0) {
+      const totalEmd = this.getTotalEmdPaid();
+      this.registerationForm.patchValue({
+        emdTxnId: this.emdFeeList[0].emdTxnId || '',
+        emdDate: this.emdFeeList[0].emdDate || '',
+        emdAmount: totalEmd || this.emdFeeList[0].emdAmount || ''
+      }, { emitEvent: false });
+    }
+  }
+
+  getTotalEmdPaid(): number {
+    if (!this.emdFeeList || this.emdFeeList.length === 0) {
+      return Number(this.registerationForm.get('emdAmount')?.value) || 0;
+    }
+    return this.emdFeeList.reduce((sum, item) => sum + (Number(item.emdAmount) || 0), 0);
+  }
+
+  // --- 25% Allotment Milestone Management ---
+  allotmentFeeList: AllotmentFeeItem[] = [
+    { allotmentTxnId: '', allotmentTransactionDate: '', allotmentAmount: '' }
+  ];
+  isAllotmentFeesExpanded: boolean = false;
+
+  get visibleAllotmentFees(): AllotmentFeeItem[] {
+    if (!this.allotmentFeeList || this.allotmentFeeList.length === 0) {
+      this.allotmentFeeList = [{
+        allotmentTxnId: this.registerationForm.get('allotmentTxnId')?.value || '',
+        allotmentTransactionDate: this.registerationForm.get('allotmentTransactionDate')?.value || '',
+        allotmentAmount: this.registerationForm.get('allotmentAmount')?.value || ''
+      }];
+    }
+    return this.isAllotmentFeesExpanded ? this.allotmentFeeList : this.allotmentFeeList.slice(0, 1);
+  }
+
+  toggleAllotmentFeesExpansion(): void {
+    this.isAllotmentFeesExpanded = !this.isAllotmentFeesExpanded;
+  }
+
+  addAllotmentFeeRow(): void {
+    this.allotmentFeeList.push({
+      allotmentTxnId: '',
+      allotmentTransactionDate: '',
+      allotmentAmount: ''
+    });
+    this.isAllotmentFeesExpanded = true;
+    this.onAllotmentFeeChange();
+  }
+
+  removeAllotmentFeeRow(index: number): void {
+    if (this.allotmentFeeList.length > 1) {
+      this.allotmentFeeList.splice(index, 1);
+      if (this.allotmentFeeList.length <= 1) {
+        this.isAllotmentFeesExpanded = false;
+      }
+      this.onAllotmentFeeChange();
+    }
+  }
+
+  onAllotmentFeeChange(): void {
+    if (this.allotmentFeeList && this.allotmentFeeList.length > 0) {
+      const totalAllotment = this.getTotalAllotmentPaid();
+      this.registerationForm.patchValue({
+        allotmentTxnId: this.allotmentFeeList[0].allotmentTxnId || '',
+        allotmentTransactionDate: this.allotmentFeeList[0].allotmentTransactionDate || '',
+        allotmentAmount: totalAllotment || this.allotmentFeeList[0].allotmentAmount || ''
+      }, { emitEvent: false });
+      this.calculateUIInstallments();
+    }
+  }
+
+  getTotalAllotmentPaid(): number {
+    if (!this.allotmentFeeList || this.allotmentFeeList.length === 0) {
+      return Number(this.registerationForm.get('allotmentAmount')?.value) || 0;
+    }
+    return this.allotmentFeeList.reduce((sum, item) => sum + (Number(item.allotmentAmount) || 0), 0);
+  }
 
   createReceiptForm(receipt?: any): FormGroup {
     return this.fb.group({
@@ -1526,6 +1717,93 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
         ownerDistrtictID: d.ownerDistrtictID,
         ownerCityID: d.ownerCityID
       };
+      // Form Fees patching
+      const formFeesFromDb = d.formFees || d.FormFees || d.formFeeList || d.FormFeeList || d.formFeeDetails;
+      if (formFeesFromDb && Array.isArray(formFeesFromDb) && formFeesFromDb.length > 0) {
+        this.formFeeList = formFeesFromDb.map((f: any) => ({
+          formTransactionId: f.formTransactionId ?? f.FormTransactionId ?? f.draftNo ?? f.DraftNo ?? '',
+          formTxnDate: f.formTxnDate ? String(f.formTxnDate).split('T')[0] : (f.FormTxnDate ? String(f.FormTxnDate).split('T')[0] : (f.receiptDate ? String(f.receiptDate).split('T')[0] : (f.ReceiptDate ? String(f.ReceiptDate).split('T')[0] : ''))),
+          formPaidAmount: f.formPaidAmount ?? f.FormPaidAmount ?? f.draftAmount ?? f.DraftAmount ?? ''
+        }));
+      } else if (d.formTransactionId || d.FormTransactionId || d.formTxnDate || d.FormTxnDate || d.formPaidAmount || d.FormPaidAmount) {
+        this.formFeeList = [{
+          formTransactionId: d.formTransactionId ?? d.FormTransactionId ?? '',
+          formTxnDate: d.formTxnDate ? String(d.formTxnDate).split('T')[0] : (d.FormTxnDate ? String(d.FormTxnDate).split('T')[0] : ''),
+          formPaidAmount: d.formPaidAmount ?? d.FormPaidAmount ?? ''
+        }];
+      } else {
+        this.formFeeList = [
+          { formTransactionId: '', formTxnDate: '', formPaidAmount: '' }
+        ];
+      }
+      this.isFormFeesExpanded = false;
+
+      if (this.formFeeList.length > 0) {
+        patchValues.formTransactionId = this.formFeeList[0].formTransactionId;
+        patchValues.formTxnDate = this.formFeeList[0].formTxnDate;
+        patchValues.formPaidAmount = this.formFeeList[0].formPaidAmount;
+      }
+
+      // EMD patching
+      const emdFeesFromDb = d.emdFees || d.EmdFees || d.emdFeeList || d.EmdFeeList || d.emdDetails;
+      if (emdFeesFromDb && Array.isArray(emdFeesFromDb) && emdFeesFromDb.length > 0) {
+        this.emdFeeList = emdFeesFromDb.map((f: any) => ({
+          emdTxnId: f.emdTxnId ?? f.EmdTxnId ?? f.transactionId ?? f.TransactionId ?? '',
+          emdDate: f.emdDate ? String(f.emdDate).split('T')[0] : (f.EmdDate ? String(f.EmdDate).split('T')[0] : (f.txnDate ? String(f.txnDate).split('T')[0] : '')),
+          emdAmount: f.emdAmount ?? f.EmdAmount ?? f.paidAmount ?? f.PaidAmount ?? ''
+        }));
+      } else if (d.emdTxnId || d.EmdTxnId || d.emdDate || d.EmdDate || d.emdAmount || d.EmdAmount) {
+        this.emdFeeList = [{
+          emdTxnId: d.emdTxnId ?? d.EmdTxnId ?? '',
+          emdDate: d.emdDate ? String(d.emdDate).split('T')[0] : (d.EmdDate ? String(d.EmdDate).split('T')[0] : ''),
+          emdAmount: d.emdAmount ?? d.EmdAmount ?? ''
+        }];
+      } else {
+        this.emdFeeList = [
+          { emdTxnId: '', emdDate: '', emdAmount: '' }
+        ];
+      }
+      this.isEmdFeesExpanded = false;
+
+      if (this.emdFeeList.length > 0) {
+        patchValues.emdTxnId = this.emdFeeList[0].emdTxnId;
+        patchValues.emdDate = this.emdFeeList[0].emdDate;
+        patchValues.emdAmount = this.emdFeeList[0].emdAmount;
+      }
+
+      // 25% Allotment Milestone patching
+      const allotmentFeesFromDb = d.allotmentFees || d.AllotmentFees || d.allotmentFeeList || d.AllotmentFeeList || d.allotmentDetails;
+      if (allotmentFeesFromDb && Array.isArray(allotmentFeesFromDb) && allotmentFeesFromDb.length > 0) {
+        this.allotmentFeeList = allotmentFeesFromDb.map((f: any) => ({
+          allotmentTxnId: f.allotmentTxnId ?? f.AllotmentTxnId ?? f.transactionId ?? f.TransactionId ?? f.challanNo ?? f.ChallanNo ?? '',
+          allotmentTransactionDate: (
+            f.allotmentTransactionDate ??
+            f.AllotmentTransactionDate ??
+            f.allotmentDate ??
+            f.AllotmentDate ??
+            f.allotmentTxnDate ??
+            f.AllotmentTxnDate ??
+            f.txnDate ?? '').toString().split('T')[0],
+          allotmentAmount: f.allotmentAmount ?? f.AllotmentAmount ?? f.allotmentPaidAmount ?? f.AllotmentPaidAmount ?? f.amountPaid ?? f.AmountPaid ?? ''
+        }));
+      } else if (d.allotmentTxnId || d.AllotmentTxnId || d.allotmentTransactionDate || d.AllotmentTransactionDate || d.allotmentAmount || d.AllotmentAmount) {
+        this.allotmentFeeList = [{
+          allotmentTxnId: d.allotmentTxnId ?? d.AllotmentTxnId ?? '',
+          allotmentTransactionDate: d.allotmentTransactionDate ? String(d.allotmentTransactionDate).split('T')[0] : (d.AllotmentTransactionDate ? String(d.AllotmentTransactionDate).split('T')[0] : ''),
+          allotmentAmount: d.allotmentAmount ?? d.AllotmentAmount ?? ''
+        }];
+      } else {
+        this.allotmentFeeList = [
+          { allotmentTxnId: '', allotmentTransactionDate: '', allotmentAmount: '' }
+        ];
+      }
+      this.isAllotmentFeesExpanded = false;
+
+      if (this.allotmentFeeList.length > 0) {
+        patchValues.allotmentTxnId = this.allotmentFeeList[0].allotmentTxnId;
+        patchValues.allotmentTransactionDate = this.allotmentFeeList[0].allotmentTransactionDate;
+        patchValues.allotmentAmount = this.allotmentFeeList[0].allotmentAmount;
+      }
 
       this.registerationForm.patchValue(patchValues, { emitEvent: false });
 
@@ -2047,6 +2325,52 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       totalEstimatedAmount: Number(s.totalWithInterest) || 0
     }));
 
+    const hasFeeValue = (value: unknown): boolean =>
+      value !== null && value !== undefined && String(value).trim() !== '';
+    const formFees = this.formFeeList.filter((fee) =>
+      hasFeeValue(fee.formTransactionId) ||
+      hasFeeValue(fee.formTxnDate) ||
+      hasFeeValue(fee.formPaidAmount)
+    );
+    const emdFees = this.emdFeeList.filter((fee) =>
+      hasFeeValue(fee.emdTxnId) ||
+      hasFeeValue(fee.emdDate) ||
+      hasFeeValue(fee.emdAmount)
+    );
+    const allotmentFees = this.allotmentFeeList.filter((fee) =>
+      hasFeeValue(fee.allotmentTxnId) ||
+      hasFeeValue(fee.allotmentTransactionDate) ||
+      hasFeeValue(fee.allotmentAmount)
+    );
+
+    const formFeeFallback = hasFeeValue(formRaw.formTransactionId) ||
+      hasFeeValue(formRaw.formTxnDate) ||
+      hasFeeValue(formRaw.formPaidAmount)
+      ? [{
+        formTransactionId: formRaw.formTransactionId,
+        formTxnDate: formRaw.formTxnDate,
+        formPaidAmount: formRaw.formPaidAmount
+      }]
+      : [];
+    const emdFeeFallback = hasFeeValue(formRaw.emdTxnId) ||
+      hasFeeValue(formRaw.emdDate) ||
+      hasFeeValue(formRaw.emdAmount)
+      ? [{
+        emdTxnId: formRaw.emdTxnId,
+        emdDate: formRaw.emdDate,
+        emdAmount: formRaw.emdAmount
+      }]
+      : [];
+    const allotmentFeeFallback = hasFeeValue(formRaw.allotmentTxnId) ||
+      hasFeeValue(formRaw.allotmentTransactionDate) ||
+      hasFeeValue(formRaw.allotmentAmount)
+      ? [{
+        allotmentTxnId: formRaw.allotmentTxnId,
+        allotmentTransactionDate: formRaw.allotmentTransactionDate,
+        allotmentAmount: formRaw.allotmentAmount
+      }]
+      : [];
+
     const payload = {
       ...(this.propertyData || {}),
 
@@ -2121,15 +2445,21 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       formTransactionId: formRaw.formTransactionId,
       formTxnDate: formRaw.formTxnDate,
       formPaidAmount: formRaw.formPaidAmount,
+      formFees: formFees.length > 0 ? formFees : formFeeFallback,
+      FormFees: formFees.length > 0 ? formFees : formFeeFallback,
 
       emdTxnId: formRaw.emdTxnId,
       emdDate: formRaw.emdDate,
       emdAmount: formRaw.emdAmount,
+      emdFees: emdFees.length > 0 ? emdFees : emdFeeFallback,
+      EmdFees: emdFees.length > 0 ? emdFees : emdFeeFallback,
 
       allotmentTxnId: formRaw.allotmentTxnId,
       allotmentDate: formRaw.allotmentDate,
       allotmentTransactionDate: formRaw.allotmentTransactionDate,
       allotmentAmount: formRaw.allotmentAmount,
+      allotmentFees: allotmentFees.length > 0 ? allotmentFees : allotmentFeeFallback,
+      AllotmentFees: allotmentFees.length > 0 ? allotmentFees : allotmentFeeFallback,
 
       dueAmount: formRaw.dueAmount,
       totalDueWithInterest: formRaw.totalDueWithInterest,
@@ -2299,6 +2629,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.receiptsFormArray.clear();
     this.bidderNamesFormArray.clear();
     this.calculatedSchedulesMatrix = [];
+    this.formFeeList = [
+      { formTransactionId: '', formTxnDate: '', formPaidAmount: '' }
+    ];
+    this.isFormFeesExpanded = false;
+    this.emdFeeList = [
+      { emdTxnId: '', emdDate: '', emdAmount: '' }
+    ];
+    this.isEmdFeesExpanded = false;
+    this.allotmentFeeList = [
+      { allotmentTxnId: '', allotmentTransactionDate: '', allotmentAmount: '' }
+    ];
+    this.isAllotmentFeesExpanded = false;
     this.propertyData = null;
     this.showPreview = false;
     this.previewConfirmed = false;
@@ -2420,7 +2762,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     // debugger
     // 1. Fetch form variables safely
     const finalBidderPrice = Number(this.registerationForm.get('finalBidPrice')?.value) || 0;
-    const allotmentPaid_25_percentage = Number(this.registerationForm.get('allotmentAmount')?.value) || 0;
+    const allotmentPaid_25_percentage = this.getTotalAllotmentPaid();
     const milestoneDateStr = this.registerationForm.get('allotmentDate')?.value;
     const selectedInstallmentString = this.registerationForm.get('installmentNo')?.value || 'Installment 1';
 

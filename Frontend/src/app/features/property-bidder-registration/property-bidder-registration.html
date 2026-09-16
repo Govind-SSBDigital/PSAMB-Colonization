@@ -578,9 +578,9 @@
                     required.</div> }
                 </div>
               </div>
-              <div class="col-sm-4">
+              <div class="col-md-4">
                 <div class="financial-tile bg-light border rounded-4 p-3 h-100">
-                  <label class="form-label small text-dark fw-semibold">Allotment
+                  <label for="allotmentDate" class="form-label small text-dark fw-semibold text-uppercase">Allotment
                     Date <span class="text-danger">*</span>
                   </label>
                   <input type="date" class="form-control bg-white custom-input-color uppercase"
@@ -594,88 +594,313 @@
             <div class="row g-3 mb-3">
               <div class="col-lg-12">
                 <div class="financial-panel bg-light border rounded-4 p-3 h-100">
-                  <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Form Fees Structure
-                  </h3>
-                  <div class="row g-2">
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
-                        ID</label><input type="text" class="form-control bg-white font-monospace custom-input-color"
-                        formControlName="formTransactionId" [class.is-invalid]="isInvalid('formTransactionId')" />
-                      <!-- @if
-                      (isInvalid('formTransactionId'))
-                      { <div class="invalid-feedback">Transaction ID is required.</div> } -->
+                  <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3 flex-wrap gap-2">
+                    <h3 class="small fw-bold text-secondary text-uppercase mb-0 border-0 pb-0">
+                      Form Fees Structure
+                    </h3>
+
+                    <div class="d-flex align-items-center gap-2">
+                      @if (formFeeList.length > 1) {
+                        <button type="button"
+                        class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2"
+                          (click)="toggleFormFeesExpansion()">
+                          <span>{{ isFormFeesExpanded ? 'Show Less' : ('View More') }}</span>
+                          <i class="fa-solid" [ngClass]="isFormFeesExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                      }
+                      @if (!readonlyMode) {
+                        <button type="button"
+                        class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-1"
+                          (click)="addFormFeeRow()" title="Add another Form Fee record">
+                          <i class="fa-solid fa-plus"></i>
+                          <span>Add Fee</span>
+                        </button>
+                      }
                     </div>
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Txn Date</label><input
-                        type="date" class="form-control bg-white custom-input-color uppercase"
-                        formControlName="formTxnDate" [class.is-invalid]="isInvalid('formTxnDate')" />@if
-                      (isInvalid('formTxnDate')) { <div class="invalid-feedback">Enter the date as
-                        DD/MM/YYYY.</div> }</div>
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Paid Amount
-                        (Rs.)</label><input type="number" class="form-control bg-white custom-input-color"
-                        formControlName="formPaidAmount" [class.is-invalid]="isInvalid('formPaidAmount')" />
-                      <!-- @if
-                      (isInvalid('formPaidAmount')) { <div class="invalid-feedback">Paid amount is required.</div> } -->
-                    </div>
+                  </div>
+
+                  <div class="table-responsive rounded-3 border bg-white shadow-sm">
+                      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                        <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                          <tr>
+                            <th scope="col" class="custom-color text-start ps-3">Transaction ID</th>
+                            <th scope="col" class="custom-color">Txn Date</th>
+                            <th scope="col" class="custom-color text-end pe-3">Paid Amount (Rs.)</th>
+                            @if (!readonlyMode && formFeeList.length > 1) {
+                            <th scope="col" class="text-center custom-color" style="width: 45px;">Action</th>
+                            }
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (fee of visibleFormFees; track $index) {
+                          <tr>
+                            <td class="text-start ps-3 p-2 font-monospace">
+                              @if (!readonlyMode) {
+                              <input type="text"
+                                class="form-control form-control-sm bg-white font-monospace custom-input-color"
+                                [(ngModel)]="fee.formTransactionId" [ngModelOptions]="{standalone: true}"
+                                (ngModelChange)="onFormFeeChange()" placeholder="Enter Transaction ID" />
+                              } @else {
+                              <span class="fw-medium text-dark">{{ fee.formTransactionId || '—' }}</span>
+                              }
+                            </td>
+                            <td>
+                              @if (!readonlyMode) {
+                              <input type="date"
+                                class="form-control form-control-sm bg-white custom-input-color uppercase text-center"
+                                [(ngModel)]="fee.formTxnDate" [ngModelOptions]="{standalone: true}"
+                                (ngModelChange)="onFormFeeChange()" />
+                              } @else {
+                              <span class="text-dark">{{ fee.formTxnDate ? (fee.formTxnDate | date:'dd/MM/yyyy') : '—'
+                                }}</span>
+                              }
+                            </td>
+                            <td class="text-end pe-3">
+                              @if (!readonlyMode) {
+                              <input type="number"
+                                class="form-control form-control-sm bg-white custom-input-color text-end"
+                                [(ngModel)]="fee.formPaidAmount" [ngModelOptions]="{standalone: true}"
+                                (ngModelChange)="onFormFeeChange()" placeholder="0.00" />
+                              } @else {
+                              <span class="fw-semibold text-success">{{ fee.formPaidAmount != null && fee.formPaidAmount
+                                !== '' ? ('₹' + (fee.formPaidAmount | number:'1.2-2')) : '—' }}</span>
+                              }
+                            </td>
+                            @if (!readonlyMode && formFeeList.length > 1) {
+                            <td class="text-center p-1">
+                              <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                                (click)="removeFormFeeRow($index)" title="Remove Fee">
+                                <i class="fa-solid fa-trash-can"></i>
+                              </button>
+                            </td>
+                            }
+                          </tr>
+                          }
+                        </tbody>
+                        @if (formFeeList.length > 1 && isFormFeesExpanded) {
+                        <tfoot class="table-light border-top">
+                          <tr class="fw-semibold small">
+                            <td colspan="2" class="text-end pe-3 text-uppercase text-secondary">Total Form Fees:</td>
+                            <td class="text-end pe-3 fw-bold text-success">
+                              ₹{{ getTotalFormFeesPaid() | number:'1.2-2' }}
+                            </td>
+                            @if (!readonlyMode && formFeeList.length > 1) {
+                            <td></td>
+                            }
+                          </tr>
+                        </tfoot>
+                        }
+                      </table>
                   </div>
                 </div>
               </div>
               <div class="col-lg-12">
                 <div class="financial-panel bg-light border rounded-4 p-3 h-100">
-                  <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">EMD (Earnest Money
-                    Deposit)</h3>
-                  <div class="row g-2 ">
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Txn ID</label><input
-                        type="text" class="form-control bg-white font-monospace custom-input-color"
-                        formControlName="emdTxnId" [class.is-invalid]="isInvalid('emdTxnId')" />
-                      <!-- @if
-                      (isInvalid('emdTxnId')) {
-                         <div class="invalid-feedback">EMD transaction ID is required.
-                      </div> } -->
+                  <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3 flex-wrap gap-2">
+                    <h3 class="small fw-bold text-secondary text-uppercase mb-0 border-0 pb-0">
+                      EMD (Earnest Money Deposit)
+                    </h3>
+
+                    <div class="d-flex align-items-center gap-2">
+                      @if (emdFeeList.length > 1) {
+                        <button type="button"
+                          class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2"
+                          (click)="toggleEmdFeesExpansion()">
+                          <span>{{ isEmdFeesExpanded ? 'Show Less' : ('View More') }}</span>
+                          <i class="fa-solid" [ngClass]="isEmdFeesExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                      }
+                      @if (!readonlyMode) {
+                        <button type="button"
+                          class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-1"
+                          (click)="addEmdFeeRow()" title="Add another EMD record">
+                          <i class="fa-solid fa-plus"></i>
+                          <span>Add EMD</span>
+                        </button>
+                      }
                     </div>
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Date</label><input
-                        type="date" class="form-control bg-white custom-input-color uppercase" formControlName="emdDate"
-                        [class.is-invalid]="isInvalid('emdDate')" />
-                      <!-- @if
-                      (isInvalid('emdDate')) { 
-                        <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
-                      </div> 
-                    } -->
-                    </div>
-                    <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">EMD Paid
-                        (Rs.)</label><input type="number" class="form-control bg-white custom-input-color"
-                        formControlName="emdAmount" [class.is-invalid]="isInvalid('emdAmount')" />
-                      <!-- @if
-                      (isInvalid('emdAmount')) { <div class="invalid-feedback">EMD paid amount is required.</div> } -->
-                    </div>
+                  </div>
+
+                  <div class="table-responsive rounded-3 border bg-white shadow-sm">
+                    <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                      <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                        <tr>
+                          <th scope="col" class="custom-color text-start ps-3">Transaction ID</th>
+                          <th scope="col" class="custom-color">Txn Date</th>
+                          <th scope="col" class="custom-color text-end pe-3">Paid Amount (Rs.)</th>
+                          @if (!readonlyMode && emdFeeList.length > 1) {
+                            <th scope="col" class="text-center custom-color" style="width: 45px;">Action</th>
+                          }
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (fee of visibleEmdFees; track $index) {
+                          <tr>
+                            <td class="text-start ps-3 p-2 font-monospace">
+                              @if (!readonlyMode) {
+                                <input type="text"
+                                  class="form-control form-control-sm bg-white font-monospace custom-input-color"
+                                  [(ngModel)]="fee.emdTxnId"
+                                  [ngModelOptions]="{standalone: true}"
+                                  (ngModelChange)="onEmdFeeChange()"
+                                  placeholder="Enter EMD Txn ID" />
+                              } @else {
+                                <span class="fw-medium text-dark">{{ fee.emdTxnId || '—' }}</span>
+                              }
+                            </td>
+                            <td>
+                              @if (!readonlyMode) {
+                                <input type="date"
+                                  class="form-control form-control-sm bg-white custom-input-color uppercase text-center"
+                                  [(ngModel)]="fee.emdDate"
+                                  [ngModelOptions]="{standalone: true}"
+                                  (ngModelChange)="onEmdFeeChange()" />
+                              } @else {
+                                <span class="text-dark">{{ fee.emdDate ? (fee.emdDate | date:'dd/MM/yyyy') : '—' }}</span>
+                              }
+                            </td>
+                            <td class="text-end pe-3">
+                              @if (!readonlyMode) {
+                                <input type="number"
+                                  class="form-control form-control-sm bg-white custom-input-color text-end"
+                                  [(ngModel)]="fee.emdAmount"
+                                  [ngModelOptions]="{standalone: true}"
+                                  (ngModelChange)="onEmdFeeChange()"
+                                  placeholder="0.00" />
+                              } @else {
+                                <span class="fw-semibold text-success">{{ fee.emdAmount != null && fee.emdAmount !== '' ? ('₹' + (fee.emdAmount | number:'1.2-2')) : '—' }}</span>
+                              }
+                            </td>
+                            @if (!readonlyMode && emdFeeList.length > 1) {
+                              <td class="text-center p-1">
+                                <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                                  (click)="removeEmdFeeRow($index)" title="Remove EMD">
+                                  <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                              </td>
+                            }
+                          </tr>
+                        }
+                      </tbody>
+                      @if (emdFeeList.length > 1 && isEmdFeesExpanded) {
+                        <tfoot class="table-light border-top">
+                          <tr class="fw-semibold small">
+                            <td colspan="2" class="text-end pe-3 text-uppercase text-secondary">Total EMD Paid:</td>
+                            <td class="text-end pe-3 fw-bold text-success">
+                              ₹{{ getTotalEmdPaid() | number:'1.2-2' }}
+                            </td>
+                            @if (!readonlyMode && emdFeeList.length > 1) {
+                              <td></td>
+                            }
+                          </tr>
+                        </tfoot>
+                      }
+                    </table>
                   </div>
                 </div>
               </div>
             </div>
             <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
-              <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money
-                Milestone</h3>
-              <div class="row g-2">
-                <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">25% Milestone Txn
-                    ID / Challan No.</label><input type="text"
-                    class="form-control bg-white font-monospace custom-input-color" formControlName="allotmentTxnId"
-                    [class.is-invalid]="isInvalid('allotmentTxnId')" />
-                  <!-- @if
-                  (isInvalid('allotmentTxnId'))
-                  { <div class="invalid-feedback">25% milestone transaction ID is required.</div> } -->
+              <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3 flex-wrap gap-2">
+                <h3 class="small fw-bold text-secondary text-uppercase mb-0 border-0 pb-0">
+                  25% Allotment Money Milestone
+                </h3>
+
+                <div class="d-flex align-items-center gap-2">
+                  @if (allotmentFeeList.length > 1) {
+                    <button type="button"
+                      class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2"
+                      (click)="toggleAllotmentFeesExpansion()">
+                      <span>{{ isAllotmentFeesExpanded ? 'Show Less' : ('View More') }}</span>
+                      <i class="fa-solid" [ngClass]="isAllotmentFeesExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+                  }
+                  @if (!readonlyMode) {
+                    <button type="button"
+                      class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-1"
+                      (click)="addAllotmentFeeRow()" title="Add another 25% Allotment record">
+                      <i class="fa-solid fa-plus"></i>
+                      <span>Add Payment</span>
+                    </button>
+                  }
                 </div>
-                <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Transaction
-                    Date </label><input type="date" class="form-control bg-white custom-input-color uppercase"
-                    formControlName="allotmentTransactionDate"
-                    [class.is-invalid]="isInvalid('allotmentTransactionDate')" />
-                  <!-- @if
-                  (isInvalid('allotmentTransactionDate')) { <div class="invalid-feedback">Enter the date as DD/MM/YYYY.
-                  </div> } -->
-                </div>
-                <div class="col-sm-4"><label class="form-label small text-dark fw-semibold">Amount Paid
-                    (Rs.)</label><input type="number" class="form-control bg-white custom-input-color"
-                    formControlName="allotmentAmount" [class.is-invalid]="isInvalid('allotmentAmount')" />
-                  <!-- @if
-                  (isInvalid('allotmentAmount')) { <div class="invalid-feedback">Amount paid is required.</div> } -->
-                </div>
+              </div>
+
+              <div class="table-responsive rounded-3 border bg-white shadow-sm">
+                <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                  <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                    <tr>
+                      <th scope="col" class="custom-color text-start ps-3">Milestone Txn ID / Challan No.</th>
+                      <th scope="col" class="custom-color">Txn Date</th>
+                      <th scope="col" class="custom-color text-end pe-3">Paid Amount (Rs.)</th>
+                      @if (!readonlyMode && allotmentFeeList.length > 1) {
+                        <th scope="col" class="text-center custom-color" style="width: 45px;">Action</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (fee of visibleAllotmentFees; track $index) {
+                      <tr>
+                        <td class="text-start ps-3 p-2 font-monospace">
+                          @if (!readonlyMode) {
+                            <input type="text"
+                              class="form-control form-control-sm bg-white font-monospace custom-input-color"
+                              [(ngModel)]="fee.allotmentTxnId"
+                              [ngModelOptions]="{standalone: true}"
+                              (ngModelChange)="onAllotmentFeeChange()"
+                              placeholder="Enter Txn ID / Challan No." />
+                          } @else {
+                            <span class="fw-medium text-dark">{{ fee.allotmentTxnId || '—' }}</span>
+                          }
+                        </td>
+                        <td>
+                          @if (!readonlyMode) {
+                            <input type="date"
+                              class="form-control form-control-sm bg-white custom-input-color uppercase text-center"
+                              [(ngModel)]="fee.allotmentTransactionDate"
+                              [ngModelOptions]="{standalone: true}"
+                              (ngModelChange)="onAllotmentFeeChange()" />
+                          } @else {
+                            <span class="text-dark">{{ fee.allotmentTransactionDate ? (fee.allotmentTransactionDate | date:'dd/MM/yyyy') : '—' }}</span>
+                          }
+                        </td>
+                        <td class="text-end pe-3">
+                          @if (!readonlyMode) {
+                            <input type="number"
+                              class="form-control form-control-sm bg-white custom-input-color text-end"
+                              [(ngModel)]="fee.allotmentAmount"
+                              [ngModelOptions]="{standalone: true}"
+                              (ngModelChange)="onAllotmentFeeChange()"
+                              placeholder="0.00" />
+                          } @else {
+                            <span class="fw-semibold text-success">{{ fee.allotmentAmount != null && fee.allotmentAmount !== '' ? ('₹' + (fee.allotmentAmount | number:'1.2-2')) : '—' }}</span>
+                          }
+                        </td>
+                        @if (!readonlyMode && allotmentFeeList.length > 1) {
+                          <td class="text-center p-1">
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                              (click)="removeAllotmentFeeRow($index)" title="Remove Payment">
+                              <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                          </td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                  @if (allotmentFeeList.length > 1 && isAllotmentFeesExpanded) {
+                    <tfoot class="table-light border-top">
+                      <tr class="fw-semibold small">
+                        <td colspan="2" class="text-end pe-3 text-uppercase text-secondary">Total 25% Money Paid:</td>
+                        <td class="text-end pe-3 fw-bold text-success">
+                          ₹{{ getTotalAllotmentPaid() | number:'1.2-2' }}
+                        </td>
+                        @if (!readonlyMode && allotmentFeeList.length > 1) {
+                          <td></td>
+                        }
+                      </tr>
+                    </tfoot>
+                  }
+                </table>
               </div>
             </div>
 
@@ -1185,66 +1410,172 @@
               <div class="row g-3 mb-3">
                 <div class="col-lg-12">
                   <div class="financial-panel bg-light border rounded-4 p-3 h-100">
-                    <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">Form Fees Structure
-                    </h3>
-                    <div class="row g-2">
-                      <div class="col-sm-4">
-                        <label class="form-label small text-dark fw-semibold">Transaction ID</label>
-                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formTransactionId')?.value || '—'
-                          }}</p>
-                      </div>
-                      <div class="col-sm-4">
-                        <label class="form-label small text-dark fw-semibold">Txn Date</label>
-                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formTxnDate')?.value || '—' }}</p>
-                      </div>
-                      <div class="col-sm-4">
-                        <label class="form-label small text-dark fw-semibold">Paid Amount (Rs.)</label>
-                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('formPaidAmount')?.value ? ('Rs. '
-                          + (registerationForm.get('formPaidAmount')?.value | number:'1.2-2')) : '—' }}</p>
-                      </div>
+                    <div
+                      class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3 flex-wrap gap-2">
+                      <h3 class="small fw-bold text-secondary text-uppercase mb-0 border-0 pb-0">
+                        Form Fees Structure
+                      </h3>
+
+                      @if (formFeeList.length > 1) {
+                      <button type="button"
+                        class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2"
+                        (click)="toggleFormFeesExpansion()">
+                        <span>{{ isFormFeesExpanded ? 'Show Less' : ('View More (' + formFeeList.length + ')') }}</span>
+                        <i class="fa-solid" [ngClass]="isFormFeesExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                      </button>
+                      }
+                    </div>
+
+                    <div class="table-responsive rounded-3 border bg-white shadow-sm">
+                      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                        <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                          <tr>
+                            <th scope="col" class="custom-color text-start ps-3">Transaction ID</th>
+                            <th scope="col" class="custom-color">Txn Date</th>
+                            <th scope="col" class="custom-color text-end pe-3">Paid Amount (Rs.)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (fee of visibleFormFees; track $index) {
+                          <tr>
+                            <td class="text-start ps-3 font-monospace fw-medium text-dark">
+                              {{ fee.formTransactionId || '—' }}
+                            </td>
+                            <td class="text-dark">
+                              {{ fee.formTxnDate ? (fee.formTxnDate | date:'dd/MM/yyyy') : '—' }}
+                            </td>
+                            <td class="text-end pe-3 fw-semibold text-success">
+                              {{ fee.formPaidAmount !== null && fee.formPaidAmount !== undefined && fee.formPaidAmount !== ''
+                              ? ('₹' + (fee.formPaidAmount | number:'1.2-2')) : '—' }}
+                            </td>
+                          </tr>
+                          }
+                        </tbody>
+                        @if (formFeeList.length > 1 && isFormFeesExpanded) {
+                        <tfoot class="table-light border-top">
+                          <tr class="fw-semibold small">
+                            <td colspan="2" class="text-end pe-3 text-uppercase text-secondary">Total Form Fees:</td>
+                            <td class="text-end pe-3 fw-bold text-success">
+                              ₹{{ getTotalFormFeesPaid() | number:'1.2-2' }}
+                            </td>
+                          </tr>
+                        </tfoot>
+                        }
+                      </table>
                     </div>
                   </div>
                 </div>
                 <div class="col-lg-12">
                   <div class="financial-panel bg-light border rounded-4 p-3 h-100">
-                    <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">EMD (Earnest Money
-                      Deposit)</h3>
-                    <div class="row g-2">
-                      <div class="col-sm-4">
-                        <label class="form-label small text-dark fw-semibold">EMD Txn ID</label>
-                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdTxnId')?.value || '—' }}</p>
-                      </div>
-                      <div class="col-sm-4">
-                        <label class="form-label small text-dark fw-semibold">EMD Date</label>
-                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdDate')?.value || '—' }}</p>
-                      </div>
-                      <div class="col-sm-4">
-                        <label class="form-label small text-dark fw-semibold">EMD Paid (Rs.)</label>
-                        <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('emdAmount')?.value ? ('Rs. ' +
-                          (registerationForm.get('emdAmount')?.value | number:'1.2-2')) : '—' }}</p>
-                      </div>
+                    <div
+                      class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3 flex-wrap gap-2">
+                      <h3 class="small fw-bold text-secondary text-uppercase mb-0 border-0 pb-0">
+                        EMD (Earnest Money Deposit)
+                      </h3>
+
+                      @if (emdFeeList.length > 1) {
+                      <button type="button"
+                        class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2"
+                        (click)="toggleEmdFeesExpansion()">
+                        <span>{{ isEmdFeesExpanded ? 'Show Less' : ('View More (' + emdFeeList.length + ')') }}</span>
+                        <i class="fa-solid" [ngClass]="isEmdFeesExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                      </button>
+                      }
+                    </div>
+
+                    <div class="table-responsive rounded-3 border bg-white shadow-sm">
+                      <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                        <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                          <tr>
+                            <th scope="col" class="custom-color text-start ps-3">Transaction ID</th>
+                            <th scope="col" class="custom-color">Txn Date</th>
+                            <th scope="col" class="custom-color text-end pe-3">Paid Amount (Rs.)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (fee of visibleEmdFees; track $index) {
+                          <tr>
+                            <td class="text-start ps-3 font-monospace fw-medium text-dark">
+                              {{ fee.emdTxnId || '—' }}
+                            </td>
+                            <td class="text-dark">
+                              {{ fee.emdDate ? (fee.emdDate | date:'dd/MM/yyyy') : '—' }}
+                            </td>
+                            <td class="text-end pe-3 fw-semibold text-success">
+                              {{ fee.emdAmount !== null && fee.emdAmount !== undefined && fee.emdAmount !== ''
+                              ? ('₹' + (fee.emdAmount | number:'1.2-2')) : '—' }}
+                            </td>
+                          </tr>
+                          }
+                        </tbody>
+                        @if (emdFeeList.length > 1 && isEmdFeesExpanded) {
+                        <tfoot class="table-light border-top">
+                          <tr class="fw-semibold small">
+                            <td colspan="2" class="text-end pe-3 text-uppercase text-secondary">Total EMD Paid:</td>
+                            <td class="text-end pe-3 fw-bold text-success">
+                              ₹{{ getTotalEmdPaid() | number:'1.2-2' }}
+                            </td>
+                          </tr>
+                        </tfoot>
+                        }
+                      </table>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="financial-panel bg-light border rounded-4 p-3 mb-3">
-                <h3 class="small fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3">25% Allotment Money
-                  Milestone</h3>
-                <div class="row g-2">
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">25% Milestone Txn ID / Challan No.</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTxnId')?.value || '—' }}</p>
-                  </div>
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">Transaction Date</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentTransactionDate')?.value ||
-                      '—' }}</p>
-                  </div>
-                  <div class="col-sm-4">
-                    <label class="form-label small text-dark fw-semibold">Amount Paid (Rs.)</label>
-                    <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('allotmentAmount')?.value ? ('Rs. ' +
-                      (registerationForm.get('allotmentAmount')?.value | number:'1.2-2')) : '—' }}</p>
-                  </div>
+                <div
+                  class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3 flex-wrap gap-2">
+                  <h3 class="small fw-bold text-secondary text-uppercase mb-0 border-0 pb-0">
+                    25% Allotment Money Milestone
+                  </h3>
+
+                  @if (allotmentFeeList.length > 1) {
+                  <button type="button"
+                    class="btn btn-sm btn-outline-success rounded-3 px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2"
+                    (click)="toggleAllotmentFeesExpansion()">
+                    <span>{{ isAllotmentFeesExpanded ? 'Show Less' : ('View More (' + allotmentFeeList.length + ')') }}</span>
+                    <i class="fa-solid" [ngClass]="isAllotmentFeesExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                  </button>
+                  }
+                </div>
+
+                <div class="table-responsive rounded-3 border bg-white shadow-sm">
+                  <table class="table table-sm table-hover align-middle mb-0 text-center small text-nowrap">
+                    <thead class="table-light text-secondary text-uppercase" style="font-size: 0.75rem;">
+                      <tr>
+                        <th scope="col" class="custom-color text-start ps-3">Milestone Txn ID / Challan No.</th>
+                        <th scope="col" class="custom-color">Txn Date</th>
+                        <th scope="col" class="custom-color text-end pe-3">Paid Amount (Rs.)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (fee of visibleAllotmentFees; track $index) {
+                      <tr>
+                        <td class="text-start ps-3 font-monospace fw-medium text-dark">
+                          {{ fee.allotmentTxnId || '—' }}
+                        </td>
+                        <td class="text-dark">
+                          {{ fee.allotmentTransactionDate ? (fee.allotmentTransactionDate | date:'dd/MM/yyyy') : '—' }}
+                        </td>
+                        <td class="text-end pe-3 fw-semibold text-success">
+                          {{ fee.allotmentAmount !== null && fee.allotmentAmount !== undefined && fee.allotmentAmount !== ''
+                          ? ('₹' + (fee.allotmentAmount | number:'1.2-2')) : '—' }}
+                        </td>
+                      </tr>
+                      }
+                    </tbody>
+                    @if (allotmentFeeList.length > 1 && isAllotmentFeesExpanded) {
+                    <tfoot class="table-light border-top">
+                      <tr class="fw-semibold small">
+                        <td colspan="2" class="text-end pe-3 text-uppercase text-secondary">Total 25% Money Paid:</td>
+                        <td class="text-end pe-3 fw-bold text-success">
+                          ₹{{ getTotalAllotmentPaid() | number:'1.2-2' }}
+                        </td>
+                      </tr>
+                    </tfoot>
+                    }
+                  </table>
                 </div>
               </div>
 
