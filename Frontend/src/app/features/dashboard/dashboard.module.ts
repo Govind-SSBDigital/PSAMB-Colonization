@@ -97,6 +97,12 @@ import { Footer } from './footer/footer';
                 .then((m) => m.DataEntryOperatorVerificationView),
           },
           {
+            path: 'mandi-wise-allotment-summary',
+            loadComponent: () =>
+              import('../../features/mandi-wise-allotment-summary/mandi-wise-allotment-summary')
+                .then((m) => m.MandiWiseAllotmentSummary),
+          },
+          {
             path: 'coming-soon',
             loadComponent: () =>
               import('../../features/comming-soon-pages/comming-soon-pages')

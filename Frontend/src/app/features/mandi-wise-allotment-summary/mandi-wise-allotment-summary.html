@@ -1,0 +1,178 @@
+<div class="container-fluid py-3 px-3 px-lg-4">
+
+    <!-- Heading -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+        <div>
+            <h1 class="h5 fw-bold text-portal mb-1">Mandi Wise Allotment Summary</h1>
+            <p class="small text-muted mb-0">
+                Choose a district, market committee and mandi to list every allotment recorded for that mandi.
+            </p>
+        </div>
+
+        <!-- <div class="d-flex gap-3 result-stats" *ngIf="searched && rows.length">
+            <div class="stat">
+                <span class="stat-value">{{ rows.length }}</span>
+                <span class="stat-label">Allotments</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ totalValue | currency : 'INR' : 'symbol' : '1.0-0' }}</span>
+                <span class="stat-label">Total allotment value</span>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- Filters -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate
+        class="card filter-card border shadow-sm rounded-3 mb-3">
+        <div class="card-body p-3 p-lg-4">
+            <div class="row g-3">
+
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="district" class="form-label small fw-semibold text-dark">
+                        District <span class="text-danger">*</span>
+                    </label>
+                    <select id="district" class="form-select custom-input-color rounded-3" formControlName="districtId"
+                        [class.is-invalid]="isInvalid('districtId')" (change)="onDistrictChange()">
+                        <option [ngValue]="null" disabled>Select district</option>
+                        <option *ngFor="let d of districts" [ngValue]="d.id">{{ d.name }}</option>
+                    </select>
+                    <div class="invalid-feedback">Select a district to continue.</div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="marketCommittee" class="form-label small fw-semibold text-dark">
+                        Market Committee <span class="text-danger">*</span>
+                    </label>
+                    <select id="marketCommittee" class="form-select custom-input-color rounded-3"
+                        formControlName="branchId" [class.is-invalid]="isInvalid('branchId')"
+                        (change)="onCommitteeChange()">
+                        <option [ngValue]="null" disabled>
+                            {{ form.get('branchId')?.disabled ? 'Select a district first' : 'Select committee' }}
+                        </option>
+                        <option *ngFor="let c of committees" [ngValue]="c.id">{{ c.name }}</option>
+                    </select>
+                    <div class="invalid-feedback">Select a market committee.</div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="mandi" class="form-label small fw-semibold text-dark">
+                        Mandi <span class="text-danger">*</span>
+                    </label>
+                    <select id="mandi" class="form-select custom-input-color rounded-3" formControlName="mandiId"
+                        [class.is-invalid]="isInvalid('mandiId')">
+                        <option [ngValue]="null" disabled>
+                            {{ form.get('mandiId')?.disabled ? 'Select a committee first' : 'Select mandi' }}
+                        </option>
+                        <option *ngFor="let m of mandis" [ngValue]="m.id">{{ m.name }}</option>
+                    </select>
+                    <div class="invalid-feedback">Select a mandi.</div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-3 d-flex align-items-end">
+                    <div class="d-flex gap-2 w-100">
+                        <button type="submit" class="btn btn-portal rounded-3 flex-fill" [disabled]="loading">
+                            <span class="spinner-border spinner-border-sm me-2" *ngIf="loading"
+                                aria-hidden="true"></span>
+                            {{ loading ? 'Loading' : 'Show summary' }}
+                        </button>
+                        <button type="button" class="btn btn-ghost rounded-3" (click)="onReset()" [disabled]="loading">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <!-- Results -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+
+        <div class="table-responsive table-scroll">
+            <table class="table table-hover align-middle mb-0 table-verification">
+                <thead class="table-head-portal">
+                    <tr>
+                        <th scope="col">Sr. No.</th>
+                        <th scope="col" class="sortable" (click)="sortBy('alloteeCode')">
+                            Allotee Code <i class="sort-mark" [class.on]="sortKey === 'alloteeCode'"
+                                [class.desc]="sortKey === 'alloteeCode' && !sortAsc"></i>
+                        </th>
+                        <th scope="col" class="sortable" (click)="sortBy('name')">
+                            Name <i class="sort-mark" [class.on]="sortKey === 'name'"
+                                [class.desc]="sortKey === 'name' && !sortAsc"></i>
+                        </th>
+                        <th scope="col">District</th>
+                        <th scope="col">Mandi</th>
+                        <th scope="col" class="sortable" (click)="sortBy('plotType')">
+                            Plot Type <i class="sort-mark" [class.on]="sortKey === 'plotType'"
+                                [class.desc]="sortKey === 'plotType' && !sortAsc"></i>
+                        </th>
+                        <th scope="col">Plot No.</th>
+                        <th scope="col">Plot Size</th>
+                        <th scope="col">Auction Date</th>
+                        <th scope="col">Allotment Date</th>
+                        <th scope="col">Allotment No.</th>
+                        <th scope="col" class="text-end sortable" (click)="sortBy('allotmentPrice')">
+                            Allotment Price <i class="sort-mark" [class.on]="sortKey === 'allotmentPrice'"
+                                [class.desc]="sortKey === 'allotmentPrice' && !sortAsc"></i>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- Loading skeleton -->
+                    <ng-container *ngIf="loading">
+                        <tr *ngFor="let s of skeletonRows">
+                            <td *ngFor="let c of [].constructor(12)"><span class="skeleton"></span></td>
+                        </tr>
+                    </ng-container>
+
+                    <!-- Data -->
+                    <ng-container *ngIf="!loading">
+                        <tr *ngFor="let row of pagedRows; let i = index; trackBy: trackByRow">
+                            <td class="fw-semibold text-secondary">{{ pageIndex * pageSize + i + 1 }}</td>
+                            <td class="fw-semibold text-portal">{{ row.alloteeCode }}</td>
+                            <td class="text-secondary text-nowrap">{{ row.name }}</td>
+                            <td class="text-secondary">{{ row.district }}</td>
+                            <td class="text-secondary">{{ row.mandi }}</td>
+                            <td>
+                                <span class="chip" [class.chip-commercial]="row.plotType === 'Commercial'">{{
+                                    row.plotType }}</span>
+                            </td>
+                            <td class="text-secondary">{{ row.plotNo }}</td>
+                            <td class="text-secondary text-nowrap">{{ row.plotSize }}</td>
+                            <td class="text-secondary text-nowrap">{{ row.auctionDate }}</td>
+                            <td class="text-secondary text-nowrap">{{ row.allotmentDate }}</td>
+                            <td class="text-secondary text-nowrap">{{ row.allotmentNo }}</td>
+                            <td class="text-end text-nowrap fw-semibold text-dark">
+                                {{ row.allotmentPrice | currency : 'INR' : 'symbol' : '1.0-0' }}
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="!pagedRows.length">
+                            <td colspan="12" class="empty-cell text-center">
+                                <ng-container *ngIf="!searched">
+                                    <p class="fw-semibold mb-1 text-dark">No Data Available</p>
+                                    <p class="small text-muted mb-0">Pick a district, committee and mandi, then select
+                                        Show summary.</p>
+                                </ng-container>
+                                <ng-container *ngIf="searched">
+                                    <p class="fw-semibold mb-1 text-dark">No allotments found</p>
+                                    <p class="small text-muted mb-0">Nothing is recorded for this mandi. Try another
+                                        mandi or committee.</p>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="border-top" *ngIf="rows.length && !loading">
+            <mat-paginator [length]="rows.length" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons (page)="onPageChange($event)">
+            </mat-paginator>
+        </div>
+
+    </div>
+</div>

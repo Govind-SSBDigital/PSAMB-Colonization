@@ -79,6 +79,7 @@ export class MainLayout {
       '/online-payment-details',
       '/coming-soon',
       '/deo-verification-view',
+      '/mandi-wise-allotment-summary',
     ];
     return dashboardRoutes.some(
       (route) =>
