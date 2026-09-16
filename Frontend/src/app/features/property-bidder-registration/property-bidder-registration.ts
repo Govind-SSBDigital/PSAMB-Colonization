@@ -128,6 +128,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
   private destroy$ = new Subject<void>();
   propertyData: any;
   propTypes: any;
+  showRemarksReadOnly = false;
+  remarksReadOnly: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -882,6 +884,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const mode = (params['mode'] as string) || this.mode;
       const propertyCode = params['propertyCode'] as string;
+      const approvalStatus = (params['approvalStatus'] as string) || '';
+      const remarksParam = (params['remarks'] as string) || '';
+
+      // Show remarks read-only panel only when viewing an Objection record
+      if (mode === 'view' && approvalStatus.trim().toLowerCase() === 'objection') {
+        this.showRemarksReadOnly = true;
+        this.remarksReadOnly = remarksParam || null;
+      } else {
+        this.showRemarksReadOnly = false;
+        this.remarksReadOnly = null;
+      }
+
       this.setMode(mode);
       if (propertyCode) {
         this.registerationForm.patchValue({ propertycode: propertyCode }, { emitEvent: false });
@@ -2214,7 +2228,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
   }
 
   onSubmit(): void {
-    debugger
+    // debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];

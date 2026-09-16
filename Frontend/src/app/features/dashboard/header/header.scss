@@ -169,11 +169,14 @@
   }
 
   .dashboard-brand img {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
   }
 
   .dashboard-title {
-    font-size: 0.9rem;
+    font-size: clamp(0.78rem, 3.5vw, 0.95rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
