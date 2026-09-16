@@ -58,7 +58,7 @@ export class SignupSignin implements OnInit {
     { id: 'Procurement Agency', label: 'Procurement Agency', icon: 'assignment', desc: 'Government or private procurement agency' }
   ];
 
-  idDocTypes = ['Aadhaar Card', 'Voter Card', 'Passport', 'Driving License'];
+  idDocTypes = ['Aadhaar Card', 'Voter Card', 'Passport', 'Other Government issued Photo ID'];
   addressDocTypes = ['Aadhaar Card', 'Passport', 'Electricity Bill', 'Water Bill', 'Rent Agreement', 'Registry Deed'];
 
   selectedEntityType = '';
@@ -189,7 +189,7 @@ export class SignupSignin implements OnInit {
   showRegistrationSuccessAlert = false;
   errorMessage = '';
   private toastHideTimer: any = null;
-  requiredIdDocs = ['Aadhaar Card', 'Voter Card', 'Passport', 'Driving License'];
+  requiredIdDocs = ['Aadhaar Card', 'Voter Card', 'Passport', 'Other Government issued Photo ID'];
   requiredAddressDocs = ['Utility Bill', 'Rental Agreement', 'Bank Statement'];
   showViewModal = false;
   showInstructionsModal = false;

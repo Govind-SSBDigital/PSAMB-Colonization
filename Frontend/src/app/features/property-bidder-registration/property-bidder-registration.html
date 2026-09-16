@@ -792,6 +792,7 @@
                       <tr>
                         <th scope="col" class="fw-normal px-1">Receipt No.</th>
                         <th scope="col" class="fw-normal px-1">Receipt Date</th>
+                        <th scope="col" class="fw-normal px-1">Treasury Receipt Date</th>
                         <th scope="col" class="fw-normal px-1">Draft No.</th>
                         <th scope="col" class="fw-normal px-1">Draft Amount</th>
                         <th scope="col" class="fw-normal px-1">Draft Date</th>
@@ -822,6 +823,15 @@
                             formControlName="receiptDate" />
                           } @else {
                           <span class="font-monospace text-dark">{{ row.get('receiptDate')?.value | date:'dd/MM/yyyy'
+                            }}</span>
+                          }
+                        </td>
+                         <td>
+                          @if (row.get('isEditing')?.value) {
+                          <input type="date" class="form-control form-control-sm font-monospace"
+                            formControlName="treasuryReceiptDate" />
+                          } @else {
+                          <span class="font-monospace text-dark">{{ row.get('treasuryReceiptDate')?.value | date:'dd/MM/yyyy'
                             }}</span>
                           }
                         </td>
@@ -1366,6 +1376,7 @@
                         <tr>
                           <th scope="col" class="fw-normal px-1">Receipt No.</th>
                           <th scope="col" class="fw-normal px-1">Receipt Date</th>
+                          <th scope="col" class="fw-normal px-1">Treasury Receipt Date</th>
                           <th scope="col" class="fw-normal px-1">Draft No.</th>
                           <th scope="col" class="fw-normal px-1">Draft Amount</th>
                           <th scope="col" class="fw-normal px-1">Draft Date</th>
@@ -1383,6 +1394,8 @@
                         <tr>
                           <td><span class="fw-semibold text-secondary">{{ row.get('receiptNo')?.value }}</span></td>
                           <td><span class="font-monospace text-dark">{{ row.get('receiptDate')?.value |
+                              date:'dd/MM/yyyy' }}</span></td>
+                          <td><span class="font-monospace text-dark">{{ row.get('treasuryReceiptDate')?.value |
                               date:'dd/MM/yyyy' }}</span></td>
                           <td><span class="font-monospace text-muted">{{ row.get('draftNo')?.value }}</span></td>
                           <td><span class="fw-bold text-dark">{{ row.get('draftAmount')?.value |

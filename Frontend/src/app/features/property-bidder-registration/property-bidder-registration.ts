@@ -10,6 +10,7 @@ import { Common } from '../../core/service/CommonService/common';
 export interface Receipt {
   receiptNo: string;
   receiptDate: string;
+  treasuryReceiptDate: string;
   draftNo: string;
   draftAmount: number;
   draftDate: string;
@@ -205,6 +206,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     return this.fb.group({
       receiptNo: [receipt?.receiptNo || ''],
       receiptDate: [receipt?.receiptDate || ''],
+      treasuryReceiptDate: [receipt?.treasuryReceiptDate || ''],
       draftNo: [receipt?.draftNo || ''],
       draftAmount: [receipt?.draftAmount || 0],
       draftDate: [receipt?.draftDate || ''],
@@ -1548,6 +1550,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
         this.receiptList = receiptsFromDb.map((rec: any) => {
           const receiptNo = rec.receiptNo || rec.ReceiptNo || '';
           const receiptDate = rec.receiptDate || rec.ReceiptDate || '';
+          const treasuryReceiptDate = rec.treasuryReceiptDate || rec.TreasuryReceiptDate || '';
           const draftNo = rec.draftNo || rec.DraftNo || '';
           const draftAmount = rec.draftAmount !== undefined ? rec.draftAmount : rec.DraftAmount;
           const draftDate = rec.draftDate || rec.DraftDate || '';
@@ -1563,6 +1566,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
           return {
             receiptNo,
             receiptDate: receiptDate ? receiptDate.split('T')[0] : '',
+            treasuryReceiptDate: treasuryReceiptDate ? treasuryReceiptDate.split('T')[0] : '',
             draftNo,
             draftAmount: draftAmount || 0,
             draftDate: draftDate ? draftDate.split('T')[0] : '',
@@ -1634,6 +1638,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     return this.fb.group({
       receiptNo: [receipt.receiptNo || ''],
       receiptDate: [receipt.receiptDate || ''],
+      treasuryReceiptDate: [receipt.treasuryReceiptDate || ''],
       draftNo: [receipt.draftNo || ''],
       draftAmount: [receipt.draftAmount ?? 0, [Validators.min(0)]],
       draftDate: [receipt.draftDate || ''],
@@ -1652,6 +1657,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     const newEmptyRecord: Partial<Receipt> = {
       receiptNo: `REC-2026-00${this.receiptsFormArray.length + 1}`,
       receiptDate: new Date().toISOString().split('T')[0],
+      treasuryReceiptDate: new Date().toISOString().split('T')[0],
       draftDate: new Date().toISOString().split('T')[0],
       draftAmount: 0,
       principalAmount: 0,
