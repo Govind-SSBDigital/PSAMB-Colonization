@@ -8,6 +8,7 @@ namespace Backend.Services.Interfaces
     public interface IUserPropertyRegistrationService
     {
         Task<ApiResponse<UserPropertyRegistrationDto>> UserPropertyRegisterAsync(UserPropertyRegistrationDto dto);
+        Task<ApiResponse<List<PlotSizesDto>>> GetMandiPlotSizeByPlotNoAsync(int mandiId,int plotTypeId,  string plotNo);
 
     }
 }
