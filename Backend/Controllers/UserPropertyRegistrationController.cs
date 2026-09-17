@@ -1,4 +1,6 @@
-﻿using Backend.Models.DTOs;
+﻿using Backend.Helpers;
+using Backend.Models.Dtos;
+using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +33,24 @@ namespace Backend.Controllers
             }
 
             return Ok(response);
+        }
+
+        [HttpGet("GetMandiPlotSizeByPlotNo")]
+        public async Task<IActionResult> GetMandiPlotSizeByPlotNo([FromQuery] int mandiId, [FromQuery] int plotTypeId, [FromQuery] string plotNo)
+        {
+            try
+            {
+                var response = await _service.GetMandiPlotSizeByPlotNoAsync(mandiId,plotTypeId,plotNo);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ApiResponse<List<PlotSizeDto>>.Fail(
+                        $"Error while fetching plot size: {ex.Message}"));
+            }
         }
     }
 }

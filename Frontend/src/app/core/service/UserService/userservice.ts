@@ -14,4 +14,8 @@ export class Userservice {
   UserPropertyRegistration(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/UserPropertyRegistration/UserPropertyRegistration`, payload);
   }
+
+  GetMandiPlotSizeByPlotNo(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/UserPropertyRegistration/GetMandiPlotSizeByPlotNo?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
+  }
 }

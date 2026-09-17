@@ -111,6 +111,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
   private destroy$ = new Subject<void>();
   propertyData: any;
   propTypes: any;
+  showRemarksReadOnly = false;
+  remarksReadOnly: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -351,25 +353,40 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.registerationForm.get('plotNo')?.markAsTouched();
     this.isPlotNoDropdownOpen = false;
     this.plotNoSearchText = '';
-
-    const selected = this.plotNos?.find(p => {
-      const id = p?.plotNo ?? p?.id ?? p;
-      return String(id) === String(val) || String(p?.label) === String(val);
-    });
-
-    if (selected) {
-      const sizeVal = selected.plotSize ?? selected.PlotSize ?? selected.plotSizeId ?? selected.PlotSizeId;
-      if (sizeVal !== undefined && sizeVal !== null && sizeVal !== '') {
-        this.registerationForm.get('plotsize')?.setValue(sizeVal);
-        this.registerationForm.get('plotsize')?.markAsTouched();
-      }
-    }
+    this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
+    this.plotSizes = [];
 
     const mandiId = this.registerationForm.get('mandiId')?.value;
     const plotTypeId = this.registerationForm.get('plotTypeId')?.value;
     if (mandiId && plotTypeId && val) {
-      this.fetchAndPatchPropertyDetailsByMandiPlot(mandiId, plotTypeId, val);
+      this.loadPlotSizesByPlotNo(mandiId, plotTypeId, val);
     }
+  }
+
+  loadPlotSizesByPlotNo(mandiId: any, plotTypeId: any, plotNo: any, callback?: () => void) {
+    if (!mandiId || !plotTypeId || !plotNo) {
+      this.plotSizes = [];
+      this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
+      if (callback) callback();
+      return;
+    }
+    this.service.GetPlotSizebyPlotNo(mandiId, plotTypeId, plotNo).subscribe({
+      next: (res: any) => {
+        const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        this.plotSizes = data.map((item: any) => ({
+          plotSizeId: item.plotSizeId ?? item.PlotSizeId ?? item.plotSize ?? item.PlotSize ?? item,
+          plotSize: item.plotSize ?? item.PlotSize ?? item.name ?? item
+        }));
+        // this.cdr.detectChanges();
+        if (callback) callback();
+      },
+      error: (err: any) => {
+        // console.error('Error fetching plot sizes by plot no:', err);
+        this.plotSizes = [];
+        this.registerationForm.get('plotsize')?.setValue('', { emitEvent: false });
+        if (callback) callback();
+      }
+    });
   }
 
   getSelectedPlotNoName(): string {
@@ -456,6 +473,15 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.registerationForm.get('plotsize')?.markAsTouched();
     this.isPlotSizeDropdownOpen = false;
     this.plotSizeSearchText = '';
+
+    const mandiId = this.registerationForm.get('mandiId')?.value;
+    const plotTypeId = this.registerationForm.get('plotTypeId')?.value;
+    const plotNo = this.registerationForm.get('plotNo')?.value;
+    const plotSize = this.registerationForm.get('plotsize')?.value;
+
+    if (mandiId && plotTypeId && plotNo && plotSize) {
+      this.fetchAndPatchPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo, plotSize);
+    }
   }
 
   getSelectedPlotSizeName(): string {
@@ -691,6 +717,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const mode = (params['mode'] as string) || this.mode;
       const propertyCode = params['propertyCode'] as string;
+      const approvalStatus = (params['approvalStatus'] as string) || '';
+      const remarksParam = (params['remarks'] as string) || '';
+
+      // Show remarks read-only panel only when viewing an Objection record
+      if (mode === 'view' && approvalStatus.trim().toLowerCase() === 'objection') {
+        this.showRemarksReadOnly = true;
+        this.remarksReadOnly = remarksParam || null;
+      } else {
+        this.showRemarksReadOnly = false;
+        this.remarksReadOnly = null;
+      }
+
       this.setMode(mode);
       if (propertyCode) {
         this.registerationForm.patchValue({ propertycode: propertyCode }, { emitEvent: false });
@@ -854,29 +892,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
             ...item
           };
         });
-
-        const availableSizes = data
-          .filter((item: any) => item.plotSize || item.PlotSize || item.plotSizeId || item.PlotSizeId)
-          .map((item: any) => ({
-            plotSizeId: item.plotSizeId ?? item.PlotSizeId ?? item.plotSize ?? item.PlotSize,
-            plotSize: item.plotSize ?? item.PlotSize ?? item.plotSizeId ?? item.PlotSizeId
-          }));
-
-        if (availableSizes.length > 0) {
-          const uniqueSizes = availableSizes.filter((v: any, i: number, a: any[]) =>
-            a.findIndex((t: any) => (String(t.plotSize) === String(v.plotSize) || String(t.plotSizeId) === String(v.plotSizeId))) === i
-          );
-          this.plotSizes = uniqueSizes;
-        }
-
-        const currentPlotNo = this.registerationForm.get('plotNo')?.value;
-        if (currentPlotNo) {
-          const matched = this.plotNos.find((p: any) => String(p.plotNo) === String(currentPlotNo));
-          if (matched && (matched.plotSize || matched.PlotSize || matched.plotSizeId || matched.PlotSizeId)) {
-            const sz = matched.plotSize ?? matched.PlotSize ?? matched.plotSizeId ?? matched.PlotSizeId;
-            this.registerationForm.get('plotsize')?.setValue(sz);
-          }
-        }
 
         if (callback) callback();
       },
@@ -1341,9 +1356,9 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  fetchAndPatchPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any) {
+  fetchAndPatchPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any, plotSize: any) {
     if (!mandiId || !plotTypeId || !plotNo) return;
-    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo).subscribe({
+    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo, plotSize).subscribe({
       next: (res: any) => {
         const d = res?.data || res;
         const hasValidData = !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName || !!d.plotSize);
@@ -1936,7 +1951,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
   }
 
   onSubmit(): void {
-    debugger
+    // debugger
     if (this.registerationForm.invalid) {
       this.registerationForm.markAllAsTouched();
       const invalidControls: string[] = [];

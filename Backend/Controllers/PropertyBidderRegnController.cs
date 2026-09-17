@@ -202,9 +202,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet("GetPropertyDetailsByMandiPlot")]
-        public async Task<IActionResult> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo)
+        public async Task<IActionResult> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo, string PlotSize)
         {
-            var response = await _service.GetPropertyDetailsByMandiPlot(MandiId, PlotTypeId, PlotNo);
+            var response = await _service.GetPropertyDetailsByMandiPlot(MandiId, PlotTypeId, PlotNo, PlotSize);
 
             return Ok(response);
         }
@@ -249,6 +249,24 @@ namespace Backend.Controllers
         {
             var response = await _service.GetPlotsByPlotTypeAsync(mandiId, plotTypeId);
             return Ok(response);
+        }
+
+        [HttpGet("GetPlotSizebyPlotNo")]
+        public async Task<IActionResult> GetPlotSizebyPlotNo([FromQuery] int mandiId, [FromQuery] int plotTypeId, [FromQuery] string plotNo)
+        {
+            try
+            {
+                var response = await _service.GetPlotSizebyPlotNo(mandiId, plotTypeId, plotNo);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ApiResponse<List<PlotSizeDto>>.Fail(
+                        $"Error while fetching plot size: {ex.Message}"));
+            }
         }
     }
 }

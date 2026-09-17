@@ -28,4 +28,9 @@ namespace Backend.Models.DTOs
         public string? PanNumber { get; set; }
         public int? VerificationUserEndStatusId { get; set; }
     }
+
+    public class PlotSizesDto
+    {
+        public string? PlotSize { get; set; }
+    }
 }
