@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Common } from '../../core/service/CommonService/common';
+import { MenuService } from '../../core/service/MenuService/menu.service';
 import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 import { PropertyBalanceResponse } from '../../models/property-balance-calculatation.model';
 
@@ -23,9 +24,23 @@ export class PropertyBalanceCalculate implements OnInit {
   mandis: any[] = [];
   plotNumbers: any[] = [];
   plotTypes: any[] = [];
+  plotSizes: any[] = [];
 
   isSearching = false;
   isCalculating = false;
+
+  // Role and user-specific allottee codes
+  isUser = false;
+  role: string = '';
+  get roles(): string {
+    return this.role;
+  }
+  allotteeCodes: any[] = [
+    { allotteeCode: 'LJJ97-10252'},
+    { allotteeCode: 'AAV10-22254'},
+    { allotteeCode: 'FFF12-11537'}
+  ];
+  isLoadingAllotteeCodes = false;
 
   showResults = false;
   balanceData: PropertyBalanceResponse | null = null;
@@ -36,11 +51,13 @@ export class PropertyBalanceCalculate implements OnInit {
     private fb: FormBuilder,
     private service: Propertybidderregn,
     private commonService: Common,
+    private menuService: MenuService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.buildForm();
+    this.initUserRoleAndAllotteeCodes();
     this.loadMasterData();
   }
 
@@ -51,8 +68,165 @@ export class PropertyBalanceCalculate implements OnInit {
       branchId: ['', Validators.required],
       plotTypeId: ['', Validators.required],
       mandiId: ['', Validators.required],
-      plotNo: ['', Validators.required]
+      plotNo: ['', Validators.required],
+      // plotSize: ['',Validators.required]
     });
+  }
+
+  private initUserRoleAndAllotteeCodes(): void {
+    this.isUser = this.checkIsUserRole();
+    // this.role = this.getUserRoleName();
+
+    if (this.isUser) {
+      this.loadUserAllotteeCodes();
+    }
+
+    this.menuService.profile$.subscribe(profile => {
+      if (profile) {
+        const roles = profile.roles || [];
+        const isUserRole = this.hasUserRole(roles);
+        if (isUserRole !== this.isUser) {
+          this.isUser = isUserRole;
+          // this.role = this.getUserRoleName() || (isUserRole ? 'user' : '');
+          if (this.isUser && (!this.allotteeCodes || this.allotteeCodes.length === 0)) {
+            this.loadUserAllotteeCodes();
+          }
+          this.cdr.detectChanges();
+        }
+      }
+    });
+  }
+
+  // private getUserRoleName(): string {
+  //   const token = sessionStorage.getItem('token');
+  //   if (token) {
+  //     try {
+  //       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+  //       const rawRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+  //         || tokenPayload.role
+  //         || tokenPayload.Role
+  //         || tokenPayload.roles
+  //         || tokenPayload.Roles;
+  //       if (Array.isArray(rawRole)) {
+  //         return rawRole[0] ? String(rawRole[0]).trim() : '';
+  //       }
+  //       if (rawRole) return String(rawRole).trim();
+  //     } catch (e) {}
+  //   }
+  //   const cpMenus = sessionStorage.getItem('cp_menus');
+  //   if (cpMenus) {
+  //     try {
+  //       const parsed = JSON.parse(cpMenus);
+  //       const roles = parsed?.profile?.roles || parsed?.roles;
+  //       if (Array.isArray(roles) && roles.length) return String(roles[0]).trim();
+  //       if (roles) return String(roles).trim();
+  //     } catch (e) {}
+  //   }
+  //   const storedRole = sessionStorage.getItem('role');
+  //   if (storedRole) return storedRole.trim();
+  //   return this.isUser ? 'user' : '';
+  // }
+
+  private hasUserRole(roles: any): boolean {
+    if (!roles) return false;
+    const isMatch = (r: any) => {
+      const s = String(r || '').trim().toLowerCase();
+      return s === 'user' || s === 'citizen' || s === 'applicant';
+    };
+    if (Array.isArray(roles)) {
+      return roles.some(isMatch);
+    }
+    return isMatch(roles);
+  }
+
+  private checkIsUserRole(): boolean {
+    // 1. Check JWT token claims
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        const rawRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+          || tokenPayload.role
+          || tokenPayload.Role
+          || tokenPayload.roles
+          || tokenPayload.Roles;
+        if (this.hasUserRole(rawRole)) {
+          return true;
+        }
+      } catch (e) {
+        console.error('Error parsing token for role:', e);
+      }
+    }
+
+    // 2. Check cp_menus cached profile roles
+    const cpMenus = sessionStorage.getItem('cp_menus');
+    if (cpMenus) {
+      try {
+        const parsed = JSON.parse(cpMenus);
+        const roles = parsed?.profile?.roles || parsed?.roles;
+        if (this.hasUserRole(roles)) {
+          return true;
+        }
+      } catch (e) {}
+    }
+
+    // 3. Check direct sessionStorage 'role'
+    const storedRole = sessionStorage.getItem('role');
+    if (this.hasUserRole(storedRole)) {
+      return true;
+    }
+
+    // 4. Check cp_session
+    const cpSession = sessionStorage.getItem('cp_session');
+    if (cpSession) {
+      try {
+        const session = JSON.parse(cpSession);
+        const role = session?.role || session?.userRole;
+        if (this.hasUserRole(role)) {
+          return true;
+        }
+      } catch (e) {}
+    }
+
+    return false;
+  }
+
+  loadUserAllotteeCodes(): void {
+    // Temporary options while API is in progress
+    this.allotteeCodes = [
+      { allotteeCode: 'LJJ97-10252'},
+      { allotteeCode: 'AAV10-22254'},
+      { allotteeCode: 'FFF12-11537'}
+    ];
+    this.isLoadingAllotteeCodes = false;
+    this.cdr.detectChanges();
+  }
+
+  onAllotteeCodeSelect(event?: any): void {
+    const selectedCode = (
+      event?.target?.value ??
+      this.balanceForm.get('allotteeCode')?.value ??
+      ''
+    ).toString().trim();
+
+    if (!selectedCode) {
+      this.resetPropertyDetails();
+      return;
+    }
+
+    this.balanceForm.patchValue({ allotteeCode: selectedCode });
+    this.searchPropertyByAllotteeCode(selectedCode);
+  }
+
+  onAllotteeCodeChange(event?: any): void {
+    this.onAllotteeCodeSelect(event);
+  }
+
+  private resetPropertyDetails(): void {
+    this.showResults = false;
+    this.balanceData = null;
+    this.propertyDetails = null;
+    this.cdr.detectChanges();
   }
 
   private loadMasterData(): void {
@@ -157,7 +331,19 @@ export class PropertyBalanceCalculate implements OnInit {
 
     if (!propertyCode) {
       allotteeCodeControl?.markAsTouched();
-      this.toastr.warning('Please enter an Allottee Code to search.', 'Validation');
+      this.toastr.warning(
+        this.isUser ? 'Please select an Allottee Code.' : 'Please enter an Allottee Code to search.',
+        'Validation'
+      );
+      return;
+    }
+
+    this.searchPropertyByAllotteeCode(propertyCode);
+  }
+
+  searchPropertyByAllotteeCode(propertyCode: string): void {
+    const code = (propertyCode || '').toString().trim();
+    if (!code) {
       return;
     }
 
@@ -166,7 +352,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.balanceData = null;
     this.propertyDetails = null;
 
-    this.service.getPropertyByCode(propertyCode).subscribe({
+    this.service.getPropertyByCode(code).subscribe({
       next: (res: any) => {
         this.isSearching = false;
         const d = res?.data;
