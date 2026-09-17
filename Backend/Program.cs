@@ -134,7 +134,7 @@ try
     {
         options.AddPolicy("CorsPolicy", policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "https://dircolon.emandikaran-pb.in")
+            policy.WithOrigins("http://localhost:4200", "https://dircolon.emandikaran-pb.in", "https://dircolon-pb.in")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
