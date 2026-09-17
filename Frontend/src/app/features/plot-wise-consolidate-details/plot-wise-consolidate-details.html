@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<!-- Summary strip: only once data is loaded -->
+<!-- Summary -->
 <div class="row g-3 mb-3" *ngIf="!loading && searched && allRows.length">
     <div class="col-12 col-sm-4">
         <div class="bg-white border rounded-3 shadow-sm p-3 h-100">
@@ -110,7 +110,7 @@
                     <!-- Empty state -->
                     <tr *ngIf="!pagedRows.length">
                         <td colspan="7" class="empty-cell text-center py-5">
-                            <p class="fw-semibold mb-1 text-dark">No allotments found</p>
+                            <p class="fw-semibold mb-1 text-dark">No Plots found</p>
                             <p class="small text-muted mb-0">
                                 Nothing is recorded for this mandi. Try another mandi or committee.
                             </p>
