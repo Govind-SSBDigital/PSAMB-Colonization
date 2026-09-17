@@ -103,6 +103,12 @@ import { Footer } from './footer/footer';
                 .then((m) => m.MandiWiseAllotmentSummary),
           },
           {
+            path: 'plot-wise-consolidate-details',
+            loadComponent: () =>
+              import('../../features/plot-wise-consolidate-details/plot-wise-consolidate-details')
+                .then((m) => m.PlotWiseConsolidateDetails),
+          },
+          {
             path: 'coming-soon',
             loadComponent: () =>
               import('../../features/comming-soon-pages/comming-soon-pages')

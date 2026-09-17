@@ -80,6 +80,7 @@ export class MainLayout {
       '/coming-soon',
       '/deo-verification-view',
       '/mandi-wise-allotment-summary',
+      '/plot-wise-consolidate-details',
     ];
     return dashboardRoutes.some(
       (route) =>
