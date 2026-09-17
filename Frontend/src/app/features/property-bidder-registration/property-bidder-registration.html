@@ -160,9 +160,30 @@
                 <div class="col-sm-6">
                   <label class="form-label small text-dark fw-semibold text-uppercase">Plot Size <span
                       class="text-danger">*</span></label>
-                  <input type="text" class="form-control bg-light rounded-3 custom-input-color"
-                    formControlName="plotsize" [class.is-invalid]="isInvalid('plotsize')" placeholder="Plot Size"
-                    autocomplete="off" />
+                  <div class="custom-select-wrapper position-relative">
+                    <input type="text" class="form-control bg-light rounded-3 custom-input-color"
+                      [class.is-invalid]="isInvalid('plotsize')" [class.open]="isPlotSizeDropdownOpen"
+                      [value]="plotSizeSearchText || getSelectedPlotSizeName() || ''" [disabled]="readonlyMode"
+                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlotSizeDropdownOpen = true)"
+                      (input)="onDropdownInput('plotsize', 'plotSizeSearchText', $event, 'isPlotSizeDropdownOpen')"
+                      (blur)="onPlotSizeBlur()" placeholder="Select Plot Size" autocomplete="off" />
+                    <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotSizeDropdownOpen">
+                      <div class="custom-dropdown-item text-muted" (click)="selectPlotSize('')">
+                        Select Plot Size
+                      </div>
+                      @for (item of filteredPlotSizes; track (item.plotSize || item.plotSizeId || item.id || item)) {
+                      <div class="custom-dropdown-item text-truncate" [class.active]="isPlotSizeSelected(item)"
+                        (click)="selectPlotSize(item.plotSize ?? item.name ?? item)">
+                        {{ item.plotSize ?? item.name ?? item }}
+                      </div>
+                      }
+                      @if (filteredPlotSizes.length === 0) {
+                      <div class="custom-dropdown-item text-muted text-center py-2">
+                        No plot size found
+                      </div>
+                      }
+                    </div>
+                  </div>
                   @if (isInvalid('plotsize')) { <div class="invalid-feedback d-block">Plot size is required.</div> }
                 </div>
 

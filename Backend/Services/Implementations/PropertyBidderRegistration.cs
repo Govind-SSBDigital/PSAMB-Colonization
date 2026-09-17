@@ -2,6 +2,7 @@ using Azure;
 using Backend.Data;
 using Backend.Helpers;
 using Backend.Models.Dtos;
+using Backend.Models.DTOs;
 using Backend.Models.Entities;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -2244,7 +2245,7 @@ namespace Backend.Services.Implementations
             return result;
         }
 
-        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo)
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo, string PlotSize)
         {
             try
             {
@@ -2258,6 +2259,8 @@ namespace Backend.Services.Implementations
                 command.Parameters.AddWithValue("@MandiId", MandiId);
                 command.Parameters.AddWithValue("@PlotTypeId", PlotTypeId);
                 command.Parameters.AddWithValue("@PlotNo", PlotNo);
+                command.Parameters.AddWithValue("@PlotSize", PlotSize);
+
 
                 using var adapter = new SqlDataAdapter(command);
 
@@ -3121,6 +3124,57 @@ namespace Backend.Services.Implementations
             }
 
             return result;
+        }
+
+        public async Task<ApiResponse<List<PlotSizesDto>>> GetPlotSizebyPlotNo(int mandiId, int plotTypeId, string plotNo)
+        {
+            try
+            {
+                var result = new List<PlotSizesDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetPlotSizebyPlotNo";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var mandiParam = command.CreateParameter();
+                mandiParam.ParameterName = "@MandiId";
+                mandiParam.Value = mandiId;
+                command.Parameters.Add(mandiParam);
+
+                var plotTypeParam = command.CreateParameter();
+                plotTypeParam.ParameterName = "@PlotTypeId";
+                plotTypeParam.Value = plotTypeId;
+                command.Parameters.Add(plotTypeParam);
+
+                var plotNoParam = command.CreateParameter();
+                plotNoParam.ParameterName = "@PlotNo";
+                plotNoParam.Value = plotNo;
+                command.Parameters.Add(plotNoParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    result.Add(new PlotSizesDto
+                    {
+                        PlotSize = reader["PlotSize"] == DBNull.Value ? null : reader["PlotSize"].ToString()
+                    });
+                }
+
+                return ApiResponse<List<PlotSizesDto>>.Ok(result, result.Count > 0 ? "Plot size fetched successfully." : "No plot size found."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<PlotSizesDto>>.Fail($"Error while fetching plot size: {ex.Message}"
+                );
+            }
         }
     }
 }

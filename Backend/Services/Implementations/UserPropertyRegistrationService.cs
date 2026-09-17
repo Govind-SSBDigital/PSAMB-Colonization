@@ -4,6 +4,7 @@ using Backend.Models.Dtos;
 using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Backend.Services.Implementations
 {
@@ -52,7 +53,7 @@ namespace Backend.Services.Implementations
                 //{
                 //    dto.PropertyCode = await GeneratePropertyCode(dto.DistrictId, dto.BranchId, dto.MandiId, dto.PlotNo);
                 //}
-                var data = _context.PropertyBidderRegistration.Where(x => x.PropertyCode == dto.PropertyCode).FirstOrDefault();
+                var data = _context.UserPropertyRegistration.Where(x => x.AllotteeCode == dto.PropertyCode).FirstOrDefault();
                 if (data != null)
                 {
                     return ApiResponse<UserPropertyRegistrationDto>.Fail("Data already exists for this allottee code.");
@@ -78,6 +79,7 @@ namespace Backend.Services.Implementations
                     AllotteeDistrictId = dto.OwnerDistrtictID,
                     AllotteeCityId = dto.OwnerCityID,
                     AllotteeAddress = dto.Address,
+                    IsActive=true
                 };
 
                 _context.UserPropertyRegistration.Add(entity);
@@ -97,6 +99,57 @@ namespace Backend.Services.Implementations
                     }
                 }
                 return ApiResponse<UserPropertyRegistrationDto>.Fail(message);
+            }
+        }
+
+        public async Task<ApiResponse<List<PlotSizesDto>>> GetMandiPlotSizeByPlotNoAsync(int mandiId, int plotTypeId, string plotNo)
+        {
+            try
+            {
+                var result = new List<PlotSizesDto>();
+
+                await using var connection = _context.Database.GetDbConnection();
+
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync();
+
+                await using var command = connection.CreateCommand();
+
+                command.CommandText = "sp_GetMandiPlotSizebyPlotNo";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var mandiParam = command.CreateParameter();
+                mandiParam.ParameterName = "@MandiId";
+                mandiParam.Value = mandiId;
+                command.Parameters.Add(mandiParam);
+
+                var plotTypeParam = command.CreateParameter();
+                plotTypeParam.ParameterName = "@PlotTypeId";
+                plotTypeParam.Value = plotTypeId;
+                command.Parameters.Add(plotTypeParam);
+
+                var plotNoParam = command.CreateParameter();
+                plotNoParam.ParameterName = "@PlotNo";
+                plotNoParam.Value = plotNo;
+                command.Parameters.Add(plotNoParam);
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    result.Add(new PlotSizesDto
+                    {
+                        PlotSize = reader["PlotSize"] == DBNull.Value ? null : reader["PlotSize"].ToString()
+                    });
+                }
+
+                return ApiResponse<List<PlotSizesDto>>.Ok(  result,   result.Count > 0? "Plot size fetched successfully."  : "No plot size found."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<PlotSizesDto>>.Fail(  $"Error while fetching plot size: {ex.Message}"
+                );
             }
         }
     }

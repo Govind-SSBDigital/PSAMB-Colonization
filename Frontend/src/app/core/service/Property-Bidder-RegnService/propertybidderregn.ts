@@ -71,8 +71,8 @@ export class Propertybidderregn {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetAuctionedPlots?mandiId=${mandiId}&plotTypeId=${plotTypeId}`);
   }
 
-  getPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyDetailsByMandiPlot?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
+  getPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any, PlotSize: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyDetailsByMandiPlot?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}&PlotSize=${encodeURIComponent(PlotSize)}`);
   }
 
   getPropertyMandiBranchesByDistrict(districtId: any): Observable<any> {
@@ -83,7 +83,7 @@ export class Propertybidderregn {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyMandisByBranchIdAsync/${branchId}`);
   }
 
-   getPropertyPlotTypesAsync(mandiId: any): Observable<any> {
+  getPropertyPlotTypesAsync(mandiId: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPropertyMandiPlotTypesAsync/${mandiId}`);
   }
 
@@ -92,6 +92,10 @@ export class Propertybidderregn {
   }
   GetBiderPropertyDetailsByMandiPlotAsync(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetBiderPropertyDetailsByMandiPlotAsync?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
+  }
+
+  GetPlotSizebyPlotNo(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPlotSizebyPlotNo?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
   }
 }
 
