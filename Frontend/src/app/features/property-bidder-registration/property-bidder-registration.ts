@@ -625,7 +625,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.loadPropertyCategories();
     this.loadBidderTypes();
     this.loadPlans();
-    this.loadPlotSizes();
     this.getPropertyTypes();
     this.setupCalculationListeners();
     this.registerationForm.get('districtId')?.valueChanges.subscribe((districtId) => {
