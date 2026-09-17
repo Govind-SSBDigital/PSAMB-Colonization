@@ -1993,14 +1993,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
         }
 
         cleanedReceipt[key] = cleanedVal;
-        const pascalKey = key.charAt(0).toUpperCase() + key.slice(1);
-        cleanedReceipt[pascalKey] = cleanedVal;
       });
 
-      cleanedReceipt['PrincipalAmount'] = cleanedReceipt['principalAmount'];
-      cleanedReceipt['InterestAmount'] = cleanedReceipt['interestAmount'];
-      cleanedReceipt['PenaltyType'] = cleanedReceipt['penaltyType'];
-      cleanedReceipt['IsVerified'] = receipt.isVerified || false;
       cleanedReceipt['isVerified'] = receipt.isVerified || false;
 
       return cleanedReceipt;
@@ -2067,21 +2061,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       totalEstimatedAmount: Number(s.totalWithInterest) || 0
     }));
 
-    const payload = {
-      ...(this.propertyData || {}),
+    const payload: any = {
 
       districtId: formRaw.districtId,
       mandiId: formRaw.mandiId,
       branchId: formRaw.branchId,
       propertyCode: finalPropertyCode,
-      PropertyCode: finalPropertyCode,
 
       ownerStateID: formRaw.ownerStateID,
       ownerDistrtictID: formRaw.ownerDistrtictID,
       ownerCityID: formRaw.ownerCityID,
 
       applicantId: applicantId,
-      ApplicantId: applicantId,
 
       plotNo: formRaw.plotNo,
       plotTypeId: formRaw.plotTypeId,
@@ -2090,48 +2081,36 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       plotStatus: formRaw.plotStatus,
       propertyCategoryId: formRaw.propertyCategoryId,
 
-      isAssetResumed: formRaw.isAssetResumed,
-      IsAssetResumed: formRaw.isAssetResumed,
       assetResumed: formRaw.isAssetResumed,
+      isAssetResumed: formRaw.isAssetResumed,
       isCourtCase: formRaw.isCourtCase,
-      isAssetSurrendered: formRaw.isAssetSurrendered,
-      IsAssetSurrendered: formRaw.isAssetSurrendered,
       assetSurrendered: formRaw.isAssetSurrendered,
+      isAssetSurrendered: formRaw.isAssetSurrendered,
 
       isAssetLocked: formRaw.isAssetLocked,
-      IsAssetLocked: formRaw.isAssetLocked,
 
       isDefaulter: formRaw.isDefaulter,
-      IsDefaulter: formRaw.isDefaulter,
 
       anyComplaint: formRaw.anyComplaint,
-      AnyComplaint: formRaw.anyComplaint,
 
       ndcGenerated: formRaw.ndcGenerated,
-      NdcGenerated: formRaw.ndcGenerated,
 
       ndcIssued: formRaw.ndcIssued,
-      NdcIssued: formRaw.ndcIssued,
 
       assetVerified: formRaw.assetVerified,
-      AssetVerified: formRaw.assetVerified,
 
       isAuctioned: formRaw.isAuctioned,
       auctionDate: formRaw.auctionDate,
       bidderTypeId: formRaw.bidderTypeId,
       email: formRaw.email,
       bidderName: finalBidderName,
-      BidderName: finalBidderName,
       isTransferred: formRaw.isTransferred,
 
       relation: formRaw.relation,
       fatherOrHusbandName: formRaw.fatherOrHusbandName,
       panNo: formRaw.panNo,
-      PANNo: formRaw.panNo,
       aadhaarNo: formRaw.aadhaarNo,
-      AadhaarNo: formRaw.aadhaarNo,
       mobileNo: formRaw.mobileNo,
-      MobileNo: formRaw.mobileNo,
       address: formRaw.address,
 
       propertyTypeId: formRaw.auctionPropertyType,
@@ -2155,15 +2134,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       totalDueWithInterest: formRaw.totalDueWithInterest,
 
       createdBy: this.propertyData?.createdBy || this.propertyData?.CreatedBy || currentUserId,
-      CreatedBy: this.propertyData?.createdBy || this.propertyData?.CreatedBy || currentUserId,
       modifiedBy: currentUserId,
-      ModifiedBy: currentUserId,
 
       installments: cleanReceipts,
-      Installments: cleanReceipts,
 
       installmentSchedules: cleanSchedules,
-      InstallmentSchedules: cleanSchedules,
 
     };
 
@@ -2176,7 +2151,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
 
     if (propertyRecordId > 0) {
       payload['id'] = propertyRecordId;
-      payload['Id'] = propertyRecordId;
     }
 
     const numericFields = [
@@ -2200,7 +2174,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
 
     if (propertyRecordId > 0) {
       cleanedPayload['id'] = propertyRecordId;
-      cleanedPayload['Id'] = propertyRecordId;
     }
 
     // console.log('Submission Payload:', cleanedPayload);
