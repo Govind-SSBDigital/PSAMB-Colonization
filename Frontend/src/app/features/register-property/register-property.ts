@@ -151,7 +151,6 @@ export class RegisterProperty implements OnInit {
       this.propertyForm.get('plotNumber')?.setValue('', { emitEvent: false });
       this.plotSizes = [];
       this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
-      this.clearOwnerInformation();
       if (districtId) {
         this.loadMarketCommittees(districtId);
       }
@@ -166,7 +165,6 @@ export class RegisterProperty implements OnInit {
       this.propertyForm.get('plotNumber')?.setValue('', { emitEvent: false });
       this.plotSizes = [];
       this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
-      this.clearOwnerInformation();
       if (branchId) {
         this.loadMandis(branchId);
       }
@@ -179,7 +177,6 @@ export class RegisterProperty implements OnInit {
       this.propertyForm.get('plotNumber')?.setValue('', { emitEvent: false });
       this.plotSizes = [];
       this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
-      this.clearOwnerInformation();
       if (mandiId) {
         this.loadPlotTypes(mandiId);
       }
@@ -190,7 +187,6 @@ export class RegisterProperty implements OnInit {
       this.propertyForm.get('plotNumber')?.setValue('', { emitEvent: false });
       this.plotSizes = [];
       this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
-      this.clearOwnerInformation();
       const mandiId = this.propertyForm.get('mandiId')?.value;
       if (mandiId && plotTypeId) {
         this.loadPlotNumbers(mandiId, plotTypeId);
@@ -200,17 +196,8 @@ export class RegisterProperty implements OnInit {
     this.propertyForm.get('plotNumber')?.valueChanges.subscribe((plotNumber) => {
       this.plotSizes = [];
       this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
-      this.clearOwnerInformation();
       if (plotNumber) {
         this.loadPlotSizes(plotNumber);
-      }
-    });
-
-    this.propertyForm.get('plotSize')?.valueChanges.subscribe((plotSize) => {
-      if (plotSize) {
-        this.loadPropertyDetailsByPlot(plotSize);
-      } else {
-        this.clearOwnerInformation();
       }
     });
 
@@ -349,7 +336,7 @@ export class RegisterProperty implements OnInit {
             if (d.plotTypeId) {
               this.loadPlotNumbers(d.mandiId, d.plotTypeId, () => {
                 if (d.plotNo || d.plotNumber) {
-                  this.loadPlotSizes(d.plotNo || d.plotNumber, proceedToBidderLocationPatch);
+                  this.loadPlotSizes(d.plotNo || d.plotNumber, d.mandiId, d.plotTypeId, proceedToBidderLocationPatch);
                 } else {
                   proceedToBidderLocationPatch();
                 }
@@ -1117,147 +1104,28 @@ export class RegisterProperty implements OnInit {
     this.cdr.detectChanges();
   }
 
-  loadPlotSizes(plotNo?: any, callback?: () => void) {
-    if (!plotNo) {
-      this.plotSizes = [];
-      this.propertyForm.get('plotSize')?.setValue('');
-      this.clearOwnerInformation();
+  loadPlotSizes(plotNo?: any, mandiId?: any, plotTypeId?: any, callback?: () => void) {
+    const currentMandiId = mandiId ?? this.propertyForm.get('mandiId')?.value;
+    const currentPlotTypeId = plotTypeId ?? this.propertyForm.get('plotTypeId')?.value;
+    const currentPlotNo = plotNo ?? this.propertyForm.get('plotNumber')?.value;
+
+    this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
+    this.plotSizes = [];
+
+    if (!currentPlotNo || !currentMandiId || !currentPlotTypeId) {
       if (callback) callback();
       return;
     }
-    this.commonService.GetPlotSizeByPlotNo(plotNo).subscribe({
+
+    this.userService.GetMandiPlotSizeByPlotNo(currentMandiId, currentPlotTypeId, currentPlotNo).subscribe({
       next: (res: any) => {
-        this.plotSizes = res.data || res || [];
-        if (this.plotSizes && this.plotSizes.length > 0) {
-          const item = this.plotSizes[0];
-          const singleSize = item?.plotSize ?? item?.size ?? item ?? '';
-          this.propertyForm.get('plotSize')?.setValue(singleSize);
-        } else {
-          this.propertyForm.get('plotSize')?.setValue('');
-          this.clearOwnerInformation();
-        }
+        this.plotSizes = res?.data || res || [];
+        this.cdr.detectChanges();
         if (callback) callback();
       },
       error: (err: any) => {
-        // console.error('Error fetching plot sizes by plot no:', err);
         this.plotSizes = [];
-        this.propertyForm.get('plotSize')?.setValue('');
-        this.clearOwnerInformation();
-        if (callback) callback();
-      }
-    });
-  }
-
-  loadPropertyDetailsByPlot(plotSize: string, callback?: () => void) {
-    const mandiId = this.propertyForm.get('mandiId')?.value;
-    const plotTypeId = this.propertyForm.get('plotTypeId')?.value;
-    const plotNo = this.propertyForm.get('plotNumber')?.value;
-
-    if (!plotNo || !plotSize || !mandiId || !plotTypeId) {
-      this.clearOwnerInformation();
-      if (callback) callback();
-      return;
-    }
-
-    this.commonService.GetPropertyDetailsByPlot(mandiId, plotTypeId, plotNo, plotSize).subscribe({
-      next: (res: any) => {
-        const d = res?.data;
-        const hasData = !!res?.success && !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.allotteeCode || !!d.currentOwnerName || !!d.bidderName || !!d.mobileNumber || !!d.mobileNo || !!d.aadhaarNo || !!d.aadhaarNumber);
-
-        if (!hasData) {
-          this.clearOwnerInformation();
-          if (callback) callback();
-          return;
-        }
-
-        this.propertyData = d;
-        this.isOwnerInfoReadOnly = true;
-        this.aadhaarDocPath = d.aadhaarDocPath || null;
-        this.panDocPath = d.panDocPath || null;
-        this.passportDocPath = d.photoPath || d.passportDocPath || null;
-        this.addrDocPath = d.addrDocPath || null;
-
-        let formattedAadhaar = d.aadhaarNumber || d.aadhaarNo || '';
-        if (formattedAadhaar && String(formattedAadhaar).trim()) {
-          const rawStr = String(formattedAadhaar).trim();
-          if (rawStr.startsWith('XXXXXXXX')) {
-            formattedAadhaar = rawStr;
-          } else {
-            const digits = rawStr.replace(/\D/g, '');
-            const last4 = digits.slice(-4);
-            formattedAadhaar = 'XXXXXXXX ' + last4;
-          }
-        }
-
-        const stateVal = (d.state && d.state !== 0 && d.state !== '0') ? d.state : ((d.ownerStateID && d.ownerStateID !== 0 && d.ownerStateID !== '0') ? d.ownerStateID : null);
-        const districtVal = (d.ownerDistrict && d.ownerDistrict !== 0 && d.ownerDistrict !== '0') ? d.ownerDistrict : ((d.ownerDistrtictID && d.ownerDistrtictID !== 0 && d.ownerDistrtictID !== '0') ? d.ownerDistrtictID : null);
-        const cityVal = (d.city && d.city !== 0 && d.city !== '0') ? d.city : ((d.ownerCityID && d.ownerCityID !== 0 && d.ownerCityID !== '0') ? d.ownerCityID : null);
-
-        const patchValues: any = {
-          allotteeCode: d.propertyCode || d.allotteeCode || '',
-          currentOwnerName: d.currentOwnerName || d.bidderName || '',
-          guardianName: d.guardianName || d.fatherOrHusbandName || '',
-          mobileNumber: d.mobileNumber || d.mobileNo || '',
-          email: d.email || '',
-          address: d.address || '',
-          aadhaarNumber: formattedAadhaar || '',
-          panNo: d.panNo || d.panNumber || '',
-          state: stateVal || '',
-          ownerDistrict: districtVal || '',
-          city: cityVal || '',
-        };
-
-        this.propertyForm.patchValue(patchValues, { emitEvent: false });
-
-        const tasks: { states?: any; districts?: any; cities?: any } = {};
-        if (!this.states || this.states.length === 0) {
-          tasks.states = this.commonService.getAllStates();
-        }
-        if (stateVal) {
-          tasks.districts = this.commonService.getAllDistrict(stateVal);
-        }
-        if (districtVal) {
-          tasks.cities = this.commonService.GetAllCityByDistrictID(districtVal);
-        }
-
-        if (Object.keys(tasks).length > 0) {
-          forkJoin(tasks).subscribe({
-            next: (resps: any) => {
-              if (resps.states) {
-                this.states = resps.states.data || resps.states || [];
-              }
-              if (resps.districts) {
-                this.bidderDistricts = resps.districts.data || resps.districts || [];
-              }
-              if (resps.cities) {
-                this.cities = resps.cities.data || resps.cities || [];
-              }
-
-              this.propertyForm.patchValue({
-                state: stateVal || '',
-                ownerDistrict: districtVal || '',
-                city: cityVal || ''
-              }, { emitEvent: false });
-
-              this.cdr.detectChanges();
-              if (callback) callback();
-            },
-            error: (err: any) => {
-              // console.error('Error loading districts or cities:', err);
-              this.cdr.detectChanges();
-              if (callback) callback();
-            }
-          });
-        } else {
-          this.cdr.detectChanges();
-          if (callback) callback();
-        }
-
-        this.toastr.success('Property and owner details loaded successfully.', 'Success');
-      },
-      error: (err: any) => {
-        // console.error('Error fetching property details by plot:', err);
-        this.clearOwnerInformation();
+        this.propertyForm.get('plotSize')?.setValue('', { emitEvent: false });
         if (callback) callback();
       }
     });

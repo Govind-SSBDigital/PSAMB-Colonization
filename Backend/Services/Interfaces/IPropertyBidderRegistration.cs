@@ -1,5 +1,6 @@
 using Backend.Helpers;
 using Backend.Models.Dtos;
+using Backend.Models.DTOs;
 using static Backend.Models.Dtos.DistrictMasterDto;
 
 namespace Backend.Services.Interfaces
@@ -20,7 +21,7 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<List<PlotTypeDto>>> GetPropertyPlotTypesAsync(int mandiId);
         Task<List<AuctionedPlotDto>> GetAuctionedPlotsAsync(int mandiId, int plotTypeId);
 
-        Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId,int PlotTypeId,string PlotNo);
+        Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId,int PlotTypeId,string PlotNo, string PlotSize);
         Task<ApiResponse<List<DistrictMasterDto>>> GetDistrictByHRMSUser(string v);
         Task<ApiResponse<List<PropertyBidderRegistration>>> GetAllRegisterPropertyById(string v);
         Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo);
@@ -28,5 +29,7 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<List<MandiDto>>> GetPropertyMandisByBranchIdAsync(int branchId);
         Task<ApiResponse<List<PlotTypeDto>>> GetPropertyMandiPlotTypesAsync(int mandiId);
         Task<List<AuctionedPlotDto>> GetPlotsByPlotTypeAsync(int mandiId, int plotTypeId);
+        Task<ApiResponse<List<PlotSizesDto>>> GetPlotSizebyPlotNo(int mandiId, int plotTypeId, string plotNo);
+
     }
 }
