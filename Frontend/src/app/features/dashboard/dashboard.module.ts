@@ -109,6 +109,12 @@ import { Footer } from './footer/footer';
                 .then((m) => m.PlotWiseConsolidateDetails),
           },
           {
+            path : 'property-ownership-verification',
+            loadComponent: () =>
+              import('../../features/property-ownership-verification/property-ownership-verification')
+                .then((m) => m.PropertyOwnershipVerification),
+          },
+          {
             path: 'coming-soon',
             loadComponent: () =>
               import('../../features/comming-soon-pages/comming-soon-pages')

@@ -81,6 +81,7 @@ export class MainLayout {
       '/deo-verification-view',
       '/mandi-wise-allotment-summary',
       '/plot-wise-consolidate-details',
+      '/property-ownership-verification',
     ];
     return dashboardRoutes.some(
       (route) =>
