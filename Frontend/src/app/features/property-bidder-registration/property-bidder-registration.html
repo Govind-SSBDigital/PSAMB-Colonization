@@ -32,7 +32,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('districtId')" [class.open]="isDistrictDropdownOpen"
                       [value]="districtSearchText || getSelectedDistrictName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isDistrictDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isDistrictDropdownOpen')"
                       (input)="onDropdownInput('districtId', 'districtSearchText', $event, 'isDistrictDropdownOpen')"
                       (blur)="onDistrictBlur()" placeholder="Select District" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isDistrictDropdownOpen">
@@ -58,7 +58,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('branchId')" [class.open]="isBranchDropdownOpen"
                       [value]="branchSearchText || getSelectedBranchName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isBranchDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isBranchDropdownOpen')"
                       (input)="onDropdownInput('branchId', 'branchSearchText', $event, 'isBranchDropdownOpen')"
                       (blur)="onBranchBlur()" placeholder="Select Market Committee" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBranchDropdownOpen">
@@ -85,7 +85,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('mandiId')" [class.open]="isMandiDropdownOpen"
                       [value]="mandiSearchText || getSelectedMandiName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isMandiDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isMandiDropdownOpen')"
                       (input)="onDropdownInput('mandiId', 'mandiSearchText', $event, 'isMandiDropdownOpen')"
                       (blur)="onMandiBlur()" placeholder="Select Mandi" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isMandiDropdownOpen">
@@ -112,7 +112,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('plotTypeId')" [class.open]="isPlotTypeDropdownOpen"
                       [value]="plotTypeSearchText || getSelectedPlotTypeName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlotTypeDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isPlotTypeDropdownOpen')"
                       (input)="onDropdownInput('plotTypeId', 'plotTypeSearchText', $event, 'isPlotTypeDropdownOpen')"
                       (blur)="onPlotTypeBlur()" placeholder="Select Plot Type" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotTypeDropdownOpen">
@@ -137,7 +137,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('plotNo')" [class.open]="isPlotNoDropdownOpen"
                       [value]="plotNoSearchText || getSelectedPlotNoName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlotNoDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isPlotNoDropdownOpen')"
                       (input)="onDropdownInput('plotNo', 'plotNoSearchText', $event, 'isPlotNoDropdownOpen')"
                       (blur)="onPlotNoBlur()" placeholder="Select or Type Plot No." autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotNoDropdownOpen">
@@ -164,7 +164,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('plotsize')" [class.open]="isPlotSizeDropdownOpen"
                       [value]="plotSizeSearchText || getSelectedPlotSizeName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlotSizeDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isPlotSizeDropdownOpen')"
                       (input)="onDropdownInput('plotsize', 'plotSizeSearchText', $event, 'isPlotSizeDropdownOpen')"
                       (blur)="onPlotSizeBlur()" placeholder="Select Plot Size" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlotSizeDropdownOpen">
@@ -208,7 +208,7 @@
                     <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                       [class.is-invalid]="isInvalid('planId')" [class.open]="isPlanDropdownOpen"
                       [value]="planSearchText || getSelectedPlanName() || ''" [disabled]="readonlyMode"
-                      [readonly]="readonlyMode" (focus)="!readonlyMode && (isPlanDropdownOpen = true)"
+                      [readonly]="readonlyMode" (focus)="openDropdown('isPlanDropdownOpen')"
                       (input)="onDropdownInput('planId', 'planSearchText', $event, 'isPlanDropdownOpen')"
                       (blur)="onPlanBlur()" placeholder="Select Plan" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPlanDropdownOpen">
@@ -234,7 +234,7 @@
                       [class.is-invalid]="isInvalid('propertyCategoryId')" [class.open]="isPropertyCategoryDropdownOpen"
                       [value]="propertyCategorySearchText || getSelectedPropertyCategoryName() || ''"
                       [disabled]="readonlyMode" [readonly]="readonlyMode"
-                      (focus)="!readonlyMode && (isPropertyCategoryDropdownOpen = true)"
+                      (focus)="openDropdown('isPropertyCategoryDropdownOpen')"
                       (input)="onDropdownInput('propertyCategoryId', 'propertyCategorySearchText', $event, 'isPropertyCategoryDropdownOpen')"
                       (blur)="onPropertyCategoryBlur()" placeholder="Select Category" autocomplete="off" />
                     <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropertyCategoryDropdownOpen">
@@ -329,7 +329,7 @@
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('bidderTypeId')" [class.open]="isBidderTypeDropdownOpen"
                     [value]="bidderTypeSearchText || getSelectedBidderTypeName() || ''" [disabled]="readonlyMode"
-                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isBidderTypeDropdownOpen = true)"
+                    [readonly]="readonlyMode" (focus)="openDropdown('isBidderTypeDropdownOpen')"
                     (input)="onDropdownInput('bidderTypeId', 'bidderTypeSearchText', $event, 'isBidderTypeDropdownOpen')"
                     (blur)="onBidderTypeBlur()" placeholder="Select Bidder Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderTypeDropdownOpen">
@@ -455,7 +455,7 @@
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('auctionPropertyType')" [class.open]="isPropTypeDropdownOpen"
                     [value]="propTypeSearchText || getSelectedPropTypeName() || ''" [disabled]="readonlyMode"
-                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isPropTypeDropdownOpen = true)"
+                    [readonly]="readonlyMode" (focus)="openDropdown('isPropTypeDropdownOpen')"
                     (input)="onDropdownInput('auctionPropertyType', 'propTypeSearchText', $event, 'isPropTypeDropdownOpen')"
                     (blur)="onPropTypeBlur()" placeholder="Select Property Type" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isPropTypeDropdownOpen">
@@ -480,7 +480,7 @@
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerStateID')" [class.open]="isStateDropdownOpen"
                     [value]="stateSearchText || getSelectedStateName() || ''" [disabled]="readonlyMode"
-                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isStateDropdownOpen = true)"
+                    [readonly]="readonlyMode" (focus)="openDropdown('isStateDropdownOpen')"
                     (input)="onDropdownInput('ownerStateID', 'stateSearchText', $event, 'isStateDropdownOpen')"
                     (blur)="onStateBlur()" placeholder="Select State" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isStateDropdownOpen">
@@ -506,7 +506,7 @@
                     [class.is-invalid]="isInvalid('ownerDistrtictID')" [class.open]="isBidderDistrictDropdownOpen"
                     [value]="bidderDistrictSearchText || getSelectedBidderDistrictName() || ''"
                     [disabled]="readonlyMode" [readonly]="readonlyMode"
-                    (focus)="!readonlyMode && (isBidderDistrictDropdownOpen = true)"
+                    (focus)="openDropdown('isBidderDistrictDropdownOpen')"
                     (input)="onDropdownInput('ownerDistrtictID', 'bidderDistrictSearchText', $event, 'isBidderDistrictDropdownOpen')"
                     (blur)="onBidderDistrictBlur()" placeholder="Select District" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isBidderDistrictDropdownOpen">
@@ -531,7 +531,7 @@
                   <input type="text" class="form-control bg-light rounded-3 custom-input-color"
                     [class.is-invalid]="isInvalid('ownerCityID')" [class.open]="isCityDropdownOpen"
                     [value]="citySearchText || getSelectedCityName() || ''" [disabled]="readonlyMode"
-                    [readonly]="readonlyMode" (focus)="!readonlyMode && (isCityDropdownOpen = true)"
+                    [readonly]="readonlyMode" (focus)="openDropdown('isCityDropdownOpen')"
                     (input)="onDropdownInput('ownerCityID', 'citySearchText', $event, 'isCityDropdownOpen')"
                     (blur)="onCityBlur()" placeholder="Select City" autocomplete="off" />
                   <div class="custom-dropdown-menu shadow-sm rounded-3 mt-1" *ngIf="isCityDropdownOpen">

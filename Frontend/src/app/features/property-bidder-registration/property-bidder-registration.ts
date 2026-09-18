@@ -270,9 +270,32 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.planSearchText = '';
   }
 
+  closeAllDropdowns(): void {
+    this.isPlanDropdownOpen = false;
+    this.isDistrictDropdownOpen = false;
+    this.isPlotNoDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPlotSizeDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
+  }
+
+  openDropdown(openProperty: string): void {
+    if (this.readonlyMode) return;
+    this.closeAllDropdowns();
+    (this as any)[openProperty] = true;
+  }
+
   onDropdownInput(controlName: string, searchProperty: string, event: Event, openProperty: string): void {
     const value = (event.target as HTMLInputElement).value;
     (this as any)[searchProperty] = value;
+    this.closeAllDropdowns();
     (this as any)[openProperty] = true;
     this.registerationForm.get(controlName)?.setValue(value, { emitEvent: false });
   }
@@ -604,20 +627,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     if (target.closest('.custom-select-wrapper')) {
       return;
     }
-
-    this.isPlanDropdownOpen = false;
-    this.isDistrictDropdownOpen = false;
-    this.isPlotNoDropdownOpen = false;
-    this.isPlotTypeDropdownOpen = false;
-    this.isPlotSizeDropdownOpen = false;
-    this.isPropTypeDropdownOpen = false;
-    this.isMandiDropdownOpen = false;
-    this.isStateDropdownOpen = false;
-    this.isBidderDistrictDropdownOpen = false;
-    this.isCityDropdownOpen = false;
-    this.isBranchDropdownOpen = false;
-    this.isPropertyCategoryDropdownOpen = false;
-    this.isBidderTypeDropdownOpen = false;
+    this.closeAllDropdowns();
   }
 
   ngOnInit(): void {

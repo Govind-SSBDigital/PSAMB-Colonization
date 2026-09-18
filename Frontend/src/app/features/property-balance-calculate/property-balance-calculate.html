@@ -136,7 +136,8 @@
           </label>
           <select id="plotNumber" class="form-select bg-light rounded-3 custom-input-color"
             formControlName="plotNo" [class.is-invalid]="isInvalid('plotNo')"
-            [disabled]="!plotNumbers.length">
+            [disabled]="!plotNumbers.length"
+            (change)="onPlotNumberChange()">
             <option value="" disabled>Select plot</option>
             @for (plot of plotNumbers; track plot.plotNo ?? plot.id) {
             <option [value]="plot.plotNo ?? plot.id">{{ plot.plotNo ?? plot.plotNumber ?? plot.name }}</option>
@@ -144,20 +145,20 @@
           </select>
           @if (isInvalid('plotNo')) { <div class="invalid-feedback">Plot number is required.</div> }
         </div>
-        <!-- <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-xl-3">
           <label for="plotSize" class="form-label small text-dark fw-semibold text-uppercase">
             Plot Size <span class="text-danger">*</span>
           </label>
           <select id="plotSize" class="form-select bg-light rounded-3 custom-input-color"
             formControlName="plotSize" [class.is-invalid]="isInvalid('plotSize')"
-            [disabled]="!plotNumbers.length">
-            <option value="" disabled>Select plot</option>
-            @for (plot of plotNumbers; track plot.plotNo ?? plot.id) {
-            <option [value]="plot.plotNo ?? plot.id">{{ plot.plotNo ?? plot.plotNumber ?? plot.name }}</option>
+            [disabled]="!plotSizes.length">
+            <option value="" disabled>Select plot size</option>
+            @for (plot of plotSizes; track plot.plotSize ?? plot.id) {
+            <option [value]="plot.plotSizeId ?? plot.plotSize ?? plot.id">{{ plot.plotSize ?? plot.plotNumber ?? plot.name }}</option>
             }
           </select>
           @if (isInvalid('plotSize')) { <div class="invalid-feedback">Plot size is required.</div> }
-        </div> -->
+        </div>
 
         <div class="col-md-6 col-xl-3 d-flex align-items-end">
           <button type="submit" class="btn bg-success text-white rounded-3 w-50">Submit
