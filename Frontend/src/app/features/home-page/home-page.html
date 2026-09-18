@@ -101,7 +101,12 @@
 
         <div class="leadership-small-grid">
             <!-- Small Card Link -->
-            <a class="leader-small-card" *ngFor="let item of leadershipShortlist" href="javascript:void(0)" (click)="openLeaderModal(item.id)">
+            <a class="leader-small-card" *ngFor="let item of leadershipShortlist"
+                [class.disabled]="item.role === 'Dr. Baldeep Kaur IAS'"
+                [attr.aria-disabled]="item.role === 'Dr. Baldeep Kaur IAS'"
+                [attr.tabindex]="item.role === 'Dr. Baldeep Kaur IAS' ? -1 : 0"
+                href="javascript:void(0)"
+                (click)="item.role !== 'Dr. Baldeep Kaur IAS' && openLeaderModal(item.id)">
                 <div class="small-card-inner">
                     <div class="leader-avatar-wrapper">
                         <img [src]="item.image" [alt]="item.name" class="leader-avatar-img">

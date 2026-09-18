@@ -1075,6 +1075,10 @@
   box-shadow: var(--hover-lift-shadow);
   border-color: rgba(6, 78, 59, 0.2);
 }
+.leader-small-card.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .leader-avatar-wrapper {
   width: 76px;

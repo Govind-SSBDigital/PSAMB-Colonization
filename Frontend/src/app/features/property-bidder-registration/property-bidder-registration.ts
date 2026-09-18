@@ -10,6 +10,7 @@ import { Common } from '../../core/service/CommonService/common';
 export interface Receipt {
   receiptNo: string;
   receiptDate: string;
+  treasuryReceiptDate: string;
   draftNo: string;
   draftAmount: number;
   draftDate: string;
@@ -205,6 +206,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     return this.fb.group({
       receiptNo: [receipt?.receiptNo || ''],
       receiptDate: [receipt?.receiptDate || ''],
+      treasuryReceiptDate: [receipt?.treasuryReceiptDate || ''],
       draftNo: [receipt?.draftNo || ''],
       draftAmount: [receipt?.draftAmount || 0],
       draftDate: [receipt?.draftDate || ''],
@@ -268,9 +270,32 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.planSearchText = '';
   }
 
+  closeAllDropdowns(): void {
+    this.isPlanDropdownOpen = false;
+    this.isDistrictDropdownOpen = false;
+    this.isPlotNoDropdownOpen = false;
+    this.isPlotTypeDropdownOpen = false;
+    this.isPlotSizeDropdownOpen = false;
+    this.isPropTypeDropdownOpen = false;
+    this.isMandiDropdownOpen = false;
+    this.isStateDropdownOpen = false;
+    this.isBidderDistrictDropdownOpen = false;
+    this.isCityDropdownOpen = false;
+    this.isBranchDropdownOpen = false;
+    this.isPropertyCategoryDropdownOpen = false;
+    this.isBidderTypeDropdownOpen = false;
+  }
+
+  openDropdown(openProperty: string): void {
+    if (this.readonlyMode) return;
+    this.closeAllDropdowns();
+    (this as any)[openProperty] = true;
+  }
+
   onDropdownInput(controlName: string, searchProperty: string, event: Event, openProperty: string): void {
     const value = (event.target as HTMLInputElement).value;
     (this as any)[searchProperty] = value;
+    this.closeAllDropdowns();
     (this as any)[openProperty] = true;
     this.registerationForm.get(controlName)?.setValue(value, { emitEvent: false });
   }
@@ -602,20 +627,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     if (target.closest('.custom-select-wrapper')) {
       return;
     }
-
-    this.isPlanDropdownOpen = false;
-    this.isDistrictDropdownOpen = false;
-    this.isPlotNoDropdownOpen = false;
-    this.isPlotTypeDropdownOpen = false;
-    this.isPlotSizeDropdownOpen = false;
-    this.isPropTypeDropdownOpen = false;
-    this.isMandiDropdownOpen = false;
-    this.isStateDropdownOpen = false;
-    this.isBidderDistrictDropdownOpen = false;
-    this.isCityDropdownOpen = false;
-    this.isBranchDropdownOpen = false;
-    this.isPropertyCategoryDropdownOpen = false;
-    this.isBidderTypeDropdownOpen = false;
+    this.closeAllDropdowns();
   }
 
   ngOnInit(): void {
@@ -1548,6 +1560,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
         this.receiptList = receiptsFromDb.map((rec: any) => {
           const receiptNo = rec.receiptNo || rec.ReceiptNo || '';
           const receiptDate = rec.receiptDate || rec.ReceiptDate || '';
+          const treasuryReceiptDate = rec.treasuryReceiptDate || rec.TreasuryReceiptDate || '';
           const draftNo = rec.draftNo || rec.DraftNo || '';
           const draftAmount = rec.draftAmount !== undefined ? rec.draftAmount : rec.DraftAmount;
           const draftDate = rec.draftDate || rec.DraftDate || '';
@@ -1563,6 +1576,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
           return {
             receiptNo,
             receiptDate: receiptDate ? receiptDate.split('T')[0] : '',
+            treasuryReceiptDate: treasuryReceiptDate ? treasuryReceiptDate.split('T')[0] : '',
             draftNo,
             draftAmount: draftAmount || 0,
             draftDate: draftDate ? draftDate.split('T')[0] : '',
@@ -1634,6 +1648,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     return this.fb.group({
       receiptNo: [receipt.receiptNo || ''],
       receiptDate: [receipt.receiptDate || ''],
+      treasuryReceiptDate: [receipt.treasuryReceiptDate || ''],
       draftNo: [receipt.draftNo || ''],
       draftAmount: [receipt.draftAmount ?? 0, [Validators.min(0)]],
       draftDate: [receipt.draftDate || ''],
@@ -1652,6 +1667,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     const newEmptyRecord: Partial<Receipt> = {
       receiptNo: `REC-2026-00${this.receiptsFormArray.length + 1}`,
       receiptDate: new Date().toISOString().split('T')[0],
+      treasuryReceiptDate: new Date().toISOString().split('T')[0],
       draftDate: new Date().toISOString().split('T')[0],
       draftAmount: 0,
       principalAmount: 0,
@@ -1987,14 +2003,8 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
         }
 
         cleanedReceipt[key] = cleanedVal;
-        const pascalKey = key.charAt(0).toUpperCase() + key.slice(1);
-        cleanedReceipt[pascalKey] = cleanedVal;
       });
 
-      cleanedReceipt['PrincipalAmount'] = cleanedReceipt['principalAmount'];
-      cleanedReceipt['InterestAmount'] = cleanedReceipt['interestAmount'];
-      cleanedReceipt['PenaltyType'] = cleanedReceipt['penaltyType'];
-      cleanedReceipt['IsVerified'] = receipt.isVerified || false;
       cleanedReceipt['isVerified'] = receipt.isVerified || false;
 
       return cleanedReceipt;
@@ -2061,21 +2071,18 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       totalEstimatedAmount: Number(s.totalWithInterest) || 0
     }));
 
-    const payload = {
-      ...(this.propertyData || {}),
+    const payload: any = {
 
       districtId: formRaw.districtId,
       mandiId: formRaw.mandiId,
       branchId: formRaw.branchId,
       propertyCode: finalPropertyCode,
-      PropertyCode: finalPropertyCode,
 
       ownerStateID: formRaw.ownerStateID,
       ownerDistrtictID: formRaw.ownerDistrtictID,
       ownerCityID: formRaw.ownerCityID,
 
       applicantId: applicantId,
-      ApplicantId: applicantId,
 
       plotNo: formRaw.plotNo,
       plotTypeId: formRaw.plotTypeId,
@@ -2084,48 +2091,36 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       plotStatus: formRaw.plotStatus,
       propertyCategoryId: formRaw.propertyCategoryId,
 
-      isAssetResumed: formRaw.isAssetResumed,
-      IsAssetResumed: formRaw.isAssetResumed,
       assetResumed: formRaw.isAssetResumed,
+      isAssetResumed: formRaw.isAssetResumed,
       isCourtCase: formRaw.isCourtCase,
-      isAssetSurrendered: formRaw.isAssetSurrendered,
-      IsAssetSurrendered: formRaw.isAssetSurrendered,
       assetSurrendered: formRaw.isAssetSurrendered,
+      isAssetSurrendered: formRaw.isAssetSurrendered,
 
       isAssetLocked: formRaw.isAssetLocked,
-      IsAssetLocked: formRaw.isAssetLocked,
 
       isDefaulter: formRaw.isDefaulter,
-      IsDefaulter: formRaw.isDefaulter,
 
       anyComplaint: formRaw.anyComplaint,
-      AnyComplaint: formRaw.anyComplaint,
 
       ndcGenerated: formRaw.ndcGenerated,
-      NdcGenerated: formRaw.ndcGenerated,
 
       ndcIssued: formRaw.ndcIssued,
-      NdcIssued: formRaw.ndcIssued,
 
       assetVerified: formRaw.assetVerified,
-      AssetVerified: formRaw.assetVerified,
 
       isAuctioned: formRaw.isAuctioned,
       auctionDate: formRaw.auctionDate,
       bidderTypeId: formRaw.bidderTypeId,
       email: formRaw.email,
       bidderName: finalBidderName,
-      BidderName: finalBidderName,
       isTransferred: formRaw.isTransferred,
 
       relation: formRaw.relation,
       fatherOrHusbandName: formRaw.fatherOrHusbandName,
       panNo: formRaw.panNo,
-      PANNo: formRaw.panNo,
       aadhaarNo: formRaw.aadhaarNo,
-      AadhaarNo: formRaw.aadhaarNo,
       mobileNo: formRaw.mobileNo,
-      MobileNo: formRaw.mobileNo,
       address: formRaw.address,
 
       propertyTypeId: formRaw.auctionPropertyType,
@@ -2149,15 +2144,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       totalDueWithInterest: formRaw.totalDueWithInterest,
 
       createdBy: this.propertyData?.createdBy || this.propertyData?.CreatedBy || currentUserId,
-      CreatedBy: this.propertyData?.createdBy || this.propertyData?.CreatedBy || currentUserId,
       modifiedBy: currentUserId,
-      ModifiedBy: currentUserId,
 
       installments: cleanReceipts,
-      Installments: cleanReceipts,
 
       installmentSchedules: cleanSchedules,
-      InstallmentSchedules: cleanSchedules,
 
     };
 
@@ -2170,7 +2161,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
 
     if (propertyRecordId > 0) {
       payload['id'] = propertyRecordId;
-      payload['Id'] = propertyRecordId;
     }
 
     const numericFields = [
@@ -2194,7 +2184,6 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
 
     if (propertyRecordId > 0) {
       cleanedPayload['id'] = propertyRecordId;
-      cleanedPayload['Id'] = propertyRecordId;
     }
 
     // console.log('Submission Payload:', cleanedPayload);

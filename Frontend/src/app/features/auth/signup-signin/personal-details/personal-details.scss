@@ -277,6 +277,16 @@
     gap: 20px;
     animation: fadeIn 0.25s ease-in-out;
 }
+@media (max-width: 768px) {
+    .toggle-section {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .toggle-section .form-group-custom {
+        width: 100%;
+    }
+}
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-4px); }

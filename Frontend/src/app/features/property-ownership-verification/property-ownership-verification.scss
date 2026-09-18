@@ -1,0 +1,238 @@
+:root {
+    --gov-slate-50: #F8FAFC;
+    --gov-slate-100: #F1F5F9;
+}
+
+.text-success {
+    color: var(--theme-primary) !important;
+}
+
+.bg-surface {
+    background: var(--gov-slate-50);
+}
+
+.hero-panel {
+    background: var(--theme-primary);
+}
+
+.header-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+}
+
+.stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.10);
+    line-height: 1.05;
+
+    .stat-pill-value {
+        font-weight: 700;
+        font-size: .85rem;
+        color: #fff;
+    }
+
+    .stat-pill-label {
+        font-size: .58rem;
+        color: rgba(255, 255, 255, 0.68);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    & :hover {
+        cursor: pointer;
+    }
+}
+
+.table-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-scroll {
+    width: 100%;
+}
+
+.table-verification {
+    font-size: .82rem;
+    margin-bottom: 0;
+
+    thead.table-head-portal th {
+        background: var(--gov-slate-50, #F8FAFC);
+        color: var(--gov-navy-900, #0f172a);
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: 700;
+        border-bottom: 1px solid var(--gov-slate-200, #e2e8f0);
+        white-space: nowrap;
+        padding: .65rem .75rem;
+    }
+
+    tbody td {
+        padding: .6rem .75rem;
+        vertical-align: middle;
+        border-color: var(--gov-slate-100, #F1F5F9);
+    }
+
+    tbody tr:hover {
+        background: var(--gov-slate-50, #F8FAFC);
+    }
+}
+
+// Status badges
+.badge-status {
+    font-size: .68rem;
+    font-weight: 600;
+    padding: .35em .7em;
+    border-radius: 999px;
+    text-transform: capitalize;
+
+    &.status-verified {
+        background: #ecfdf5;
+        color: var(--gov-accent-emerald, #059669);
+    }
+
+    &.status-pending {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    &.status-rejected {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+}
+
+// Row action icons 
+.btn-action-icon {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid var(--gov-slate-200, #e2e8f0);
+    background: #fff;
+    color: var(--theme-primary);
+    transition: background-color .15s ease, border-color .15s ease;
+
+    mat-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+    }
+
+    &:hover {
+        background: var(--gov-slate-50, #F8FAFC);
+        border-color: var(--theme-primary);
+    }
+}
+
+.empty-icon {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+    color: var(--gov-slate-400, #94a3b8);
+}
+
+.filter-bar {
+    border-color: var(--gov-slate-100, #F1F5F9) !important;
+
+    .search-group {
+        position: relative;
+
+        .input-group-text {
+            border-color: var(--gov-slate-200, #e2e8f0);
+        }
+
+        .form-control {
+            border-color: var(--gov-slate-200, #e2e8f0);
+            font-size: .8rem;
+
+            &:focus {
+                box-shadow: none;
+                border-color: var(--theme-primary);
+            }
+        }
+    }
+
+    .search-icon {
+        font-size: 17px;
+        height: 16px;
+        width: 16px;
+        color: var(--theme-primary);
+    }
+
+    .form-select {
+        border-color: var(--gov-slate-200, #e2e8f0);
+        font-size: .8rem;
+
+        &:focus {
+            box-shadow: none;
+            border-color: var(--theme-primary);
+        }
+    }
+
+    .filter-select-wrapper {
+        position: relative;
+
+        .form-select {
+            padding-right: 2.25rem !important;
+        }
+    }
+
+    .clear-filter-btn {
+        position: absolute;
+        top: 50%;
+        right: 1.9rem;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--gov-slate-400, #94a3b8);
+        z-index: 2;
+
+        mat-icon {
+            width: 16px;
+            height: 16px;
+            font-size: 16px;
+        }
+
+        &:hover {
+            color: var(--theme-primary);
+        }
+    }
+
+    .reset-filter-btn {
+        font-size: .78rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .reset-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+    }
+}
+
+::ng-deep mat-paginator {
+    background: transparent !important;
+    border-radius: .75rem;
+    font-size: .8rem;
+}

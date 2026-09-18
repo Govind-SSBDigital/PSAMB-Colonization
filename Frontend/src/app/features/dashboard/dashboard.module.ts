@@ -97,6 +97,24 @@ import { Footer } from './footer/footer';
                 .then((m) => m.DataEntryOperatorVerificationView),
           },
           {
+            path: 'mandi-wise-allotment-summary',
+            loadComponent: () =>
+              import('../../features/mandi-wise-allotment-summary/mandi-wise-allotment-summary')
+                .then((m) => m.MandiWiseAllotmentSummary),
+          },
+          {
+            path: 'plot-wise-consolidate-details',
+            loadComponent: () =>
+              import('../../features/plot-wise-consolidate-details/plot-wise-consolidate-details')
+                .then((m) => m.PlotWiseConsolidateDetails),
+          },
+          {
+            path : 'property-ownership-verification',
+            loadComponent: () =>
+              import('../../features/property-ownership-verification/property-ownership-verification')
+                .then((m) => m.PropertyOwnershipVerification),
+          },
+          {
             path: 'coming-soon',
             loadComponent: () =>
               import('../../features/comming-soon-pages/comming-soon-pages')

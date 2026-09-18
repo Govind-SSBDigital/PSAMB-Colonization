@@ -90,8 +90,8 @@ export class Propertybidderregn {
   getPlotsByPlotTypesAsync(mandiId: any, plotTypeId: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetPlotsByPlotTypeAsync?mandiId=${mandiId}&plotTypeId=${plotTypeId}`);
   }
-  GetBiderPropertyDetailsByMandiPlotAsync(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetBiderPropertyDetailsByMandiPlotAsync?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
+  GetBiderPropertyDetailsByMandiPlotAsync(mandiId: any, plotTypeId: any, plotNo: any, plotSize: any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/PropertyBidderRegn/GetBiderPropertyDetailsByMandiPlotAsync?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}&PlotSize=${encodeURIComponent(plotSize)}`);
   }
 
   GetPlotSizebyPlotNo(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
