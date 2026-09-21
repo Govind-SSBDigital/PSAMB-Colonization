@@ -170,7 +170,7 @@ export class PropertyOwnershipVerification implements OnInit {
 
   viewDetails(property: OwnershipPropertyModel): void {
     // const encryptedId = btoa(property.id.toString());
-    this.router.navigate(['/user-verification-view'], {
+    this.router.navigate(['/user-verification'], {
       // queryParams: { id: encryptedId },
       // state: { registrationData: property.registrationData },
     });

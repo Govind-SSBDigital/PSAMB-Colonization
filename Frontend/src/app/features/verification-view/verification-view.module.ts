@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { VerificationView } from './verification-view';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -10,6 +11,7 @@ import { CommonModule } from '@angular/common';
   ],
   imports: [
     RouterModule,
+    ConfirmDialogModule,
     ReactiveFormsModule,
     CommonModule,
     RouterModule.forChild([
