@@ -199,3 +199,19 @@
     font-size: 0.85rem;
   }
 }
+
+.pw-toggle-btn {
+  border-color: rgba(var(--theme-primary-rgb), 0.16);
+  color: var(--theme-forest-dark);
+  background-color: #f7fafc;
+  transition: color 0.2s ease, background-color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    color: var(--theme-primary);
+    background-color: rgba(var(--theme-primary-rgb), 0.06);
+    border-color: rgba(var(--theme-primary-rgb), 0.35);
+    box-shadow: none;
+  }
+}
+
