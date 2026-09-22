@@ -8,6 +8,7 @@ using Backend.Data;
 using Backend.Middleware;
 using Backend.Models.DTOs;
 using Backend.Models.Entities;
+using Backend.Models.Settings;
 using Backend.Repositories.Implementations;
 using Backend.Repositories.Interfaces;
 using Backend.Services.Implementations;
@@ -161,8 +162,8 @@ try
 
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
-    builder.Services.Configure<FileStorageSettings>(
-    builder.Configuration.GetSection("FileStorage"));
+    builder.Services.Configure<FileUploadSettings>(
+    builder.Configuration.GetSection("FileUploadSettings"));
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
     builder.Services.AddScoped<IPropertyBidderRegistration, Backend.Services.Implementations.PropertyBidderRegistration>(); builder.Services.AddScoped<ICommon, Common>();

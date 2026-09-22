@@ -1,7 +1,6 @@
 ﻿using Backend.Helpers;
 using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -22,26 +21,24 @@ namespace Backend.Controllers
         [HttpPost("upload")]
         [RequestSizeLimit(5 * 1024 * 1024)]
         public async Task<ActionResult<ApiResponse<FileUploadResponse>>> Upload(
-            [FromForm] FileUploadRequest request)
+             [FromForm] FileUploadRequest request)
         {
             try
             {
-                if (request.File == null ||
-                    request.File.Length == 0)
-                {
-                    return BadRequest(
-                        "Please select a file.");
-                }
-                var result =
-                    await _fileService.UploadAsync(
-                        request.File,
-                        request.DocumentCategoryId,
-                        request.DocumentTypeId);
+                if (request.File == null || request.File.Length == 0)
+                    return BadRequest("Please select a file.");
 
-                return Ok(
-                    ApiResponse<FileUploadResponse>.Ok(
-                        result,
-                        "File uploaded successfully"));
+                if (string.IsNullOrWhiteSpace(request.SessionId))
+                    return BadRequest("SessionId is required.");
+
+                var result = await _fileService.UploadAsync(
+                    request.File,
+                    request.DocumentCategoryId,
+                    request.DocumentTypeId,
+                    request.DocumentNumber,
+                    request.SessionId);
+
+                return Ok(ApiResponse<FileUploadResponse>.Ok(result, "File uploaded successfully"));
             }
             catch (ArgumentException ex)
             {
