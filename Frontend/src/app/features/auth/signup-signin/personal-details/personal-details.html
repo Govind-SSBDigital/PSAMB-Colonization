@@ -156,7 +156,7 @@
             <div class="input-with-action">
                 <input type="email" name="emailAddress" [(ngModel)]="signUpData.emailAddress" #emailAddress="ngModel"
                     class="form-input-custom" placeholder="Enter Email Id" required email
-                    [disabled]="verification.emailVerified || verification.emailSent">
+                    [disabled]="verification.emailVerified">
 
                 <ng-container *ngIf="!verification.emailVerified">
                     <button type="button" class="btn-verify-inline" *ngIf="!verification.emailSent"
@@ -189,7 +189,7 @@
             <div class="input-with-action">
                 <input type="tel" maxlength="10" name="mobileNumber" [(ngModel)]="signUpData.mobileNumber" #mobileNumber="ngModel"
                     class="form-input-custom" placeholder="Enter Mobile Number" required pattern="^[0-9]{10}$"
-                    [disabled]="verification.mobileVerified || verification.mobileSent">
+                    [disabled]="verification.mobileVerified">
 
                 <ng-container *ngIf="!verification.mobileVerified">
                     <button type="button" class="btn-verify-inline" *ngIf="!verification.mobileSent"
