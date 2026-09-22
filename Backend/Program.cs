@@ -1,5 +1,12 @@
-﻿using Backend.Data;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.RateLimiting;
+using System.Threading.Tasks;
+using Backend.Data;
 using Backend.Middleware;
+using Backend.Models.DTOs;
 using Backend.Models.Entities;
 using Backend.Repositories.Implementations;
 using Backend.Repositories.Interfaces;
@@ -21,12 +28,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.RateLimiting;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -160,7 +161,8 @@ try
 
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
-
+    builder.Services.Configure<FileStorageSettings>(
+    builder.Configuration.GetSection("FileStorage"));
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
     builder.Services.AddScoped<IPropertyBidderRegistration, Backend.Services.Implementations.PropertyBidderRegistration>(); builder.Services.AddScoped<ICommon, Common>();
