@@ -132,7 +132,8 @@ export class DocumentsAndAddress implements OnInit {
       case 'PAN Card': return '[A-Z0-9]{10}';
       case 'Voter Card': return '[A-Za-z0-9]{10}';
       case 'Passport': return '[A-Za-z0-9]{8}';
-      case 'Driving License': return '[A-Za-z0-9]{15}';
+      // case 'Driving License': return '[A-Za-z0-9]{15}';
+      case 'Other Government issued Photo ID': return '[A-Za-z0-9]{20}';
       default: return '[A-Za-z0-9]+';
     }
   }
@@ -144,7 +145,8 @@ export class DocumentsAndAddress implements OnInit {
       case 'PAN Card': return 10;
       case 'Voter Card': return 10;
       case 'Passport': return 8;
-      case 'Driving License': return 15;
+      // case 'Driving License': return 15;
+      case 'Other Government issued Photo ID': return 20;
       default: return 20;
     }
   }

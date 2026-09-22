@@ -3,8 +3,10 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Common } from '../../core/service/CommonService/common';
+import { MenuService } from '../../core/service/MenuService/menu.service';
 import { Propertybidderregn } from '../../core/service/Property-Bidder-RegnService/propertybidderregn';
 import { PropertyBalanceResponse } from '../../models/property-balance-calculatation.model';
+import { Userservice } from '../../core/service/UserService/userservice';
 
 @Component({
   selector: 'app-property-balance-calculate',
@@ -23,9 +25,19 @@ export class PropertyBalanceCalculate implements OnInit {
   mandis: any[] = [];
   plotNumbers: any[] = [];
   plotTypes: any[] = [];
+  plotSizes: any[] = [];
 
   isSearching = false;
   isCalculating = false;
+
+  // Role and user-specific allottee codes
+  isUser = false;
+  allotteeCodes: any[] = [
+    { allotteeCode: 'LJJ97-10252'},
+    { allotteeCode: 'AAV10-22254'},
+    { allotteeCode: 'FFF12-11537'}
+  ];
+  isLoadingAllotteeCodes = false;
 
   showResults = false;
   balanceData: PropertyBalanceResponse | null = null;
@@ -36,11 +48,14 @@ export class PropertyBalanceCalculate implements OnInit {
     private fb: FormBuilder,
     private service: Propertybidderregn,
     private commonService: Common,
+    private menuService: MenuService,
     private toastr: ToastrService,
+    private userService: Userservice,
     private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.buildForm();
+    this.initUserRoleAndAllotteeCodes();
     this.loadMasterData();
   }
 
@@ -51,8 +66,133 @@ export class PropertyBalanceCalculate implements OnInit {
       branchId: ['', Validators.required],
       plotTypeId: ['', Validators.required],
       mandiId: ['', Validators.required],
-      plotNo: ['', Validators.required]
+      plotNo: ['', Validators.required],
+      plotSize: ['',Validators.required]
     });
+  }
+
+  private initUserRoleAndAllotteeCodes(): void {
+    this.isUser = this.checkIsUserRole();
+
+    if (this.isUser) {
+      this.loadUserAllotteeCodes();
+    }
+
+    this.menuService.profile$.subscribe(profile => {
+      if (profile) {
+        const roles = profile.roles || [];
+        const isUserRole = this.hasUserRole(roles);
+        if (isUserRole !== this.isUser) {
+          this.isUser = isUserRole;
+          if (this.isUser && (!this.allotteeCodes || this.allotteeCodes.length === 0)) {
+            this.loadUserAllotteeCodes();
+          }
+          this.cdr.detectChanges();
+        }
+      }
+    });
+  }
+
+  private hasUserRole(roles: any): boolean {
+    if (!roles) return false;
+    const isMatch = (r: any) => {
+      const s = String(r || '').trim().toLowerCase();
+      return s === 'user' || s === 'citizen' || s === 'applicant';
+    };
+    if (Array.isArray(roles)) {
+      return roles.some(isMatch);
+    }
+    return isMatch(roles);
+  }
+
+  private checkIsUserRole(): boolean {
+    // 1. Check JWT token claims
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        const rawRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+          || tokenPayload.role
+          || tokenPayload.Role
+          || tokenPayload.roles
+          || tokenPayload.Roles;
+        if (this.hasUserRole(rawRole)) {
+          return true;
+        }
+      } catch (e) {
+        console.error('Error parsing token for role:', e);
+      }
+    }
+
+    // 2. Check cp_menus cached profile roles
+    const cpMenus = sessionStorage.getItem('cp_menus');
+    if (cpMenus) {
+      try {
+        const parsed = JSON.parse(cpMenus);
+        const roles = parsed?.profile?.roles || parsed?.roles;
+        if (this.hasUserRole(roles)) {
+          return true;
+        }
+      } catch (e) {}
+    }
+
+    // 3. Check direct sessionStorage 'role'
+    const storedRole = sessionStorage.getItem('role');
+    if (this.hasUserRole(storedRole)) {
+      return true;
+    }
+
+    // 4. Check cp_session
+    const cpSession = sessionStorage.getItem('cp_session');
+    if (cpSession) {
+      try {
+        const session = JSON.parse(cpSession);
+        const role = session?.role || session?.userRole;
+        if (this.hasUserRole(role)) {
+          return true;
+        }
+      } catch (e) {}
+    }
+
+    return false;
+  }
+
+  loadUserAllotteeCodes(): void {
+    // Temporary options while API is in progress
+    this.allotteeCodes = [
+      { allotteeCode: 'LJJ97-10252'},
+      { allotteeCode: 'AAV10-22254'},
+      { allotteeCode: 'FFF12-11537'}
+    ];
+    this.isLoadingAllotteeCodes = false;
+    this.cdr.detectChanges();
+  }
+
+  onAllotteeCodeSelect(event?: any): void {
+    const selectedCode = (
+      event?.target?.value ??
+      this.balanceForm.get('allotteeCode')?.value ??
+      ''
+    ).toString().trim();
+
+    if (!selectedCode) {
+      this.resetPropertyDetails();
+      return;
+    }
+
+    this.balanceForm.patchValue({ allotteeCode: selectedCode });
+    this.searchPropertyByAllotteeCode(selectedCode);
+  }
+
+  onAllotteeCodeChange(event?: any): void {
+    this.onAllotteeCodeSelect(event);
+  }
+
+  private resetPropertyDetails(): void {
+    this.showResults = false;
+    this.balanceData = null;
+    this.propertyDetails = null;
+    this.cdr.detectChanges();
   }
 
   private loadMasterData(): void {
@@ -71,13 +211,15 @@ export class PropertyBalanceCalculate implements OnInit {
       branchId: '',
       mandiId: '',
       plotNo: '',
-      plotTypeId: ''
+      plotTypeId: '',
+      plotSize: ''
     });
     this.marketCommittees = [];
     this.propertyTypes = [];
     this.mandis = [];
     this.plotNumbers = [];
     this.plotTypes = [];
+    this.plotSizes = [];
 
     if (districtId) {
       this.service.getPropertyMandiBranchesByDistrict(districtId).subscribe({
@@ -95,12 +237,14 @@ export class PropertyBalanceCalculate implements OnInit {
     this.balanceForm.patchValue({
       mandiId: '',
       plotTypeId: '',
-      plotNo: ''
+      plotNo: '',
+      plotSize: ''
     });
     this.propertyTypes = [];
     this.mandis = [];
     this.plotNumbers = [];
     this.plotTypes = [];
+    this.plotSizes = [];
 
     if (branchId) {
       this.service.getPropertyMandiBranchesByBranchId(branchId).subscribe({
@@ -115,9 +259,10 @@ export class PropertyBalanceCalculate implements OnInit {
 
   onMandiChange(): void {
     const mandiId = this.balanceForm.get('mandiId')?.value;
-    this.balanceForm.patchValue({ plotNo: '', plotTypeId: '' });
+    this.balanceForm.patchValue({ plotNo: '', plotTypeId: '', plotSize: '' });
     this.plotNumbers = [];
     this.plotTypes = [];
+    this.plotSizes = [];
 
     if (mandiId) {
       this.service.getPropertyPlotTypesAsync(mandiId).subscribe({
@@ -134,12 +279,56 @@ export class PropertyBalanceCalculate implements OnInit {
     const mandiId = this.balanceForm.get('mandiId')?.value;
     const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
 
-    this.balanceForm.patchValue({ plotNo: '' });
+    this.balanceForm.patchValue({ plotNo: '', plotSize: '' });
     this.plotNumbers = [];
+    this.plotSizes = [];
 
     if (mandiId && plotTypeId) {
       this.loadPlotNumbers(mandiId, plotTypeId);
     }
+  }
+
+  onPlotNumberChange(preselectedPlotSize?: any): void {
+    const mandiId = this.balanceForm.get('mandiId')?.value;
+    const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
+    const plotNo = this.balanceForm.get('plotNo')?.value;
+
+    this.balanceForm.patchValue({ plotSize: '' });
+    this.plotSizes = [];
+
+    if (!mandiId || !plotTypeId || !plotNo) {
+      return;
+    }
+
+    const sizeRequest = this.isUser
+      ? this.userService.GetMandiPlotSizeByPlotNo(mandiId, plotTypeId, plotNo)
+      : this.service.GetPlotSizebyPlotNo(mandiId, plotTypeId, plotNo);
+
+    sizeRequest.subscribe({
+      next: (res: any) => {
+        const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        this.plotSizes = data.map((item: any) => ({
+          plotSizeId: item?.plotSizeId ?? item?.PlotSizeId ?? item?.plotSize ?? item?.PlotSize ?? item,
+          plotSize: item?.plotSize ?? item?.PlotSize ?? item?.name ?? item
+        }));
+
+        if (preselectedPlotSize !== undefined && preselectedPlotSize !== null) {
+          const selectedSize = this.plotSizes.find((size: any) =>
+            String(size.plotSizeId) === String(preselectedPlotSize) ||
+            String(size.plotSize) === String(preselectedPlotSize)
+          );
+          this.balanceForm.patchValue({
+            plotSize: selectedSize?.plotSizeId ?? preselectedPlotSize
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.plotSizes = [];
+        console.error('Error loading plot sizes:', err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   get f() {
@@ -157,7 +346,19 @@ export class PropertyBalanceCalculate implements OnInit {
 
     if (!propertyCode) {
       allotteeCodeControl?.markAsTouched();
-      this.toastr.warning('Please enter an Allottee Code to search.', 'Validation');
+      this.toastr.warning(
+        this.isUser ? 'Please select an Allottee Code.' : 'Please enter an Allottee Code to search.',
+        'Validation'
+      );
+      return;
+    }
+
+    this.searchPropertyByAllotteeCode(propertyCode);
+  }
+
+  searchPropertyByAllotteeCode(propertyCode: string): void {
+    const code = (propertyCode || '').toString().trim();
+    if (!code) {
       return;
     }
 
@@ -166,7 +367,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.balanceData = null;
     this.propertyDetails = null;
 
-    this.service.getPropertyByCode(propertyCode).subscribe({
+    this.service.getPropertyByCode(code).subscribe({
       next: (res: any) => {
         this.isSearching = false;
         const d = res?.data;
@@ -259,8 +460,10 @@ export class PropertyBalanceCalculate implements OnInit {
       this.balanceForm.patchValue({
         mandiId: '',
         plotTypeId: '',
-        plotNo: ''
+        plotNo: '',
+        plotSize: ''
       });
+      this.plotSizes = [];
       onComplete?.();
       return;
     }
@@ -274,6 +477,7 @@ export class PropertyBalanceCalculate implements OnInit {
           plotNo: d.plotNo ?? ''
         });
         this.loadPlotNumbers(mandiId, plotTypeId);
+        this.onPlotNumberChange(d.plotSize ?? d.PlotSize ?? d.plotSizeId ?? d.PlotSizeId);
         this.cdr.detectChanges();
         onComplete?.();
       },
@@ -304,10 +508,11 @@ export class PropertyBalanceCalculate implements OnInit {
 
     const mandiId = this.balanceForm.get('mandiId')?.value;
     const plotTypeId = this.balanceForm.get('plotTypeId')?.value;
+    const plotSizes = this.balanceForm.get('plotSize')?.value;
     const plotNo = this.balanceForm.get('plotNo')?.value;
 
-    if (!mandiId || !plotTypeId || !plotNo) {
-      this.toastr.warning('Please select mandi, plot type and plot number.', 'Validation');
+    if (!mandiId || !plotTypeId || !plotNo || !plotSizes) {
+      this.toastr.warning('Please select mandi, plot type, plot number and plot size.', 'Validation');
       return;
     }
 
@@ -316,7 +521,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.propertyDetails = null;
     this.showResults = false;
 
-    this.service.GetBiderPropertyDetailsByMandiPlotAsync(mandiId, plotTypeId, plotNo).subscribe({
+    this.service.GetBiderPropertyDetailsByMandiPlotAsync(mandiId, plotTypeId, plotNo, plotSizes).subscribe({
       next: (res: any) => {
         const d = res?.data ?? res ?? null;
         const apiSuccess = res?.success !== false;

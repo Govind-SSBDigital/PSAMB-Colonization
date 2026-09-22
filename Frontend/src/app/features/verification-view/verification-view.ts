@@ -1,173 +1,215 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormArray,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfirmationService } from 'primeng/api';
 
-
-export interface VerificationHistoryEntry {
-  role: string;
-  actorName: string;
-  action: 'Approved' | 'Sent Back' | 'Submitted';
-  remarks: string;
-  date: string;
-}
- 
-export interface DocumentItem {
+export interface UploadedDocument {
   key: string;
   label: string;
   hint?: string;
-  submitted: boolean;
   fileName: string | null;
   fileUrl: string | null;
+  uploaded: boolean;
 }
+
+export interface DataField {
+  label: string;
+  value: string;
+  maskedValue?: string;
+  isMasked?: boolean;
+  isSecret?: boolean;
+  copyable?: boolean;
+  isEmail?: boolean;
+  isPhone?: boolean;
+  fullWidth?: boolean;
+}
+
+type VerificationStatus = 'pending' | 'verified' | 'objection';
+type DecisionType = 'approve' | 'sendback' | null;
 
 @Component({
   selector: 'app-verification-view',
   standalone: false,
   templateUrl: './verification-view.html',
   styleUrl: './verification-view.scss',
+  providers: [ConfirmationService],
 })
 export class VerificationView implements OnInit {
- 
-  /** Master edit toggle - flips every field between read-only and editable */
-  editMode = false;
- 
-  /** Which decision is currently active in the action panel */
-  activeDecision: 'approve' | 'sendback' | null = null;
- 
+  // ---- Header info (empty by default, to be set when new API is integrated) ----
+  propertyCode = '—';
+  submittedOn = '—';
+  verificationStatus: VerificationStatus = 'pending';
+
+  // ---- Property Details (Clean placeholders without fake data) ----
+  propertyDetails: DataField[] = [
+    { label: 'District', value: '—' },
+    { label: 'Market Committee', value: '—' },
+    { label: 'Mandi', value: '—' },
+    { label: 'Plot Type', value: '—' },
+    { label: 'Plot Number', value: '—', copyable: false },
+    { label: 'Plot Size', value: '—' },
+  ];
+
+  // ---- Owner Information (Clean placeholders without fake data) ----
+  ownerDetails: DataField[] = [
+    { label: 'Current Owner Name', value: '—' },
+    { label: "Father's / Husband Name", value: '—' },
+    { label: 'Mobile Number', value: '—', copyable: false, isPhone: false },
+    { label: 'Email', value: '—', copyable: false, isEmail: false },
+    { label: 'State', value: '—' },
+    { label: 'District', value: '—' },
+    { label: 'City', value: '—' },
+    { label: 'Address', value: '—', fullWidth: true },
+    {
+      label: 'Aadhaar Number',
+      value: '—',
+      maskedValue: '—',
+      isMasked: true,
+      isSecret: false,
+      copyable: false,
+    },
+    {
+      label: 'PAN No.',
+      value: '—',
+      maskedValue: '—',
+      isMasked: true,
+      isSecret: false,
+      copyable: false,
+    },
+  ];
+
+  // ---- Uploaded Documents list (All set to not uploaded, ready for real API) ----
+  documents: UploadedDocument[] = [
+    { key: 'allotmentLetter', label: 'Allotment Letter', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'lastPaymentReceipt', label: 'Last Payment Receipt', hint: 'Any one from last three receipts', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'noDueCertificate', label: 'No Due Certificate', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'bForm', label: 'B.Form', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'conveyanceDeed', label: 'Conveyance Deed', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'saleDeed', label: 'Sale Deed', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'transferOrder', label: 'Transfer Order', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'legalHeirCertificate', label: 'Legal Heir Certificate', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'aadhaarProof', label: 'Aadhaar Card Proof', fileName: null, fileUrl: null, uploaded: false },
+    { key: 'passportProof', label: 'Passport Proof', fileName: null, fileUrl: null, uploaded: false },
+  ];
+
+  decisionForm!: FormGroup;
   submitting = false;
+  activeDecision: DecisionType = null;
   showValidationHint = false;
- 
-  allotteeCode = 'AAA1-1';
-  applicationId = 'PR-2026-004821';
-  submittedOn = '24 Jul 2026';
-  currentStage = 'Superintendent Review';
- 
-  verificationForm!: FormGroup;
- 
-  documents: DocumentItem[] = [
-    { key: 'allotmentLetter', label: 'Allotment Letter', submitted: true, fileName: 'allotment_letter.pdf', fileUrl: '#' },
-    { key: 'lastPaymentReceipt', label: 'Last Payment Receipt', hint: 'Any one from last three receipts', submitted: true, fileName: 'payment_receipt_mar26.pdf', fileUrl: '#' },
-    { key: 'noDueCertificate', label: 'No Due Certificate', submitted: false, fileName: null, fileUrl: null },
-    { key: 'bForm', label: 'B.Form', submitted: true, fileName: 'b_form.pdf', fileUrl: '#' },
-    { key: 'conveyanceDeed', label: 'Conveyance Deed', submitted: false, fileName: null, fileUrl: null },
-    { key: 'saleDeed', label: 'Sale Deed', submitted: true, fileName: 'sale_deed.pdf', fileUrl: '#' },
-    { key: 'transferOrder', label: 'Transfer Order', submitted: false, fileName: null, fileUrl: null },
-    { key: 'legalHeirCertificate', label: 'Legal Heir Certificate', submitted: false, fileName: null, fileUrl: null }
-  ];
- 
-  history: VerificationHistoryEntry[] = [
-    { role: 'Clerk', actorName: 'Test', action: 'Submitted', remarks: 'Forwarded after initial document check.', date: '25 Jul 2026, 11:42 AM' }
-  ];
- 
-  districts = ['Ludhiana', 'Amritsar', 'Jalandhar', 'Patiala', 'Bathinda'];
-  states = ['Punjab', 'Haryana', 'Delhi', 'Chandigarh'];
-  committees = ['Ludhiana Market Committee', 'Khanna Market Committee', 'Jagraon Market Committee'];
-  mandis = ['New Grain Market', 'Sabzi Mandi', 'Anaj Mandi'];
-  plotTypes = ['Commercial', 'Residential', 'Industrial', 'Booth'];
- 
-  constructor(private fb: FormBuilder) {}
- 
+  remarksReadOnly = '';
+  previewDoc: UploadedDocument | null = null;
+  copiedField: string | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private confirmationService: ConfirmationService
+  ) {}
+
   ngOnInit(): void {
-    this.buildForm();
-    this.setFormDisabled(true);
-  }
- 
-  private buildForm(): void {
-    this.verificationForm = this.fb.group({
-      propertyDetails: this.fb.group({
-        district: ['Ludhiana', Validators.required],
-        marketCommittee: ['Ludhiana Market Committee', Validators.required],
-        mandi: ['New Grain Market', Validators.required],
-        plotNumber: ['PLT-0231', Validators.required],
-        plotType: ['Commercial', Validators.required],
-        plotSize: ['1800', Validators.required]
-      }),
-      ownerInfo: this.fb.group({
-        currentOwnerName: ['Test Name', Validators.required],
-        fatherHusbandName: ['Test Name2', Validators.required],
-        mobileNumber: ['9876543210', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-        email: ['test@example.com', [Validators.required, Validators.email]],
-        state: ['Punjab', Validators.required],
-        district: ['Ludhiana', Validators.required],
-        city: ['Ludhiana', Validators.required],
-        address: ['House No. 22, Model Town, Ludhiana', Validators.required],
-        aadhaarNumber: ['XXXXXXXX4231', Validators.required],
-        passportNumber: ['']
-      }),
-      decision: this.fb.group({
-        remarks: ['']
-      })
+    this.decisionForm = this.fb.group({
+      decision: [null, Validators.required],
+      remarks: [''],
     });
- 
-    // Read-only until Edit All Fields is switched on
-    // this.setFormDisabled(true);
   }
- 
-  private setFormDisabled(disabled: boolean): void {
-    const propertyGroup = this.verificationForm.get('propertyDetails');
-    const ownerGroup = this.verificationForm.get('ownerInfo');
-    if (disabled) {
-      propertyGroup?.disable({ emitEvent: false });
-      ownerGroup?.disable({ emitEvent: false });
-    } else {
-      propertyGroup?.enable({ emitEvent: false });
-      ownerGroup?.enable({ emitEvent: false });
-    }
-  }
- 
-  onDocumentFileChange(doc: DocumentItem, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      doc.fileName = input.files[0].name;
-      doc.submitted = true;
-    }
-  }
- 
+
   get remarksControl() {
-    return this.verificationForm.get('decision.remarks');
+    return this.decisionForm.get('remarks')!;
   }
- 
-  selectDecision(decision: 'approve' | 'sendback'): void {
+
+  get decisionControl() {
+    return this.decisionForm.get('decision')!;
+  }
+
+  get showActionButtons(): boolean {
+    return this.verificationStatus === 'pending';
+  }
+
+  get showRemarksReadOnly(): boolean {
+    return this.verificationStatus === 'objection';
+  }
+
+  get isAlreadyVerified(): boolean {
+    return this.verificationStatus === 'verified';
+  }
+
+  get verificationStatusClass(): string {
+    switch (this.verificationStatus) {
+      case 'verified':
+        return 'bg-white text-success fw-semibold shadow-sm';
+      case 'objection':
+        return 'bg-white text-danger fw-semibold shadow-sm';
+      default:
+        return 'bg-white text-warning-emphasis fw-semibold shadow-sm';
+    }
+  }
+
+  toggleFieldMask(field: DataField): void {
+    field.isMasked = !field.isMasked;
+  }
+
+  copyValue(value: string, label: string): void {
+    if (value && value !== '—' && navigator?.clipboard) {
+      navigator.clipboard.writeText(value);
+      this.copiedField = label;
+      setTimeout(() => {
+        if (this.copiedField === label) {
+          this.copiedField = null;
+        }
+      }, 2000);
+    }
+  }
+
+  viewDocument(doc: UploadedDocument): void {
+    if (!doc.uploaded || !doc.fileUrl) return;
+    this.previewDoc = doc;
+  }
+
+  closePreview(): void {
+    this.previewDoc = null;
+  }
+
+  isPdf(doc: UploadedDocument | null): boolean {
+    return !!doc?.fileUrl && doc.fileUrl.toLowerCase().endsWith('.pdf');
+  }
+
+  onDecisionChange(decision: 'approve' | 'sendback'): void {
     this.activeDecision = decision;
-    this.showValidationHint = false;
+    this.decisionControl.setValue(decision);
+
     if (decision === 'sendback') {
-      this.remarksControl?.setValidators([Validators.required, Validators.minLength(10)]);
+      this.remarksControl.setValidators([Validators.required, Validators.minLength(10)]);
     } else {
-      this.remarksControl?.setValidators([]);
+      this.remarksControl.clearValidators();
     }
-    this.remarksControl?.updateValueAndValidity();
+    this.remarksControl.updateValueAndValidity();
+    this.showValidationHint = false;
   }
- 
-  submitDecision(): void {
-    if (!this.activeDecision) {
-      return;
-    }
-    if (this.activeDecision === 'sendback' && this.remarksControl?.invalid) {
+
+  handleApprove(): void {
+    this.onDecisionChange('approve');
+
+    this.confirmationService.confirm({
+      header: 'Confirm Approval',
+      message:
+        'Are you sure you want to approve this property ownership verification? This action cannot be undone.',
+      icon: 'fa-solid fa-circle-question text-success fs-4 me-2',
+      acceptLabel: 'Yes, Approve',
+      rejectLabel: 'Cancel',
+      acceptButtonStyleClass: 'btn btn-success px-3',
+      rejectButtonStyleClass: 'btn btn-outline-secondary px-3',
+      accept: () => {
+        // Ready for your new approval API call here
+        console.log('Approve confirmed');
+      },
+    });
+  }
+
+  handleSendBack(): void {
+    this.onDecisionChange('sendback');
+    if (this.remarksControl.invalid) {
       this.showValidationHint = true;
-      this.remarksControl.markAsTouched();
       return;
     }
- 
-    this.submitting = true;
- 
-    const entry: VerificationHistoryEntry = {
-      role: this.currentStage,
-      actorName: 'You',
-      action: this.activeDecision === 'approve' ? 'Approved' : 'Sent Back',
-      remarks: this.remarksControl?.value || 'No remarks added.',
-      date: new Date().toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' })
-    };
- 
-    // Simulate an API call
-    setTimeout(() => {
-      this.history.unshift(entry);
-      this.submitting = false;
-      this.activeDecision = null;
-      this.remarksControl?.reset('');
-    }, 600);
+    // Ready for your new send-back API call here
+    console.log('Send back submitted with remarks:', this.remarksControl.value);
   }
 }

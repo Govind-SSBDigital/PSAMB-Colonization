@@ -84,8 +84,11 @@ export class MenuService {
     if (!profile) {
       return null;
     }
-    const roles = data?.roles ?? payload?.roles ?? [];
-    return Array.isArray(roles) ? { ...profile, roles } : profile;
+    const topLevelRoles = data?.roles ?? payload?.roles;
+    if (Array.isArray(topLevelRoles) && topLevelRoles.length) {
+      return { ...profile, roles: topLevelRoles };
+    }
+    return profile;
   }
 
   private loadFromStorage(): void {

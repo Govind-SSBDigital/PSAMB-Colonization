@@ -1,0 +1,227 @@
+:host {
+  --portal-green: var(--theme-primary);
+  --portal-green-dark: var(--theme-forest-dark);
+  --portal-green-soft: #e9f3ee;
+  --line: #e7ecea;
+
+  display: block;
+}
+
+.text-portal {
+  color: var(--portal-green);
+}
+
+// .filter-card {
+//   border-left: 4px solid var(--portal-green) !important;
+// }
+
+.custom-input-color {
+  font-size: 0.9rem;
+  padding: 0.55rem 2rem 0.55rem 0.75rem;
+  box-shadow: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:disabled {
+    background: #f5f7f6;
+    color: #9aa5a1;
+    cursor: not-allowed;
+  }
+}
+
+.btn-portal {
+  background: var(--portal-green);
+  border: 1px solid var(--portal-green);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: var(--portal-green-dark);
+    color: #fff;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  &:disabled {
+    opacity: 0.65;
+  }
+}
+
+.btn-ghost {
+  border: 1px solid #d7dee0;
+  color: #5b6763;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+
+  &:hover:not(:disabled) {
+    background: var(--portal-green-soft);
+    border-color: var(--portal-green);
+    color: var(--portal-green);
+  }
+}
+
+.result-stats .stat {
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0.85rem;
+  background: var(--portal-green-soft);
+  border-radius: 0.5rem;
+  border: 1px solid #d9e8e0;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--portal-green);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #6b7a75;
+}
+
+.results-bar {
+  padding: 0.6rem 1rem;
+  background: #fbfcfc;
+  border-bottom: 1px solid var(--line);
+}
+
+.table-scroll {
+  max-height: 62vh;
+}
+
+.table-verification {
+  font-size: 0.875rem;
+  min-width: 1150px;
+
+  td {
+    padding: 0.7rem 0.75rem;
+    border-color: var(--line);
+  }
+
+  tbody tr {
+    transition: background 0.12s ease;
+  }
+  tbody tr:hover td {
+    background: var(--portal-green-soft);
+  }
+}
+
+.table-head-portal th {
+  background: var(--portal-green);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  padding: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.table-head-portal th.sortable {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: var(--portal-green-dark);
+  }
+}
+
+.sort-mark {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.3rem;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.35);
+  vertical-align: middle;
+  transition: transform 0.15s ease;
+
+  &.desc {
+    transform: rotate(180deg);
+  }
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--portal-green-soft);
+  color: var(--portal-green);
+}
+
+.chip-commercial {
+  background: #fdf3dc;
+  color: #8a6512;
+}
+
+.empty-cell {
+  padding: 3rem 1rem;
+}
+
+.skeleton {
+  display: block;
+  height: 0.75rem;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #eef1f0 25%, #f7f9f8 37%, #eef1f0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+::ng-deep .mat-mdc-paginator {
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button:not([disabled]) {
+  color: var(--portal-green);
+}
+
+@media (max-width: 575.98px) {
+  .table-verification {
+    font-size: 0.8rem;
+  }
+  .result-stats {
+    width: 100%;
+  }
+  .result-stats .stat {
+    flex: 1;
+  }
+  ::ng-deep .mat-mdc-paginator-range-label {
+    margin: 0 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+  .sort-mark,
+  .btn-portal,
+  .custom-input-color,
+  .table-verification tbody tr {
+    transition: none;
+  }
+}

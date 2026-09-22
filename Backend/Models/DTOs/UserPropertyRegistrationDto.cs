@@ -26,7 +26,14 @@ namespace Backend.Models.DTOs
         public string? Address { get; set; }
         public string? AadhaarNumber { get; set; }
         public string? PanNumber { get; set; }
-        public int? VerificationUserEndStatusId { get; set; }
+        public int? Status { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? DistrictName { get; set; }
+        public string? BranchName { get; set; }
+        public string? MandiName { get; set; }
+        public string? PlotType { get; set; }
+
     }
 
     public class PlotSizesDto

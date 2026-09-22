@@ -70,7 +70,7 @@ export class MainLayout {
       '/property-bidder-registration',
       '/property-verification',
       '/profile',
-      '/user-verification-view',
+      '/user-verification',
       '/verification',
       '/registration-status',
       '/property-details',
@@ -79,6 +79,9 @@ export class MainLayout {
       '/online-payment-details',
       '/coming-soon',
       '/deo-verification-view',
+      '/mandi-wise-allotment-summary',
+      '/plot-wise-consolidate-details',
+      '/property-ownership-verification',
     ];
     return dashboardRoutes.some(
       (route) =>

@@ -96,7 +96,7 @@ export class HomePage {
       name: "Director of Colonization",
       punjabiName: "\u0A21\u0A3E\u0A07\u0A30\u0A48\u0A15\u0A1F\u0A30 \u0A06\u0A2c\u0A3e\u0A26\u0A15\u0A3e\u0A30\u0A40",
       image: "assets/ias_image.jpg",
-      role: "IAS Smt. Baldeep Kaur"
+      role: "Dr. Baldeep Kaur IAS"
     }
   ];
   private autoplayTimer: any;
@@ -151,7 +151,7 @@ export class HomePage {
     },
     doc: {
       id: 'doc',
-      name: 'IAS Smt. Baldeep Kaur',
+      name: 'Dr. Baldeep Kaur IAS',
       title: "Director of Colonization, Punjab",
       punjabiTitle: "\u0A21\u0A3E\u0A07\u0A30\u0A48\u0A15\u0A1F\u0A30 \u0A06\u0A2c\u0A3e\u0A26\u0A15\u0A3e\u0A30\u0A40, \u0A2a\u0A70\u0A1c\u0A3e\u0A2c",
       image: "assets/ias_image.jpg",
