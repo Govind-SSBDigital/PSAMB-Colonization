@@ -9,6 +9,8 @@ namespace Backend.Services.Interfaces
     {
         Task<ApiResponse<UserPropertyRegistrationDto>> UserPropertyRegisterAsync(UserPropertyRegistrationDto dto);
         Task<ApiResponse<List<PlotSizesDto>>> GetMandiPlotSizeByPlotNoAsync(int mandiId,int plotTypeId,  string plotNo);
+        Task<ApiResponse<List<UserPropertyRegistrationDto>>> GetPropertyOwnerVerificationAsync(string? userid, string? searchCode, int districtId, int branchId, int mandiid);
+        Task<ApiResponse<bool>> VerifyByClerkForUser(ClerkVerificationDto dto);
 
     }
 }

@@ -18,4 +18,20 @@ export class Userservice {
   GetMandiPlotSizeByPlotNo(mandiId: any, plotTypeId: any, plotNo: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/UserPropertyRegistration/GetMandiPlotSizeByPlotNo?MandiId=${mandiId}&PlotTypeId=${plotTypeId}&PlotNo=${encodeURIComponent(plotNo)}`);
   }
+
+  // GetPropertyOwnerVerification(userId: any, districtId: any, branchId: any, mandiId: any): Observable<any> {
+  //   return this.http.get<any>(`${this.baseUrl}/UserPropertyRegistration/GetPropertyOwnerVerification` +
+  //     `?userId=${userId}&districtId=${districtId}&branchId=${branchId}&mandiId=${mandiId}`
+  //   );
+  // }
+
+
+  GetPropertyOwnerVerification(searchCode?: string): Observable<any> {
+    let url = `${this.baseUrl}/UserPropertyRegistration/GetPropertyOwnerVerification`;
+    if (searchCode) {
+      url += `?searchCode=${encodeURIComponent(searchCode)}`;
+    }
+    return this.http.get<any>(url);
+  }
+
 }
