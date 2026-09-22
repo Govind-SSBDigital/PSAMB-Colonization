@@ -124,14 +124,14 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">City</label>
+              <label class="form-label">State</label>
               <input type="text" class="form-control minimal-input"
-                     [class.is-invalid]="f['city'].invalid && f['city'].touched"
-                     formControlName="city">
-              @if (f['city'].invalid && f['city'].touched) {
+                     [class.is-invalid]="f['state'].invalid && f['state'].touched"
+                     formControlName="state">
+              @if (f['state'].invalid && f['state'].touched) {
                 <div class="text-danger small mt-1">
-                  @if (f['city'].errors?.['required']) {
-                    City is required.
+                  @if (f['state'].errors?.['required']) {
+                    State is required.
                   }
                 </div>
               }
@@ -152,14 +152,14 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">State</label>
+              <label class="form-label">City</label>
               <input type="text" class="form-control minimal-input"
-                     [class.is-invalid]="f['state'].invalid && f['state'].touched"
-                     formControlName="state">
-              @if (f['state'].invalid && f['state'].touched) {
+                     [class.is-invalid]="f['city'].invalid && f['city'].touched"
+                     formControlName="city">
+              @if (f['city'].invalid && f['city'].touched) {
                 <div class="text-danger small mt-1">
-                  @if (f['state'].errors?.['required']) {
-                    State is required.
+                  @if (f['city'].errors?.['required']) {
+                    City is required.
                   }
                 </div>
               }
@@ -202,27 +202,19 @@
           </div>
           <div class="modal-body">
             <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" novalidate>
-              <div class="mb-3">
-                <label class="form-label">Current Password</label>
-                <input type="password" class="form-control"
-                       [class.is-invalid]="pf['oldPassword'].invalid && pf['oldPassword'].touched"
-                       formControlName="oldPassword" maxlength="50">
-                @if (pf['oldPassword'].invalid && pf['oldPassword'].touched) {
-                  <div class="text-danger small mt-1">
-                    @if (pf['oldPassword'].errors?.['required']) {
-                      Current password is required.
-                    } @else if (pf['oldPassword'].errors?.['minlength']) {
-                      Password must be at least 8 characters.
-                    }
-                  </div>
-                }
-              </div>
 
               <div class="mb-3">
                 <label class="form-label">New Password</label>
-                <input type="password" class="form-control"
-                       [class.is-invalid]="pf['newPassword'].invalid && pf['newPassword'].touched"
-                       formControlName="newPassword" maxlength="50">
+                <div class="input-group">
+                  <input [type]="showNewPassword ? 'text' : 'password'" class="form-control"
+                         [class.is-invalid]="pf['newPassword'].invalid && pf['newPassword'].touched"
+                         formControlName="newPassword" maxlength="50">
+                  <button type="button" class="btn btn-outline-secondary pw-toggle-btn"
+                          (click)="toggleNewPassword()" tabindex="-1"
+                          [attr.aria-label]="showNewPassword ? 'Hide password' : 'Show password'">
+                    <i [class]="showNewPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                  </button>
+                </div>
                 @if (pf['newPassword'].invalid && pf['newPassword'].touched) {
                   <div class="text-danger small mt-1">
                     @if (pf['newPassword'].errors?.['required']) {
@@ -236,9 +228,16 @@
 
               <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" class="form-control"
-                       [class.is-invalid]="pf['confirmPassword'].invalid && pf['confirmPassword'].touched"
-                       formControlName="confirmPassword" maxlength="50">
+                <div class="input-group">
+                  <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control"
+                         [class.is-invalid]="pf['confirmPassword'].invalid && pf['confirmPassword'].touched"
+                         formControlName="confirmPassword" maxlength="50">
+                  <button type="button" class="btn btn-outline-secondary pw-toggle-btn"
+                          (click)="toggleConfirmPassword()" tabindex="-1"
+                          [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">
+                    <i [class]="showConfirmPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                  </button>
+                </div>
                 @if (pf['confirmPassword'].invalid && pf['confirmPassword'].touched) {
                   <div class="text-danger small mt-1">
                     @if (pf['confirmPassword'].errors?.['required']) {

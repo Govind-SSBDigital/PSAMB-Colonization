@@ -48,7 +48,7 @@ import { Footer } from './footer/footer';
                 .then((m) => m.ProfileModule),
           },
           {
-            path: 'user-verification-view',
+            path: 'user-verification',
             loadChildren: () =>
               import('../verification-view/verification-view.module')
                 .then((m) => m.VerificationViewModule),

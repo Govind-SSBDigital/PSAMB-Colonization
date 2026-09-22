@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MenuService } from '../../../core/service/MenuService/menu.service';
+import { AuthService } from '../../../core/service/auth.service';
 import {
   FormBuilder,
   FormGroup,
@@ -31,20 +33,29 @@ export class Profile implements OnInit {
   passwordModalOpen = false;
   passwordError = '';
   errorMessage: string | null = null;
+  showNewPassword = false;
+  showConfirmPassword = false;
 
   avatarUrl: string = '';
-
+  email: string = '';
+  userName = '';
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
 
   private initialFormState: any;
 
-  constructor(private fb: FormBuilder, private toastr: ToastrService) {}
+  constructor(
+    private fb: FormBuilder,
+    private toastr: ToastrService,
+    private menuService: MenuService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.buildProfileForm();
     this.buildPasswordForm();
     this.initialFormState = this.profileForm.getRawValue();
+    this.openChangePasswordMenu();
   }
 
   private buildProfileForm(): void {
@@ -79,7 +90,6 @@ export class Profile implements OnInit {
   private buildPasswordForm(): void {
     this.passwordForm = this.fb.group(
       {
-        oldPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50)]],
         newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50)]],
         confirmPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50)]]
       },
@@ -130,19 +140,26 @@ export class Profile implements OnInit {
   closePasswordModal(): void {
     this.passwordModalOpen = false;
     this.passwordError = '';
+    this.showNewPassword = false;
+    this.showConfirmPassword = false;
+  }
+
+  toggleNewPassword(): void {
+    this.showNewPassword = !this.showNewPassword;
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   savePassword(): void {
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
 
-      const oldPasswordErrors = this.pf['oldPassword'].errors;
       const newPasswordErrors = this.pf['newPassword'].errors;
       const confirmPasswordErrors = this.pf['confirmPassword'].errors;
 
-      if (oldPasswordErrors?.['required']) {
-        this.passwordError = 'Please enter your current password.';
-      } else if (newPasswordErrors?.['required'] || confirmPasswordErrors?.['required']) {
+      if (newPasswordErrors?.['required'] || confirmPasswordErrors?.['required']) {
         this.passwordError = 'Please enter and confirm your new password.';
       } else if (newPasswordErrors?.['minlength'] || confirmPasswordErrors?.['minlength']) {
         this.passwordError = 'Password must be at least 8 characters long.';
@@ -154,9 +171,32 @@ export class Profile implements OnInit {
       return;
     }
 
+    const email = this.email.trim();
+    if (!email) {
+      this.passwordError = 'Unable to find your registered email address.';
+      return;
+    }
+
+    const { newPassword, confirmPassword } = this.passwordForm.getRawValue();
     this.passwordError = '';
-    this.passwordModalOpen = false;
-    alert('Password updated successfully.');
+
+    this.authService.forgotPassword({
+      email,
+      newPassword,
+      confirmNewPassword: confirmPassword
+    }).subscribe({
+      next: () => {
+        this.closePasswordModal();
+        this.passwordForm.reset();
+        this.toastr.success('Password updated successfully!', 'Success');
+      },
+      error: (error) => {
+        const response = error?.error;
+        this.passwordError = typeof response === 'string'
+          ? response
+          : response?.message || 'Password update failed. Please try again.';
+      }
+    });
   }
 
   resetForm(): void {
@@ -184,5 +224,27 @@ export class Profile implements OnInit {
   }
   showSuccess() {
     this.toastr.success('Profile updated successfully!', 'Success');
+  }
+
+  getEmailforChangePassword(): string {
+    const email = this.profileForm.get('email')?.value;
+    return email || '';
+  }
+
+  openChangePasswordMenu(): void {
+    this.menuService.profile$.subscribe(profile => {
+      if (!profile) {
+        return;
+      }
+
+      this.email = profile.email ?? '';
+      this.userName = profile.userName ?? '';
+
+      this.profileForm.patchValue({
+        name: profile.fullName ?? '',
+        email: this.email,
+        mobile: profile.phoneNumber ?? profile.mobileNo ?? ''
+      }, { emitEvent: false });
+    });
   }
 }
