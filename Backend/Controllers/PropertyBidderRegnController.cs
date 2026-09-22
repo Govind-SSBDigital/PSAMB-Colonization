@@ -210,9 +210,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet("GetBiderPropertyDetailsByMandiPlotAsync")]
-        public async Task<IActionResult> GetBiderPropertyDetailsByMandiPlotAsync(int MandiId, int PlotTypeId, string PlotNo)
+        public async Task<IActionResult> GetBiderPropertyDetailsByMandiPlotAsync(int MandiId, int PlotTypeId, string PlotNo, string PlotSize)
         {
-            var response = await _service.GetBiderPropertyDetailsByMandiPlotAsync(MandiId, PlotTypeId, PlotNo);
+            var response = await _service.GetBiderPropertyDetailsByMandiPlotAsync(MandiId, PlotTypeId, PlotNo, PlotSize);
 
             return Ok(response);
         }

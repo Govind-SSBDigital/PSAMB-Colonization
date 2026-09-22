@@ -61,7 +61,7 @@ namespace Backend.Services.Implementations
                 var data = _context.PropertyBidderRegistration.Where(x => x.PropertyCode == dto.PropertyCode).FirstOrDefault();
                 if (data != null)
                 {
-                    return ApiResponse<PropertyBidderRegistrationDto>.Fail("Data already exists for this allottee code.");
+                    return ApiResponse<PropertyBidderRegistrationDto>.Fail("Data already digitized");
                 }
 
                 var entity = new Models.Entities.PropertyBidderRegistration
@@ -2672,7 +2672,7 @@ namespace Backend.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo)
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo, string plotSize)
         {
             try
             {
@@ -2710,6 +2710,11 @@ namespace Backend.Services.Implementations
                     plotNoParam.ParameterName = "@PlotNo";
                     plotNoParam.Value = plotNo;
                     command.Parameters.Add(plotNoParam);
+
+                    var plotSizeParam = command.CreateParameter();
+                    plotSizeParam.ParameterName = "@PlotSize";
+                    plotSizeParam.Value = plotSize;
+                    command.Parameters.Add(plotSizeParam);
 
                     await using var reader = await command.ExecuteReaderAsync();
 

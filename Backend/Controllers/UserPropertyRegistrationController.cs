@@ -4,6 +4,7 @@ using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -52,5 +53,40 @@ namespace Backend.Controllers
                         $"Error while fetching plot size: {ex.Message}"));
             }
         }
+
+        private string GetUserId() =>
+           User.FindFirstValue(ClaimTypes.NameIdentifier)
+           ?? throw new UnauthorizedAccessException("Invalid token");
+
+        [HttpGet("GetPropertyOwnerVerification")]
+        public async Task<IActionResult> GetPropertyOwnerVerification([FromQuery] string? searchCode = null, int districtId = 0, int branchId = 0, int mandiid = 0)
+        {
+            var response = await _service.GetPropertyOwnerVerificationAsync(GetUserId(), searchCode, districtId, branchId, mandiid);
+
+            return Ok(response);
+        }
+
+        [HttpPost("VerifyByClerkForUser")]
+        public async Task<IActionResult> VerifyByClerkForUser([FromBody] ClerkVerificationDto dto)
+        {
+            if (dto == null || dto.Id == 0)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Invalid request"
+                });
+            }
+
+            var result = await _service.VerifyByClerkForUser(dto);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
     }
 }
