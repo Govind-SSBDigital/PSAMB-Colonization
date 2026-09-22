@@ -28,7 +28,7 @@ export class DashboardHome implements OnInit {
   constructor(private menuService: MenuService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.menuService.fetchMenus(true).subscribe({
+    this.menuService.fetchMenus().subscribe({
       next: (menus) => {
         this.availableServices = this.flattenServices(menus);
         this.cdr.detectChanges();
@@ -45,7 +45,7 @@ export class DashboardHome implements OnInit {
           userId: profile.id ?? profile.userId ?? '',
           fullName: profile.fullName ?? profile.name ?? profile.userName ?? '',
           userName: profile.userName ?? '',
-          entityType: profile.entityType ?? (Array.isArray(profile.roles) && profile.roles.length ? profile.roles.join(', ') : (typeof profile.roles === 'string' ? profile.roles : '')),
+          entityType: profile.entityType ?? (Array.isArray(profile.roles) && profile.roles.length ? profile.roles[0] : '')?? (typeof profile.roles === 'string' ? profile.roles : ''),
         };
         this.cdr.detectChanges();
       }
