@@ -37,15 +37,15 @@
                         class="required-star">*</span></label>
                 <div class="custom-file-wrapper">
                     <div class="choose-file-container">
-                        <button type="button" class="choose-file-btn" (click)="idDocInput.click()">Choose File</button>
+                        <button type="button" class="choose-file-btn"
+                            [disabled]="!canUploadIdDoc()"
+                            [title]="!canUploadIdDoc() ? 'Please select document type and enter document number first' : ''"
+                            (click)="canUploadIdDoc() && idDocInput.click()">Choose File</button>
                         <span class="file-chosen-text" [class.text-muted]="!signUpData.idDocumentFileName">
                             {{ signUpData.idDocumentFileName || 'No file chosen' }}
                         </span>
                         <input #idDocInput type="file" (change)="emitFileSelected($event, 'idDoc')" class="d-none">
                     </div>
-                    <!-- <div class="progress-bar-inline" *ngIf="uploadingStates['idDoc']">
-                        <div class="p-fill" [style.width.%]="uploadProgress['idDoc']"></div>
-                    </div> -->
                 </div>
                 <input type="hidden" name="idDocumentFileName" [(ngModel)]="signUpData.idDocumentFileName"
                     #idFile="ngModel" required>
@@ -161,7 +161,7 @@
                 <label class="form-label-custom">Address Document (ਪਤਾ ਦਸਤਾਵੇਜ਼ ਚੁਣੋ) <span
                         class="required-star">*</span></label>
                 <select name="addressDocType" [(ngModel)]="signUpData.addressDocType" #addressDocType="ngModel" required
-                    class="form-input-custom">
+                    class="form-input-custom" (change)="onAddressDocTypeChange()">
                     <option value="" disabled selected>Select Document</option>
                     <option *ngFor="let doc of filteredAddressDocTypes" [value]="doc">{{ doc }}</option>
                 </select>
@@ -189,7 +189,10 @@
                         class="required-star">*</span></label>
                 <div class="custom-file-wrapper">
                     <div class="choose-file-container">
-                        <button type="button" class="choose-file-btn" (click)="addressDocInput.click()">Choose
+                        <button type="button" class="choose-file-btn"
+                            [disabled]="!canUploadAddressDoc()"
+                            [title]="!canUploadAddressDoc() ? 'Please select document type and enter document number first' : ''"
+                            (click)="canUploadAddressDoc() && addressDocInput.click()">Choose
                             File</button>
                         <span class="file-chosen-text" [class.text-muted]="!signUpData.addressDocFileName">
                             {{ signUpData.addressDocFileName || 'No file chosen' }}
@@ -197,9 +200,6 @@
                         <input #addressDocInput type="file" (change)="emitFileSelected($event, 'addressDoc')"
                             class="d-none">
                     </div>
-                    <!-- <div class="progress-bar-inline" *ngIf="uploadingStates['addressDoc']">
-                        <div class="p-fill" [style.width.%]="uploadProgress['addressDoc']"></div>
-                    </div> -->
                 </div>
                 <input type="hidden" name="addressDocFileName" [(ngModel)]="signUpData.addressDocFileName"
                     #addressFile="ngModel" required>

@@ -17,6 +17,7 @@ export class DocumentsAndAddress implements OnInit {
   @Input() addressDocTypes: string[] = [];
   @Input() uploadProgress: Record<string, number> = {};
   @Input() uploadingStates: Record<string, boolean> = {};
+  @Input() sessionId: string = '';
   @Output() fileSelected = new EventEmitter<{ event: Event; docType: string }>();
 
   states: any[] = [];
@@ -102,9 +103,14 @@ export class DocumentsAndAddress implements OnInit {
   onDocumentTypeChange(): void {
     this.signUpData.idDocumentNumber = '';
     this.maskedIdDocumentNumber = '';
+    // Clear the previously uploaded file so user must re-upload for the new type
+    this.signUpData.idDocumentFileName = '';
+    this.signUpData.idDocumentId = 0;
     if (this.signUpData.addressDocType === this.signUpData.idDocumentType) {
       this.signUpData.addressDocType = '';
       this.signUpData.addressDocNumber = '';
+      this.signUpData.addressDocFileName = '';
+      this.signUpData.addressDocumentId = 0;
     }
   }
 
@@ -190,6 +196,9 @@ export class DocumentsAndAddress implements OnInit {
 
   onAddressDocTypeChange(): void {
     this.signUpData.addressDocNumber = '';
+    // Clear the previously uploaded file so user must re-upload for the new type
+    this.signUpData.addressDocFileName = '';
+    this.signUpData.addressDocumentId = 0;
   }
 
   getDisplayAddressDocNumber(): string {
@@ -253,6 +262,22 @@ export class DocumentsAndAddress implements OnInit {
 
   emitFileSelected(event: Event, docType: string): void {
     this.fileSelected.emit({ event, docType });
+  }
+
+  //  Returns true when the identification document upload is allowed.
+  //  Upload is blocked until the user selects a document type AND enters a number.
+  canUploadIdDoc(): boolean {
+    return !!this.signUpData?.idDocumentType &&
+           !!(this.signUpData?.idDocumentNumber?.trim());
+  }
+
+  
+  //  Returns true when the address document upload is allowed.
+  //  Upload is blocked until the user selects a document type AND enters a number.
+   
+  canUploadAddressDoc(): boolean {
+    return !!this.signUpData?.addressDocType &&
+           !!(this.signUpData?.addressDocNumber?.trim());
   }
 
   getPunjabiLabel(typeId: string): string {

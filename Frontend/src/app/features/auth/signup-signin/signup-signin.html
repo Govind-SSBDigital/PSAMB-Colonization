@@ -428,7 +428,8 @@
 
                     <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
                         [idDocTypes]="idDocTypes" [addressDocTypes]="addressDocTypes" [uploadProgress]="uploadProgress"
-                        [uploadingStates]="uploadingStates" (fileSelected)="onFileSelected($event.event, $event.docType)">
+                        [uploadingStates]="uploadingStates" [sessionId]="sessionId"
+                        (fileSelected)="onFileSelected($event.event, $event.docType)">
                     </app-documents-and-address>
 
                     <!-- SECTION 3: BUSINESS DETAILS -->
