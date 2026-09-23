@@ -474,7 +474,7 @@ namespace Backend.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyEAuctionDetailsByPropertyCodeAsync(string propertyCode)
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyEAuctionDetailsByPropertyCodeAsync(string propertyCode, bool isSold = false)
         {
             try
             {
@@ -489,6 +489,9 @@ namespace Backend.Services.Implementations
                 command.Parameters.AddWithValue(
                     "@PropertyCode",
                     propertyCode);
+                command.Parameters.AddWithValue(
+                    "@IsPropertySold",
+                    isSold);
 
                 using var adapter = new SqlDataAdapter(command);
 
@@ -594,13 +597,25 @@ namespace Backend.Services.Implementations
                           ? Convert.ToInt32(row["PropertyTypeId"])
                           : null;
 
-                   
+                    response.DistrictName =
+                   row["DistrictName"] != DBNull.Value
+                       ? Convert.ToString(row["DistrictName"])
+                       : null;
+
+                    //response.BranchName = row["BranchName"] != DBNull.Value
+                    //                    ? Convert.ToString(row["BranchName"])
+                    //                    : null;
+
+                    response.MandiName =
+                     row["MandiName"] != DBNull.Value
+                         ? Convert.ToString(row["MandiName"])
+                         : null;
 
                     //response.BidderTypeId =
                     //  row["BiddingType"] != DBNull.Value
                     //      ? Convert.ToInt32(row["BiddingType"])
                     //      : null;
-                    
+
                 }
 
                
@@ -747,6 +762,55 @@ namespace Backend.Services.Implementations
                     //        : null;
                 }
 
+
+                response.InstallmentSchedules = new List<InstallmentScheduleDto>();
+
+                if (dataSet.Tables.Count > 3 &&
+                    dataSet.Tables[3].Rows.Count > 0)
+                {
+                    var table = dataSet.Tables[3];
+
+                    foreach (DataRow row in table.Rows)
+                    {
+                        var schedule = new InstallmentScheduleDto
+                        {
+
+                            Id = row["InstallmentId"] != DBNull.Value
+                                ? Convert.ToInt32(row["InstallmentId"])
+                                : 0,
+
+                            PropertyId = row["PropertyId"] != DBNull.Value
+                                ? Convert.ToInt32(row["PropertyId"])
+                                : 0,
+
+                            PropertyCode = row["AllotteeCode"] != DBNull.Value
+                                ? row["AllotteeCode"]?.ToString()
+                                : null,
+
+                            InstallmentNo = row["InstallmentNo"] != DBNull.Value
+                                ? Convert.ToString(row["InstallmentNo"])
+                                : null,
+
+                            CalculatedDueDate = row["DueDate"] != DBNull.Value
+                                ? Convert.ToDateTime(row["DueDate"])
+                                : null,
+
+                            BasePrincipal = row["DueAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["DueAmount"])
+                                : 0,
+
+                            Interest = row["Interest"] != DBNull.Value
+                                ? Convert.ToDecimal(row["Interest"])
+                                : 0,
+
+                            TotalEstimatedAmount = row["TotalDueAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["TotalDueAmount"])
+                                : 0
+                        };
+
+                        response.InstallmentSchedules.Add(schedule);
+                    }
+                }
                 // =====================================
                 // TABLE 5 - PropertyInstallmentDetails
                 // =====================================
@@ -2245,7 +2309,7 @@ namespace Backend.Services.Implementations
             return result;
         }
 
-        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo, string PlotSize)
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetPropertyDetailsByMandiPlot(int MandiId, int PlotTypeId, string PlotNo, string PlotSize, bool isSold = false)
         {
             try
             {
@@ -2260,6 +2324,7 @@ namespace Backend.Services.Implementations
                 command.Parameters.AddWithValue("@PlotTypeId", PlotTypeId);
                 command.Parameters.AddWithValue("@PlotNo", PlotNo);
                 command.Parameters.AddWithValue("@PlotSize", PlotSize);
+                command.Parameters.AddWithValue("@IsPropertySold", isSold);
 
 
                 using var adapter = new SqlDataAdapter(command);
@@ -2367,7 +2432,19 @@ namespace Backend.Services.Implementations
                           : null;
 
 
+                    response.DistrictName =
+                  row["DistrictName"] != DBNull.Value
+                      ? Convert.ToString(row["DistrictName"])
+                      : null;
 
+                    //response.BranchName = row["BranchName"] != DBNull.Value
+                    //                    ? Convert.ToString(row["BranchName"])
+                    //                    : null;
+
+                    response.MandiName =
+                     row["MandiName"] != DBNull.Value
+                         ? Convert.ToString(row["MandiName"])
+                         : null;
                     //response.BidderTypeId =
                     //  row["BiddingType"] != DBNull.Value
                     //      ? Convert.ToInt32(row["BiddingType"])
@@ -2519,6 +2596,54 @@ namespace Backend.Services.Implementations
                     //        : null;
                 }
 
+                response.InstallmentSchedules = new List<InstallmentScheduleDto>();
+
+                if (dataSet.Tables.Count > 3 &&
+                    dataSet.Tables[3].Rows.Count > 0)
+                {
+                    var table = dataSet.Tables[3];
+
+                    foreach (DataRow row in table.Rows)
+                    {
+                        var schedule = new InstallmentScheduleDto
+                        {
+
+                            Id = row["InstallmentId"] != DBNull.Value
+                                ? Convert.ToInt32(row["InstallmentId"])
+                                : 0,
+
+                            PropertyId = row["PropertyId"] != DBNull.Value
+                                ? Convert.ToInt32(row["PropertyId"])
+                                : 0,
+
+                            PropertyCode = row["AllotteeCode"] != DBNull.Value
+                                ? row["AllotteeCode"]?.ToString()
+                                : null,
+
+                            InstallmentNo = row["InstallmentNo"] != DBNull.Value
+                                ? Convert.ToString(row["InstallmentNo"])
+                                : null,
+
+                            CalculatedDueDate = row["DueDate"] != DBNull.Value
+                                ? Convert.ToDateTime(row["DueDate"])
+                                : null,
+
+                            BasePrincipal = row["DueAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["DueAmount"])
+                                : 0,
+
+                            Interest = row["Interest"] != DBNull.Value
+                                ? Convert.ToDecimal(row["Interest"])
+                                : 0,
+
+                            TotalEstimatedAmount = row["TotalDueAmount"] != DBNull.Value
+                                ? Convert.ToDecimal(row["TotalDueAmount"])
+                                : 0
+                        };
+
+                        response.InstallmentSchedules.Add(schedule);
+                    }
+                }
                 // =====================================
                 // TABLE 5 - PropertyInstallmentDetails
                 // =====================================
@@ -2672,7 +2797,7 @@ namespace Backend.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo, string plotSize)
+        public async Task<ApiResponse<PropertyBidderRegistrationDto>> GetBiderPropertyDetailsByMandiPlotAsync(int mandiId, int plotTypeId, string plotNo, string plotSize, bool isSold = true)
         {
             try
             {
@@ -2699,6 +2824,7 @@ namespace Backend.Services.Implementations
                 command.Parameters.AddWithValue("@PlotTypeId", plotTypeId);
                 command.Parameters.AddWithValue("@PlotNo", plotNo);
                 command.Parameters.AddWithValue("@PlotSize", plotSize);
+                command.Parameters.AddWithValue("@IsPropertySold", isSold);
 
                 // ==========================================
                 // EXECUTE STORED PROCEDURE USING DATASET

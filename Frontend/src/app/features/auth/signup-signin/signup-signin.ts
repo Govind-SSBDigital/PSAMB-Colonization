@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/service/auth.service';
 import { Common } from '../../../core/service/CommonService/common';
 import { MenuService } from '../../../core/service/MenuService/menu.service';
 import { IdleTimeoutService } from '../../../core/service/idle-timeout.service';
+import { FileService } from '../../../core/service/FileService/file-service';
 
 interface EntityType {
   id: string;
@@ -36,6 +37,9 @@ interface ResetPasswordModel {
 })
 export class SignupSignin implements OnInit {
   isLoggedIn = false;
+
+  // Unique session ID generated when the signup form is opened. Passed to every file upload.
+  sessionId: string = '';
   loginMethod: 'password' | 'otp' = 'password';
 
   sectionsExpanded = {
@@ -95,10 +99,13 @@ export class SignupSignin implements OnInit {
     idDocumentTypeId: 0,
     idDocumentNumber: '',
     idDocumentFileName: '',
+    idDocumentId: 0,
     shareAadhaarDetails: false,
     panNumber: '',
     panFileName: '',
+    panDocumentId: 0,
     photoFileName: '',
+    photoDocumentId: 0,
 
     // Address
     addressState: '',
@@ -113,6 +120,7 @@ export class SignupSignin implements OnInit {
     addressDocTypeId: 0,
     addressDocNumber: '',
     addressDocFileName: '',
+    addressDocumentId: 0,
 
     // Business
     firmName: '',
@@ -127,6 +135,7 @@ export class SignupSignin implements OnInit {
     businessPincode: '',
     businessLandmark: '',
     officePhotoFileName: '',
+    officePhotoDocumentId: 0,
     mandiPropertyCode: ''
   }
   // OTP data (Signup)
@@ -222,10 +231,14 @@ export class SignupSignin implements OnInit {
     private cdr: ChangeDetectorRef,
     private common: Common,
     private menuService: MenuService,
-    private idleTimeoutService: IdleTimeoutService
+    private idleTimeoutService: IdleTimeoutService,
+    private fileService: FileService
   ) { }
 
   ngOnInit() {
+    // Generate a new session ID for the current form session
+    this.sessionId = this.generateSessionId();
+
     // Seed test accounts in sessionStorage if not already present
     const existingUsersRaw = sessionStorage.getItem('cp_users');
     const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
@@ -573,30 +586,117 @@ export class SignupSignin implements OnInit {
     this.completeRegistration();
   }
 
-  // File Upload Simulations
-  onFileSelected(event: any, docType: string) {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploadingStates[docType] = true;
-      this.uploadProgress[docType] = 0;
+  // File Upload
 
-      const interval = setInterval(() => {
-        if (this.uploadProgress[docType] < 100) {
-          this.uploadProgress[docType] += 25;
-        } else {
-          clearInterval(interval);
-          this.uploadingStates[docType] = false;
-
-          if (docType === 'idDoc') this.signUpData.idDocumentFileName = file.name;
-          else if (docType === 'pan') this.signUpData.panFileName = file.name;
-          else if (docType === 'photo') this.signUpData.photoFileName = file.name;
-          else if (docType === 'addressDoc') this.signUpData.addressDocFileName = file.name;
-          else if (docType === 'officePhoto') this.signUpData.officePhotoFileName = file.name;
-
-          this.triggerToast('Document uploaded successfully!', 'success');
-        }
-      }, 120);
+  // Maps a docType string to the DocumentCategoryId expected by the API.
+  private getDocumentCategoryId(docType: string): number {
+    switch (docType) {
+      case 'photo':      return 1;  // Upload Your Photo
+      case 'idDoc':      return 2;  // Identification Document
+      case 'addressDoc': return 3;  // Address Document
+      default:           return 0;
     }
+  }
+    // Maps a document-type label to its API DocumentTypeId.
+    // Category 2 (Identification): Aadhaar=1, Voter Card=2, Passport=3, Other=4
+    // Category 3 (Address):        Aadhaar=1, Passport=2, Electricity Bill=3, Water Bill=4, Rent Agreement=5, Registry Deed=6
+    // Category 1 (Photo):
+ 
+  private getDocumentTypeId(docType: string): number {
+    if (docType === 'idDoc') {
+      const idDocTypeMap: Record<string, number> = {
+        'Aadhaar Card':                      1,
+        'Voter Card':                        2,
+        'Passport':                          3,
+        'Other Government issued Photo ID':  4,
+      };
+      return idDocTypeMap[this.signUpData.idDocumentType] ?? 0;
+    }
+    if (docType === 'addressDoc') {
+      const addrDocTypeMap: Record<string, number> = {
+        'Aadhaar Card':      1,
+        'Passport':          2,
+        'Electricity Bill':  3,
+        'Water Bill':        4,
+        'Rent Agreement':    5,
+        'Registry Deed':     6,
+      };
+      return addrDocTypeMap[this.signUpData.addressDocType] ?? 0;
+    }
+    return 0;
+  }
+
+  // Returns the document number associated with the given docType.
+  private getDocumentNumber(docType: string): string {
+    if (docType === 'idDoc')      return this.signUpData.idDocumentNumber ?? '';
+    if (docType === 'addressDoc') return this.signUpData.addressDocNumber ?? '';
+    return ''; // photo has no document number
+  }
+
+  // Generates a UUID v4 to use as the session identifier.
+  private generateSessionId(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+
+  /** Handles file selection, builds the multipart payload and calls the upload API. */
+  onFileSelected(event: any, docType: string) {
+    const file: File | undefined = event.target?.files?.[0];
+    if (!file) return;
+
+    this.uploadingStates[docType] = true;
+    this.uploadProgress[docType] = 0;
+
+    const payload = {
+      file,
+      documentCategoryId: this.getDocumentCategoryId(docType),
+      documentTypeId:     this.getDocumentTypeId(docType),
+      documentNumber:     this.getDocumentNumber(docType),
+      sessionId:          this.sessionId,
+    };
+
+    this.fileService.UploadFile(payload).subscribe({
+      next: (response) => {
+        this.uploadingStates[docType] = false;
+        this.uploadProgress[docType] = 100;
+
+        // Store the returned filename (or fall back to the local file name)
+        const uploadedFileName  = response?.data?.storedFileName ?? file.name;
+        const uploadedDocumentId: number = response?.data?.userDocumentId ?? 0;
+
+        if (docType === 'idDoc') {
+          this.signUpData.idDocumentFileName = uploadedFileName;
+          this.signUpData.idDocumentId       = uploadedDocumentId;
+        } else if (docType === 'pan') {
+          this.signUpData.panFileName   = uploadedFileName;
+          this.signUpData.panDocumentId = uploadedDocumentId;
+        } else if (docType === 'photo') {
+          this.signUpData.photoFileName   = uploadedFileName;
+          this.signUpData.photoDocumentId = uploadedDocumentId;
+        } else if (docType === 'addressDoc') {
+          this.signUpData.addressDocFileName = uploadedFileName;
+          this.signUpData.addressDocumentId  = uploadedDocumentId;
+        } else if (docType === 'officePhoto') {
+          this.signUpData.officePhotoFileName   = uploadedFileName;
+          this.signUpData.officePhotoDocumentId = uploadedDocumentId;
+        }
+
+        this.triggerToast('Document uploaded successfully!', 'success');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.uploadingStates[docType] = false;
+        this.uploadProgress[docType] = 0;
+        console.error(`File upload failed for docType '${docType}':`, err);
+        this.triggerToast(
+          err?.error?.message ?? 'File upload failed. Please try again.',
+          'error'
+        );
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   // OTP Modal management (Signup)
@@ -667,7 +767,12 @@ export class SignupSignin implements OnInit {
       // Documents
       identDocTypeId: this.signUpData.idDocumentTypeId,
       identDocNumber: this.signUpData.idDocumentNumber,
+      identDocId: this.signUpData.idDocumentId,          // userDocumentId from upload
+      photoDocId: this.signUpData.photoDocumentId,       // userDocumentId from upload
       panNumber: this.signUpData.panNumber,
+      ...(this.shouldShowBusinessDetails() && {
+        panDocId: this.signUpData.panDocumentId,         // only for non-Individual / non-Sole Proprietorship
+      }),
 
       // Address
       individualStateId: this.signUpData.addressStateId,
@@ -677,6 +782,8 @@ export class SignupSignin implements OnInit {
       individualPlotStreetLandmark: this.signUpData.addressLandmark,
       addrDocTypeId: this.signUpData.addressDocTypeId,
       addrDocNumber: this.signUpData.addressDocNumber,
+      addrDocId: this.signUpData.addressDocumentId,
+      sessionId: this.sessionId,
 
       // Business
       firmName: this.signUpData.firmName,
@@ -687,7 +794,10 @@ export class SignupSignin implements OnInit {
       businessDistrictId: this.signUpData.businessDistrictId,
       businessCityId: this.signUpData.businessCityId,
       businessPinCode: this.signUpData.businessPincode,
-      businessPlotStreetLandmark: this.signUpData.businessLandmark
+      businessPlotStreetLandmark: this.signUpData.businessLandmark,
+      ...(this.shouldShowBusinessDetails() && {
+        officePropertyPhotoDocId: this.signUpData.officePhotoDocumentId, // only for non-Individual / non-Sole Proprietorship
+      }),
     };
 
     this.authService.register(request).subscribe({
@@ -756,10 +866,13 @@ export class SignupSignin implements OnInit {
       idDocumentTypeId: 0,
       idDocumentNumber: '',
       idDocumentFileName: '',
+      idDocumentId: 0,
       shareAadhaarDetails: false,
       panNumber: '',
       panFileName: '',
+      panDocumentId: 0,
       photoFileName: '',
+      photoDocumentId: 0,
 
       // Address
       addressState: '',
@@ -774,6 +887,7 @@ export class SignupSignin implements OnInit {
       addressDocTypeId: 0,
       addressDocNumber: '',
       addressDocFileName: '',
+      addressDocumentId: 0,
 
       // Business
       firmName: '',
@@ -788,6 +902,7 @@ export class SignupSignin implements OnInit {
       businessPincode: '',
       businessLandmark: '',
       officePhotoFileName: '',
+      officePhotoDocumentId: 0,
       mandiPropertyCode: ''
     }
     this.otpData = {
