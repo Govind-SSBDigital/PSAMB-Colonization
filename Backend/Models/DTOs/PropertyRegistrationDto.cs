@@ -164,7 +164,7 @@ namespace Backend.Models.Dtos
         public int Id { get; set; }
         public int PropertyId { get; set; }
         public string? PropertyCode { get; set; }
-        public int InstallmentNo { get; set; }
+        public string? InstallmentNo { get; set; }
         public DateTime? CalculatedDueDate { get; set; }
         public decimal? BasePrincipal { get; set; }
         public decimal? Interest { get; set; }

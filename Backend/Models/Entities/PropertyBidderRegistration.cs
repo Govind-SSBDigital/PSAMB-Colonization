@@ -279,7 +279,7 @@ namespace Backend.Models.Entities
 
         public string? PropertyCode { get; set; }
 
-        public int InstallmentNo { get; set; }
+        public string? InstallmentNo { get; set; }
 
         public DateTime? CalculatedDueDate { get; set; }
 
