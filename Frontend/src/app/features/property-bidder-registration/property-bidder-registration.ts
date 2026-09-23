@@ -1325,7 +1325,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     const propertyCode = propertycodeControl.value;
 
     const fetchFromEAuction = () => {
-      this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode).subscribe({
+      this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(propertyCode, false).subscribe({
         next: (res: any) => {
           const d = res.data;
           const hasValidData = !!res.success && !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName);
@@ -1369,7 +1369,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
 
   fetchAndPatchPropertyDetailsByMandiPlot(mandiId: any, plotTypeId: any, plotNo: any, plotSize: any) {
     if (!mandiId || !plotTypeId || !plotNo) return;
-    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo, plotSize).subscribe({
+    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo, plotSize, false).subscribe({
       next: (res: any) => {
         const d = res?.data || res;
         const hasValidData = !!d && ((d.id && d.id > 0) || (d.propertyId && d.propertyId > 0) || !!d.propertyCode || !!d.plotNo || !!d.bidderName || !!d.plotSize);

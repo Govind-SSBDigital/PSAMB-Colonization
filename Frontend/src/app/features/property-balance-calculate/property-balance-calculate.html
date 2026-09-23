@@ -41,8 +41,7 @@
               id="allotteeCodeSelect"
               class="form-select bg-light rounded-3 custom-input-color"
               formControlName="allotteeCode"
-              [class.is-invalid]="isInvalid('allotteeCode')"
-              (change)="onAllotteeCodeSelect($event)">
+              [class.is-invalid]="isInvalid('allotteeCode')">
               <option value="" disabled selected>Select allottee code</option>
               @if (isLoadingAllotteeCodes) {
                 <option value="" disabled>Loading allottee codes...</option>
@@ -161,7 +160,7 @@
         </div>
 
         <div class="col-md-6 col-xl-3 d-flex align-items-end">
-          <button type="submit" class="btn bg-success text-white rounded-3 w-50">Submit
+          <button type="submit" class="btn bg-success text-white rounded-3 w-50" [disabled]="isUser">Submit
           </button>
         </div>
       </div>
