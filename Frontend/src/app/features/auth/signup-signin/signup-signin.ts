@@ -91,6 +91,8 @@ export class SignupSignin implements OnInit {
     isManagingPartner: null,
     emailAddress: '',
     mobileNumber: '',
+    emailVerified: false,
+    mobileVerified: false,
     password: '',
     confirmPassword: '',
 
@@ -338,7 +340,8 @@ export class SignupSignin implements OnInit {
   }
 
   onEntityTypeChange() {
-    this.triggerToast(`Entity Type changed to: ${this.selectedEntityType}`, 'info');
+    this.resetSignUpForm();
+    this.triggerToast(`Category changed to: ${this.selectedEntityType}`, 'info');
   }
 
   openSignUp() {
@@ -364,6 +367,8 @@ export class SignupSignin implements OnInit {
   }
 
   onBackToInstructions() {
+    // Reset the form so stale values (address, business, documents)
+    this.resetSignUpForm();
     this.proceedToForm = false;
     window.scrollTo(0, 0);
   }
@@ -475,7 +480,21 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter a valid 10-digit Mobile Number / 10-ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ', 'error');
       return false;
     }
+    if (!this.signUpData.mobileVerified) {
+      this.triggerToast('Please verify your Mobile Number before submitting', 'error');
+      return false;
+    }
+    if (!this.signUpData.emailVerified) {
+      this.triggerToast('Please verify your Email ID before submitting', 'error');
+      return false;
+    }
     return true;
+  }
+
+  // Called by the personal-details child whenever email/mobile verification status changes.
+  onVerificationChanged(event: { emailVerified: boolean; mobileVerified: boolean }): void {
+    this.signUpData.emailVerified  = event.emailVerified;
+    this.signUpData.mobileVerified = event.mobileVerified;
   }
 
   // Step 2 Validation
@@ -858,6 +877,8 @@ export class SignupSignin implements OnInit {
       isManagingPartner: null,
       emailAddress: '',
       mobileNumber: '',
+      emailVerified: false,
+      mobileVerified: false,
       password: '',
       confirmPassword: '',
 
