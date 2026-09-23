@@ -144,8 +144,8 @@ export class SignupSignin implements OnInit {
   otpData = {
     mobileOtpInput: '',
     emailOtpInput: '',
-    sentMobileOtp: '123456',
-    sentEmailOtp: '654321',
+    sentMobileOtp: '',
+    sentEmailOtp: '',
     mobileSent: false,
     emailSent: false,
     mobileVerified: false,
@@ -188,7 +188,7 @@ export class SignupSignin implements OnInit {
   loginOtpData = {
     mobileNumber: '',
     otpInput: '',
-    sentOtp: '112233',
+    sentOtp: '',
     otpSent: false,
     timer: 0
   };
@@ -241,11 +241,6 @@ export class SignupSignin implements OnInit {
     // Generate a new session ID for the current form session
     this.sessionId = this.generateSessionId();
 
-    // Seed test accounts in sessionStorage if not already present
-    const existingUsersRaw = sessionStorage.getItem('cp_users');
-    const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-
-    sessionStorage.setItem('cp_users', JSON.stringify(existingUsers));
 
     const session = sessionStorage.getItem('cp_session');
     if (session) {
@@ -739,7 +734,7 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Mobile Number verified successfully!', 'success');
       this.checkOtpVerificationProgress();
     } else {
-      this.triggerToast('Invalid Mobile OTP. Please try 123456', 'error');
+      this.triggerToast('Invalid Mobile OTP. Please try again.', 'error');
     }
   }
 
@@ -749,7 +744,7 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Email Address verified successfully!', 'success');
       this.checkOtpVerificationProgress();
     } else {
-      this.triggerToast('Invalid Email OTP. Please try 654321', 'error');
+      this.triggerToast('Invalid Email OTP. Please try again.', 'error');
     }
   }
 
@@ -761,7 +756,6 @@ export class SignupSignin implements OnInit {
     }
   }
   completeRegistration() {
-    // debugger;
     this.closeOtpModal();
 
     // Backend ke hisaab se request banao
@@ -929,8 +923,8 @@ export class SignupSignin implements OnInit {
     this.otpData = {
       mobileOtpInput: '',
       emailOtpInput: '',
-      sentMobileOtp: '123456',
-      sentEmailOtp: '654321',
+      sentMobileOtp: '',
+      sentEmailOtp: '',
       mobileSent: false,
       emailSent: false,
       mobileVerified: false,
@@ -943,12 +937,11 @@ export class SignupSignin implements OnInit {
   resetSignInForm() {
     this.loginData = { userId: '', password: '' };
     this.captchaInput = '';
-    this.loginOtpData = { mobileNumber: '', otpInput: '', sentOtp: '112233', otpSent: false, timer: 0 };
+    this.loginOtpData = { mobileNumber: '', otpInput: '', sentOtp: '', otpSent: false, timer: 0 };
   }
 
   // Sign-In via user/pass + captcha + role-based OTP
   onSignInSubmit() {
-    // debugger;
     this.errorMessage = '';
     const { userId, password } = this.loginData;
 
@@ -962,7 +955,6 @@ export class SignupSignin implements OnInit {
       this.generateCaptcha();
       return;
     }
-    // debugger
     this.loginRole= this.loginRole === true ? 1 : 0 ;
     this.authService.login(userId, password, this.loginRole).subscribe({
       next: (response) => {
@@ -1044,7 +1036,6 @@ export class SignupSignin implements OnInit {
   }
 
   sendLoginOtp() {
-    // debugger
     if (!this.loginOtpData.mobileNumber || !/^\d{10}$/.test(this.loginOtpData.mobileNumber)) {
       this.triggerToast('Please enter a valid registered 10-digit Mobile Number', 'error');
       return;
@@ -1053,7 +1044,6 @@ export class SignupSignin implements OnInit {
     this.authService.sendLoginOtp(this.loginOtpData.mobileNumber).subscribe({
       next: (res) => {
         if (res.success) {
-          // debugger
           this.loginOtpData.otpSent = true;
           this.triggerToast('OTP sent to your mobile', 'success');
         }

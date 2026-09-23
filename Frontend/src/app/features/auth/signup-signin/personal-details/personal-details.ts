@@ -335,7 +335,6 @@ export class PersonalDetails implements OnInit {
   }
 
   onRelationTypeChange() {
-    // debugger
     if (!this.signUpData) return;
 
     if (this.signUpData.relationType === 'father') {
