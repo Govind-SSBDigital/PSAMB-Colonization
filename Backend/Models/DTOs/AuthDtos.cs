@@ -8,8 +8,10 @@ namespace Backend.Models.DTOs
     // ── REQUESTS ─────────────────────────────────────
     public class RegisterRequest
     {
-        public int CategoryId { get; set; }
+        // Yehi SessionId frontend upload ke time bhi use karega, aur register call mein bhi
+        public string SessionId { get; set; } = string.Empty;
 
+        public int CategoryId { get; set; }
         public int Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string FirstName { get; set; } = string.Empty;
@@ -23,26 +25,75 @@ namespace Backend.Models.DTOs
         public string? SpouseLastName { get; set; }
         public string Email { get; set; } = string.Empty;
         public string MobileNo { get; set; } = string.Empty;
+
         public int? IdentDocTypeId { get; set; }
         public string? IdentDocNumber { get; set; }
+        public int? IdentDocId { get; set; }
+
         public string? PANNumber { get; set; }
+        public int? PANDocId { get; set; }
+
         public int? IndividualStateId { get; set; }
         public int? IndividualDistrictId { get; set; }
         public int? IndividualCityId { get; set; }
         public string? IndividualPinCode { get; set; }
         public string? IndividualPlotStreetLandmark { get; set; }
+
         public int? AddrDocTypeId { get; set; }
         public string? AddrDocNumber { get; set; }
+        public int? AddrDocId { get; set; }
+
         public string? FirmName { get; set; }
         public string? GSTNumber { get; set; }
         public string? MandiPropertyCode { get; set; }
+        public int? OfficePropertyPhotoDocId { get; set; }
+
         public bool? IsSameAsIndividualAddress { get; set; }
         public int? BusinessStateId { get; set; }
         public int? BusinessDistrictId { get; set; }
         public int? BusinessCityId { get; set; }
         public string? BusinessPinCode { get; set; }
         public string? BusinessPlotStreetLandmark { get; set; }
+
+        public int? PhotoDocId { get; set; }
     }
+    //public class RegisterRequest
+    //{
+    //    public int CategoryId { get; set; }
+
+    //    public int Gender { get; set; }
+    //    public DateTime DateOfBirth { get; set; }
+    //    public string FirstName { get; set; } = string.Empty;
+    //    public string? LastName { get; set; }
+    //    public int RelationType { get; set; } = 1;
+    //    public string? FatherHusbandFirstName { get; set; }
+    //    public string? FatherHusbandLastName { get; set; }
+    //    public string? MotherFirstName { get; set; }
+    //    public string? MotherLastName { get; set; }
+    //    public string? SpouseFirstName { get; set; }
+    //    public string? SpouseLastName { get; set; }
+    //    public string Email { get; set; } = string.Empty;
+    //    public string MobileNo { get; set; } = string.Empty;
+    //    public int? IdentDocTypeId { get; set; }
+    //    public string? IdentDocNumber { get; set; }
+    //    public string? PANNumber { get; set; }
+    //    public int? IndividualStateId { get; set; }
+    //    public int? IndividualDistrictId { get; set; }
+    //    public int? IndividualCityId { get; set; }
+    //    public string? IndividualPinCode { get; set; }
+    //    public string? IndividualPlotStreetLandmark { get; set; }
+    //    public int? AddrDocTypeId { get; set; }
+    //    public string? AddrDocNumber { get; set; }
+    //    public string? FirmName { get; set; }
+    //    public string? GSTNumber { get; set; }
+    //    public string? MandiPropertyCode { get; set; }
+    //    public bool? IsSameAsIndividualAddress { get; set; }
+    //    public int? BusinessStateId { get; set; }
+    //    public int? BusinessDistrictId { get; set; }
+    //    public int? BusinessCityId { get; set; }
+    //    public string? BusinessPinCode { get; set; }
+    //    public string? BusinessPlotStreetLandmark { get; set; }
+    //}
 
     public class LoginRequest
     {
