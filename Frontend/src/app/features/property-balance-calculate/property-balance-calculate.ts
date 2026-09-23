@@ -33,9 +33,9 @@ export class PropertyBalanceCalculate implements OnInit {
   // Role and user-specific allottee codes
   isUser = false;
   allotteeCodes: any[] = [
-    { allotteeCode: 'LJJ97-10252'},
-    { allotteeCode: 'AAV10-22254'},
-    { allotteeCode: 'FFF12-11537'}
+    { allotteeCode: 'LJJ97-10252' },
+    { allotteeCode: 'AAV10-22254' },
+    { allotteeCode: 'FFF12-11537' }
   ];
   isLoadingAllotteeCodes = false;
 
@@ -51,7 +51,7 @@ export class PropertyBalanceCalculate implements OnInit {
     private menuService: MenuService,
     private toastr: ToastrService,
     private userService: Userservice,
-    private cdr: ChangeDetectorRef) {}
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.buildForm();
@@ -67,7 +67,7 @@ export class PropertyBalanceCalculate implements OnInit {
       plotTypeId: ['', Validators.required],
       mandiId: ['', Validators.required],
       plotNo: ['', Validators.required],
-      plotSize: ['',Validators.required]
+      plotSize: ['', Validators.required]
     });
   }
 
@@ -133,7 +133,7 @@ export class PropertyBalanceCalculate implements OnInit {
         if (this.hasUserRole(roles)) {
           return true;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // 3. Check direct sessionStorage 'role'
@@ -151,7 +151,7 @@ export class PropertyBalanceCalculate implements OnInit {
         if (this.hasUserRole(role)) {
           return true;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return false;
@@ -160,9 +160,9 @@ export class PropertyBalanceCalculate implements OnInit {
   loadUserAllotteeCodes(): void {
     // Temporary options while API is in progress
     this.allotteeCodes = [
-      { allotteeCode: 'LJJ97-10252'},
-      { allotteeCode: 'AAV10-22254'},
-      { allotteeCode: 'FFF12-11537'}
+      { allotteeCode: 'LJJ97-10252' },
+      { allotteeCode: 'AAV10-22254' },
+      { allotteeCode: 'FFF12-11537' }
     ];
     this.isLoadingAllotteeCodes = false;
     this.cdr.detectChanges();
@@ -367,35 +367,68 @@ export class PropertyBalanceCalculate implements OnInit {
     this.balanceData = null;
     this.propertyDetails = null;
 
-    this.service.getPropertyByCode(code).subscribe({
+    const handleSuccess = (d: any) => {
+      this.isSearching = false;
+      this.propertyDetails = d;
+      this.bindPropertyDetails(d, () => {
+        this.balanceData = this.buildBalanceDataFromResponse(d);
+        this.showResults = true;
+        this.cdr.detectChanges();
+      });
+      this.toastr.success('Property details loaded successfully.', 'Success');
+    };
+
+    const handleNotFound = () => {
+      this.isSearching = false;
+      this.toastr.warning('No records found related to this Allottee Code', 'Not Found');
+      this.cdr.detectChanges();
+    };
+
+    const fetchFromRegistration = () => {
+      this.service.getPropertyByCode(code).subscribe({
+        next: (res: any) => {
+          const d = res?.data;
+          const hasValidData =
+            !!res?.success && !!d && (
+              (d.id && d.id > 0) ||
+              (d.propertyId && d.propertyId > 0) ||
+              !!d.propertyCode ||
+              (d.plotNo !== null && d.plotNo !== undefined) ||
+              !!d.bidderName
+            );
+
+          if (hasValidData) {
+            handleSuccess(d);
+          } else {
+            handleNotFound();
+          }
+        },
+        error: () => {
+          handleNotFound();
+        }
+      });
+    };
+
+    this.service.GetPropertyEAuctionDetailsByPropertyCodeAsync(code, true).subscribe({
       next: (res: any) => {
-        this.isSearching = false;
         const d = res?.data;
         const hasValidData =
           !!res?.success && !!d && (
             (d.id && d.id > 0) ||
             (d.propertyId && d.propertyId > 0) ||
             !!d.propertyCode ||
-            d.plotNo !== null && d.plotNo !== undefined ||
+            (d.plotNo !== null && d.plotNo !== undefined) ||
             !!d.bidderName
           );
 
         if (hasValidData) {
-          this.propertyDetails = d;
-          this.bindPropertyDetails(d, () => {
-            this.balanceData = this.buildBalanceDataFromResponse(d);
-            this.showResults = true;
-            this.cdr.detectChanges();
-          });
-          this.toastr.success('Property details loaded successfully.', 'Success');
+          handleSuccess(d);
         } else {
-          this.toastr.warning('No records found related to this Allottee Code', 'Not Found');
+          fetchFromRegistration();
         }
       },
-      error: (err: any) => {
-        this.isSearching = false;
-        console.error('Error fetching property details by code:', err);
-        this.toastr.warning('No records found related to this Allottee Code', 'Error');
+      error: () => {
+        fetchFromRegistration();
       }
     });
   }
@@ -521,7 +554,7 @@ export class PropertyBalanceCalculate implements OnInit {
     this.propertyDetails = null;
     this.showResults = false;
 
-    this.service.GetBiderPropertyDetailsByMandiPlotAsync(mandiId, plotTypeId, plotNo, plotSizes).subscribe({
+    this.service.getPropertyDetailsByMandiPlot(mandiId, plotTypeId, plotNo, plotSizes, true).subscribe({
       next: (res: any) => {
         const d = res?.data ?? res ?? null;
         const apiSuccess = res?.success !== false;
@@ -629,18 +662,18 @@ export class PropertyBalanceCalculate implements OnInit {
       ? d.installmentSchedules
       : Array.isArray(d.installments)
         ? d.installments.filter((item: any) =>
-            item && (
-              item.installmentNo !== undefined ||
-              item.installmentLabel !== undefined ||
-              item.calculatedDueDate !== undefined ||
-              item.dueDate !== undefined ||
-              item.basePrincipal !== undefined ||
-              item.dueAmount !== undefined ||
-              item.interest !== undefined ||
-              item.totalEstimatedAmount !== undefined ||
-              item.totalDueAmount !== undefined
-            )
+          item && (
+            item.installmentNo !== undefined ||
+            item.installmentLabel !== undefined ||
+            item.calculatedDueDate !== undefined ||
+            item.dueDate !== undefined ||
+            item.basePrincipal !== undefined ||
+            item.dueAmount !== undefined ||
+            item.interest !== undefined ||
+            item.totalEstimatedAmount !== undefined ||
+            item.totalDueAmount !== undefined
           )
+        )
         : [];
 
     const dueInstallments = scheduleRows.map((item: any, index: number) => ({
@@ -664,14 +697,14 @@ export class PropertyBalanceCalculate implements OnInit {
 
     const initialDeposit = sorted[0]
       ? {
-          receiptNo: sorted[0].receiptNo ?? '',
-          receiptDate: this.formatDate(sorted[0].receiptDate),
-          draftChequeRtgsNo: sorted[0].draftNo ?? '',
-          draftChequeRtgsDate: this.formatDate(sorted[0].draftDate),
-          paymentMode: sorted[0].paymentMode ?? '-',
-          bank: sorted[0].draftBank ?? '-',
-          amount: Number(sorted[0].draftAmount) || 0
-        }
+        receiptNo: sorted[0].receiptNo ?? '',
+        receiptDate: this.formatDate(sorted[0].receiptDate),
+        draftChequeRtgsNo: sorted[0].draftNo ?? '',
+        draftChequeRtgsDate: this.formatDate(sorted[0].draftDate),
+        paymentMode: sorted[0].paymentMode ?? '-',
+        bank: sorted[0].draftBank ?? '-',
+        amount: Number(sorted[0].draftAmount) || 0
+      }
       : null;
 
     const installmentReceipts = sorted.slice(1).map((r: any) => ({
@@ -732,29 +765,29 @@ export class PropertyBalanceCalculate implements OnInit {
     return safeRows.reduce((sum, row) => sum + (Number(row?.[field]) || 0), 0);
   }
 
- getRateOfInterest(): number {
-  const propertyDate =
-    this.balanceData?.propertyInfo?.allotmentDate ||
-    this.balanceData?.propertyInfo?.auctionDate ||
-    '';
+  getRateOfInterest(): number {
+    const propertyDate =
+      this.balanceData?.propertyInfo?.allotmentDate ||
+      this.balanceData?.propertyInfo?.auctionDate ||
+      '';
 
-  if (!propertyDate) {
-    return 0;
+    if (!propertyDate) {
+      return 0;
+    }
+
+    // Date format: DD-MM-YYYY
+    const dateParts = propertyDate.split('-');
+
+    if (dateParts.length !== 3) {
+      return 0;
+    }
+
+    const year = Number(dateParts[2]);
+
+    if (isNaN(year)) {
+      return 0;
+    }
+
+    return year < 1972 ? 6 : 12;
   }
-
-  // Date format: DD-MM-YYYY
-  const dateParts = propertyDate.split('-');
-
-  if (dateParts.length !== 3) {
-    return 0;
-  }
-
-  const year = Number(dateParts[2]);
-
-  if (isNaN(year)) {
-    return 0;
-  }
-
-  return year < 1972 ? 6 : 12;
-}
 }
