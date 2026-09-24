@@ -423,7 +423,8 @@
                 <div class="signup-step-container"
                     *ngIf="selectedEntityType && proceedToForm && !shouldShowProcurementSection()">
                     <app-personal-details [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"
-                        (toastMessage)="triggerToast($event.message, $event.type)">
+                        (toastMessage)="triggerToast($event.message, $event.type)"
+                        (verificationChanged)="onVerificationChanged($event)">
                     </app-personal-details>
 
                     <app-documents-and-address [selectedEntityType]="selectedEntityType" [signUpData]="signUpData"

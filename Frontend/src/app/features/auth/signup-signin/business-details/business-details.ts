@@ -106,6 +106,7 @@ export class BusinessDetails implements OnInit {
 
   onSameAddressChange() {
     if (this.signUpData.isSameAddress) {
+      // Copy all address values from the individual address
       this.signUpData.businessState = this.signUpData.addressState;
       this.signUpData.businessStateId = this.signUpData.addressStateId;
       this.signUpData.businessDistrict = this.signUpData.addressDistrict;
@@ -114,13 +115,78 @@ export class BusinessDetails implements OnInit {
       this.signUpData.businessCityId = this.signUpData.addressCityId;
       this.signUpData.businessPincode = this.signUpData.addressPincode;
       this.signUpData.businessLandmark = this.signUpData.addressLandmark;
+
+      // The dropdowns need their options loaded — fetch districts for the copied
+      // state, then fetch cities for the copied district so the <select> can
+      // match and display the pre-selected values.
+      if (this.signUpData.addressStateId) {
+        this.isLoadingDistricts = true;
+        this.businessDistricts = [];
+        this.businessCities = [];
+
+        this.locationService.getDistricts(this.signUpData.addressStateId).subscribe({
+          next: (res) => {
+            this.businessDistricts = res.data;
+            this.isLoadingDistricts = false;
+
+            // Now load cities for the copied district
+            if (this.signUpData.addressDistrictId) {
+              this.isLoadingCities = true;
+              this.locationService.getCities(this.signUpData.addressDistrictId).subscribe({
+                next: (cityRes) => {
+                  this.businessCities = cityRes.data;
+                  this.isLoadingCities = false;
+                },
+                error: (err) => {
+                  console.error('Business cities error:', err);
+                  this.isLoadingCities = false;
+                }
+              });
+            }
+          },
+          error: (err) => {
+            console.error('Business districts error:', err);
+            this.isLoadingDistricts = false;
+          }
+        });
+      }
+
       this.toastMessage.emit({ message: 'Address copied from Document Address', type: 'success' });
     } else {
+      // Clear everything when unchecked
       this.signUpData.businessState = '';
       this.signUpData.businessStateId = 0;
       this.signUpData.businessDistrict = '';
+      this.signUpData.businessDistrictId = 0;
+      this.signUpData.businessCity = '';
+      this.signUpData.businessCityId = 0;
       this.signUpData.businessPincode = '';
       this.signUpData.businessLandmark = '';
+      this.businessDistricts = [];
+      this.businessCities = [];
+    }
+  }
+
+  restrictToNumbers(event: KeyboardEvent): void {
+    const allowedKeys = [
+      'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+      'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+      'Home', 'End'
+    ];
+
+    // Allow system shortcuts (Ctrl+A, Ctrl+C, Ctrl+V, etc.)
+    if (event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    // Allow navigation and functional keys
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+
+    // Block non-numeric keystrokes
+    if (event.key < '0' || event.key > '9') {
+      event.preventDefault();
     }
   }
 }

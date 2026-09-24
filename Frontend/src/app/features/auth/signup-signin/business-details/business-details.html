@@ -108,6 +108,7 @@
                 <div class="form-group-custom">
                     <label class="form-label-custom">Pin Code (ਪਿੰਨ ਕੋਡ) <span class="required-star">*</span></label>
                     <input type="text" name="businessPincode" maxlength="6" [(ngModel)]="signUpData.businessPincode"
+                    (keydown)="restrictToNumbers($event)"
                         #businessPincode="ngModel" [required]="!signUpData.isSameAddress" pattern="^[0-9]{6}$"
                         [disabled]="signUpData.isSameAddress" class="form-input-custom" placeholder="Enter Pin Code">
                     <div class="error-message"
