@@ -1,11 +1,14 @@
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CommonController : ControllerBase
     {
         private readonly ICommon _common;
@@ -14,6 +17,8 @@ namespace Backend.Controllers
         {
             _common = common;
         }
+         
+
 
         [HttpGet("getAllStates")]
         public async Task<IActionResult> GetAllStates()
@@ -210,6 +215,26 @@ namespace Backend.Controllers
         public async Task<IActionResult> GetPropertyDetailsByPlot(int? mandiId, int? plotTypeId, int? plotNo, string? plotSize)
         {
             var response = await _common.GetPropertyDetailsByPlot(mandiId, plotTypeId, plotNo, plotSize);
+            return Ok(response);
+        }
+
+        [HttpGet("getProfileDetailsByUserId")]
+        public async Task<IActionResult> GetProfileDetailsByUserId()
+        {
+            var Userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(Userid))
+            {
+                return BadRequest(new { success = false, message = "userId is required." });
+            }
+
+            var response = await _common.GetProfileDetailsByUserId(Userid);
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
             return Ok(response);
         }
     }

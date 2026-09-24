@@ -3,6 +3,7 @@ using Backend.Helpers;
 using Backend.Models.Dtos;
 using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -435,6 +436,95 @@ namespace Backend.Services.Implementations
             };
 
             return ApiResponse<PropertyOwnerDetailsDto>.Ok(dto, "Property details retrieved successfully.");
+        }
+
+        public async Task<ApiResponse<ApplicationUserProfileDto>> GetProfileDetailsByUserId(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return ApiResponse<ApplicationUserProfileDto>.Fail(
+                        "User ID is required.");
+                }
+
+                var user = await (
+                    from application in _context.ApplicationUsers
+
+                    join state in _context.StateMasters
+                      on application.IndividualStateId equals state.StateId
+                      into stateGroup
+                    from state in stateGroup.DefaultIfEmpty()
+
+                    join district in _context.DistrictMasters
+                        on application.IndividualDistrictId equals district.DistrictId
+                        into districtGroup
+                    from district in districtGroup.DefaultIfEmpty()
+
+                    join city in _context.CityMasters
+                        on application.IndividualCityId equals city.CityId
+                        into cityGroup
+                    from city in cityGroup.DefaultIfEmpty()
+
+                    where application.IdentityUserId == userId
+                          && !application.IsDeleted
+
+                    select new
+                    {
+                        ApplicationUser = application,
+                        State = state,
+                        District = district,
+                        City = city
+                    }
+                ).FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    return ApiResponse<ApplicationUserProfileDto>.Fail(
+                        "No profile found for the given user.");
+                }
+
+                var applicationUser = user.ApplicationUser;
+
+                var dto = new ApplicationUserProfileDto
+                {
+                    ApplicantId = applicationUser.ApplicantId,
+                    IdentityUserId = applicationUser.IdentityUserId,
+
+                    FirstName = applicationUser.FirstName,
+                    LastName = applicationUser.LastName,
+                    Email = applicationUser.Email,
+                    MobileNo = applicationUser.MobileNo,
+                    FatherHusbandFirstName = applicationUser.FirstName,
+                    MotherFirstName = applicationUser.FirstName,
+
+                    IndividualStateId = applicationUser.IndividualStateId,
+                    IndividualDistrictId = applicationUser.IndividualDistrictId,
+                    IndividualCityId = applicationUser.IndividualCityId,
+
+                    IndividualPinCode = applicationUser.IndividualPinCode,
+                    IndividualPlotStreetLandmark =applicationUser.IndividualPlotStreetLandmark,
+
+                    StateName = user.State?.StateName,
+                    DistrictName = user.District?.DistrictName,
+                    CityName = user.City?.CityName,
+
+                    IsDeleted = applicationUser.IsDeleted,
+                    IsActive = applicationUser.IsActive,
+
+                    CreatedDate = applicationUser.CreatedDate,
+                    CreatedBy = applicationUser.CreatedBy
+                };
+
+                return ApiResponse<ApplicationUserProfileDto>.Ok(
+                    dto,
+                    "Profile details fetched successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<ApplicationUserProfileDto>.Fail(
+                    $"Error while fetching profile details: {ex.Message}");
+            }
         }
     }
 }
