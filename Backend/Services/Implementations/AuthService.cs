@@ -169,6 +169,47 @@ namespace Backend.Services.Implementations
 
                     await _context.SaveChangesAsync();
 
+                    if (!string.IsNullOrWhiteSpace(request.SessionId))
+                    {
+                        var documentIds = new[]
+                        {
+    request.PhotoDocId,
+    request.IdentDocId,
+    request.AddrDocId,
+    request.PANDocId,
+    request.OfficePropertyPhotoDocId
+}
+                        .Where(id => id.HasValue)
+                        .Select(id => id!.Value)
+                        .ToList();
+
+                        if (documentIds.Any())
+                        {
+                            var docsToLink = await _context.UserDocuments
+                                .Where(d =>
+                                    documentIds.Contains(d.UserDocumentId) &&
+                                    d.TempSessionId == request.SessionId &&
+                                    d.ApplicantId == null)
+                                .ToListAsync();
+
+                            if (docsToLink.Count != documentIds.Count)
+                            {
+                                // Kisi document ki ID galat hai, ya already kisi
+                                // aur applicant se link ho chuki hai, ya session
+                                // match nahi ho raha — safe side pe fail karo
+                                throw new ArgumentException(
+                                    "One or more uploaded documents could not be verified. Please re-upload and try again.");
+                            }
+
+                            foreach (var doc in docsToLink)
+                            {
+                                doc.ApplicantId = applicant.ApplicantId;
+                            }
+
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    // ---- NAYA CODE END ----
                     await transaction.CommitAsync();
 
                     response = BuildLoginResponse(

@@ -1,7 +1,6 @@
 ﻿using Backend.Helpers;
 using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,7 +8,6 @@ namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     [Produces("application/json")]
     public class FileController : ControllerBase
     {
@@ -20,32 +18,39 @@ namespace Backend.Controllers
             _fileService = fileService;
         }
 
-        /// <summary>File upload (max 10MB)</summary>
         [HttpPost("upload")]
-        [RequestSizeLimit(10 * 1024 * 1024)]
-        public async Task<ActionResult<ApiResponse<FileUploadResponse>>> Upload(IFormFile file)
+        [RequestSizeLimit(5 * 1024 * 1024)]
+        public async Task<ActionResult<ApiResponse<FileUploadResponse>>> Upload(
+             [FromForm] FileUploadRequest request)
         {
-            var result = await _fileService.UploadAsync(file, GetUserId());
-            return Ok(ApiResponse<FileUploadResponse>.Ok(result, "File uploaded successfully"));
-        }
+            try
+            {
+                if (request.File == null || request.File.Length == 0)
+                    return BadRequest("Please select a file.");
 
-        /// <summary>check all files</summary>
-        [HttpGet("my-files")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<FileListResponse>>>> GetMyFiles()
-        {
-            var files = await _fileService.GetUserFilesAsync(GetUserId());
-            return Ok(ApiResponse<IEnumerable<FileListResponse>>.Ok(files));
-        }
+                if (string.IsNullOrWhiteSpace(request.SessionId))
+                    return BadRequest("SessionId is required.");
 
-        /// <summary>File download  by ID</summary>
-        [HttpGet("download/{id:int}")]
-        public async Task<IActionResult> Download(int id)
-        {
-            var (bytes, contentType, fileName) = await _fileService.DownloadAsync(id, GetUserId());
-            return File(bytes, contentType, fileName);
-        }
+                var result = await _fileService.UploadAsync(
+                    request.File,
+                    request.DocumentCategoryId,
+                    request.DocumentTypeId,
+                    request.DocumentNumber,
+                    request.SessionId);
 
-        /// <summary>File delete karo</summary>
+                return Ok(ApiResponse<FileUploadResponse>.Ok(result, "File uploaded successfully"));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "An error occurred while uploading the file.");
+            }
+        }
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<ApiResponse>> Delete(int id)
         {
