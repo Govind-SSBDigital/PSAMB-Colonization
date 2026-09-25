@@ -356,19 +356,11 @@
               <div class="col-md-8">
                 <label for="h1BidderName" class="form-label small text-dark fw-semibold text-uppercase">Allotee Name
                   <span class="text-danger">*</span></label>
-                <div class="input-group">
-                  <input id="bidderName" type="text" class="form-control bg-light rounded-start-3 custom-input-color"
-                    placeholder="Enter full name of highest bidder" formControlName="bidderName"
-                    [class.is-invalid]="isInvalid('bidderName')" />
-                  @if (registerationForm.get('isTransferred')?.value && !readonlyMode) {
-                  <button type="button" class="btn btn-outline-secondary rounded-end-3" (click)="addBidderName()">+
-                    Add</button>
-                  }
-                </div>
+                <input id="bidderName" type="text" class="form-control bg-light rounded-3 custom-input-color"
+                  placeholder="Enter full name of highest bidder" formControlName="bidderName"
+                  [class.is-invalid]="isInvalid('bidderName')" />
                 @if (isInvalid('bidderName')) { <div class="invalid-feedback d-block">Allotee name is required.
                 </div> }
-                @if (registerationForm.get('isTransferred')?.value && bidderNamesFormArray.length) {
-                }
               </div>
 
               <div class="col-md-4">
@@ -379,33 +371,14 @@
                     <label class="form-check-label fw-semibold text-dark" for="isTransferred">Is Transfered</label>
                     <input class="form-check-input m-0 custom-switch-color" type="checkbox" role="switch"
                       id="isTransferred" formControlName="isTransferred"
+                      (change)="onIsTransferredChange($event)"
                       [class.is-invalid]="isInvalid('isTransferred')" />
                   </div>
                   @if (isInvalid('isTransferred')) { <div class="invalid-feedback d-block">Transfer status is required.
                   </div> }
                 </div>
               </div>
-              @if (registerationForm.get('isTransferred')?.value) {
-              <div class="col-md-12 mt-3 border border-secondary rounded-3 bg-light p-2">
-                <h6 class="small text-dark fw-semibold">Allotee Names</h6>
-                @if (bidderNamesFormArray.length) {
-                <ul class="list-group list-group-flush">
-                  @for (bidder of bidderNamesFormArray.controls; track bidder) {
-                  <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
-                    <span>{{ bidder.value }}</span>
-                    @if (!readonlyMode) {
-                    <button type="button" class="btn btn-sm btn-outline-danger"
-                      (click)="removeBidderName(bidderNamesFormArray.controls.indexOf(bidder))"><i
-                        class="fa-solid fa-trash"></i></button>
-                    }
-                  </li>
-                  }
-                </ul>
-                } @else {
-                <div class="text-muted small py-2">No allotee names added yet. Click + Add to add one.</div>
-                }
-              </div>
-              }
+
               <div class="col-md-4">
                 <label for="relation" class="form-label small text-dark fw-semibold text-uppercase">Relation
                   <span class="text-danger">*</span>
@@ -560,7 +533,106 @@
                 @if (isInvalid('address')) { <div class="invalid-feedback">Permanent communication address
                   is required.</div> }
               </div>
+
+              <!-- Transferred Allotees Table (Appears only when Is Transfered is checked) -->
+              @if (registerationForm.get('isTransferred')?.value) {
+              <div class="col-12 mt-3">
+                <div class="card transferred-table-card border-0 overflow-hidden">
+                  <div class="card-header d-flex align-items-center justify-content-between py-2 px-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-users text-success fs-6"></i>
+                      <h6 class="mb-0 fw-semibold text-dark">Transferred Allotee Details</h6>
+                      <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2">
+                        {{ transferredAlloteesList.length }}
+                      </span>
+                    </div>
+                    @if (!readonlyMode) {
+                    <button type="button" class="btn btn-sm btn-outline-success rounded-3 fw-semibold d-inline-flex align-items-center gap-1"
+                      (click)="openTransferModal()">
+                      <i class="fa-solid fa-plus"></i> Add Transferee
+                    </button>
+                    }
+                  </div>
+
+                  @if (transferredAlloteesList.length > 0) {
+                  <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0 text-nowrap">
+                      <thead>
+                        <tr class="small text-uppercase">
+                          <th class="ps-3 py-2">#</th>
+                          <th class="py-2">Allotee Name</th>
+                          <th class="py-2">Relation / Guardian</th>
+                          <th class="py-2">PAN No.</th>
+                          <th class="py-2">Aadhar No.</th>
+                          <th class="py-2">Mobile No.</th>
+                          <th class="py-2">Property Type</th>
+                          <th class="py-2">Location</th>
+                          <th class="py-2">Address</th>
+                          @if (!readonlyMode) {
+                          <th class="text-center pe-3 py-2">Action</th>
+                          }
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (allotee of transferredAlloteesList; track $index) {
+                        <tr class="small">
+                          <td class="ps-3 fw-semibold">{{ $index + 1 }}</td>
+                          <td class="fw-semibold text-dark">{{ allotee.alloteeName }}</td>
+                          <td>
+                            <div>{{ allotee.relation || '—' }}</div>
+                            @if (allotee.fatherOrHusbandName) {
+                            <small class="text-muted">{{ allotee.fatherOrHusbandName }}</small>
+                            }
+                          </td>
+                          <td>
+                            @if (allotee.panNo) {
+                            <span class="badge bg-light text-dark font-monospace border">{{ allotee.panNo }}</span>
+                            } @else {
+                            <span>—</span>
+                            }
+                          </td>
+                          <td>
+                            <span class="font-monospace text-muted">{{ allotee.aadhaarNo || '—' }}</span>
+                          </td>
+                          <td>{{ allotee.mobileNo || '—' }}</td>
+                          <td>{{ allotee.propertyTypeName || getPropertyTypeNameById(allotee.propertyTypeId) || '—' }}</td>
+                          <td>
+                            <div>{{ allotee.stateName || getStateNameById(allotee.stateId) || '—' }}</div>
+                            @if (allotee.districtName || allotee.cityName) {
+                            <small class="text-muted">{{ allotee.districtName || getDistrictNameById(allotee.districtId) }}<span *ngIf="allotee.cityName">, {{ allotee.cityName }}</span></small>
+                            }
+                          </td>
+                          <td class="text-truncate" style="max-width: 200px;" [title]="allotee.address">
+                            {{ allotee.address || '—' }}
+                          </td>
+                          @if (!readonlyMode) {
+                          <td class="text-center pe-3">
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle"
+                              (click)="removeTransferredAllotee($index)" title="Remove Transferee">
+                              <i class="fa-solid fa-trash"></i>
+                            </button>
+                          </td>
+                          }
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                  } @else {
+                  <div class="text-center py-4 px-3 bg-white">
+                    <p class="text-muted small mb-2">No transferred allotees added yet.</p>
+                    @if (!readonlyMode) {
+                    <button type="button" class="btn btn-sm btn-success rounded-3 fw-semibold" (click)="openTransferModal()">
+                      <i class="fa-solid fa-plus me-1"></i> Add Transferee Details
+                    </button>
+                    }
+                  </div>
+                  }
+                </div>
+              </div>
+              }
             </div>
+
           </div>
         </div>
 
@@ -1153,16 +1225,35 @@
                   <p class="mb-0 text-dark fw-medium">{{ registerationForm.get('isTransferred')?.value ? 'Yes' : 'No' }}
                   </p>
                 </div>
-                @if (registerationForm.get('isTransferred')?.value && bidderNamesFormArray.length) {
+                @if (registerationForm.get('isTransferred')?.value && transferredAlloteesList.length) {
                 <div class="col-12">
-                  <label class="form-label small text-dark fw-semibold text-uppercase">Allotee Names</label>
-                  <ul class="list-group list-group-flush">
-                    @for (bidder of bidderNamesFormArray.controls; track bidder) {
-                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
-                      <span>{{ bidder.value }}</span>
-                    </li>
-                    }
-                  </ul>
+                  <label class="form-label small text-dark fw-semibold text-uppercase">Transferred Allotees</label>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0">
+                      <thead class="table-light">
+                        <tr class="small text-secondary">
+                          <th>#</th>
+                          <th>Allotee Name</th>
+                          <th>Relation</th>
+                          <th>Guardian</th>
+                          <th>PAN</th>
+                          <th>Mobile</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (allotee of transferredAlloteesList; track $index) {
+                        <tr class="small">
+                          <td>{{ $index + 1 }}</td>
+                          <td class="fw-semibold">{{ allotee.alloteeName }}</td>
+                          <td>{{ allotee.relation || '—' }}</td>
+                          <td>{{ allotee.fatherOrHusbandName || '—' }}</td>
+                          <td>{{ allotee.panNo || '—' }}</td>
+                          <td>{{ allotee.mobileNo || '—' }}</td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 }
                 <div class="col-md-4">
@@ -1471,3 +1562,159 @@
     }
   </div>
 </main>
+
+<!-- Modal opens when property is transferred -->
+@if (isTransferModalOpen) {
+<div class="transfer-modal-backdrop" (click)="closeTransferModal()" role="dialog" aria-modal="true">
+  <div class="modal-dialog modal-dialog-centered transfer-modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden bg-white">
+      <!-- Modal Header -->
+      <div class="modal-header bg-success text-white py-3 px-4 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa-solid fa-user-plus fs-5"></i>
+          <h5 class="modal-title mb-0 fw-semibold">Add Transferred Allotee Details</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="closeTransferModal()"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4 bg-light" [formGroup]="transferModalForm">
+        <div class="row g-3">
+          <!-- Allotee Name -->
+          <div class="col-md-6">
+            <label for="modalAlloteeName" class="form-label small text-dark fw-semibold text-uppercase">
+              Allotee Name <span class="text-danger">*</span>
+            </label>
+            <input id="modalAlloteeName" type="text" class="form-control bg-white rounded-3 custom-input-color"
+              placeholder="Enter full name of highest bidder" formControlName="alloteeName"
+              [class.is-invalid]="isModalInvalid('alloteeName')" />
+            @if (isModalInvalid('alloteeName')) {
+            <div class="invalid-feedback d-block">Allotee name is required.</div>
+            }
+          </div>
+
+          <!-- Relation -->
+          <div class="col-md-3">
+            <label for="modalRelation" class="form-label small text-dark fw-semibold text-uppercase">Relation</label>
+            <select id="modalRelation" class="form-select bg-white rounded-3 custom-input-color" formControlName="relation">
+              <option value="" disabled selected>Select Relation</option>
+              @for (rel of relations; track rel) {
+              <option [value]="rel">{{ rel }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Father / Husband Name -->
+          <div class="col-md-3">
+            <label for="modalFatherOrHusbandName" class="form-label small text-dark fw-semibold text-uppercase">
+              Father / Husband Name
+            </label>
+            <input id="modalFatherOrHusbandName" type="text" class="form-control bg-white rounded-3 custom-input-color"
+              placeholder="Guardian Name" formControlName="fatherOrHusbandName" />
+          </div>
+
+          <!-- PAN No. -->
+          <div class="col-md-4">
+            <label for="modalPanNo" class="form-label small text-dark fw-semibold text-uppercase">PAN No.</label>
+            <input id="modalPanNo" type="text" maxlength="10"
+              class="form-control bg-white rounded-3 font-monospace text-uppercase custom-input-color"
+              placeholder="ABCDE1234F" formControlName="panNo"
+              [class.is-invalid]="isModalInvalid('panNo')" />
+            @if (isModalInvalid('panNo')) {
+            <div class="invalid-feedback d-block">Enter a valid PAN (e.g. ABCDE1234F).</div>
+            }
+          </div>
+
+          <!-- Aadhar No. -->
+          <div class="col-md-4">
+            <label for="modalAadhaarNo" class="form-label small text-dark fw-semibold text-uppercase">Aadhar No.</label>
+            <input id="modalAadhaarNo" type="text" maxlength="12"
+              class="form-control bg-white rounded-3 font-monospace custom-input-color"
+              placeholder="XXXXXXXX1234" formControlName="aadhaarNo" (input)="maskModalAadhaar($event)" />
+          </div>
+
+          <!-- Mobile No. -->
+          <div class="col-md-4">
+            <label for="modalMobileNo" class="form-label small text-dark fw-semibold text-uppercase">Mobile No.</label>
+            <input id="modalMobileNo" type="tel" maxlength="10"
+              class="form-control bg-white rounded-3 custom-input-color"
+              placeholder="+91 XXXXX XXXXX" formControlName="mobileNo"
+              [class.is-invalid]="isModalInvalid('mobileNo')" />
+            @if (isModalInvalid('mobileNo')) {
+            <div class="invalid-feedback d-block">Enter a valid 10-digit mobile number.</div>
+            }
+          </div>
+
+          <!-- Property Type -->
+          <div class="col-md-4">
+            <label for="modalPropertyType" class="form-label small text-dark fw-semibold text-uppercase">Property Type</label>
+            <select id="modalPropertyType" class="form-select bg-white rounded-3 custom-input-color" formControlName="propertyTypeId">
+              <option value="" disabled selected>Select Property Type</option>
+              @for (prop of auctionPropertyTypes; track (prop.propertyTypeId || prop.id || prop)) {
+              <option [value]="prop.propertyTypeId || prop.id || prop">
+                {{ prop.propertyTypeName || prop.name || prop }}
+              </option>
+              }
+            </select>
+          </div>
+
+          <!-- State -->
+          <div class="col-md-4">
+            <label for="modalState" class="form-label small text-dark fw-semibold text-uppercase">State</label>
+            <select id="modalState" class="form-select bg-white rounded-3 custom-input-color"
+              formControlName="stateId" (change)="onModalStateChange($event)">
+              <option value="" disabled selected>Select State</option>
+              @for (st of states; track st.stateId) {
+              <option [value]="st.stateId">{{ st.stateName }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- District -->
+          <div class="col-md-4">
+            <label for="modalDistrict" class="form-label small text-dark fw-semibold text-uppercase">District</label>
+            <select id="modalDistrict" class="form-select bg-white rounded-3 custom-input-color"
+              formControlName="districtId" (change)="onModalDistrictChange($event)">
+              <option value="" disabled selected>Select District</option>
+              @for (dt of modalDistricts; track dt.districtId) {
+              <option [value]="dt.districtId">{{ dt.districtName }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- City -->
+          <div class="col-md-4">
+            <label for="modalCity" class="form-label small text-dark fw-semibold text-uppercase">City</label>
+            <select id="modalCity" class="form-select bg-white rounded-3 custom-input-color" formControlName="cityId">
+              <option value="" disabled selected>Select City</option>
+              @for (ct of modalCities; track ct.cityId) {
+              <option [value]="ct.cityId">{{ ct.cityName }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Permanent Communication Address -->
+          <div class="col-md-8">
+            <label for="modalAddress" class="form-label small text-dark fw-semibold text-uppercase">
+              Permanent Communication Address
+            </label>
+            <textarea id="modalAddress" rows="2" class="form-control bg-white rounded-3 custom-input-color"
+              placeholder="Enter complete billing/residential address..." formControlName="address"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer justify-content-end bg-white border-top px-4 py-3 gap-2">
+        <button type="button" class="btn btn-outline-secondary px-4 rounded-3" (click)="closeTransferModal()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-success fw-semibold px-4 rounded-3 d-inline-flex align-items-center gap-2"
+          (click)="addTransferredAllotee()">
+          <i class="fa-solid fa-plus"></i> Add
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

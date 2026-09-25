@@ -114,6 +114,11 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
   propTypes: any;
   showRemarksReadOnly = false;
   remarksReadOnly: string | null = null;
+  isTransferModalOpen = false;
+  transferredAlloteesList: any[] = [];
+  modalDistricts: any[] = [];
+  modalCities: any[] = [];
+  transferModalForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -197,6 +202,20 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
       ownerDistrtictID: [''],
       ownerCityID: ['']
 
+    });
+
+    this.transferModalForm = this.fb.group({
+      alloteeName: ['', Validators.required],
+      relation: [''],
+      fatherOrHusbandName: [''],
+      panNo: ['', [Validators.pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)]],
+      aadhaarNo: [''],
+      mobileNo: ['', [Validators.pattern(/^[6-9]\d{9}$/), Validators.minLength(10), Validators.maxLength(10)]],
+      propertyTypeId: [''],
+      stateId: [''],
+      districtId: [''],
+      cityId: [''],
+      address: ['']
     });
   }
 
@@ -1698,6 +1717,176 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.updateBidderNameValidators();
   }
 
+  openTransferModal(): void {
+    if (this.readonlyMode) return;
+    this.transferModalForm.reset({
+      alloteeName: '',
+      relation: '',
+      fatherOrHusbandName: '',
+      panNo: '',
+      aadhaarNo: '',
+      mobileNo: '',
+      propertyTypeId: '',
+      stateId: '',
+      districtId: '',
+      cityId: '',
+      address: ''
+    });
+    this.modalDistricts = [];
+    this.modalCities = [];
+    this.isTransferModalOpen = true;
+  }
+
+  closeTransferModal(): void {
+    this.isTransferModalOpen = false;
+  }
+
+  onIsTransferredChange(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    if (isChecked) {
+      this.openTransferModal();
+    }
+  }
+
+  onModalStateChange(event: Event): void {
+    const stateId = (event.target as HTMLSelectElement).value;
+    this.modalDistricts = [];
+    this.modalCities = [];
+    this.transferModalForm.patchValue({ districtId: '', cityId: '' });
+    if (stateId) {
+      this.commonService.getAllDistrict(stateId).subscribe({
+        next: (res: any) => {
+          this.modalDistricts = res.data || res || [];
+        },
+        error: (err: any) => {
+          console.error('Error fetching districts for modal:', err);
+        }
+      });
+    }
+  }
+
+  onModalDistrictChange(event: Event): void {
+    const districtId = (event.target as HTMLSelectElement).value;
+    this.modalCities = [];
+    this.transferModalForm.patchValue({ cityId: '' });
+    if (districtId) {
+      this.commonService.GetAllCityByDistrictID(districtId).subscribe({
+        next: (res: any) => {
+          this.modalCities = res.data || res || [];
+        },
+        error: (err: any) => {
+          console.error('Error fetching cities for modal:', err);
+        }
+      });
+    }
+  }
+
+  maskModalAadhaar(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
+    let digits = value.replace(/^XXXXXXXX/, '').replace(/\D/g, '');
+
+    if (digits.length > 4) {
+      digits = digits.substring(0, 4);
+    }
+
+    const maskedValue = digits ? ('XXXXXXXX' + digits) : '';
+    this.transferModalForm.get('aadhaarNo')?.setValue(maskedValue, { emitEvent: false });
+    input.value = maskedValue;
+  }
+
+  addTransferredAllotee(): void {
+    if (this.transferModalForm.invalid) {
+      this.transferModalForm.markAllAsTouched();
+      return;
+    }
+
+    const formVal = this.transferModalForm.value;
+    const alloteeName = (formVal.alloteeName || '').trim();
+    if (!alloteeName) {
+      return;
+    }
+
+    const stateObj = this.states?.find(s => String(s.stateId) === String(formVal.stateId));
+    const distObj = this.modalDistricts?.find(d => String(d.districtId) === String(formVal.districtId));
+    const cityObj = this.modalCities?.find(c => String(c.cityId) === String(formVal.cityId));
+    const propObj = this.auctionPropertyTypes?.find(t => String(t.propertyTypeId || t.id || t) === String(formVal.propertyTypeId));
+
+    const record = {
+      alloteeName: alloteeName,
+      relation: formVal.relation || '',
+      fatherOrHusbandName: formVal.fatherOrHusbandName || '',
+      panNo: formVal.panNo ? formVal.panNo.toUpperCase() : '',
+      aadhaarNo: formVal.aadhaarNo || '',
+      mobileNo: formVal.mobileNo || '',
+      propertyTypeId: formVal.propertyTypeId || '',
+      propertyTypeName: propObj?.propertyTypeName || propObj?.name || '',
+      stateId: formVal.stateId || '',
+      stateName: stateObj?.stateName || '',
+      districtId: formVal.districtId || '',
+      districtName: distObj?.districtName || '',
+      cityId: formVal.cityId || '',
+      cityName: cityObj?.cityName || '',
+      address: formVal.address || ''
+    };
+
+    this.transferredAlloteesList.push(record);
+
+    this.bidderNamesFormArray.push(this.fb.control(alloteeName, Validators.required));
+    this.updateBidderNameValidators();
+
+    this.closeTransferModal();
+  }
+
+  removeTransferredAllotee(index: number): void {
+    if (index >= 0 && index < this.transferredAlloteesList.length) {
+      const removed = this.transferredAlloteesList.splice(index, 1)[0];
+      if (removed) {
+        const nameIdx = this.bidderNamesFormArray.controls.findIndex(c => c.value === removed.alloteeName);
+        if (nameIdx !== -1) {
+          this.bidderNamesFormArray.removeAt(nameIdx);
+        }
+        this.updateBidderNameValidators();
+      }
+    }
+  }
+
+  isModalInvalid(controlName: string): boolean {
+    const control = this.transferModalForm.get(controlName);
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  getPropertyTypeNameById(id: any): string {
+    if (!id) return '';
+    const selected = this.auctionPropertyTypes?.find(t => {
+      const matchId = t?.propertyTypeId ?? t?.id ?? t;
+      return String(matchId) === String(id);
+    });
+    return selected ? (selected.propertyTypeName ?? selected.name ?? selected.propertyType ?? String(id)) : String(id);
+  }
+
+  getStateNameById(id: any): string {
+    if (!id) return '';
+    const selected = this.states?.find(s => String(s.stateId) === String(id));
+    return selected ? selected.stateName : String(id);
+  }
+
+  getDistrictNameById(id: any): string {
+    if (!id) return '';
+    const selected = this.modalDistricts?.find(d => String(d.districtId) === String(id))
+      || this.bidderDistricts?.find(d => String(d.districtId) === String(id))
+      || this.districts?.find(d => String(d.districtId) === String(id));
+    return selected ? selected.districtName : String(id);
+  }
+
+  getCityNameById(id: any): string {
+    if (!id) return '';
+    const selected = this.modalCities?.find(c => String(c.cityId) === String(id))
+      || this.cities?.find(c => String(c.cityId) === String(id));
+    return selected ? selected.cityName : String(id);
+  }
+
+
   get hasActiveReceiptRowEditing(): boolean {
     return this.receiptsFormArray.controls.some((control) => control.get('isEditing')?.value);
   }
@@ -2301,6 +2490,7 @@ export class PropertyBidderRegistration implements OnInit, OnDestroy, OnChanges 
     this.plotTypes = [];
     this.receiptsFormArray.clear();
     this.bidderNamesFormArray.clear();
+    this.transferredAlloteesList = [];
     this.calculatedSchedulesMatrix = [];
     this.propertyData = null;
     this.showPreview = false;

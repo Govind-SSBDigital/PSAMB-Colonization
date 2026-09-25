@@ -587,3 +587,64 @@ tbody td {
 .custom-switch-border {
   border: 1px solid var(--theme-primary) !important;
 }
+
+.transfer-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1060;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.transfer-modal-dialog {
+  width: 100%;
+  max-width: 960px;
+  margin: auto;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.transferred-table-card {
+  border: 1px solid rgba(var(--theme-primary-rgb), 0.25) !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.08);
+
+  .card-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid rgba(var(--theme-primary-rgb), 0.18);
+  }
+
+  .table {
+    font-size: 0.85rem;
+    
+    th {
+      font-weight: 600;
+      color: #475569;
+      background-color: #f1f5f9;
+      letter-spacing: 0.03em;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+  }
+}
