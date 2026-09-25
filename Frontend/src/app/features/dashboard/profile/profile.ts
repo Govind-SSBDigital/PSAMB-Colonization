@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MenuService } from '../../../core/service/MenuService/menu.service';
 import { AuthService } from '../../../core/service/auth.service';
+import { Common } from '../../../core/service/CommonService/common';
 import { FileService, FileUploadPayload } from '../../../core/service/FileService/file-service';
 import {
   FormBuilder,
@@ -43,6 +44,7 @@ export class Profile implements OnInit {
   uploadedDocumentId: number = 0;
   email: string = '';
   userName = '';
+  isLoadingProfile = false;
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
 
@@ -53,14 +55,16 @@ export class Profile implements OnInit {
     private toastr: ToastrService,
     private menuService: MenuService,
     private authService: AuthService,
+    private commonService: Common,
     private fileService: FileService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.buildProfileForm();
     this.buildPasswordForm();
     this.initialFormState = this.profileForm.getRawValue();
+    this.loadProfileFromApi();
     this.openChangePasswordMenu();
   }
 
@@ -110,6 +114,46 @@ export class Profile implements OnInit {
 
   get pf() {
     return this.passwordForm.controls;
+  }
+
+  /** Calls getProfileDetailsByUserId API and patches form with all profile data */
+  private loadProfileFromApi(): void {
+    this.isLoadingProfile = true;
+    this.commonService.getProfileDetailsByUserId().subscribe({
+      next: (res: any) => {
+        this.isLoadingProfile = false;
+        const d = res?.data;
+        console.log('data', d);
+
+        if (!res?.success || !d) {
+          return;
+        }
+
+        // Merge firstName + lastName into full name
+        const fullName = [d.firstName, d.lastName]
+          .filter((n: string) => n && n.trim())
+          .join(' ');
+
+        this.email = d.email ?? '';
+
+        this.profileForm.patchValue({
+          name: fullName,
+          email: d.email ?? '',
+          mobile: d.mobileNo ?? '',
+          address: d.individualPlotStreetLandmark ?? '',
+          state: d.stateName ?? '',
+          district: d.districtName ?? '',
+          city: d.cityName ?? '',
+          pincode: d.individualPinCode ?? ''
+        }, { emitEvent: false });
+
+        this.initialFormState = this.profileForm.getRawValue();
+      },
+      error: (err: any) => {
+        this.isLoadingProfile = false;
+        console.error('Error loading profile:', err);
+      }
+    });
   }
 
   onAvatarChange(event: Event): void {
@@ -236,11 +280,10 @@ export class Profile implements OnInit {
   }
 
   resetForm(): void {
-    this.profileForm.reset();
+    this.profileForm.reset(this.initialFormState);
     this.avatarUrl = '';
     this.uploadedPhotoFileName = '';
     this.uploadedDocumentId = 0;
-    this.initialFormState = this.profileForm.getRawValue();
     this.passwordModalOpen = false;
     this.passwordError = '';
     this.cdr.detectChanges();
@@ -261,9 +304,11 @@ export class Profile implements OnInit {
     this.initialFormState = this.profileForm.getRawValue();
     this.showSuccess();
   }
+
   show() {
     this.toastr.error('Error message', 'Major Error');
   }
+
   showSuccess() {
     this.toastr.success('Profile updated successfully!', 'Success');
   }
@@ -282,11 +327,14 @@ export class Profile implements OnInit {
       this.email = profile.email ?? '';
       this.userName = profile.userName ?? '';
 
-      this.profileForm.patchValue({
-        name: profile.fullName ?? '',
-        email: this.email,
-        mobile: profile.phoneNumber ?? profile.mobileNo ?? ''
-      }, { emitEvent: false });
+      // Only patch from menuService if API hasn't loaded data yet
+      if (!this.profileForm.get('name')?.value) {
+        this.profileForm.patchValue({
+          name: profile.fullName ?? '',
+          email: this.email,
+          mobile: profile.phoneNumber ?? profile.mobileNo ?? ''
+        }, { emitEvent: false });
+      }
     });
   }
 }

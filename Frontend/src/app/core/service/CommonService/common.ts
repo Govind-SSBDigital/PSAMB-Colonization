@@ -77,4 +77,8 @@ export class Common {
   GetPropertyDetailsByPlot(mandiId: any, plotTypeId: any, plotNo: any, plotSize: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Common/GetPropertyDetailsByPlot`, { params: { mandiId, plotTypeId, plotNo, plotSize } });
   }
+
+  getProfileDetailsByUserId(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Common/getProfileDetailsByUserId`);
+  }
 }
