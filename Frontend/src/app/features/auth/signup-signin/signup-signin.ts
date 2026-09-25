@@ -193,6 +193,11 @@ export class SignupSignin implements OnInit {
     timer: 0
   };
 
+  // Loading state flags — prevent double-submits and give the user visual feedback
+  // while the API call is in flight.
+  isSigningIn = false;       // true while password-login OR otp-verify API is pending
+  isSendingLoginOtp = false; // true while Send OTP API is pending
+
   // Toast Alerts & Notification states
   toastMessage = '';
   toastType: 'success' | 'error' | 'info' = 'info';
@@ -938,6 +943,10 @@ export class SignupSignin implements OnInit {
     this.loginData = { userId: '', password: '' };
     this.captchaInput = '';
     this.loginOtpData = { mobileNumber: '', otpInput: '', sentOtp: '', otpSent: false, timer: 0 };
+    // Always reset loading flags here — guards against stale `true` if the user
+    // switches login method while an in-flight request is somehow still pending.
+    this.isSigningIn = false;
+    this.isSendingLoginOtp = false;
   }
 
   // Sign-In via user/pass + captcha + role-based OTP
@@ -956,12 +965,20 @@ export class SignupSignin implements OnInit {
       return;
     }
     this.loginRole= this.loginRole === true ? 1 : 0 ;
+    // Guard: prevent double-submit if a request is already in flight.
+    if (this.isSigningIn) { return; }
+    this.isSigningIn = true;
+
     this.authService.login(userId, password, this.loginRole).subscribe({
       next: (response) => {
         // Token save karo
         sessionStorage.setItem('token', response.data.token);
 
         if (response.data.isFirstLogin === true) {
+          // First-login path: show the reset-password modal.
+          // Must reset isSigningIn here because we return early — we never reach
+          // the navigation below, so the flag would otherwise stay true forever.
+          this.isSigningIn = false;
           this.pendingFirstLoginToken = response.data.token;
           this.resetPasswordData = { currentPassword: '', newPassword: '', confirmNewPassword: '' };
           this.showResetPassword = true;
@@ -989,17 +1006,26 @@ export class SignupSignin implements OnInit {
         };
         sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
 
-        this.menuService.clearMenusCache();
+        // isSigningIn stays true intentionally until navigation completes —
+        // keeps button disabled during the router transition so the user
+        // cannot re-submit while the dashboard is loading.
+        // NOTE: Do NOT call menuService.clearMenusCache() here.
+        // authService.logout() already removes 'cp_menus' from sessionStorage on
+        // every logout path. Clearing it again right before navigation forces the
+        // Sidebar to always hit GET /Auth/profile — adding a blocking round-trip
+        // to every login. The cache will always be empty at this point anyway.
         this.idleTimeoutService.start();
         this.triggerToast(`Welcome back!`, 'success');
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
+        // Always reset on error so the user can retry.
+        this.isSigningIn = false;
         this.errorMessage = err.error?.message || 'Invalid User ID or Password.';
         this.triggerToast(this.errorMessage, 'error');
         this.generateCaptcha();
       }
-    }); // <-- subscribe properly close
+    });
   }
 
 
@@ -1012,8 +1038,13 @@ export class SignupSignin implements OnInit {
       this.triggerToast('Please enter Mobile Number and OTP', 'error');
       return;
     }
-    this.loginRole= this.loginRole === true ;
-    this.authService.loginWithOtp(mobileNumber, otpInput, this.loginRole).subscribe({
+    // Derive the role flag as a proper boolean for the API call.
+    // loginRole is boolean | number (true = officer, false/0 = user).
+    const isOfficer: boolean = this.loginRole === true || this.loginRole === 1;
+    // Guard: prevent double-submit if a request is already in flight.
+    if (this.isSigningIn) { return; }
+    this.isSigningIn = true;
+    this.authService.loginWithOtp(mobileNumber, otpInput, isOfficer).subscribe({
       next: (response) => {
         sessionStorage.setItem('token', response.data.token);
         const sessionData = {
@@ -1023,12 +1054,16 @@ export class SignupSignin implements OnInit {
           entityType: 'Individual'
         };
         sessionStorage.setItem('cp_session', JSON.stringify(sessionData));
-        this.menuService.clearMenusCache();
+        // NOTE: Do NOT call menuService.clearMenusCache() here — see comment
+        // in onSignInSubmit() for the full explanation.
+        // isSigningIn stays true intentionally until navigation completes.
         this.idleTimeoutService.start();
         this.triggerToast('Welcome back!', 'success');
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
+        // Always reset on error so the user can retry.
+        this.isSigningIn = false;
         this.errorMessage = err.error?.message || 'Invalid OTP';
         this.triggerToast(this.errorMessage, 'error');
       }
@@ -1041,14 +1076,23 @@ export class SignupSignin implements OnInit {
       return;
     }
 
+    // Guard: prevent double-tap while OTP request is already in flight.
+    if (this.isSendingLoginOtp) { return; }
+    this.isSendingLoginOtp = true;
+
     this.authService.sendLoginOtp(this.loginOtpData.mobileNumber).subscribe({
       next: (res) => {
+        this.isSendingLoginOtp = false;
         if (res.success) {
           this.loginOtpData.otpSent = true;
           this.triggerToast('OTP sent to your mobile', 'success');
+        } else {
+          // API returned 200 but success=false (e.g. mobile not registered)
+          this.triggerToast(res.message || 'Failed to send OTP. Please try again.', 'error');
         }
       },
       error: (err) => {
+        this.isSendingLoginOtp = false;
         this.triggerToast(err.error?.message || 'Failed to send OTP', 'error');
       }
     });

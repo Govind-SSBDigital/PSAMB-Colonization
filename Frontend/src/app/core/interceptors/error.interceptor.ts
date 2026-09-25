@@ -95,7 +95,14 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   private clearAuthSession(): void {
     try {
+      // Remove all session keys so that a 401-forced logout is as clean as
+      // a normal logout via authService.logout(). If we only remove 'token',
+      // stale cp_menus / cp_session can persist and be served to the next
+      // user who logs in on the same browser tab.
       sessionStorage.removeItem('token');
+      sessionStorage.removeItem('refresh_token');
+      sessionStorage.removeItem('cp_session');
+      sessionStorage.removeItem('cp_menus');
     } catch {
       // Ignore storage access issues in non-browser contexts
     }
