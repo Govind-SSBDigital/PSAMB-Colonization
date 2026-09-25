@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MenuService } from '../../../core/service/MenuService/menu.service';
 import { AuthService } from '../../../core/service/auth.service';
+import { FileService, FileUploadPayload } from '../../../core/service/FileService/file-service';
 import {
   FormBuilder,
   FormGroup,
@@ -37,6 +38,9 @@ export class Profile implements OnInit {
   showConfirmPassword = false;
 
   avatarUrl: string = '';
+  isUploading = false;
+  uploadedPhotoFileName = '';
+  uploadedDocumentId: number = 0;
   email: string = '';
   userName = '';
   profileForm!: FormGroup;
@@ -48,7 +52,9 @@ export class Profile implements OnInit {
     private fb: FormBuilder,
     private toastr: ToastrService,
     private menuService: MenuService,
-    private authService: AuthService
+    private authService: AuthService,
+    private fileService: FileService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -111,10 +117,11 @@ export class Profile implements OnInit {
 
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      const maxSizeInBytes = 100 * 1024; // 100 KB
+      const maxSizeInBytes = 200 * 1024; // 200 KB
 
       if (file.size > maxSizeInBytes) {
-        this.errorMessage = 'Image size must be less than 100 KB.';
+        this.errorMessage = 'Image size must be less than 200 KB.';
+        this.toastr.warning(this.errorMessage, 'Warning');
         input.value = '';
         return;
       }
@@ -122,8 +129,37 @@ export class Profile implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.avatarUrl = reader.result as string;
+        this.cdr.detectChanges();
       };
       reader.readAsDataURL(file);
+
+      const payload: FileUploadPayload = {
+        file: file,
+        documentCategoryId: 1,
+        documentTypeId: 0,
+        documentNumber: '',
+        sessionId: 'a7e6d175-7bbd-4a7f-9d65-7a3e37415be2'
+      };
+
+      this.isUploading = true;
+      this.cdr.detectChanges();
+
+      this.fileService.UploadFile(payload).subscribe({
+        next: (response) => {
+          this.isUploading = false;
+          this.uploadedPhotoFileName = response?.data?.storedFileName ?? file.name;
+          this.uploadedDocumentId = response?.data?.userDocumentId ?? 0;
+          this.toastr.success(response?.message || 'Profile image uploaded successfully!', 'Success');
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          this.isUploading = false;
+          const msg = error?.error?.message || error?.error || 'Failed to upload profile image.';
+          this.errorMessage = typeof msg === 'string' ? msg : 'Failed to upload profile image.';
+          this.toastr.error(this.errorMessage, 'Upload Failed');
+          this.cdr.detectChanges();
+        }
+      });
     }
   }
 
@@ -202,10 +238,12 @@ export class Profile implements OnInit {
   resetForm(): void {
     this.profileForm.reset();
     this.avatarUrl = '';
+    this.uploadedPhotoFileName = '';
+    this.uploadedDocumentId = 0;
     this.initialFormState = this.profileForm.getRawValue();
     this.passwordModalOpen = false;
     this.passwordError = '';
-    this.passwordForm.reset();
+    this.cdr.detectChanges();
   }
 
   saveProfile(): void {
@@ -214,8 +252,12 @@ export class Profile implements OnInit {
       return;
     }
 
-    const payload = { ...this.profileForm.getRawValue(), avatarUrl: this.avatarUrl };
-    // console.log('Payload Submitted:', payload);
+    const payload = {
+      ...this.profileForm.getRawValue(),
+      avatarUrl: this.avatarUrl,
+      photoFileName: this.uploadedPhotoFileName,
+      photoDocumentId: this.uploadedDocumentId
+    };
     this.initialFormState = this.profileForm.getRawValue();
     this.showSuccess();
   }
