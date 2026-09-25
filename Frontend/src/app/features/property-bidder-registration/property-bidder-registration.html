@@ -555,7 +555,7 @@
                   </div>
 
                   @if (transferredAlloteesList.length > 0) {
-                  <div class="table-responsive">
+                  <div class="table-responsive overflow-auto">
                     <table class="table table-hover table-striped align-middle mb-0 text-nowrap">
                       <thead>
                         <tr class="small text-uppercase">
@@ -1228,7 +1228,7 @@
                 @if (registerationForm.get('isTransferred')?.value && transferredAlloteesList.length) {
                 <div class="col-12">
                   <label class="form-label small text-dark fw-semibold text-uppercase">Transferred Allotees</label>
-                  <div class="table-responsive">
+                  <div class="table-responsive overflow-auto">
                     <table class="table table-sm table-bordered mb-0">
                       <thead class="table-light">
                         <tr class="small text-secondary">
@@ -1238,6 +1238,9 @@
                           <th>Guardian</th>
                           <th>PAN</th>
                           <th>Mobile</th>
+                          <th>Property Type</th>
+                          <th>Location</th>
+                          <th>Address</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1249,6 +1252,9 @@
                           <td>{{ allotee.fatherOrHusbandName || '—' }}</td>
                           <td>{{ allotee.panNo || '—' }}</td>
                           <td>{{ allotee.mobileNo || '—' }}</td>
+                          <td>{{ allotee.propertyType || '—' }}</td>
+                          <td>{{ allotee.location || '—' }}</td>
+                          <td>{{ allotee.address || '—' }}</td>
                         </tr>
                         }
                       </tbody>
