@@ -3,6 +3,7 @@ using Backend.Helpers;
 using Backend.Models.Dtos;
 using Backend.Models.DTOs;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -435,6 +436,173 @@ namespace Backend.Services.Implementations
             };
 
             return ApiResponse<PropertyOwnerDetailsDto>.Ok(dto, "Property details retrieved successfully.");
+        }
+
+        public async Task<ApiResponse<ApplicationUserProfileDto>> GetProfileDetailsByUserId(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return ApiResponse<ApplicationUserProfileDto>.Fail(
+                        "User ID is required.");
+                }
+
+                var user = await (
+                    from application in _context.ApplicationUsers
+
+                    join state in _context.StateMasters
+                      on application.IndividualStateId equals state.StateId
+                      into stateGroup
+                    from state in stateGroup.DefaultIfEmpty()
+
+                    join district in _context.DistrictMasters
+                        on application.IndividualDistrictId equals district.DistrictId
+                        into districtGroup
+                    from district in districtGroup.DefaultIfEmpty()
+
+                    join city in _context.CityMasters
+                        on application.IndividualCityId equals city.CityId
+                        into cityGroup
+                    from city in cityGroup.DefaultIfEmpty()
+
+                    where application.IdentityUserId == userId
+                          && !application.IsDeleted
+
+                    select new
+                    {
+                        ApplicationUser = application,
+                        State = state,
+                        District = district,
+                        City = city
+                    }
+                ).FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    return ApiResponse<ApplicationUserProfileDto>.Fail(
+                        "No profile found for the given user.");
+                }
+
+                var applicationUser = user.ApplicationUser;
+
+                var dto = new ApplicationUserProfileDto
+                {
+                    ApplicantId = applicationUser.ApplicantId,
+                    IdentityUserId = applicationUser.IdentityUserId,
+
+                    FirstName = applicationUser.FirstName,
+                    LastName = applicationUser.LastName,
+                    Email = applicationUser.Email,
+                    MobileNo = applicationUser.MobileNo,
+                    FatherHusbandFirstName = applicationUser.FirstName,
+                    MotherFirstName = applicationUser.FirstName,
+
+                    IndividualStateId = applicationUser.IndividualStateId,
+                    IndividualDistrictId = applicationUser.IndividualDistrictId,
+                    IndividualCityId = applicationUser.IndividualCityId,
+
+                    IndividualPinCode = applicationUser.IndividualPinCode,
+                    IndividualPlotStreetLandmark =applicationUser.IndividualPlotStreetLandmark,
+
+                    StateName = user.State?.StateName,
+                    DistrictName = user.District?.DistrictName,
+                    CityName = user.City?.CityName,
+
+                    IsDeleted = applicationUser.IsDeleted,
+                    IsActive = applicationUser.IsActive,
+
+                    CreatedDate = applicationUser.CreatedDate,
+                    CreatedBy = applicationUser.CreatedBy
+                };
+
+                return ApiResponse<ApplicationUserProfileDto>.Ok(
+                    dto,
+                    "Profile details fetched successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<ApplicationUserProfileDto>.Fail(
+                    $"Error while fetching profile details: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<UserProfileImageDto>> GetProfileImageByUserIdAsync(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("User ID is required.");
+                }
+
+                var applicantId = await _context.ApplicationUsers.Where(x => x.IdentityUserId == userId && !x.IsDeleted) .Select(x => x.ApplicantId).FirstOrDefaultAsync();
+
+                if (applicantId == 0)
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("Application user not found.");
+                }
+
+                var document = await _context.UserDocuments.Where(x => x.ApplicantId == applicantId &&!x.IsDeleted &&x.IsActive &&
+                        (
+                            (x.FolderPath != null &&
+                             x.FolderPath.Contains("Photograph")) ||
+                            (x.RelativePath != null &&
+                             x.RelativePath.Contains("Photograph"))
+                        ))
+                    .OrderByDescending(x => x.CreatedDate)
+                    .Select(x => new
+                    {
+                        x.OriginalFileName,
+                        x.StoredFileName,
+                        x.RelativePath,
+                        x.FolderPath,
+                        x.ContentType,
+                        x.TempSessionId
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (document == null)
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("Profile photograph not found.");
+                }
+
+                var relativePath = !string.IsNullOrWhiteSpace(document.RelativePath)
+                    ? document.RelativePath : document.FolderPath;
+
+                if (string.IsNullOrWhiteSpace(relativePath))
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("Profile photograph path not found.");
+                }
+
+                var rootPath = @"D:\ColonizationDocuments";
+
+                relativePath = relativePath.Replace("/", Path.DirectorySeparatorChar.ToString()).TrimStart(Path.DirectorySeparatorChar,Path.AltDirectorySeparatorChar);
+
+                var filePath = Path.Combine(rootPath, relativePath);
+
+                if (!File.Exists(filePath))
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail(
+                        $"Profile photograph file not found. Path: {filePath}");
+                }
+
+                var fileData = await File.ReadAllBytesAsync(filePath);
+
+                var result = new UserProfileImageDto
+                {
+                    FileName      = document.OriginalFileName ?? document.StoredFileName,
+                    ContentType   = document.ContentType ?? "application/octet-stream",
+                    FilePath      = filePath,
+                    TempSessionId = document.TempSessionId
+                };
+
+                return ApiResponse<UserProfileImageDto>.Ok(result,"Profile photograph fetched successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<UserProfileImageDto>.Fail($"Error while fetching profile photograph: {ex.Message}");
+            }
         }
     }
 }
