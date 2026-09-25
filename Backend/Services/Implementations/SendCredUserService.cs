@@ -48,7 +48,7 @@ namespace Backend.Services.Implementations
                     Username : {model.EmailId}
                     Password : {model.Password}
 
-                    Please login at: https://dircolon.emandikaran-pb.in/auth/login
+                    Please login at: https://dircolon-pb.in/auth/login
 
                     For security reasons, please change your password after first login.
 
