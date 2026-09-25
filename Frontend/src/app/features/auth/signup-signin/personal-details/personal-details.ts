@@ -17,6 +17,7 @@ export class PersonalDetails implements OnInit {
   @Input() selectedEntityType = '';
   @Input() signUpData: any;
   @Output() toastMessage = new EventEmitter<{ message: string; type: 'success' | 'error' | 'info' }>();
+  @Output() verificationChanged = new EventEmitter<{ emailVerified: boolean; mobileVerified: boolean }>();
 
   maxDob = '';
   ageError = false;
@@ -199,6 +200,7 @@ export class PersonalDetails implements OnInit {
           this.verification.emailVerified = true;
           this.verification.emailSent = false;
           this.verification.emailOtpInput = '';
+          this.emitVerification();
           this.triggerToast('Email verified successfully!', 'success');
         } else {
           this.verification.emailOtpInput = '';
@@ -317,6 +319,7 @@ export class PersonalDetails implements OnInit {
           this.verification.mobileVerified = true;
           this.verification.mobileSent = false;
           this.verification.mobileOtpInput = '';
+          this.emitVerification();
           this.triggerToast('Mobile verified successfully!', 'success');
         } else {
           this.verification.mobileOtpInput = '';
@@ -349,12 +352,19 @@ export class PersonalDetails implements OnInit {
     this.sectionsExpanded[section] = !this.sectionsExpanded[section];
   }
 
+  // Notifies the parent whenever email or mobile verification status changes.
+  emitVerification(): void {
+    this.verificationChanged.emit({
+      emailVerified:  this.verification.emailVerified,
+      mobileVerified: this.verification.mobileVerified,
+    });
+  }
+
   get isManagingPartnerVisible(): boolean {
     return this.managingPartnerVisibleTypes.includes(this.selectedEntityType);
   }
 
   onRelationTypeChange() {
-    // debugger
     if (!this.signUpData) return;
 
     if (this.signUpData.relationType === 'father') {
