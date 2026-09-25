@@ -96,6 +96,7 @@ export class PersonalDetails implements OnInit {
   //   });
   // }
   sendEmailOtp() {
+    // debugger
     if (this.verification.emailVerified) {
       return;
     }
@@ -110,11 +111,13 @@ export class PersonalDetails implements OnInit {
     }
 
     const email = this.signUpData.emailAddress.trim();
+    const mobileNumber = this.signUpData.mobileNumber;
 
     this.http.post<any>(
       `${environment.apiUrl}/EmailVerification/verifyfirst`,
       {
-        emailId: email
+        emailId: email,
+        mobileNumber: mobileNumber
       }
     ).subscribe({
       next: (verifyRes) => {
@@ -239,27 +242,54 @@ export class PersonalDetails implements OnInit {
       return;
     }
 
-    this.verification.mobileSending = true;
-    this.verification.mobileSent = true;
-    this.verification.mobileOtpInput = '';
+    const mobileNumber = this.signUpData.mobileNumber.trim();
 
-    this.http.post(`${environment.apiUrl}/MobileVerification/send-mobile-otp`, {
-      mobileNumber: this.signUpData.mobileNumber
-    }).subscribe({
-      next: (res: any) => {
-        this.verification.mobileSending = false;
-        if (res.success) {
-          this.startMobileTimer();
-          this.triggerToast('OTP sent to your mobile', 'success');
-        } else {
-          this.verification.mobileSent = false;
-          this.triggerToast(res.message || 'Failed to send OTP', 'error');
+    // Step 1: Check if mobile already exists
+    this.http.post<any>(
+      `${environment.apiUrl}/EmailVerification/verifyfirst`,
+      { mobileNumber: mobileNumber }
+    ).subscribe({
+      next: (verifyRes) => {
+        if (verifyRes.success) {
+          // Mobile already exists in DB
+          this.triggerToast(
+            verifyRes.message || 'Mobile number already exists',
+            'error'
+          );
+          return;
         }
+
+        // Step 2: Mobile not found — proceed to send OTP
+        this.verification.mobileSending = true;
+        this.verification.mobileSent = true;
+        this.verification.mobileOtpInput = '';
+
+        this.http.post(`${environment.apiUrl}/MobileVerification/send-mobile-otp`, {
+          mobileNumber: mobileNumber
+        }).subscribe({
+          next: (res: any) => {
+            this.verification.mobileSending = false;
+            if (res.success) {
+              this.startMobileTimer();
+              this.triggerToast('OTP sent to your mobile', 'success');
+            } else {
+              this.verification.mobileSent = false;
+              this.triggerToast(res.message || 'Failed to send OTP', 'error');
+            }
+          },
+          error: () => {
+            this.verification.mobileSending = false;
+            this.verification.mobileSent = false;
+            this.triggerToast('Failed to send OTP. Try again.', 'error');
+          }
+        });
       },
+
       error: () => {
-        this.verification.mobileSending = false;
-        this.verification.mobileSent = false;
-        this.triggerToast('Failed to send OTP. Try again.', 'error');
+        this.triggerToast(
+          'Unable to verify Mobile Number. Please try again.',
+          'error'
+        );
       }
     });
   }

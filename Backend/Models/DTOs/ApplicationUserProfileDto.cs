@@ -55,4 +55,15 @@ namespace Backend.Models.DTOs
         public DateTime CreatedDate { get; set; }
         public long? CreatedBy { get; set; }
     }
+
+    public class UserProfileImageDto
+    {
+        public string? FileName { get; set; }
+
+        public string? ContentType { get; set; }
+
+        public string? FilePath { get; set; }
+
+        public string? TempSessionId { get; set; }
+    }
 }

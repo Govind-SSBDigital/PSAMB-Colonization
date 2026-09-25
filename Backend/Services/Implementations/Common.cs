@@ -526,5 +526,83 @@ namespace Backend.Services.Implementations
                     $"Error while fetching profile details: {ex.Message}");
             }
         }
+
+        public async Task<ApiResponse<UserProfileImageDto>> GetProfileImageByUserIdAsync(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("User ID is required.");
+                }
+
+                var applicantId = await _context.ApplicationUsers.Where(x => x.IdentityUserId == userId && !x.IsDeleted) .Select(x => x.ApplicantId).FirstOrDefaultAsync();
+
+                if (applicantId == 0)
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("Application user not found.");
+                }
+
+                var document = await _context.UserDocuments.Where(x => x.ApplicantId == applicantId &&!x.IsDeleted &&x.IsActive &&
+                        (
+                            (x.FolderPath != null &&
+                             x.FolderPath.Contains("Photograph")) ||
+                            (x.RelativePath != null &&
+                             x.RelativePath.Contains("Photograph"))
+                        ))
+                    .OrderByDescending(x => x.CreatedDate)
+                    .Select(x => new
+                    {
+                        x.OriginalFileName,
+                        x.StoredFileName,
+                        x.RelativePath,
+                        x.FolderPath,
+                        x.ContentType,
+                        x.TempSessionId
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (document == null)
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("Profile photograph not found.");
+                }
+
+                var relativePath = !string.IsNullOrWhiteSpace(document.RelativePath)
+                    ? document.RelativePath : document.FolderPath;
+
+                if (string.IsNullOrWhiteSpace(relativePath))
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail("Profile photograph path not found.");
+                }
+
+                var rootPath = @"D:\ColonizationDocuments";
+
+                relativePath = relativePath.Replace("/", Path.DirectorySeparatorChar.ToString()).TrimStart(Path.DirectorySeparatorChar,Path.AltDirectorySeparatorChar);
+
+                var filePath = Path.Combine(rootPath, relativePath);
+
+                if (!File.Exists(filePath))
+                {
+                    return ApiResponse<UserProfileImageDto>.Fail(
+                        $"Profile photograph file not found. Path: {filePath}");
+                }
+
+                var fileData = await File.ReadAllBytesAsync(filePath);
+
+                var result = new UserProfileImageDto
+                {
+                    FileName      = document.OriginalFileName ?? document.StoredFileName,
+                    ContentType   = document.ContentType ?? "application/octet-stream",
+                    FilePath      = filePath,
+                    TempSessionId = document.TempSessionId
+                };
+
+                return ApiResponse<UserProfileImageDto>.Ok(result,"Profile photograph fetched successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<UserProfileImageDto>.Fail($"Error while fetching profile photograph: {ex.Message}");
+            }
+        }
     }
 }

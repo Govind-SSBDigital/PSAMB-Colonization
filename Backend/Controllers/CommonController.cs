@@ -237,5 +237,24 @@ namespace Backend.Controllers
 
             return Ok(response);
         }
+        [HttpGet("GetProfileImageByUserId")]
+        public async Task<IActionResult> GetProfileImageByUserId()
+        {
+            var Userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(Userid))
+            {
+                return BadRequest(new { success = false, message = "userId is required." });
+            }
+
+            var response = await _common.GetProfileImageByUserIdAsync(Userid);
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

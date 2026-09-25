@@ -24,5 +24,6 @@ namespace Backend.Services.Interfaces
         Task<ApiResponse<List<PlotSizeDto>>> GetPlotSizeByPlotNo(int plotNo);
         Task<ApiResponse<PropertyOwnerDetailsDto>> GetPropertyDetailsByPlot(int? mandiId, int? plotTypeId, int? plotNo, string? plotSize);
         Task<ApiResponse<ApplicationUserProfileDto>> GetProfileDetailsByUserId(string userId);
+        Task<ApiResponse<UserProfileImageDto>> GetProfileImageByUserIdAsync(string userId);
     }
 }
