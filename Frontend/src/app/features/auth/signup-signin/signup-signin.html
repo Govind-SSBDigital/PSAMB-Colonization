@@ -160,10 +160,16 @@
                     </div>
 
                     <div class="login-actions-row-parallel">
-                        <button type="submit" class="btn-login-screenshot flex-grow-1">
-                            LOG IN
+                        <button type="submit" class="btn-login-screenshot flex-grow-1"
+                            [disabled]="isSigningIn">
+                            <span *ngIf="!isSigningIn">LOG IN</span>
+                            <span *ngIf="isSigningIn" class="btn-spinner-row">
+                                <span class="btn-spinner"></span> Signing in&hellip;
+                            </span>
                         </button>
-                        <button type="button" class="btn-login-mobile-toggle" (click)="toggleLoginMethod('otp')">
+                        <button type="button" class="btn-login-mobile-toggle"
+                            [disabled]="isSigningIn"
+                            (click)="toggleLoginMethod('otp')">
                             <i class="fas fa-mobile-alt"></i> Login with Mobile
                         </button>
                     </div>
@@ -190,7 +196,7 @@
                         </div>
                         <div class="vertical-divider-screenshot">|</div>
                         <input type="text" name="otpInput" maxlength="6" [(ngModel)]="loginOtpData.otpInput" required
-                            placeholder="Enter 6-digit OTP (112233)">
+                            placeholder="Enter 6-digit OTP">
                     </div>
 
                     <!-- OTP Sent Countdown/Resend helper -->
@@ -205,13 +211,21 @@
                     <div class="login-actions-row-parallel mt-2">
                         <!-- Send OTP Button (when not sent) -->
                         <button type="button" *ngIf="!loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1"
+                            [disabled]="isSendingLoginOtp"
                             (click)="sendLoginOtp()">
-                            Send OTP / ਵੈਰੀਫਾਈ ਕਰੋ
+                            <span *ngIf="!isSendingLoginOtp">Send OTP / ਵੈਰੀਫਾਈ ਕਰੋ</span>
+                            <span *ngIf="isSendingLoginOtp" class="btn-spinner-row">
+                                <span class="btn-spinner"></span> Sending&hellip;
+                            </span>
                         </button>
 
-                        <!-- Verify & Log In Button (when sent) -->
-                        <button type="submit" *ngIf="loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1">
-                            Verify & Login
+                        <!-- Verify &amp; Log In Button (when sent) -->
+                        <button type="submit" *ngIf="loginOtpData.otpSent" class="btn-login-screenshot flex-grow-1"
+                            [disabled]="isSigningIn">
+                            <span *ngIf="!isSigningIn">Verify &amp; Login</span>
+                            <span *ngIf="isSigningIn" class="btn-spinner-row">
+                                <span class="btn-spinner"></span> Verifying&hellip;
+                            </span>
                         </button>
                     </div>
                 </form>

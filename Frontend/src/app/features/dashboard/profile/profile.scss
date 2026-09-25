@@ -93,9 +93,15 @@
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.avatar-edit-btn:hover {
+.avatar-edit-btn:hover:not(:disabled) {
   transform: translateY(-1px) scale(1.05);
   background: var(--theme-forest-dark);
+}
+
+.avatar-edit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .minimal-input {

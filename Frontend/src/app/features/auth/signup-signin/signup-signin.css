@@ -681,6 +681,39 @@ color: var(--theme-primary) !important;
     box-shadow: 0 8px 16px rgba(21, 128, 61, 0.3);
 }
 
+/* Disabled state — applied automatically when [disabled] is bound */
+.btn-login-screenshot:disabled,
+.btn-login-mobile-toggle:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Inline spinner shown inside buttons during API in-flight state */
+.btn-spinner-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: btn-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+
 /* Parallel actions row inside sign-in card */
 .login-actions-row-parallel {
     display: flex;

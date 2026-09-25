@@ -14,8 +14,12 @@
                 @if (avatarUrl) {
                   <img [src]="avatarUrl" alt="Profile Image" class="profile-avatar">
                 }
-                <button type="button" class="avatar-edit-btn" (click)="fileInput.click()" matTooltip="Upload Image" matTooltipPosition="right">
-                  <i class="fa-regular fa-pen-to-square"></i>
+                <button type="button" class="avatar-edit-btn" (click)="fileInput.click()" [disabled]="isUploading" [matTooltip]="isUploading ? 'Uploading...' : 'Upload Image'" matTooltipPosition="right">
+                  @if (isUploading) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                  } @else {
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  }
                 </button>
                 <input #fileInput type="file" (change)="onAvatarChange($event)" class="d-none" accept="image/*">
               </div>

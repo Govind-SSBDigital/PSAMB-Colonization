@@ -138,8 +138,7 @@ export class DocumentsAndAddress implements OnInit {
       case 'Voter Card': return '[A-Za-z0-9]{10}';
       case 'Passport': return '[A-Za-z0-9]{8}';
       // case 'Driving License': return '[A-Za-z0-9]{15}';
-      case 'Other Government issued Photo ID': return '[A-Za-z0-9]{20}';
-      default: return '[A-Za-z0-9]+';
+      default: return '[A-Za-z0-9]{1,30}';
     }
   }
 
@@ -151,8 +150,7 @@ export class DocumentsAndAddress implements OnInit {
       case 'Voter Card': return 10;
       case 'Passport': return 8;
       // case 'Driving License': return 15;
-      case 'Other Government issued Photo ID': return 20;
-      default: return 20;
+      default: return 30;
     }
   }
 
@@ -167,7 +165,8 @@ export class DocumentsAndAddress implements OnInit {
       this.signUpData.idDocumentNumber = cleaned;
       this.maskedIdDocumentNumber = cleaned;
     } else {
-      const cleaned = value.slice(0, this.getMaxLength());
+      const maxLen = this.getMaxLength(); // 15 for DL, 8 for Passport, 10 for Voter, 30 for others
+      const cleaned = value.slice(0, maxLen);
       this.signUpData.idDocumentNumber = cleaned;
       this.maskedIdDocumentNumber = cleaned;
     }
@@ -213,8 +212,10 @@ export class DocumentsAndAddress implements OnInit {
     if (!docType || docType === 'Aadhaar Card') return '';
 
     switch (docType) {
+      case 'Voter Card': return '[A-Za-z0-9]{10}';
       case 'Passport': return '[A-Za-z0-9]{8}';
-      default: return '[A-Za-z0-9]+';
+      // case 'Driving License': return '[A-Za-z0-9]{15}';
+      default: return '[A-Za-z0-9]{1,30}';
     }
   }
 
@@ -222,8 +223,10 @@ export class DocumentsAndAddress implements OnInit {
     const docType = this.signUpData?.addressDocType;
     switch (docType) {
       case 'Aadhaar Card': return 12;
+      case 'Voter Card': return 10;
       case 'Passport': return 8;
-      default: return 20;
+      // case 'Driving License': return 15;
+      default: return 30;
     }
   }
 
@@ -236,7 +239,8 @@ export class DocumentsAndAddress implements OnInit {
       const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
       this.signUpData.addressDocNumber = cleaned;
     } else {
-      const cleaned = value.slice(0, this.getAddressDocMaxLength());
+      const maxLen = this.getAddressDocMaxLength(); // 15 for DL, 10 for Voter, 30 for others
+      const cleaned = value.slice(0, maxLen);
       this.signUpData.addressDocNumber = cleaned;
     }
   }
@@ -247,7 +251,7 @@ export class DocumentsAndAddress implements OnInit {
     if (docType === 'Aadhaar Card') {
       input.value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
     } else {
-      input.value = input.value.slice(0, this.getAddressDocMaxLength());
+      input.value = input.value.slice(0, this.getAddressDocMaxLength()); // 15 for DL, 10 for Voter, 8 for Passport, 30 for others
     }
     this.signUpData.addressDocNumber = input.value;
   }

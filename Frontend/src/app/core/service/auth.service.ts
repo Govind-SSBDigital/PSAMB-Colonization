@@ -88,4 +88,16 @@ export class AuthService {
   forgotPassword(payload: { email: string; newPassword: string; confirmNewPassword: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/change-password`, payload);
   }
+
+  verifyFirst(payload: { emailId?: string; mobileNumber?: string }): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/EmailVerification/verifyfirst`, payload);
+  }
+
+  sendMobileOtp(mobileNumber: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/MobileVerification/send-mobile-otp`, { mobileNumber });
+  }
+
+  verifyMobileOtp(mobileNumber: string, otp: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/MobileVerification/verify-mobile-otp`, { mobileNumber, otp });
+  }
 }
