@@ -2,9 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../../../core/service/auth.service';
 
 @Component({
   selector: 'app-personal-details',
@@ -47,7 +46,7 @@ export class PersonalDetails implements OnInit {
   private emailTimerInterval: any;
   private mobileTimerInterval: any;
 
-  constructor(private http: HttpClient) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
     this.maxDob = this.formatDate(new Date());
@@ -57,47 +56,7 @@ export class PersonalDetails implements OnInit {
     this.toastMessage.emit({ message, type });
   }
 
-  // Email OTP
-  // sendEmailOtp() {
-  //   if (this.verification.emailVerified) {
-  //     return;
-  //   }
-
-  //   if (!this.signUpData?.emailAddress) {
-  //     this.triggerToast('Please enter Email ID first', 'error');
-  //     return;
-  //   }
-
-  //   if (this.verification.emailSending) {
-  //     return;
-  //   }
-
-  //   this.verification.emailSending = true;
-  //   this.verification.emailSent = true;
-  //   this.verification.emailOtpInput = '';
-
-  //   this.http.post(`${environment.apiUrl}/EmailVerification/send-otp`, {
-  //     email: this.signUpData.emailAddress
-  //   }).subscribe({
-  //     next: (res: any) => {
-  //       this.verification.emailSending = false;
-  //       if (res.success) {
-  //         this.startEmailTimer();
-  //         this.triggerToast('OTP sent to your email', 'success');
-  //       } else {
-  //         this.verification.emailSent = false;
-  //         this.triggerToast(res.message || 'Failed to send OTP', 'error');
-  //       }
-  //     },
-  //     error: () => {
-  //       this.verification.emailSending = false;
-  //       this.verification.emailSent = false;
-  //       this.triggerToast('Failed to send OTP. Try again.', 'error');
-  //     }
-  //   });
-  // }
   sendEmailOtp() {
-    // debugger
     if (this.verification.emailVerified) {
       return;
     }
@@ -114,65 +73,38 @@ export class PersonalDetails implements OnInit {
     const email = this.signUpData.emailAddress.trim();
     const mobileNumber = this.signUpData.mobileNumber;
 
-    this.http.post<any>(
-      `${environment.apiUrl}/EmailVerification/verifyfirst`,
-      {
-        emailId: email,
-        mobileNumber: mobileNumber
-      }
-    ).subscribe({
+    //Check email/mobile already exists
+    this.authService.verifyFirst({ emailId: email, mobileNumber }).subscribe({
       next: (verifyRes) => {
         if (verifyRes.success) {
-          this.triggerToast(
-            verifyRes.message || 'Email ID already exists',
-            'error'
-          );
+          this.triggerToast(verifyRes.message || 'Email ID already exists', 'error');
           return;
         }
         this.verification.emailSending = true;
         this.verification.emailSent = true;
         this.verification.emailOtpInput = '';
 
-        this.http.post<any>(
-          `${environment.apiUrl}/EmailVerification/send-otp`,
-          {
-            email: email
-          }
-        ).subscribe({
+        //Send OTP
+        this.authService.sendEmailOtp(email).subscribe({
           next: (res) => {
             this.verification.emailSending = false;
-
             if (res.success) {
               this.startEmailTimer();
-              this.triggerToast(
-                'OTP sent to your email',
-                'success'
-              );
+              this.triggerToast('OTP sent to your email', 'success');
             } else {
               this.verification.emailSent = false;
-              this.triggerToast(
-                res.message || 'Failed to send OTP',
-                'error'
-              );
+              this.triggerToast(res.message || 'Failed to send OTP', 'error');
             }
           },
           error: () => {
             this.verification.emailSending = false;
             this.verification.emailSent = false;
-
-            this.triggerToast(
-              'Failed to send OTP. Try again.',
-              'error'
-            );
+            this.triggerToast('Failed to send OTP. Try again.', 'error');
           }
         });
       },
-
       error: () => {
-        this.triggerToast(
-          'Unable to verify Email ID. Please try again.',
-          'error'
-        );
+        this.triggerToast('Unable to verify Email ID. Please try again.', 'error');
       }
     });
   }
@@ -191,10 +123,7 @@ export class PersonalDetails implements OnInit {
       return;
     }
 
-    this.http.post(`${environment.apiUrl}/EmailVerification/verify-otp`, {
-      email: this.signUpData.emailAddress,
-      otp
-    }).subscribe({
+    this.authService.verifyEmailOtp(this.signUpData.emailAddress, otp).subscribe({
       next: (res: any) => {
         if (res.verified) {
           this.verification.emailVerified = true;
@@ -246,18 +175,11 @@ export class PersonalDetails implements OnInit {
 
     const mobileNumber = this.signUpData.mobileNumber.trim();
 
-    // Step 1: Check if mobile already exists
-    this.http.post<any>(
-      `${environment.apiUrl}/EmailVerification/verifyfirst`,
-      { mobileNumber: mobileNumber }
-    ).subscribe({
+    // Check if mobile already exists
+    this.authService.verifyFirst({ mobileNumber }).subscribe({
       next: (verifyRes) => {
         if (verifyRes.success) {
-          // Mobile already exists in DB
-          this.triggerToast(
-            verifyRes.message || 'Mobile number already exists',
-            'error'
-          );
+          this.triggerToast(verifyRes.message || 'Mobile number already exists', 'error');
           return;
         }
 
@@ -266,9 +188,7 @@ export class PersonalDetails implements OnInit {
         this.verification.mobileSent = true;
         this.verification.mobileOtpInput = '';
 
-        this.http.post(`${environment.apiUrl}/MobileVerification/send-mobile-otp`, {
-          mobileNumber: mobileNumber
-        }).subscribe({
+        this.authService.sendMobileOtp(mobileNumber).subscribe({
           next: (res: any) => {
             this.verification.mobileSending = false;
             if (res.success) {
@@ -286,12 +206,8 @@ export class PersonalDetails implements OnInit {
           }
         });
       },
-
       error: () => {
-        this.triggerToast(
-          'Unable to verify Mobile Number. Please try again.',
-          'error'
-        );
+        this.triggerToast('Unable to verify Mobile Number. Please try again.', 'error');
       }
     });
   }
@@ -310,10 +226,7 @@ export class PersonalDetails implements OnInit {
       return;
     }
 
-    this.http.post(`${environment.apiUrl}/MobileVerification/verify-mobile-otp`, {
-      mobileNumber: this.signUpData.mobileNumber,
-      otp
-    }).subscribe({
+    this.authService.verifyMobileOtp(this.signUpData.mobileNumber, otp).subscribe({
       next: (res: any) => {
         if (res.success) {
           this.verification.mobileVerified = true;
